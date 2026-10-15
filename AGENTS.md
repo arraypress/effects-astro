@@ -21,6 +21,7 @@ Pick by what is asked for:
 | A hero that moves with the music on the page (sample packs, a label, a podcast) | `<WaveBars audio="page">`, `<SignalLines audio="page">`, `<InkField audio="page">`; `audio="#id"` follows one `<audio>` or WaveformPlayer |
 | A halftone or dotted wave surface, a dark tech, launch or hiring hero | `<DotSurface>` (one colour or a gradient; `quiet` behind the copy) |
 | A moody photo hero: rain on a window, a café or bar on a wet night, city lights through fogged glass | `<RainOnGlass src="…" alt="…">` (a night-street or city-lights photo suits it best; `tint` for the fog, `palette` for the bokeh) |
+| Realistic sea or ocean water, a coastal, surf, sailing or sea-view hero | `<Ocean>` (`time="dawn"`, `"noon"`, `"sunset"` or `"night"`, `waves` 0–2, `horizon` to keep the copy over the sky) |
 | A pool, spa, swimwear or summer hero: sunlight rippling on water | `<Caustics>` (`tiles` for a pool floor; `colors` for deep ocean, or `palette="Saffron"` for light through amber glass) |
 | A map, outdoors, travel or trail hero: contour lines like a survey map | `<Topography>` (dark by default; `background="#f3ead6" colors={['#9a6b43']}` for a paper map; `labels` for elevation numbers, `quiet` behind copy) |
 | A "we sell worldwide" or "we ship from here" section | `<WorldRoutes>` with the cities that matter to the shop; `home="…"` for a hub, `colors` + `gradient` for colour, `labels`, `region="europe"` (or `routes`) to crop |

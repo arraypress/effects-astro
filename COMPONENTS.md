@@ -580,6 +580,34 @@ NeonSwarm: a logo or a word held by a swarm of glowing particles that flows like
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
 | `class` | `string` | Classes for the element. |
 
+## `<Ocean>`
+
+Ocean: open sea to the horizon, photoreal, as a hero background. Waves at every scale run before the wind, sunlight glows through their thin crests, a glittering path runs out under the sun, whitecaps break on a rough sea and high cloud drifts in the sky and its reflection. `time` sets the hour (dawn, noon, sunset, a moonlit night); the camera drifts with the pointer. See src/runtime/ocean.js.
+
+```astro
+<section class="hero" style="position: relative">
+  <Ocean time="sunset" />
+  <h1>Out past the <em>break.</em></h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `time` | `'dawn' \| 'noon' \| 'sunset' \| 'night'` | The time of day: the sun, the sky's colours and the water's (`night` has a moon and stars). Default `sunset`. |
+| `waves` | `number` | The sea state: 0 glassy, 1 a fresh breeze, 2 rough with whitecaps. Default 1. |
+| `wind` | `number` | Where the waves run, degrees 0–360: 0 straight towards the viewer, 90 from left to right. Default 30. |
+| `speed` | `number` | How fast the sea moves; 0 holds it still. Default 1. |
+| `height` | `number` | How high the camera is above the water, metres, 1–20 (raised as far as the waves need). Default 4. |
+| `horizon` | `number` | Where the horizon sits, 0–1 up the frame. Default 0.3. |
+| `clouds` | `boolean` | Soft high cloud in the sky and its reflection. Default true. |
+| `sun` | `{ x?: number; y?: number } \| null` | Where the sun (or moon) sits instead of the time's place: 0–1 across and up the frame. Default none. |
+| `colors` | `string[]` | Tints, kept to each part's lightness: the sky, the water and the light. |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case) to tint with, when there are no `colors`. |
+| `interactive` | `boolean` | Whether the camera drifts with the pointer. Default true. |
+| `quiet` | `{ x?: number; y?: number; radius?: number; depth?: number } \| null` | An area dimmed behind copy: centre (0–1 from the top left), radius (a share of the height), depth (0–1). Default none; `{}` for the middle. |
+| `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
+| `class` | `string` | Classes for the element. |
+
 ## `<OutlineWordmark>`
 
 OutlineWordmark: a name at enormous scale, drawn as one outline, cropped so it sinks out of the bottom of the page, with a bright beam travelling through the letters. A page's closing mark: it ends on the brand rather than trailing off after the last link column, and as an outline it reads as texture rather than a second logo.

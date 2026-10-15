@@ -25,6 +25,7 @@ import Caustics from '@arraypress/effects-astro/Caustics.astro';
 import RainOnGlass from '@arraypress/effects-astro/RainOnGlass.astro';
 import '@arraypress/waveform-player/styles.css';
 import '../styles/audio.css';
+import Ocean from '@arraypress/effects-astro/Ocean.astro';
 const shaders = Object.keys(SHADER_BACKGROUNDS) as (keyof typeof SHADER_BACKGROUNDS)[];
 ---
 
@@ -209,6 +210,20 @@ const shaders = Object.keys(SHADER_BACKGROUNDS) as (keyof typeof SHADER_BACKGROU
 		<div class="audio-pack audio-pack--one" id="night-shift">
 			<div data-waveform-player data-url="/audio/drum-loop.mp3" data-title="Low Light" data-artist="Velvet Static · lead single" data-color-preset="dark" data-height="40" data-waveform-color="rgba(255, 255, 255, 0.3)" data-progress-color="#ffffff"></div>
 		</div>
+	</Hero>
+	<Hero id="ocean" name="Ocean" code="<Ocean />" align="left" style="--hero-ground: #1c2a4a; --muted: #fbe6d4">
+		<Ocean slot="effect" />
+		<span class="eyebrow">Halyard &amp; Co. · sailing charters, Falmouth</span>
+		<h2 class="headline">Leave the harbour<br /><em>at golden hour.</em></h2>
+		<p class="lede">Skippered evening sails on a classic wooden ketch. Six guests, a cool box of local cider, and nothing ahead of the bow but open water.</p>
+		<div class="actions"><a class="btn" href="#">Book a sunset sail</a><a class="btn btn--ghost" href="#">Meet the boat</a></div>
+	</Hero>
+	<Hero id="ocean-night" name="Ocean · night" code={`<Ocean time="night" />`} style="--hero-ground: #070b1a; --muted: #c9d4ee">
+		<Ocean slot="effect" time="night" />
+		<span class="eyebrow">Lantern House · a hotel on the cliff</span>
+		<h2 class="headline">Fall asleep<br /><em>to the tide.</em></h2>
+		<p class="lede">Eleven rooms above the bay, each with a window on the sea. Shutters open, the moon on the water, the kettle on for morning.</p>
+		<div class="actions"><a class="btn" href="#">Check availability</a></div>
 	</Hero>
 	{
 		shaders.map((effect, i) => (

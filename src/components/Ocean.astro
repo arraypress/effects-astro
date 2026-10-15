@@ -1,0 +1,40 @@
+---
+/**
+ * Ocean: open sea to the horizon, photoreal, as a hero background. Waves
+ * at every scale run before the wind, sunlight glows through their thin
+ * crests, a glittering path runs out under the sun, whitecaps break on a
+ * rough sea and high cloud drifts in the sky and its reflection. `time`
+ * sets the hour (dawn, noon, sunset, a moonlit night); the camera drifts
+ * with the pointer. See src/runtime/ocean.js.
+ *
+ * Opaque: it is the whole background of what it fills (its nearest
+ * positioned ancestor, or the viewport with `fixed`). Without WebGL the
+ * scene shows as a gradient.
+ *
+ * @example
+ * <section class="hero" style="position: relative">
+ *   <Ocean time="sunset" />
+ *   <h1>Out past the <em>break.</em></h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import { oceanBackdrop, oceanLook } from '../runtime/ocean/presets.js';
+import type { OceanConfig } from '../runtime/ocean.js';
+
+interface Props extends OceanConfig {
+	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
+	fixed?: boolean;
+	class?: string;
+}
+
+const { fixed = false, class: className, ...config } = Astro.props;
+---
+
+<EffectCanvas name="ocean" config={config} fixed={fixed} class={className} behind background={oceanBackdrop(oceanLook(config), config.horizon)} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { ocean } from '../runtime/ocean.js';
+
+	mount('[data-effect-ocean]', ocean);
+</script>

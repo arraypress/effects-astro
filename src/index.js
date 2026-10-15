@@ -51,6 +51,8 @@ export { radiantGlass } from './runtime/radiant-glass.js';
 export { topography } from './runtime/topography.js';
 export { caustics, causticTones } from './runtime/caustics.js';
 export { rainOnGlass } from './runtime/rain-on-glass.js';
+export { ocean } from './runtime/ocean.js';
+export { OCEAN_TIMES, oceanLook, oceanBackdrop } from './runtime/ocean/presets.js';
 export { mosaicReveal, tileGrid } from './runtime/mosaic-reveal.js';
 export { slideshow } from './runtime/slideshow.js';
 export { productStack } from './runtime/product-stack.js';
@@ -81,7 +83,7 @@ export { mount, readConfig, watchColors } from './runtime/mount.js';
 /**
  * Changes the colours of a WebGL effect (`<LightField>`, `<Ink>`,
  * `<AsciiRain>`, `<FlutedGlass>`, `<GlassGlyph>`, `<LiquidMetal>`,
- * `<ParticleLogo>`, `<PointCloud>`, `<VoxelLogo>`, `<HaloRing>`, `<SilkRibbon>`, `<RadiantGlass>`, `<Topography>`, `<Caustics>`, `<RainOnGlass>`, `<MosaicReveal>`): a light
+ * `<ParticleLogo>`, `<PointCloud>`, `<VoxelLogo>`, `<HaloRing>`, `<SilkRibbon>`, `<RadiantGlass>`, `<Topography>`, `<Caustics>`, `<RainOnGlass>`, `<MosaicReveal>`, `<Ocean>`): a light
  * eases to them in about a second, the others take them from their next frame.
  *
  * @param {Element | null} el The effect's element (`[data-effect-light-field]` and so on).

@@ -70,6 +70,10 @@ export { caustics, causticTones } from './runtime/caustics.js';
 export type { CausticsConfig, CausticTones } from './runtime/caustics.js';
 export { rainOnGlass } from './runtime/rain-on-glass.js';
 export type { RainOnGlassConfig } from './runtime/rain-on-glass.js';
+export { ocean } from './runtime/ocean.js';
+export type { OceanConfig } from './runtime/ocean.js';
+export { OCEAN_TIMES, oceanLook, oceanBackdrop } from './runtime/ocean/presets.js';
+export type { OceanLook, OceanTime } from './runtime/ocean/presets.js';
 export { mosaicReveal, tileGrid } from './runtime/mosaic-reveal.js';
 export type { MosaicRevealConfig, MosaicTransition } from './runtime/mosaic-reveal.js';
 export { slideshow } from './runtime/slideshow.js';
@@ -118,7 +122,7 @@ export { mount, readConfig, watchColors } from './runtime/mount.js';
 /**
  * Changes the colours of a WebGL effect (`<LightField>`, `<Ink>`, `<AsciiRain>`,
  * `<FlutedGlass>`, `<GlassGlyph>`, `<LiquidMetal>`, `<ParticleLogo>`, `<PointCloud>`,
- * `<VoxelLogo>`, `<HaloRing>`, `<SilkRibbon>`, `<RadiantGlass>`, `<Topography>`, `<Caustics>`, `<RainOnGlass>`, `<MosaicReveal>`),
+ * `<VoxelLogo>`, `<HaloRing>`, `<SilkRibbon>`, `<RadiantGlass>`, `<Topography>`, `<Caustics>`, `<RainOnGlass>`, `<MosaicReveal>`, `<Ocean>`),
  * in the order its `colors` takes. A light eases to them; the others take them next frame.
  */
 export function setColors(el: Element | null, colors: string[], glint?: string): void;
