@@ -24,6 +24,7 @@ Pick by what is asked for:
 | Realistic sea or ocean water, a coastal, surf, sailing or sea-view hero | `<Ocean>` (`time="dawn"`, `"noon"`, `"sunset"` or `"night"`, `waves` 0–2, `horizon` to keep the copy over the sky) |
 | A pool, spa, swimwear or summer hero: sunlight rippling on water | `<Caustics>` (`tiles` for a pool floor; `colors` for deep ocean, or `palette="Saffron"` for light through amber glass) |
 | A map, outdoors, travel or trail hero: contour lines like a survey map | `<Topography>` (dark by default; `background="#f3ead6" colors={['#9a6b43']}` for a paper map; `labels` for elevation numbers, `quiet` behind copy) |
+| A taxi, ride-hailing, delivery, mobility or city-services hero: a tiny living city | `<IsoCity accent="…">` (`night` for lit windows and headlights, `side="right"` + `quiet` beside copy; a click on a street calls a taxi) |
 | A "we sell worldwide" or "we ship from here" section | `<WorldRoutes>` with the cities that matter to the shop; `home="…"` for a hub, `colors` + `gradient` for colour, `labels`, `region="europe"` (or `routes`) to crop |
 | A light or texture over a background (a spotlight, film grain) | `<GlowField>`, `<Grain>` (`still` for either to hold) |
 | The brand's logo as the hero's centrepiece | `<GlassGlyph>`, `<LiquidMetal>` (liquid chrome you can poke and splash; `tint="gold"`…), `<ParticleLogo>`, `<NeonSwarm>` (a flowing neon swarm), `<NebulaLogo>` (filled with nebula gas), `<VoxelLogo>`, `<PointCloud>`, all with `src="/logo.svg"` or `text` |

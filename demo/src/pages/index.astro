@@ -26,6 +26,7 @@ import RainOnGlass from '@arraypress/effects-astro/RainOnGlass.astro';
 import '@arraypress/waveform-player/styles.css';
 import '../styles/audio.css';
 import Ocean from '@arraypress/effects-astro/Ocean.astro';
+import IsoCity from '@arraypress/effects-astro/IsoCity.astro';
 const shaders = Object.keys(SHADER_BACKGROUNDS) as (keyof typeof SHADER_BACKGROUNDS)[];
 ---
 
@@ -224,6 +225,22 @@ const shaders = Object.keys(SHADER_BACKGROUNDS) as (keyof typeof SHADER_BACKGROU
 		<h2 class="headline">Fall asleep<br /><em>to the tide.</em></h2>
 		<p class="lede">Eleven rooms above the bay, each with a window on the sea. Shutters open, the moon on the water, the kettle on for morning.</p>
 		<div class="actions"><a class="btn" href="#">Check availability</a></div>
+	</Hero>
+	<Hero id="iso-city" name="IsoCity" code={`<IsoCity side="right" quiet={{ x: 0.2, y: 0.5, radius: 0.42, depth: 0.85 }} />`} theme="light" align="left" style="--hero-ground: #e9e3d8; --muted: #4a4640">
+		<IsoCity slot="effect" side="right" quiet={{ x: 0.2, y: 0.5, radius: 0.42, depth: 0.85 }} />
+		<span aria-hidden="true" style="position: absolute; inset: -40% -60% -40% -30%; z-index: -1; background: radial-gradient(closest-side, rgb(233 227 216 / 0.92), rgb(233 227 216 / 0.6) 60%, transparent); pointer-events: none"></span>
+		<span class="eyebrow">Marigold · rides across the city</span>
+		<h2 class="headline">Tap the street.<br /><em>We're round the corner.</em></h2>
+		<p class="lede" style="max-width: 26rem">Marigold sends the nearest car by road, not as the crow flies, so the one on your map is the one that pulls in. Fixed fares, quiet electric saloons, and always the right side of the street.</p>
+		<div class="actions"><a class="btn" href="#">Get the app</a><a class="btn btn--ghost" href="#">See fares</a></div>
+	</Hero>
+	<Hero id="iso-city-night" name="IsoCity · night" code={`<IsoCity night side="right" quiet={{ x: 0.2, y: 0.5, radius: 0.42, depth: 0.85 }} />`} align="left" style="--hero-ground: #0d1219">
+		<IsoCity slot="effect" night side="right" quiet={{ x: 0.2, y: 0.5, radius: 0.42, depth: 0.85 }} />
+		<span aria-hidden="true" style="position: absolute; inset: -40% -60% -40% -30%; z-index: -1; background: radial-gradient(closest-side, rgb(13 18 25 / 0.9), rgb(13 18 25 / 0.55) 60%, transparent); pointer-events: none"></span>
+		<span class="eyebrow">Marigold · after dark</span>
+		<h2 class="headline">Home by<br /><em>the lit streets.</em></h2>
+		<p class="lede" style="max-width: 26rem">Late shift, last train, long dinner: a driver is a few blocks away all night, and you can watch them turn into your street.</p>
+		<div class="actions"><a class="btn" href="#">Book a late ride</a><a class="btn btn--ghost" href="#">Safety on board</a></div>
 	</Hero>
 	{
 		shaders.map((effect, i) => (

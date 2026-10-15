@@ -402,6 +402,37 @@ InkField: ink in water, lit by a lamp that follows the pointer. Slow emitters ke
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
 | `class` | `string` | Classes for the element. |
 
+## `<IsoCity>`
+
+IsoCity: a small isometric city in flat-shaded low poly, with cars driving its streets and the brand's taxis among them, in its `accent`. Click a street and the nearest taxi comes: its route draws in, it pulls in at the pin, and it picks up with a hop. `night` lights the windows, lamps and headlights. See src/runtime/iso-city.js.
+
+```astro
+<section class="hero" style="position: relative">
+  <IsoCity accent="#f2a53a" side="right" quiet={{ x: 0.25, radius: 0.5 }} />
+  <h1>Your ride, <em>two streets away.</em></h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `colors` | `string[]` | Buildings, parks, roads. Default warm off-white, sage and graphite (at night slate, deep green and near-black). |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), softened into a city, when there are no `colors`; its first colour becomes the taxis'. |
+| `accent` | `string` | The taxis' colour. Default `#f2a53a` (amber; `#ffb547` at night). |
+| `background` | `string` | The ground the city fades into. Default `#e9e3d8` (`#0d1219` at night). |
+| `cars` | `number` | How many cars, 0–60. Default 24. |
+| `taxis` | `number` | How many of them are taxis: a share, 0–1, or a count, 1–60. Default 0.3. |
+| `speed` | `number` | How fast they drive, 0–3; 0 holds them still. Default 1. |
+| `seed` | `number` | Which city, 1–9999: the same seed always builds the same streets and buildings. Default 7. |
+| `size` | `number` | Blocks across, 3–10. Default 6. |
+| `night` | `boolean` | Night: lit windows, street lamps, headlight beams and glowing roof signs. Default false. |
+| `interactive` | `boolean` | A click or tap on a street calls the nearest taxi by road, which drives there and picks up. Default true. |
+| `drift` | `boolean` | Let the view drift very slowly. Default true. |
+| `zoom` | `number` | How close the camera is, 0.5–2. Default 1. |
+| `side` | `'center' \| 'left' \| 'right'` | Where the city sits on a wide screen (centred on a narrow one). Default `center`. |
+| `quiet` | `{ x?: number; y?: number; radius?: number; depth?: number } \| null` | An area faded towards the background behind copy: centre (0–1 from the top left), radius (a share of the height), depth (0–1). Default none; `{}` for the middle. |
+| `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
+| `class` | `string` | Classes for the element. |
+
 ## `<LightField>`
 
 LightField: liquid light in three colours, bending around the pointer, with a real fluid under it that the pointer stirs and a click drops ink into. See src/runtime/light-field.js for how it is drawn.

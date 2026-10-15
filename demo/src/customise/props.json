@@ -1811,6 +1811,173 @@
 			}
 		]
 	},
+	"IsoCity": {
+		"selector": "[data-effect-iso-city]",
+		"props": [
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "Buildings, parks, roads. Default warm off-white, sage and graphite (at night slate, deep green and near-black).",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), softened into a city, when there are no `colors`; its first colour becomes the taxis'.",
+				"live": "config"
+			},
+			{
+				"name": "accent",
+				"kind": "color",
+				"doc": "The taxis' colour. Default `#f2a53a` (amber; `#ffb547` at night).",
+				"default": "#f2a53a",
+				"live": "config"
+			},
+			{
+				"name": "background",
+				"kind": "color",
+				"doc": "The ground the city fades into. Default `#e9e3d8` (`#0d1219` at night).",
+				"default": "#e9e3d8",
+				"live": "config"
+			},
+			{
+				"name": "cars",
+				"kind": "number",
+				"min": 0,
+				"max": 60,
+				"step": 1,
+				"doc": "How many cars, 0–60. Default 24.",
+				"default": 24,
+				"live": "config"
+			},
+			{
+				"name": "taxis",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How many of them are taxis: a share, 0–1, or a count, 1–60. Default 0.3.",
+				"default": 0.3,
+				"live": "config"
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How fast they drive, 0–3; 0 holds them still. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "seed",
+				"kind": "number",
+				"min": 1,
+				"max": 9999,
+				"step": 1,
+				"doc": "Which city, 1–9999: the same seed always builds the same streets and buildings. Default 7.",
+				"default": 7,
+				"live": "config"
+			},
+			{
+				"name": "size",
+				"kind": "number",
+				"min": 3,
+				"max": 10,
+				"step": 0.05,
+				"doc": "Blocks across, 3–10. Default 6.",
+				"default": 6,
+				"live": "config"
+			},
+			{
+				"name": "night",
+				"kind": "boolean",
+				"doc": "Night: lit windows, street lamps, headlight beams and glowing roof signs. Default false.",
+				"default": false,
+				"live": "config"
+			},
+			{
+				"name": "interactive",
+				"kind": "boolean",
+				"doc": "A click or tap on a street calls the nearest taxi by road, which drives there and picks up. Default true.",
+				"default": true,
+				"live": "config"
+			},
+			{
+				"name": "drift",
+				"kind": "boolean",
+				"doc": "Let the view drift very slowly. Default true.",
+				"default": true,
+				"live": "config"
+			},
+			{
+				"name": "zoom",
+				"kind": "number",
+				"min": 0.5,
+				"max": 2,
+				"step": 0.01,
+				"doc": "How close the camera is, 0.5–2. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "side",
+				"kind": "enum",
+				"options": [
+					"center",
+					"left",
+					"right"
+				],
+				"doc": "Where the city sits on a wide screen (centred on a narrow one). Default `center`.",
+				"default": "center",
+				"live": "config"
+			},
+			{
+				"name": "quiet",
+				"kind": "point",
+				"fields": [
+					{
+						"name": "x",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "radius",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "depth",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "An area faded towards the background behind copy: centre (0–1 from the top left), radius (a share of the height), depth (0–1). Default none; `{}` for the middle.",
+				"live": "config"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
 	"LightField": {
 		"selector": "[data-effect-light-field]",
 		"props": [

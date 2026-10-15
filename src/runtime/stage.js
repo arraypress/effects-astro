@@ -48,6 +48,7 @@ void main() { gl_Position = vec4(p, 0.0, 1.0); }
  * @property {number} [scale=1] Share of the pixel ratio to draw at.
  * @property {boolean} [adaptive=true] Lower the resolution while frames run slow (a weak GPU), down to half; a step that does not help is taken back and adjusting stops.
  * @property {boolean} [webgl1=true] Accept WebGL 1 where there is no WebGL 2.
+ * @property {boolean} [antialias=false] Smooth the edges of geometry drawn into it (multisampling): for effects that draw meshes.
  * @property {boolean} [still=false] Draw one frame (again after each resize and
  *   redraw) and never join the loop, as with prefers-reduced-motion: for an
  *   effect used as wallpaper.
@@ -68,9 +69,9 @@ void main() { gl_Position = vec4(p, 0.0, 1.0); }
  *   WebGL, when the canvas is removed), and a function that stops it.
  */
 export function createStage(el, options) {
-	const { fragment, alpha = true, scale = 1, webgl1 = true, adaptive = true } = options;
+	const { fragment, alpha = true, scale = 1, webgl1 = true, adaptive = true, antialias = false } = options;
 	const canvas = el.querySelector('canvas');
-	const gl = canvas && getContext(canvas, { alpha, premultipliedAlpha: true }, webgl1);
+	const gl = canvas && getContext(canvas, { alpha, premultipliedAlpha: true, antialias }, webgl1);
 	const compiled = gl && createProgram(gl, options.vertex ?? CLIP, fragment);
 	if (!canvas || !gl || !compiled) {
 		canvas?.remove();

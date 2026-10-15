@@ -1,0 +1,54 @@
+---
+/**
+ * IsoCity: a small isometric city in flat-shaded low poly, with cars
+ * driving its streets and the brand's taxis among them, in its `accent`.
+ * Click a street and the nearest taxi comes: its route draws in, it pulls
+ * in at the pin, and it picks up with a hop. `night` lights the windows,
+ * lamps and headlights. See src/runtime/iso-city.js.
+ *
+ * Opaque: it is the whole background of what it fills (its nearest
+ * positioned ancestor, or the viewport with `fixed`). With reduced motion
+ * the cars are parked and the city holds still; without WebGL a plain
+ * street grid in the city's colours shows.
+ *
+ * @example
+ * <section class="hero" style="position: relative">
+ *   <IsoCity accent="#f2a53a" side="right" quiet={{ x: 0.25, radius: 0.5 }} />
+ *   <h1>Your ride, <em>two streets away.</em></h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { IsoCityConfig } from '../runtime/iso-city.js';
+import { cityLook } from '../runtime/iso-city/look.js';
+import { toHex } from '../runtime/color.js';
+
+interface Props extends IsoCityConfig {
+	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
+	fixed?: boolean;
+	class?: string;
+}
+
+const { fixed = false, class: className, ...config } = Astro.props;
+const ground = toHex(cityLook(config).background);
+---
+
+<EffectCanvas name="iso-city" config={config} fixed={fixed} class={className} behind background={ground} />
+
+<style>
+	/* Without WebGL: the street grid as an isometric pattern, fading out at the edges.
+	   Important, to win over the ground colour EffectCanvas sets inline. */
+	:global([data-effect-iso-city].is-flat) {
+		background:
+			radial-gradient(ellipse 62% 58% at 62% 52%, transparent 30%, var(--iso-ground) 92%),
+			repeating-linear-gradient(150deg, transparent 0 84px, var(--iso-road) 84px 96px),
+			repeating-linear-gradient(30deg, transparent 0 84px, var(--iso-road) 84px 96px),
+			var(--iso-block) !important;
+	}
+</style>
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { isoCity } from '../runtime/iso-city.js';
+
+	mount('[data-effect-iso-city]', isoCity);
+</script>

@@ -52,6 +52,7 @@ export { topography } from './runtime/topography.js';
 export { caustics, causticTones } from './runtime/caustics.js';
 export { rainOnGlass } from './runtime/rain-on-glass.js';
 export { ocean } from './runtime/ocean.js';
+export { isoCity } from './runtime/iso-city.js';
 export { OCEAN_TIMES, oceanLook, oceanBackdrop } from './runtime/ocean/presets.js';
 export { mosaicReveal, tileGrid } from './runtime/mosaic-reveal.js';
 export { slideshow } from './runtime/slideshow.js';
@@ -63,6 +64,10 @@ export { loadImage, imageTexture, coverScale, GLSL_COVER } from './runtime/image
 export { boxBlur } from './runtime/blur.js';
 export { paperShader, paperSettings, paperUniforms } from './runtime/paper.js';
 export { createStage } from './runtime/stage.js';
+export { createMesh, STRIDE } from './runtime/mesh.js';
+export { isoCamera, ISO_PITCH } from './runtime/iso-camera.js';
+export { instancing } from './runtime/instancing.js';
+export { seededRandom } from './runtime/random.js';
 export { createPingPong, floatFormats } from './runtime/ping-pong.js';
 export { createHeightField, GLSL_HEIGHT_FIELD, MAX_PUSHES } from './runtime/height-field.js';
 export { createPoints, projectPoint, GLSL_PROJECT } from './runtime/points.js';
@@ -83,7 +88,7 @@ export { mount, readConfig, watchColors } from './runtime/mount.js';
 /**
  * Changes the colours of a WebGL effect (`<LightField>`, `<Ink>`,
  * `<AsciiRain>`, `<FlutedGlass>`, `<GlassGlyph>`, `<LiquidMetal>`,
- * `<ParticleLogo>`, `<PointCloud>`, `<VoxelLogo>`, `<HaloRing>`, `<SilkRibbon>`, `<RadiantGlass>`, `<Topography>`, `<Caustics>`, `<RainOnGlass>`, `<MosaicReveal>`, `<Ocean>`): a light
+ * `<ParticleLogo>`, `<PointCloud>`, `<VoxelLogo>`, `<HaloRing>`, `<SilkRibbon>`, `<RadiantGlass>`, `<Topography>`, `<Caustics>`, `<RainOnGlass>`, `<MosaicReveal>`, `<Ocean>`, `<IsoCity>`): a light
  * eases to them in about a second, the others take them from their next frame.
  *
  * @param {Element | null} el The effect's element (`[data-effect-light-field]` and so on).

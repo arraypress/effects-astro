@@ -74,6 +74,8 @@ export { ocean } from './runtime/ocean.js';
 export type { OceanConfig } from './runtime/ocean.js';
 export { OCEAN_TIMES, oceanLook, oceanBackdrop } from './runtime/ocean/presets.js';
 export type { OceanLook, OceanTime } from './runtime/ocean/presets.js';
+export { isoCity } from './runtime/iso-city.js';
+export type { IsoCityConfig } from './runtime/iso-city.js';
 export { mosaicReveal, tileGrid } from './runtime/mosaic-reveal.js';
 export type { MosaicRevealConfig, MosaicTransition } from './runtime/mosaic-reveal.js';
 export { slideshow } from './runtime/slideshow.js';
@@ -92,6 +94,13 @@ export { paperShader, paperSettings, paperUniforms } from './runtime/paper.js';
 export type { PaperConfig, PaperShaderName } from './runtime/paper.js';
 export { createStage } from './runtime/stage.js';
 export type { Stage, StageOptions } from './runtime/stage.js';
+export { createMesh, STRIDE } from './runtime/mesh.js';
+export type { Mesh } from './runtime/mesh.js';
+export { isoCamera, ISO_PITCH } from './runtime/iso-camera.js';
+export type { IsoCamera, IsoCameraOptions } from './runtime/iso-camera.js';
+export { instancing } from './runtime/instancing.js';
+export type { Instancing } from './runtime/instancing.js';
+export { seededRandom } from './runtime/random.js';
 export { createPingPong, floatFormats } from './runtime/ping-pong.js';
 export type { PingPong, FloatFormat } from './runtime/ping-pong.js';
 export { createHeightField, GLSL_HEIGHT_FIELD, MAX_PUSHES } from './runtime/height-field.js';
@@ -122,7 +131,7 @@ export { mount, readConfig, watchColors } from './runtime/mount.js';
 /**
  * Changes the colours of a WebGL effect (`<LightField>`, `<Ink>`, `<AsciiRain>`,
  * `<FlutedGlass>`, `<GlassGlyph>`, `<LiquidMetal>`, `<ParticleLogo>`, `<PointCloud>`,
- * `<VoxelLogo>`, `<HaloRing>`, `<SilkRibbon>`, `<RadiantGlass>`, `<Topography>`, `<Caustics>`, `<RainOnGlass>`, `<MosaicReveal>`, `<Ocean>`),
+ * `<VoxelLogo>`, `<HaloRing>`, `<SilkRibbon>`, `<RadiantGlass>`, `<Topography>`, `<Caustics>`, `<RainOnGlass>`, `<MosaicReveal>`, `<Ocean>`, `<IsoCity>`),
  * in the order its `colors` takes. A light eases to them; the others take them next frame.
  */
 export function setColors(el: Element | null, colors: string[], glint?: string): void;

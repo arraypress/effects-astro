@@ -27,6 +27,8 @@ export interface StageOptions {
 	adaptive?: boolean;
 	/** Accept WebGL 1 without WebGL 2. Default true. */
 	webgl1?: boolean;
+	/** Smooth the edges of geometry drawn into it (multisampling): for effects that draw meshes. Default false. */
+	antialias?: boolean;
 	/** One frame (redrawn after resizes and redraws), never the loop, as with reduced motion. Default false. */
 	still?: boolean;
 	/** Once, after the context is made; returns a clean-up, or false when the effect cannot run here (the canvas is removed). */
