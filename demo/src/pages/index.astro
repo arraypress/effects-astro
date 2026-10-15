@@ -1,13 +1,72 @@
 ---
-/** The gallery: every effect as a card, grouped, each opening its own page in a new tab. Hovering a card plays it live. */
+/**
+ * The gallery: every effect as a real hero, one after another down a
+ * single page: the backgrounds (every Backdrop and every Paper shader on
+ * its own), the logo effects, the wordmarks, text and surfaces. Each
+ * effect runs only while its hero is near the screen.
+ */
 import '../styles/gallery.css';
-import { GALLERY, pageOf } from '../gallery.js';
+import Hero from '../components/Hero.astro';
+import LightField from '@arraypress/effects-astro/LightField.astro';
+import Ink from '@arraypress/effects-astro/Ink.astro';
+import AsciiRain from '@arraypress/effects-astro/AsciiRain.astro';
+import FlutedGlass from '@arraypress/effects-astro/FlutedGlass.astro';
+import DotGrid from '@arraypress/effects-astro/DotGrid.astro';
+import SignalLines from '@arraypress/effects-astro/SignalLines.astro';
+import WaveBars from '@arraypress/effects-astro/WaveBars.astro';
+import WorldRoutes from '@arraypress/effects-astro/WorldRoutes.astro';
+import GlowField from '@arraypress/effects-astro/GlowField.astro';
+import Grain from '@arraypress/effects-astro/Grain.astro';
+import Backdrop from '@arraypress/effects-astro/Backdrop.astro';
+import PaperShader from '@arraypress/effects-astro/PaperShader.astro';
+import GlassGlyph from '@arraypress/effects-astro/GlassGlyph.astro';
+import ParticleLogo from '@arraypress/effects-astro/ParticleLogo.astro';
+import PointCloud from '@arraypress/effects-astro/PointCloud.astro';
+import VoxelLogo from '@arraypress/effects-astro/VoxelLogo.astro';
+import SpotlightText from '@arraypress/effects-astro/SpotlightText.astro';
+import PixelGlitchText from '@arraypress/effects-astro/PixelGlitchText.astro';
+import OutlineWordmark from '@arraypress/effects-astro/OutlineWordmark.astro';
+import FitText from '@arraypress/effects-astro/FitText.astro';
+import ScrambleText from '@arraypress/effects-astro/ScrambleText.astro';
+import Typewriter from '@arraypress/effects-astro/Typewriter.astro';
+import Reveal from '@arraypress/effects-astro/Reveal.astro';
+import ScrollReveal from '@arraypress/effects-astro/ScrollReveal.astro';
+import HighlightSweep from '@arraypress/effects-astro/HighlightSweep.astro';
+import Marquee from '@arraypress/effects-astro/Marquee.astro';
+import Glass from '@arraypress/effects-astro/Glass.astro';
+import BorderSweep from '@arraypress/effects-astro/BorderSweep.astro';
+import Tilt from '@arraypress/effects-astro/Tilt.astro';
+import Parallax from '@arraypress/effects-astro/Parallax.astro';
+import Magnetic from '@arraypress/effects-astro/Magnetic.astro';
+import Cursor from '@arraypress/effects-astro/Cursor.astro';
+import PulseMark from '@arraypress/effects-astro/PulseMark.astro';
+import '@arraypress/effects-astro/motion.css';
+import { BACKDROPS } from '@arraypress/effects-astro/runtime/backdrop';
+import { PRESETS } from '../../../src/vendor/paper/presets.js';
 
-const groups = [...new Set(GALLERY.map((entry) => entry.group))].map((group) => ({
-	group,
-	id: group.toLowerCase().replace(/\W+/g, '-'),
-	entries: GALLERY.filter((entry) => entry.group === group),
-}));
+const GROUPS = ['Backgrounds', 'Backdrop', 'Paper', 'Logos', 'Wordmarks', 'Text', 'Surfaces'];
+const anchor = (group: string) => group.toLowerCase();
+
+/** Headlines for the heroes that have no copy of their own. */
+const LINES = [
+	['Launch your next idea.', 'A line about what you sell and who it is for, where a real hero would put it.'],
+	['Sell what you make.', 'Digital downloads, licence keys and instant delivery, on a page that feels alive.'],
+	['Design that moves.', 'One component behind your copy, and the page stops looking like a template.'],
+	['Your store, your rules.', 'No marketplace cut, no monthly platform fee, no waiting on anyone.'],
+	['Ship it tonight.', 'Start from a theme made for one kind of business, and finish it with your agent.'],
+	['Light up your launch.', 'Colour that follows the pointer, and holds still for anyone who asks it to.'],
+	['From idea to checkout.', 'Everything a small shop needs, and nothing it does not.'],
+	['Beautiful by default.', 'Tuned to look right behind real copy, before you change a setting.'],
+];
+const line = (i: number) => LINES[i % LINES.length];
+const ACCENTS = ['#8b5cf6', '#ec4899', '#06b6d4', '#f59e0b', '#10b981', '#ef4444', '#3b82f6', '#a855f7'];
+const title = (name: string) => name.replace(/(^|-)(\w)/g, (_, dash, c) => (dash ? ' ' : '') + c.toUpperCase());
+
+const backdrops = Object.keys(BACKDROPS) as (keyof typeof BACKDROPS)[];
+const papers = Object.keys(PRESETS) as (keyof typeof PRESETS)[];
+/** Paper shaders that bend a photo, and those that work on a logo's shape. */
+const PICTURES = ['fluted-glass', 'water', 'lens-distortion', 'image-dithering', 'halftone-dots', 'halftone-cmyk', 'paper-texture'];
+const LOGOS = ['liquid-metal', 'heatmap', 'gem-smoke'];
 ---
 
 <html lang="en-GB">
@@ -17,94 +76,219 @@ const groups = [...new Set(GALLERY.map((entry) => entry.group))].map((group) => 
 		<title>effects-astro · gallery</title>
 	</head>
 	<body>
-		<header class="hero">
-			<h1>effects-astro <span>gallery</span></h1>
-			<p>{GALLERY.length} effects for Astro sites. Hover a card to see it live; click to open it full screen in a new tab. Every one is <code>import X from '@arraypress/effects-astro/X.astro'</code>.</p>
-		</header>
-		<nav aria-label="Groups">
-			<div>{groups.map((g) => <a href={`#${g.id}`}>{g.group}<b>{g.entries.length}</b></a>)}</div>
+		<nav class="bar" aria-label="Groups">
+			<a class="bar__brand" href="#top">effects-astro</a>
+			{GROUPS.map((g) => <a href={`#${anchor(g)}`} data-group-link={g}>{g}</a>)}
+			<span class="bar__readout" data-readout></span>
 		</nav>
-		<main>
-			{
-				groups.map((g) => (
-					<section id={g.id}>
-						<h2>
-							{g.group}
-							<span>{g.entries.length}</span>
-						</h2>
-						<div class="grid">
-							{g.entries.map((entry) => (
-								<a class="card" href={pageOf(entry)} target="_blank" rel="noopener" data-preview={pageOf(entry)}>
-									<div class="shot">
-										<img src={`/thumbs/${entry.slug}.jpg`} alt="" loading="lazy" width="640" height="400" />
-										<span class="live">LIVE</span>
-									</div>
-									<div class="meta">
-										<div class="name">
-											{entry.name}
-											<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-												<path d="M7 17 17 7M8 7h9v9" />
-											</svg>
-										</div>
-										<p class="blurb">{entry.blurb}</p>
-									</div>
-								</a>
-							))}
-						</div>
-					</section>
-				))
-			}
-		</main>
-		<footer>MIT © ArrayPress Limited · <a href="https://github.com/arraypress/effects-astro">github.com/arraypress/effects-astro</a></footer>
 
-		<script>
-			/** Hover a card a moment and its page plays inside it; one at a time, so the GPU is never shared out. */
-			const HOVER_DELAY = 350;
-			let timer = 0;
-			/** @type {HTMLAnchorElement | null} */
-			let live = null;
+		<Hero id="top" name="effects-astro" code="npm i @arraypress/effects-astro" group="Backgrounds">
+			<LightField slot="effect" colors={['#7c3aed', '#db2777', '#06b6d4']} glint="#fcd34d" quiet={{ y: 0.45, radius: 0.6, depth: 0.75 }} />
+			<span class="eyebrow">Every effect, as a hero · scroll</span>
+			<h1 class="headline">Pages that<br /><em>feel alive.</em></h1>
+			<p class="lede">Backgrounds, logo effects, wordmarks and text motion for Astro. Each one below is a working hero; move the pointer, click, and copy the line in its tag.</p>
+		</Hero>
 
-			/** Takes the live preview out of whichever card has it. */
-			const stop = () => {
-				clearTimeout(timer);
-				live?.classList.remove('is-live');
-				live?.querySelector('iframe')?.remove();
-				live = null;
-			};
+		<header class="group" id="backgrounds"><h2>Backgrounds</h2><p>The light behind a page: fluids, rain, glass, dots, waves and maps. Each fills its section, or the page with <code>fixed</code>.</p></header>
 
-			/**
-			 * Plays a card's page inside it, scaled to fit.
-			 *
-			 * @param {HTMLAnchorElement} card The card.
-			 */
-			const play = (card) => {
-				stop();
-				const shot = card.querySelector('.shot');
-				if (!shot) return;
-				const frame = document.createElement('iframe');
-				frame.src = card.dataset.preview ?? '';
-				frame.tabIndex = -1;
-				frame.setAttribute('aria-hidden', 'true');
-				frame.style.transform = `scale(${shot.clientWidth / 1280})`;
-				frame.addEventListener('load', () => setTimeout(() => frame.classList.add('is-ready'), 250));
-				shot.append(frame);
-				card.classList.add('is-live');
-				live = card;
-			};
+		<Hero id="light-field" name="LightField" code="<LightField colors={[…]} quiet />" group="Backgrounds">
+			<LightField slot="effect" colors={['#e11d48', '#f97316', '#7c3aed']} glint="#fde68a" quiet={{ y: 0.42, radius: 0.6, depth: 0.7 }} />
+			<h2 class="headline">Skip the build.<br />Start selling.</h2>
+			<p class="lede">Liquid light over a real fluid. Stir it with the pointer; click to drop ink.</p>
+			<div class="actions"><a class="btn" href="#">Get started</a><a class="btn btn--ghost" href="#">See themes</a></div>
+		</Hero>
+		<Hero id="ink" name="Ink" code="<Ink colors={[…]} />" group="Backgrounds" style="--hero-ground: #07070c">
+			<Ink slot="effect" colors={['#2216f7', '#55bdff', '#a702ff']} />
+			<h2 class="headline">Stir me.</h2>
+			<p class="lede">Ink in water, under the pointer. It sits over whatever is behind it.</p>
+		</Hero>
+		<Hero id="ascii-rain" name="AsciiRain" code="<AsciiRain quiet={{ x: 0, y: 0, radius: 1.15 }} />" group="Backgrounds" align="left" style="--hero-ground: #000">
+			<AsciiRain slot="effect" quiet={{ x: 0, y: 0, radius: 1.15, depth: 1 }} />
+			<h2 class="headline">Stream everything.<br />Query anything.</h2>
+			<p class="lede">Data streaks on a rippling surface, drawn in text characters.</p>
+			<div class="actions"><a class="btn" href="#">Start streaming</a><a class="btn btn--ghost" href="#">Read the docs</a></div>
+		</Hero>
+		<Hero id="fluted-glass" name="FlutedGlass" code="<FlutedGlass />" group="Backgrounds" theme="light" align="bottom">
+			<FlutedGlass slot="effect" />
+			<h2 class="headline">Brands seen through<br /><em>a different light.</em></h2>
+		</Hero>
+		<Hero id="dot-grid" name="DotGrid" code="<DotGrid />" group="Backgrounds">
+			<DotGrid slot="effect" />
+			<h2 class="headline">Drop a stone.</h2>
+			<p class="lede">A sea of dots with a drifting current. Click anywhere to send a ripple across.</p>
+		</Hero>
+		<Hero id="signal-lines" name="SignalLines" code="<SignalLines />" group="Backgrounds">
+			<SignalLines slot="effect" />
+			<h2 class="headline">Every sound,<br />on the page.</h2>
+			<p class="lede">Waveform lines with a drifting loudness, and pulses of light running along them.</p>
+		</Hero>
+		<Hero id="wave-bars" name="WaveBars" code="<WaveBars />" group="Backgrounds">
+			<WaveBars slot="effect" />
+			<h2 class="headline">Tuned for you.</h2>
+			<p class="lede">A bar waveform retuning itself every couple of seconds.</p>
+		</Hero>
+		<Hero id="world-routes" name="WorldRoutes" code="<WorldRoutes routes={[['london', 'tokyo'], …]} />" group="Backgrounds" align="bottom">
+			<WorldRoutes slot="effect" />
+			<h2 class="headline">Sell worldwide.</h2>
+			<p class="lede">Customers in 40 countries, paid in their own currency.</p>
+		</Hero>
+		<Hero id="glow-field" name="GlowField" code={`<GlowField variant="beam" color="#f0abfc" />`} group="Backgrounds">
+			<GlowField slot="effect" variant="beam" color="#f0abfc" />
+			<h2 class="headline">Lit from above.</h2>
+			<p class="lede">A still light, no script at all: bloom, beam, horizon or wash.</p>
+		</Hero>
+		<Hero id="grain" name="Grain" code="<Grain />" group="Backgrounds" style="--hero-ground: radial-gradient(120% 90% at 30% 20%, #7c3aed, #1e1b4b 55%, #09090b)">
+			<Grain slot="effect" opacity={0.35} />
+			<h2 class="headline">Film grain.</h2>
+			<p class="lede">Over a smooth gradient, so it never bands.</p>
+		</Hero>
 
-			if (matchMedia('(hover: hover) and (prefers-reduced-motion: no-preference)').matches) {
-				document.querySelectorAll('.card').forEach((node) => {
-					const card = /** @type {HTMLAnchorElement} */ (node);
-					card.addEventListener('pointerenter', () => {
-						clearTimeout(timer);
-						timer = window.setTimeout(() => play(card), HOVER_DELAY);
-					});
-					card.addEventListener('pointerleave', () => {
-						if (live === card) stop();
-						else clearTimeout(timer);
-					});
-				});
-			}
-		</script>
+		<header class="group" id="backdrop"><h2>Backdrop</h2><p>Fifteen shader backgrounds by name, tinted from the page's <code>--color-accent</code>. Each section here has its own accent.</p></header>
+		{
+			backdrops.map((effect, i) => (
+				<Hero id={`backdrop-${effect}`} name={`Backdrop · ${effect}`} code={`<Backdrop effect="${effect}" />`} group="Backdrop" style={`--color-accent: ${ACCENTS[i % ACCENTS.length]}`}>
+					<Backdrop slot="effect" effect={effect} interactive />
+					<h2 class="headline">{line(i)[0]}</h2>
+					<p class="lede">{line(i)[1]}</p>
+					<div class="actions"><a class="btn" href="#">Get started</a></div>
+				</Hero>
+			))
+		}
+
+		<header class="group" id="paper"><h2>Paper</h2><p>Paper's thirty shaders, each with its presets: pick one from the tag. Apache-2.0, vendored.</p></header>
+		{
+			papers.map((shader, i) => (
+				<Hero id={`paper-${shader}`} name={`Paper · ${title(shader)}`} code={`<PaperShader shader="${shader}" />`} group="Paper" scrim>
+					<PaperShader
+						slot="effect"
+						shader={shader}
+						preset={PRESETS[shader][0].name}
+						image={LOGOS.includes(shader) ? '/logo.svg' : undefined}
+						gradient={PICTURES.includes(shader) ? ['#4f46e5', '#ec4899', '#f59e0b'] : undefined}
+					/>
+					<h2 class="headline">{line(i + 3)[0]}</h2>
+					<p class="lede">{line(i + 3)[1]}</p>
+					<div slot="tools" class="chips">
+						{PRESETS[shader].map((p, n) => <button type="button" class:list={['chip', { 'is-on': n === 0 }]} data-preset={p.name}>{p.name}</button>)}
+					</div>
+				</Hero>
+			))
+		}
+
+		<header class="group" id="logos"><h2>Logos</h2><p>Your mark as the hero's centrepiece: from <code>text</code> in any font, or <code>src</code>, your own SVG or PNG.</p></header>
+		<Hero id="glass-glyph" name="GlassGlyph" code={`<GlassGlyph src="/logo.svg" />`} group="Logos" align="left" style="--hero-ground: #050505">
+			<GlassGlyph slot="effect" src="/logo.svg" />
+			<h2 class="headline" style="font: 900 clamp(64px, 10vw, 150px)/0.9 Impact, 'Arial Narrow', sans-serif; text-transform: uppercase; letter-spacing: 0">Heavy<br />Rotation</h2>
+		</Hero>
+		<Hero id="particle-logo" name="ParticleLogo" code={`<ParticleLogo src="/logo.svg" />`} group="Logos">
+			<ParticleLogo slot="effect" src="/logo.svg" />
+			<h2 class="headline">Rewind <em>wild.</em></h2>
+		</Hero>
+		<Hero id="point-cloud" name="PointCloud" code={`<PointCloud text="inference" />`} group="Logos" align="bottom">
+			<PointCloud slot="effect" text="inference" font="700 ui-monospace, Menlo, monospace" />
+			<p class="lede" style="margin: 0">Vision models on live video at the edge: detection, tracking and segmentation in milliseconds.</p>
+		</Hero>
+		<Hero id="voxel-logo" name="VoxelLogo" code={`<VoxelLogo src="/logo.svg" />`} group="Logos" align="left">
+			<VoxelLogo slot="effect" src="/logo.svg" cells={30} />
+			<h2 class="headline" style="max-width: 9ch">Your next release starts here.</h2>
+		</Hero>
+
+		<header class="group" id="wordmarks"><h2>Wordmarks</h2><p>The name at the foot of the page, at viewport scale. Move over them.</p></header>
+		<Hero id="spotlight-text" name="SpotlightText" code="<SpotlightText fit>LumiThemes</SpotlightText>" group="Wordmarks" size="short" align="bottom">
+			<div style="width: 88vw"><SpotlightText as="div" fit style="font-weight: 800; letter-spacing: -0.05em; line-height: 0.9">LumiThemes</SpotlightText></div>
+		</Hero>
+		<Hero id="pixel-glitch-text" name="PixelGlitchText" code="<PixelGlitchText fit stroke={1.5}>" group="Wordmarks" size="short" align="bottom">
+			<div style="width: 88vw"><PixelGlitchText as="div" fit stroke={1.5} style="font-weight: 800; letter-spacing: -0.05em; line-height: 0.85">Northwave</PixelGlitchText></div>
+		</Hero>
+		<Hero id="outline-wordmark" name="OutlineWordmark" code={`<OutlineWordmark text="ArrayPress" />`} group="Wordmarks" size="short">
+			<OutlineWordmark slot="effect" text="ArrayPress" color="#a78bfa" />
+			<h2 class="headline" style="font-size: 40px">Made in Edinburgh.</h2>
+		</Hero>
+		<Hero id="fit-text" name="FitText" code="<FitText>Make it fit.</FitText>" group="Wordmarks" size="short" align="bottom">
+			<div style="width: 88vw"><FitText as="div" style="font-weight: 800; letter-spacing: -0.05em; line-height: 0.9">Make it fit.</FitText></div>
+		</Hero>
+
+		<header class="group" id="text"><h2>Text</h2><p>Words that arrive, type, resolve or run.</p></header>
+		<Hero id="reveal" name="Reveal" code={`<Reveal as="h2" words text="…" />`} group="Text" size="short">
+			<Reveal as="h2" class="headline" words text="Skip the build. Start selling." />
+			<Reveal from="blur" delay={0.6}><p class="lede">Each word rises into place as it scrolls into view.</p></Reveal>
+		</Hero>
+		<Hero id="typewriter" name="Typewriter" code={`<Typewriter phrases={[…]} />`} group="Text" size="short">
+			<h2 class="headline">Sell your<br /><Typewriter phrases={['beats', 'sample packs', 'presets', 'courses']} caret="#c084fc" /></h2>
+		</Hero>
+		<Hero id="scramble-text" name="ScrambleText" code={`<ScrambleText text="…" hover />`} group="Text" size="short">
+			<h2 class="headline" style="font-family: ui-monospace, Menlo, monospace; font-size: clamp(36px, 5.6vw, 80px)"><ScrambleText text="Inference at the edge" hover /></h2>
+			<p class="lede">Hover it to scramble again.</p>
+		</Hero>
+		<Hero id="highlight-sweep" name="HighlightSweep" code={`<HighlightSweep color="#c084fc">beats</HighlightSweep>`} group="Text" size="short">
+			<h2 class="headline">Sell <HighlightSweep color="#c084fc">beats</HighlightSweep>,<br />keep <HighlightSweep color="#34d399">every</HighlightSweep> penny.</h2>
+		</Hero>
+		<Hero id="marquee" name="Marquee" code={`<Marquee items={[…]} separator="✦" />`} group="Text" size="short">
+			<div style="width: 100vw; display: grid; gap: 2rem">
+				<div style="font-size: clamp(32px, 5vw, 64px); font-weight: 650; letter-spacing: -0.03em"><Marquee items={['Marcus Vane', 'Vivid Skye', 'Adrian Holt', 'Lunaire', 'Northwave', 'Kestrel']} separator="✦" /></div>
+				<Marquee items={['NEW BUNDLE', 'OUT NOW', 'LIMITED TIME', 'FREE UPDATES']} separator="///" direction="right" speed={25} />
+			</div>
+		</Hero>
+		<Hero id="scroll-reveal" name="ScrollReveal" code={`<ScrollReveal />  +  class="fade-in-up"`} group="Text">
+			<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 220px)); gap: 20px">
+				{['fade-in-up', 'zoom-in', 'flip-up', 'blur-in', 'slide-in-up', 'fade-in-left'].map((kind, i) => (
+					<div class={kind} style={`--reveal-delay: ${(i % 3) * 0.08}s; height: 180px; border-radius: 16px; background: linear-gradient(160deg, ${ACCENTS[i]}, #18181b); display: grid; place-items: center; font: 600 15px ui-monospace, monospace`}>.{kind}</div>
+				))}
+			</div>
+		</Hero>
+
+		<header class="group" id="surfaces"><h2>Surfaces</h2><p>Panels, cards and buttons that answer the pointer.</p></header>
+		<Hero id="glass" name="Glass" code="<Glass>…</Glass>" group="Surfaces" style="--hero-ground: radial-gradient(70% 60% at 25% 30%, #7c3aed, transparent 70%), radial-gradient(60% 60% at 80% 70%, #db2777, transparent 70%), #0b0b10">
+			<div class="row">
+				{[['Starter', '£0', 'One store, every feature.'], ['Studio', '£12', 'Licences, bundles, analytics.'], ['Label', '£39', 'Many artists, one dashboard.']].map(([plan, price, text]) => (
+					<Glass style="width: 240px; padding: 28px; border-radius: 20px; text-align: left"><strong style="font-size: 20px">{plan}</strong><p style="color: #d4d4d8; font-size: 14px">{text}</p><b style="font-size: 40px; letter-spacing: -0.03em">{price}</b></Glass>
+				))}
+			</div>
+		</Hero>
+		<Hero id="border-sweep" name="BorderSweep" code={`<BorderSweep always color="#22d3ee">`} group="Surfaces" size="short">
+			<div class="row">
+				<BorderSweep color="#a78bfa" style="width: 300px; padding: 32px; border-radius: 18px; border: 1px solid #27272a; text-align: left"><strong style="font-size: 22px">Hover me</strong><p style="color: #a1a1aa">The light runs round on hover and focus.</p></BorderSweep>
+				<BorderSweep color="#22d3ee" always style="width: 300px; padding: 32px; border-radius: 18px; border: 1px solid #27272a; text-align: left"><strong style="font-size: 22px">Featured</strong><p style="color: #a1a1aa">Or all the time, for the plan you want picked.</p></BorderSweep>
+			</div>
+		</Hero>
+		<Hero id="tilt" name="Tilt" code="<Tilt glare max={12}>" group="Surfaces" size="short">
+			<div class="row">
+				{['#7c3aed', '#db2777', '#0891b2'].map((c, i) => (
+					<Tilt glare max={12} lift={10} style={`width: 220px; height: 300px; border-radius: 18px; display: flex; align-items: flex-end; padding: 20px; box-sizing: border-box; font-weight: 600; font-size: 20px; background: linear-gradient(160deg, ${c}, #18181b)`}>Vol. {i + 1}</Tilt>
+				))}
+			</div>
+		</Hero>
+		<Hero id="parallax" name="Parallax" code="<Parallax depth={50}>" group="Surfaces" size="short">
+			<div data-parallax-root style="position: absolute; inset: 0; z-index: -1">
+				<Parallax depth={-30} style="position: absolute; inset: 0; display: grid; place-items: center"><div style="width: 420px; height: 420px; border-radius: 50%; background: #312e81; translate: -220px -40px"></div></Parallax>
+				<Parallax depth={60} style="position: absolute; inset: 0; display: grid; place-items: center"><div style="width: 200px; height: 200px; border-radius: 50%; background: #7c3aed; translate: 240px 80px"></div></Parallax>
+				<Parallax depth={100} style="position: absolute; inset: 0; display: grid; place-items: center"><div style="width: 80px; height: 80px; border-radius: 50%; background: #f472b6; translate: 60px -170px"></div></Parallax>
+			</div>
+			<h2 class="headline">Depth, by pointer.</h2>
+		</Hero>
+		<Hero id="magnetic" name="Magnetic" code={`<Magnetic as="a" href="…">`} group="Surfaces" size="short">
+			<h2 class="headline">Ready when you are.</h2>
+			<div class="actions" style="margin-top: 40px">
+				<Magnetic as="a" href="#" class="btn" style="height: 58px; padding: 0 34px; font-size: 18px">Start selling</Magnetic>
+				<Magnetic as="a" href="#" class="btn btn--ghost" strength={0.45} style="height: 58px; padding: 0 34px; font-size: 18px">See the demo</Magnetic>
+			</div>
+		</Hero>
+		<Hero id="cursor" name="Cursor" code={`<Cursor blend="difference" />`} group="Surfaces" size="short">
+			<template data-cursor-template><Cursor blend="difference" /></template>
+			<div data-cursor-slot></div>
+			<h2 class="headline">A softer pointer.</h2>
+			<div class="actions"><button type="button" class="btn" data-cursor-toggle>Try the custom cursor</button><a class="btn btn--ghost" href="#" data-cursor="View">A link with a label</a></div>
+		</Hero>
+		<Hero id="pulse-mark" name="PulseMark · motion.css" code={`<PulseMark variant="sonar" />  ·  class="fx-live"`} group="Surfaces" size="short">
+			<div class="row" style="gap: 72px">
+				<PulseMark variant="matrix" size={120} color="#a855f7" glow />
+				<PulseMark variant="rings" size={120} />
+				<PulseMark variant="sonar" size={120} color="#00ff88" glow />
+				<span style="display: inline-flex; align-items: center; gap: 12px; font-size: 22px"><span class="fx-live"></span>Available for work</span>
+			</div>
+		</Hero>
+
+		<ScrollReveal />
+		<script src="../scripts/gallery.js"></script>
 	</body>
 </html>

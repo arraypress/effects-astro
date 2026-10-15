@@ -38,7 +38,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `<ScrollReveal>` and `reveal.css`: class-based scroll reveal for a whole site (fades, slides, zooms, flips, blur), replacing the `@arraypress/reveal-astro` package with the same classes and props.
   - `<HighlightSweep>`.
   - `<Marquee>`: a pause button.
-  - `<CountUp>`: counts to its value on arrival and glides to new ones.
 - Surfaces and interaction:
   - `<Glass>` (and `glass.css`).
   - `<BorderSweep>` (and `border-sweep.css`).
@@ -46,20 +45,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `<Parallax>`.
   - `<Magnetic>`.
   - `<Cursor>`.
-  - `<Carousel>`: drag and throw with a mouse, snap, edge fades, arrows.
-  - `<Dropzone>`: a file drop target with an edge light and a busy scan.
-  - `<Range>`: a filled slider with a formatted value.
-  - `<Timeline>`: fills as the page scrolls.
   - `<PulseMark>`: matrix, rings and sonar marks.
-  - `tooltip.css`: tooltips from `data-tip`.
-- For shops:
-  - `<VinylSleeve>`.
-  - `<Equalizer>`.
-  - `<Countdown>`.
-  - `<Skeleton>`.
-  - `<ScrollProgress>`.
-  - `<BackToTop>`.
-  - `motion.css` (pulse ring, heartbeat, bump, shimmer, attention, settle, a live status dot) with `bump()`.
+- `motion.css` (pulse ring, heartbeat, bump, shimmer, attention, settle, a live status dot) with `bump()`.
 - `setColors`, for changing a WebGL effect's palette on the fly.
 - The runtime:
   - **Shared set-up:** `createStage` (WebGL) and `createCanvas2D`; one animation loop that runs only what is near the screen; view-transition-safe mounting.
@@ -67,6 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Colour:** Oklab on the CPU and in GLSL.
   - **Device checks:** pixel-ratio cap, phones, reduced motion, hover.
 - COMPONENTS.md, generated from the components' types (`npm run docs`).
-- A demo gallery (`demo/`): every effect as a card that plays on hover and opens its own full-screen page.
+- A demo (`demo/`): every effect as a working hero down one page, each Backdrop and Paper shader on its own, live only while near the screen.
+- Effects added to or taken out of the page after it loads start and stop by themselves, and a WebGL effect taken out gives its GPU context back at once.
 
 Effects brought together from the WaveGrid (SampleGrid), SellGrid, ArrayPress, AgentGrid, LinkGrid and LaunchGrid themes, the LumiThemes, FilterSpark, waveform-player, SugarCart, Statement Buster, Pure Papers, Sample Foundry, Graphic Foundry, Loopcuts, Producer Space and David Sherlock sites, and new.

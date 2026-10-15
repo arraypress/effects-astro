@@ -1,6 +1,6 @@
 # @arraypress/effects-astro
 
-Effects for Astro sites, as components: shader backgrounds, a real fluid, logos made of glass, particles or cubes, text that glitches, scrambles or types itself, glass panels, marquees, and the small motions a shop needs. Plain WebGL, Canvas and CSS with no dependencies, and with the fallbacks a theme needs built in.
+Effects for Astro sites, as components: shader backgrounds, a real fluid, logos made of glass, particles or cubes, text that glitches, scrambles or types itself, glass panels and marquees: what makes a page look alive. Small UI pieces (countdowns, sliders, drop zones, tooltips) live in [`@arraypress/ui-astro`](https://github.com/arraypress/ui-astro); counters and drag-to-scroll in [`@arraypress/behaviors-astro`](https://github.com/arraypress/behaviors-astro). Plain WebGL, Canvas and CSS with no dependencies, and with the fallbacks a theme needs built in.
 
 ```astro
 ---
@@ -75,7 +75,6 @@ Astro 6 or 7. The runtime underneath (`@arraypress/effects-astro`) works without
 | `<ScrollReveal>` | Once in a layout: anything with a reveal.css class (`fade-in-up`, `zoom-in`, `flip-left`…) arrives on scroll | CSS + JS |
 | `<HighlightSweep>` | A marker underline sweeping in under a word | CSS |
 | `<Marquee>` | An endless strip of names or logos, with a pause button | CSS + JS |
-| `<CountUp>` | A number counting up to its value on arrival, and gliding to each new one | JS |
 
 **Surfaces and interaction**
 
@@ -87,22 +86,7 @@ Astro 6 or 7. The runtime underneath (`@arraypress/effects-astro`) works without
 | `<Parallax>` | Layers that drift with the pointer by depth | CSS + JS |
 | `<Magnetic>` | A button the pointer pulls on | CSS + JS |
 | `<Cursor>` | A dot and a trailing ring that swells over links | CSS + JS |
-| `<Carousel>` | A row of cards to drag and throw, settling aligned, its edges fading where there is more | CSS + JS |
-| `<Dropzone>` | A file drop target with a light round its edge, and a scanning line while busy | CSS + JS |
-| `<Range>` | A slider with its label and value, filled to the thumb | CSS + JS |
-| `<Timeline>` | Dated steps down a line that fills as the page scrolls | CSS + JS |
 | `<PulseMark>` | A small animated mark: LED matrix, turning rings or sonar | SVG + CSS |
-
-**For shops**
-
-| Component | | Drawn with |
-|---|---|---|
-| `<VinylSleeve>` | A record that slides out of its sleeve and spins while playing | CSS |
-| `<Equalizer>` | Level-meter bars that settle in and bounce while playing | CSS |
-| `<Countdown>` | Days, hours, minutes and seconds to a drop | JS |
-| `<Skeleton>` | A shimmering loading placeholder | CSS |
-| `<ScrollProgress>` | A reading-progress bar | JS |
-| `<BackToTop>` | A button that floats in once you have scrolled | JS |
 
 **Stylesheets**, for elements you render yourself:
 
@@ -112,7 +96,6 @@ Astro 6 or 7. The runtime underneath (`@arraypress/effects-astro`) works without
 | `@arraypress/effects-astro/border-sweep.css` | `.sweep-ring`, `--always`, `--fast` |
 | `@arraypress/effects-astro/motion.css` | `.fx-pulse-ring`, `.fx-heartbeat`, `.fx-bump` (replay with `bump(el)`), `.fx-shimmer`, `.fx-pulse`, `.fx-wiggle`, `.fx-shake`, `.fx-settle`, `.fx-live` (a status dot) |
 | `@arraypress/effects-astro/reveal.css` | `.fade-in`, `.fade-in-up/down/left/right`, `.slide-in-*`, `.zoom-in`, `.zoom-out`, `.flip-up/down/left/right`, `.blur-in` (with `<ScrollReveal />`) |
-| `@arraypress/effects-astro/tooltip.css` | `data-tip="…"` on any element, `data-tip-side="bottom"` |
 
 ## Your own logo
 
@@ -149,7 +132,6 @@ The package's main entry is the runtime the components are built on, for use wit
 | `createGlyphs`, `GLYPH_SETS`, `GLSL_GLYPHS` | Text characters as a texture, for ASCII effects |
 | `createTrackers(el, count)` | Machine-vision tracker boxes over an effect |
 | `parseColor`, `toHex`, `toOklab`, `fromOklab`, `mixOklab`, `paletteAt`, `GLSL_OKLAB`, `GLSL_PALETTE`, `GLSL_NOISE`, `GLSL_QUIET` | Colour in Oklab and shared shader pieces |
-| `numberFormat(style)` | Numbers the reader's way: language, currency, decimals, compact |
 | `isLand(lat, lon)`, `LAND`, `CITIES` | Where the land is (Natural Earth, 1.5°), and cities by name |
 | `inView(el, show)` | A callback as an element scrolls into view |
 | `scrollReveal(config)`, `REVEAL_CLASSES` | Class-based scroll reveal for a whole page |
@@ -160,7 +142,7 @@ The package's main entry is the runtime the components are built on, for use wit
 
 ## Demo
 
-`demo/` is an Astro site: a gallery of every effect (hover a card to play it), each opening its own full-screen page:
+`demo/` is an Astro site: one long page with every effect as a working hero, each Backdrop and Paper shader on its own (a hero's effect runs only while it is near the screen):
 
 ```bash
 cd demo && npm install && npm run dev   # http://127.0.0.1:4400

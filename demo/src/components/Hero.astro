@@ -1,0 +1,49 @@
+---
+/**
+ * One section of the gallery: an effect behind real copy, labelled with
+ * the line that makes it. The effect waits in a <template> and is stamped
+ * into the section only while it is near the screen (src/scripts/gallery.js),
+ * so the page never holds more than a few GPU contexts however long it is.
+ */
+
+interface Props {
+	/** The anchor, and the name in the rail. */
+	id: string;
+	/** What it is, as the tag shows it. */
+	name: string;
+	/** The line that makes it. */
+	code: string;
+	/** The group it is listed under. */
+	group: string;
+	/** The ground the copy sits on. Default `dark`. */
+	theme?: 'dark' | 'light';
+	/** Full screen or a shorter band. Default `full`. */
+	size?: 'full' | 'short';
+	/** Where the copy sits. Default `center`. */
+	align?: 'center' | 'left' | 'bottom';
+	/** A soft shade behind the copy, for busy or bright backgrounds. Default false. */
+	scrim?: boolean;
+	/** Inline style for the section (an accent colour, a ground). */
+	style?: string;
+}
+
+const { id, name, code, group, theme = 'dark', size = 'full', align = 'center', scrim = false, style } = Astro.props;
+---
+
+<section
+	class:list={['hero', `is-${theme}`, `is-${size}`, `align-${align}`, { 'has-scrim': scrim }]}
+	id={id}
+	style={style}
+	data-hero
+	data-name={name}
+	data-group={group}
+>
+	<template data-live-template><slot name="effect" /></template>
+	<div class="hero__live" data-live></div>
+	<div class="hero__copy"><slot /></div>
+	<footer class="hero__tag">
+		<span class="hero__name">{name}</span>
+		<button type="button" class="hero__code" data-copy={code} title="Copy">{code}</button>
+		<slot name="tools" />
+	</footer>
+</section>

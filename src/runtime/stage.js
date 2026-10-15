@@ -132,6 +132,9 @@ export function createStage(el, options) {
 			stopLoop();
 			resizer.disconnect();
 			cleanup?.();
+			// Gone from the page: give the GPU context back now rather than
+			// whenever it is collected, as a browser keeps only so many.
+			if (!el.isConnected) gl.getExtension('WEBGL_lose_context')?.loseContext();
 		},
 	};
 }
