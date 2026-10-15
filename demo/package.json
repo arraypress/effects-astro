@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build"
+    "build": "astro build",
+    "thumbs": "node scripts/thumbs.mjs"
   },
   "dependencies": {
     "@arraypress/effects-astro": "file:..",

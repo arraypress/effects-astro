@@ -1,6 +1,110 @@
 ---
-/** The demo's index: a link to each effect's page. */
-const pages = ['light-field', 'ink', 'ascii-rain', 'glass-glyph', 'fluted-glass', 'particle-logo', 'point-cloud', 'voxel-logo', 'wordmarks', 'dot-grid', 'waves', 'light', 'ui', 'text', 'dropzone', 'world-routes', 'numbers', 'timeline', 'scroll-reveal', 'paper', 'backdrop'];
+/** The gallery: every effect as a card, grouped, each opening its own page in a new tab. Hovering a card plays it live. */
+import '../styles/gallery.css';
+import { GALLERY, pageOf } from '../gallery.js';
+
+const groups = [...new Set(GALLERY.map((entry) => entry.group))].map((group) => ({
+	group,
+	id: group.toLowerCase().replace(/\W+/g, '-'),
+	entries: GALLERY.filter((entry) => entry.group === group),
+}));
 ---
-<html><head><meta charset="utf-8"><title>effects-astro demo</title></head>
-<body style="font-family: system-ui"><h1>@arraypress/effects-astro</h1><ul>{pages.map((p) => <li><a href={`/${p}`}>{p}</a></li>)}</ul></body></html>
+
+<html lang="en-GB">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>effects-astro · gallery</title>
+	</head>
+	<body>
+		<header class="hero">
+			<h1>effects-astro <span>gallery</span></h1>
+			<p>{GALLERY.length} effects for Astro sites. Hover a card to see it live; click to open it full screen in a new tab. Every one is <code>import X from '@arraypress/effects-astro/X.astro'</code>.</p>
+		</header>
+		<nav aria-label="Groups">
+			<div>{groups.map((g) => <a href={`#${g.id}`}>{g.group}<b>{g.entries.length}</b></a>)}</div>
+		</nav>
+		<main>
+			{
+				groups.map((g) => (
+					<section id={g.id}>
+						<h2>
+							{g.group}
+							<span>{g.entries.length}</span>
+						</h2>
+						<div class="grid">
+							{g.entries.map((entry) => (
+								<a class="card" href={pageOf(entry)} target="_blank" rel="noopener" data-preview={pageOf(entry)}>
+									<div class="shot">
+										<img src={`/thumbs/${entry.slug}.jpg`} alt="" loading="lazy" width="640" height="400" />
+										<span class="live">LIVE</span>
+									</div>
+									<div class="meta">
+										<div class="name">
+											{entry.name}
+											<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+												<path d="M7 17 17 7M8 7h9v9" />
+											</svg>
+										</div>
+										<p class="blurb">{entry.blurb}</p>
+									</div>
+								</a>
+							))}
+						</div>
+					</section>
+				))
+			}
+		</main>
+		<footer>MIT © ArrayPress Limited · <a href="https://github.com/arraypress/effects-astro">github.com/arraypress/effects-astro</a></footer>
+
+		<script>
+			/** Hover a card a moment and its page plays inside it; one at a time, so the GPU is never shared out. */
+			const HOVER_DELAY = 350;
+			let timer = 0;
+			/** @type {HTMLAnchorElement | null} */
+			let live = null;
+
+			/** Takes the live preview out of whichever card has it. */
+			const stop = () => {
+				clearTimeout(timer);
+				live?.classList.remove('is-live');
+				live?.querySelector('iframe')?.remove();
+				live = null;
+			};
+
+			/**
+			 * Plays a card's page inside it, scaled to fit.
+			 *
+			 * @param {HTMLAnchorElement} card The card.
+			 */
+			const play = (card) => {
+				stop();
+				const shot = card.querySelector('.shot');
+				if (!shot) return;
+				const frame = document.createElement('iframe');
+				frame.src = card.dataset.preview ?? '';
+				frame.tabIndex = -1;
+				frame.setAttribute('aria-hidden', 'true');
+				frame.style.transform = `scale(${shot.clientWidth / 1280})`;
+				frame.addEventListener('load', () => setTimeout(() => frame.classList.add('is-ready'), 250));
+				shot.append(frame);
+				card.classList.add('is-live');
+				live = card;
+			};
+
+			if (matchMedia('(hover: hover) and (prefers-reduced-motion: no-preference)').matches) {
+				document.querySelectorAll('.card').forEach((node) => {
+					const card = /** @type {HTMLAnchorElement} */ (node);
+					card.addEventListener('pointerenter', () => {
+						clearTimeout(timer);
+						timer = window.setTimeout(() => play(card), HOVER_DELAY);
+					});
+					card.addEventListener('pointerleave', () => {
+						if (live === card) stop();
+						else clearTimeout(timer);
+					});
+				});
+			}
+		</script>
+	</body>
+</html>

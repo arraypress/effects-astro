@@ -1,0 +1,24 @@
+---
+import Range from '@arraypress/effects-astro/Range.astro';
+import CountUp from '@arraypress/effects-astro/CountUp.astro';
+---
+
+<section class="stage"><div class="calc">
+	<Range id="sales" label="Monthly sales" min={0} max={50000} step={500} value={8000} currency="GBP" decimals={0} color="#ff6b6b" />
+	<Range id="fee" label="Their fee (%)" min={0} max={10} step={0.5} value={5} decimals={1} color="#ff6b6b" />
+	<p>You'd save <CountUp id="saving" class="result" value={4800} currency="GBP" decimals={0} /> a year</p>
+</div></section>
+<script>
+	const sales = document.getElementById('sales') as HTMLInputElement;
+	const fee = document.getElementById('fee') as HTMLInputElement;
+	const saving = document.getElementById('saving') as HTMLElement;
+	const update = () => (saving.dataset.value = String(Math.round(Number(sales.value) * 12 * (Number(fee.value) / 100))));
+	sales.addEventListener('input', update);
+	fee.addEventListener('input', update);
+</script>
+
+<style>
+.calc { width: 100%; max-width: 760px; font-size: 22px; padding: 0 24px; display: grid; gap: 32px; }
+p { font-size: 26px; }
+.calc :global(.result) { font-size: 76px; font-weight: 800; color: #34d399; letter-spacing: -0.03em; }
+</style>

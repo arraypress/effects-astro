@@ -1,0 +1,12 @@
+---
+import Tilt from '@arraypress/effects-astro/Tilt.astro';
+---
+
+<section class="stage"><div class="cards">
+	{['#7c3aed', '#db2777', '#0891b2'].map((c, i) => <Tilt class="card" glare max={12} lift={10} style={`background: linear-gradient(160deg, ${c}, #18181b)`}><span>Vol. {i + 1}</span></Tilt>)}
+</div></section>
+
+<style>
+.cards { display: flex; gap: 32px; }
+.cards :global(.card) { width: 220px; height: 300px; border-radius: 18px; display: flex; align-items: flex-end; padding: 20px; box-sizing: border-box; font-weight: 600; font-size: 20px; }
+</style>

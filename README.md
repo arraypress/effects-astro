@@ -160,7 +160,7 @@ The package's main entry is the runtime the components are built on, for use wit
 
 ## Demo
 
-`demo/` is an Astro site with a page for every effect, for checking changes in a browser:
+`demo/` is an Astro site: a gallery of every effect (hover a card to play it), each opening its own full-screen page:
 
 ```bash
 cd demo && npm install && npm run dev   # http://127.0.0.1:4400

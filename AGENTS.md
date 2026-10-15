@@ -45,19 +45,20 @@ Things that trip people up:
 
 ## Working on this package
 
-Plain ES modules in `src/` with hand-written `.d.ts` files beside them: components in `src/components/`, the runtime in `src/runtime/` (one concern a file), stylesheets in `src/styles/`. No build step and no dependencies. `demo/` is an Astro site with a page per effect (it is not published).
+Plain ES modules in `src/` with hand-written `.d.ts` files beside them: components in `src/components/`, the runtime in `src/runtime/` (one concern a file), stylesheets in `src/styles/`. No build step and no dependencies. `demo/` is an Astro site (not published): a gallery of every effect, each opening its own full-screen page.
 
 | | |
 |---|---|
 | `npm test` | Node's test runner over `tests/*.test.js`. Run before every commit. |
 | `npm run docs` | Regenerates COMPONENTS.md from the components' `Props` and the runtime `.d.ts` files. Run after changing any prop. |
-| `cd demo && npm run dev` | The demo on http://127.0.0.1:4400. |
+| `cd demo && npm run dev` | The demo gallery on http://127.0.0.1:4400. |
+| `cd demo && npm run thumbs [slug…]` | Recaptures the gallery's thumbnails (needs the demo running and Google Chrome). |
 
 The shaders and canvases cannot run under Node. After changing an effect, check it in the demo: it draws, the console has no `[effects-astro]` warnings, and reduced motion, a touch screen and a WebGL-less browser each get their still state or fallback.
 
 ### House rules
 
-- **A new effect** is a runtime module (`src/runtime/<name>.js` + `.d.ts`, exporting `name(el, config) => stop`), a component (`src/components/<Name>.astro`) and a demo page (`demo/src/pages/<name>.astro`, linked from the demo's index). Canvas components render `<EffectCanvas name="<name>">` and call `mount('[data-effect-<name>]', fn)`.
+- **A new effect** is a runtime module (`src/runtime/<name>.js` + `.d.ts`, exporting `name(el, config) => stop`), a component (`src/components/<Name>.astro`) and a showcase in the demo: `demo/src/showcase/<slug>.astro` (served at `/fx/<slug>`), an entry in `demo/src/gallery.js`, and its thumbnail (`npm run thumbs <slug>`). Canvas components render `<EffectCanvas name="<name>">` and call `mount('[data-effect-<name>]', fn)`.
 - **Build on the shared parts:** `createStage` for a WebGL effect, `createCanvas2D` for a Canvas one, `animate` for any loop, `pointerIn` / `trail` / `pressAt` for the pointer, `watchColors` for `data-colors`, `drawShape` for logos and text shapes, `GLSL_*` for shader pieces. Each effect keeps the guarantees in the README.
 - **No repetition.** Anything two effects need goes in its own runtime module and is imported.
 - **JSDoc on every function**, nested ones included: a short description, `@param` for each parameter, `@returns`, `@throws` where it applies. Every prop has a doc comment with its default (COMPONENTS.md is built from them). Keep the `.d.ts` files in step. Plain, concise voice: what a thing does and why.

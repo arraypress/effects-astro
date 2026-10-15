@@ -1,0 +1,15 @@
+---
+import Timeline from '@arraypress/effects-astro/Timeline.astro';
+---
+
+<main><h1 class="headline">Our story</h1><Timeline current={3} color="#d334cc" items={[
+	{ date: '2016', title: 'The first pack', text: 'Eighty drum hits recorded in a spare room, sold from a one-page site.' },
+	{ date: '2017–2019', title: 'Building a library', text: 'Forty packs across house, techno and hip-hop, and the first collaborations.' },
+	{ date: '2020', title: 'Going independent', text: 'Leaving the marketplaces to sell direct, with instant downloads.' },
+	{ date: '2020+', title: 'The foundry', text: 'A team of six, and a pack every month.' },
+]} /></main>
+
+<style>
+main { max-width: 560px; margin: 0 auto; padding: 22vh 24px 60vh; }
+h1 { text-align: left; margin-bottom: 3rem !important; }
+</style>

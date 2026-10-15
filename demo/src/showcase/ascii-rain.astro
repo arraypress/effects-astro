@@ -1,0 +1,10 @@
+---
+import AsciiRain from '@arraypress/effects-astro/AsciiRain.astro';
+---
+
+<section class="stage"><AsciiRain quiet={{ x: 0, y: 0, radius: 1.15, depth: 1 }} /><h1>Stream everything.<br />Query anything.</h1></section>
+
+<style>
+section { background: #000; }
+h1 { position: absolute !important; left: 40px; top: 18vh; margin: 0; font-size: clamp(44px, 6.6vw, 88px); line-height: 1; letter-spacing: -0.035em; font-weight: 600; }
+</style>

@@ -67,6 +67,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Colour:** Oklab on the CPU and in GLSL.
   - **Device checks:** pixel-ratio cap, phones, reduced motion, hover.
 - COMPONENTS.md, generated from the components' types (`npm run docs`).
-- A demo site with a page per effect (`demo/`).
+- A demo gallery (`demo/`): every effect as a card that plays on hover and opens its own full-screen page.
 
 Effects brought together from the WaveGrid (SampleGrid), SellGrid, ArrayPress, AgentGrid, LinkGrid and LaunchGrid themes, the LumiThemes, FilterSpark, waveform-player, SugarCart, Statement Buster, Pure Papers, Sample Foundry, Graphic Foundry, Loopcuts, Producer Space and David Sherlock sites, and new.

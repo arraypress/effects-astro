@@ -1,0 +1,13 @@
+---
+import Marquee from '@arraypress/effects-astro/Marquee.astro';
+---
+
+<section class="stage"><div class="rows">
+	<Marquee items={['Marcus Vane', 'Vivid Skye', 'Adrian Holt', 'Lunaire', 'Northwave', 'Kestrel']} separator="✦" class="big" />
+	<Marquee items={['NEW BUNDLE', 'OUT NOW', 'LIMITED TIME', 'FREE UPDATES']} separator="///" direction="right" speed={25} />
+</div></section>
+
+<style>
+.rows { width: 100%; display: grid; gap: 2.5rem; }
+.rows :global(.big) { font-size: clamp(32px, 5vw, 64px); font-weight: 650; letter-spacing: -0.03em; }
+</style>

@@ -1,0 +1,14 @@
+---
+import PulseMark from '@arraypress/effects-astro/PulseMark.astro';
+import '@arraypress/effects-astro/motion.css';
+---
+
+<section class="stage"><div class="row">
+	<PulseMark variant="matrix" size={150} color="#a855f7" glow />
+	<PulseMark variant="rings" size={150} />
+	<PulseMark variant="sonar" size={150} color="#00ff88" glow />
+</div></section>
+
+<style>
+.row { display: flex; gap: 110px; align-items: center; }
+</style>

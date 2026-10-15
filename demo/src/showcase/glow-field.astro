@@ -1,0 +1,16 @@
+---
+import GlowField from '@arraypress/effects-astro/GlowField.astro';
+---
+
+<div class="grid">
+	<section class="stage"><GlowField variant="bloom" color="#a5b4fc" /><h2>bloom</h2></section>
+	<section class="stage"><GlowField variant="beam" color="#f0abfc" /><h2>beam</h2></section>
+	<section class="stage"><GlowField variant="horizon" color="#67e8f9" /><h2>horizon</h2></section>
+	<section class="stage"><GlowField variant="wash" color="#fbbf24" /><h2>wash</h2></section>
+</div>
+
+<style>
+.grid { display: grid; grid-template-columns: 1fr 1fr; }
+.stage { min-height: 50vh; border: 1px solid #1d1d24; }
+h2 { margin: 0; font-size: 32px; letter-spacing: -0.02em; }
+</style>

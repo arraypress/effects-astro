@@ -1,0 +1,14 @@
+---
+import Carousel from '@arraypress/effects-astro/Carousel.astro';
+---
+
+<section class="stage"><div class="wrap"><h2>Featured packs</h2><Carousel label="Featured packs" buttons>
+	{['#7c3aed', '#db2777', '#06b6d4', '#f59e0b', '#10b981', '#ef4444', '#3b82f6', '#a3e635'].map((c, i) => <a class="card" href="#" style={`background: linear-gradient(160deg, ${c}, #111)`}>Pack {i + 1}</a>)}
+</Carousel><p>Drag it with the mouse and throw it.</p></div></section>
+
+<style>
+.wrap { width: 100%; max-width: 1100px; padding: 0 24px; box-sizing: border-box; }
+h2 { margin: 0 0 1.25rem; font-size: 28px; letter-spacing: -0.02em; }
+.card { width: 240px; height: 300px; border-radius: 16px; display: flex; align-items: flex-end; padding: 18px; box-sizing: border-box; color: #fff; font-weight: 600; text-decoration: none; }
+p { color: #71717a; font-size: 14px; }
+</style>
