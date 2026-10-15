@@ -45,7 +45,7 @@ Astro 6 or 7. The runtime underneath (`@arraypress/effects-astro`) works without
 | `<SignalLines>` | Waveform lines drawn as light: sharp in front, out of focus and lens-fringed behind, a shimmer where they cross, pulses of light running along them, and the pointer a lens they part round | WebGL |
 | `<WaveBars>` | A glowing bar waveform over its reflection, retuning like a meter with peak caps that hold and fall, a playhead that lights the bars it plays, and the pointer scrubbing | WebGL |
 | `<DotSurface>` | A halftone sea: dots on a slowly rolling sheet in perspective, sized and lit by the light; the pointer raises a swell, a click sends a ring | WebGL |
-| `<Backdrop>` | Six shader backgrounds by name (`mesh-gradient`, `grain-gradient`, `silk`, `band-lens`, `grid`, `waves`), tinted from the page's `--color-accent` unless given `colors`; `static` for wallpaper | WebGL |
+| `<ShaderBackground>` | Six shader backgrounds by name (`mesh-gradient`, `grain-gradient`, `silk`, `band-lens`, `grid`, `waves`), tinted from the page's `--color-accent` unless given `colors`; `static` for wallpaper | WebGL |
 | `<WorldRoutes>` | A dotted world map with comets of light arcing between cities: a home hub, per-route colours and Oklab gradients, labels, regions, great-circle arcs, hover | Canvas |
 | `<GlowField>` | A still light (bloom, beam, horizon or wash) to lay over a background | CSS |
 | `<Grain>` | Film grain, to dither smooth gradients | CSS |
@@ -158,7 +158,7 @@ The package's main entry is the runtime the components are built on, for use wit
 
 ## Demo
 
-`demo/` is an Astro site: a page for each group (backgrounds, Backdrop, Paper, logos, wordmarks, text, surfaces), every effect on it a working hero, each Backdrop and Paper shader on its own (a hero's effect runs only while it is near the screen):
+`demo/` is an Astro site: a page for each group (backgrounds, Paper, logos, wordmarks, text, surfaces), every effect on it a working hero, each ShaderBackground and Paper shader on its own (a hero's effect runs only while it is near the screen):
 
 ```bash
 cd demo && npm install && npm run dev   # http://127.0.0.1:4400
@@ -168,7 +168,7 @@ cd demo && npm install && npm run dev   # http://127.0.0.1:4400
 
 - The fluid is Jos Stam's Stable Fluids, after Pavel Dobryakov's [WebGL-Fluid-Simulation](https://github.com/PavelDoGreat/WebGL-Fluid-Simulation) (MIT, © 2017 Pavel Dobryakov).
 - `<FlutedGlass>`'s flute geometry and `<GlassGlyph>`'s lens model are adapted from the FlutedGlass and Glass components of [Shaders](https://github.com/shader-effects-inc/shaders) (MIT, © 2026 Shader Effects Inc.).
-- `<Backdrop>` is the shader set from the earlier `@arraypress/effect-canvas-astro` package; `silk` follows Inigo Quilez's domain-warping technique.
+- `<ShaderBackground>` is the shader set from the earlier `@arraypress/effect-canvas-astro` package; `silk` follows Inigo Quilez's domain-warping technique.
 - `<PaperShader>` runs [Paper Shaders](https://github.com/paper-design/shaders) (Apache-2.0, © 2026 Paper), vendored unchanged in `src/vendor/paper/` with their presets. Powered by Paper Shaders: https://shaders.paper.design
 - `<InkField>` is adapted from Trirat's ink shader for LumiThemes (its sim, display shader, emitters, lamp and twelve palettes), on Jos Stam's Stable Fluids in the shape of Pavel Dobryakov's WebGL-Fluid-Simulation (MIT, © 2017 Pavel Dobryakov).
 - `<WorldRoutes>`'s land is sampled from [Natural Earth](https://www.naturalearthdata.com)'s 1:110m land (public domain).

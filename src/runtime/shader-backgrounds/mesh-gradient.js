@@ -1,5 +1,5 @@
 /**
- * @module @arraypress/effects-astro/backdrops/mesh-gradient
+ * @module @arraypress/effects-astro/shader-backgrounds/mesh-gradient
  *
  * Mesh gradient: four colour spots on their own orbits, warped by noise and pulled
  * through a slow vortex, blended by inverse distance so no spot has an
@@ -8,10 +8,10 @@
  * so it is a pastel tint on a light page and a deep pool on a dark one.
  */
 
-import { BACKDROP_GLSL } from './common.js';
+import { SHADER_BACKGROUND_GLSL } from './common.js';
 
-/** The mesh gradient backdrop's fragment shader. */
-export const MESH_GRADIENT = `${BACKDROP_GLSL}
+/** The mesh gradient shader background's fragment shader. */
+export const MESH_GRADIENT = `${SHADER_BACKGROUND_GLSL}
 void main(){
 	vec2 uv=gl_FragCoord.xy/uRes;
 	float ar=uRes.x/uRes.y;

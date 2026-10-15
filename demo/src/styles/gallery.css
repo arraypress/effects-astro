@@ -4,7 +4,7 @@
 	--line: #232329;
 	--text: #f4f4f5;
 	--muted: #a1a1aa;
-	/* Backdrop takes its colours from these, as it would from a theme's. */
+	/* ShaderBackground takes its colours from these, as it would from a theme's. */
 	--color-accent: #8b5cf6;
 	--color-bg: #09090b;
 }

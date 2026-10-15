@@ -1,5 +1,5 @@
 /**
- * @module @arraypress/effects-astro/backdrops/band-lens
+ * @module @arraypress/effects-astro/shader-backgrounds/band-lens
  *
  * Band lens: a flowing two-colour field seen through a grid of lens cells about a
  * hundred times wider than they are tall, which smears it into tall,
@@ -7,10 +7,10 @@
  * light falling, not a swipe.
  */
 
-import { BACKDROP_GLSL } from './common.js';
+import { SHADER_BACKGROUND_GLSL } from './common.js';
 
-/** The band lens backdrop's fragment shader. */
-export const BAND_LENS = `${BACKDROP_GLSL}
+/** The band lens shader background's fragment shader. */
+export const BAND_LENS = `${SHADER_BACKGROUND_GLSL}
 /* One cell of the lens grid. Tiling with fract() puts every fragment in
    its own cell, then the sphere equation gives the warp for that cell. */
 vec2 bandLens(vec2 p, float spacingX, float spacingY, float radiusSq){

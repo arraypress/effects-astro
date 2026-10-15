@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `<SignalLines>`: waveform lines drawn as light in WebGL: summed and tone-mapped so hot cores run white, back lines out of focus and lens-fringed (`depth`), loud passages brighter, a shimmer where lines cross, pulses that light the lines they pass, the pointer as a lens and lamp (`bend`), film grain in the light, `quiet`.
   - `<WaveBars>`: rounded glowing bars over a reflection in WebGL, a `colors` gradient, bars that retune like a meter with peak caps that hold then fall (`peaks`), a playhead (`sweep`) that lights and kicks the bars it plays, a pointer scrub (`scrub`), `glow`, `quiet`.
   - `<DotSurface>`: a halftone sea, round dots on a slowly rolling sheet in perspective, each sized and lit by the light; the pointer raises a swell and a click sends a ring; `color` or an Oklab `colors` gradient across depth or width, `quiet`.
-  - `<Backdrop effect="…">`: the six strongest shader backgrounds of `@arraypress/effect-canvas-astro`, which it replaces (mesh-gradient, grain-gradient, silk, band-lens, grid, waves; its faint and plain ones are left to `<GlowField>` and `<Grain>`), tinted from `--color-accent` (the second colour mixed towards `--color-bg` in Oklab); `speed`, `intensity`, `static` + `frame`, `interactive`, `blend`, `fade` and `fixed`; a CSS gradient without WebGL.
+  - `<ShaderBackground effect="…">`: the six strongest shader backgrounds of `@arraypress/effect-canvas-astro`, which it replaces (mesh-gradient, grain-gradient, silk, band-lens, grid, waves; its faint and plain ones are left to `<GlowField>` and `<Grain>`), tinted from `--color-accent` (the second colour mixed towards `--color-bg` in Oklab); `speed`, `intensity`, `static` + `frame`, `interactive`, `blend`, `fade` and `fixed`; a CSS gradient without WebGL.
   - `<WorldRoutes>`: a dotted world map (from Natural Earth) with comets between cities; routes as `[from, to]`, `{ from, to, color, label, speed, width, dashed }` or a lone place from a `home` hub; a `colors` palette and Oklab `gradient`s; city `markers`, `halo`s and collision-aware `labels`; `curve="great-circle"`, `dashed` arcs, `arcOpacity`, `width`, `tail`, `glow`, `comets`, `ping`; `region` (named, `routes`, or a lat/lon box) with `fit`, `dotShape`, `graticule` and a wrapping `drift`; hovering a city or route picks it out and names it.
   - `<GlowField>`: bloom, beam, horizon and wash.
   - `<Grain>`.
@@ -59,7 +59,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Colour:** Oklab on the CPU and in GLSL.
   - **Device checks:** pixel-ratio cap, phones, reduced motion, hover.
 - COMPONENTS.md, generated from the components' types (`npm run docs`).
-- A demo (`demo/`): a page for each group, every effect a working hero, each Backdrop and Paper shader on its own, live only while near the screen.
+- A demo (`demo/`): a page for each group, every effect a working hero, each ShaderBackground and Paper shader on its own, live only while near the screen.
 - Effects added to or taken out of the page after it loads start and stop by themselves, and a WebGL effect taken out gives its GPU context back at once.
 
 Effects brought together from the WaveGrid (SampleGrid), SellGrid, ArrayPress, AgentGrid, LinkGrid and LaunchGrid themes, the LumiThemes, FilterSpark, waveform-player, SugarCart, Statement Buster, Pure Papers, Sample Foundry, Graphic Foundry, Loopcuts, Producer Space and David Sherlock sites, and new.

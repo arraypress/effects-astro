@@ -1,14 +1,14 @@
 /**
- * @module @arraypress/effects-astro/backdrops/waves
+ * @module @arraypress/effects-astro/shader-backgrounds/waves
  *
  * Waves: three glowing waveform lines across the middle: a signal, on brand for
  * audio shops.
  */
 
-import { BACKDROP_GLSL } from './common.js';
+import { SHADER_BACKGROUND_GLSL } from './common.js';
 
-/** The waves backdrop's fragment shader. */
-export const WAVES = `${BACKDROP_GLSL}
+/** The waves shader background's fragment shader. */
+export const WAVES = `${SHADER_BACKGROUND_GLSL}
 void main(){
 	vec2 uv=gl_FragCoord.xy/uRes;
 	float ar=uRes.x/uRes.y;

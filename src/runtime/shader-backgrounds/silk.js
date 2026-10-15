@@ -1,5 +1,5 @@
 /**
- * @module @arraypress/effects-astro/backdrops/silk
+ * @module @arraypress/effects-astro/shader-backgrounds/silk
  *
  * Silk: flowing folds like a sheet of silk: fbm warped by fbm warped by fbm
  * (after Inigo Quilez's domain warping), where the warp fields themselves
@@ -7,10 +7,10 @@
  * place, with a sheen on the crests and a calmer middle for a headline.
  */
 
-import { BACKDROP_GLSL } from './common.js';
+import { SHADER_BACKGROUND_GLSL } from './common.js';
 
-/** The silk backdrop's fragment shader. */
-export const SILK = `${BACKDROP_GLSL}
+/** The silk shader background's fragment shader. */
+export const SILK = `${SHADER_BACKGROUND_GLSL}
 /* Three octaves, not fbm's five: silk is BROAD soft folds. The extra
    octaves are what turned the first draft into marbled smoke. */
 float fbm3(vec2 p){float v=0.;float a=.5;for(int i=0;i<3;i++){v+=a*vnoise(p);p*=2.03;a*=.5;}return v;}

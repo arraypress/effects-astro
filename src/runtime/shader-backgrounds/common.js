@@ -1,14 +1,14 @@
 /**
- * @module @arraypress/effects-astro/backdrops/common
+ * @module @arraypress/effects-astro/shader-backgrounds/common
  *
- * What every backdrop shader starts with: its uniforms, the noise they
+ * What every shader background shader starts with: its uniforms, the noise they
  * share, a rotation, a vortex, and `premultiply`.
  *
- * The noise is the backdrops' own (`hash`, value noise `vnoise`, and a
+ * The noise is the shader backgrounds' own (`hash`, value noise `vnoise`, and a
  * five-octave `fbm` without rotation between octaves), not glsl.js's: the
- * two give different fields, and every backdrop was tuned against this one.
+ * two give different fields, and every shader background was tuned against this one.
  *
- * Uniforms (set by backdrop.js):
+ * Uniforms (set by shader-background.js):
  *
  * - `uRes`: the canvas size in pixels.
  * - `uTime`: seconds since it started, times `speed`.
@@ -22,8 +22,8 @@
  * `premultiply` for the stage's premultiplied canvas.
  */
 
-/** GLSL: the backdrops' precision, uniforms, noise, rotation, vortex and `premultiply`. */
-export const BACKDROP_GLSL = `
+/** GLSL: the shader backgrounds' precision, uniforms, noise, rotation, vortex and `premultiply`. */
+export const SHADER_BACKGROUND_GLSL = `
 precision highp float;
 uniform vec2 uRes;
 uniform float uTime;

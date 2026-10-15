@@ -43,34 +43,6 @@ AsciiRain: data rain on a rippling surface, drawn in text characters, with red a
 | `fixed` | `boolean` | Fill the viewport (position: fixed). Default false. |
 | `class` | `string` | Classes for the element. |
 
-## `<Backdrop>`
-
-Backdrop: six animated shader backgrounds for a hero or section, tinted from `--color-accent` with no settings (the page's, or a section's own): mesh-gradient, grain-gradient, silk, band-lens, grid and waves. See src/runtime/backdrop.js.
-
-```astro
-<section style="position: relative">
-  <Backdrop effect="silk" speed={0.6} intensity={0.7} />
-  <h1>Your hero</h1>
-</section>
-<Backdrop effect="mesh-gradient" static frame={14} intensity={0.45} fade="none" fixed />
-```
-
-| Prop | Type | |
-|---|---|---|
-| `effect` (required) | `BackdropName` | Which backdrop. |
-| `colors` | `string[]` | Up to four colours (hex or `rgb()`); those missing come from `--color-accent` where it sits: the accent, the accent towards `--color-bg`, its hue +36°, its hue −32° lifted. Only mesh-gradient, grain-gradient and silk use the fourth. Default all four from the accent. |
-| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`. |
-| `speed` | `number` | How fast it moves, 0–4. Default 1. |
-| `intensity` | `number` | How strong it is (brightness and contrast, not opacity), 0–2. Default 1. |
-| `static` | `boolean` | One frame, never the loop: for a backdrop that is wallpaper. Default false. |
-| `frame` | `number` | With `static`, the moment drawn, in seconds. Default 12. |
-| `interactive` | `boolean` | Lean towards the pointer, on devices that hover. Default false. |
-| `opacity` | `number` | Its opacity, 0–1, to fade it against the section without changing the shader. Default 1. |
-| `blend` | `string` | CSS `mix-blend-mode` with what is behind it (`screen`, `lighten`, `plus-lighter`…), for layering over imagery. Default normal. |
-| `fade` | `'none' \| 'bottom' \| 'top' \| 'both'` | Fade it out towards an edge, so it melts into the page: 'bottom', 'top', 'both' (top and bottom) or 'none'. Default 'bottom'. |
-| `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
-| `class` | `string` | Classes for the element. |
-
 ## `<BorderSweep>`
 
 BorderSweep: a light travelling round an element's outline, on hover and focus or (`always`) all the time. A wrapper for `class="sweep-ring"` from border-sweep.css; for elements you render yourself, import `@arraypress/effects-astro/border-sweep.css` and add the class.
@@ -690,6 +662,34 @@ ScrollReveal: scroll reveal for a whole site by class. Put it once in the layout
 | `threshold` | `number` | How much must be in view, 0–1. Default 0.08. |
 | `rootMargin` | `string` | The observer's margin. Default `0px 0px -10% 0px`. |
 | `once` | `boolean` | Reveal once; false hides it again when it leaves, to replay. Default true. |
+
+## `<ShaderBackground>`
+
+ShaderBackground: six animated shader backgrounds for a hero or section, tinted from `--color-accent` with no settings (the page's, or a section's own): mesh-gradient, grain-gradient, silk, band-lens, grid and waves. See src/runtime/shader-background.js.
+
+```astro
+<section style="position: relative">
+  <ShaderBackground effect="silk" speed={0.6} intensity={0.7} />
+  <h1>Your hero</h1>
+</section>
+<ShaderBackground effect="mesh-gradient" static frame={14} intensity={0.45} fade="none" fixed />
+```
+
+| Prop | Type | |
+|---|---|---|
+| `effect` (required) | `ShaderBackgroundName` | Which shader background. |
+| `colors` | `string[]` | Up to four colours (hex or `rgb()`); those missing come from `--color-accent` where it sits: the accent, the accent towards `--color-bg`, its hue +36°, its hue −32° lifted. Only mesh-gradient, grain-gradient and silk use the fourth. Default all four from the accent. |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`. |
+| `speed` | `number` | How fast it moves, 0–4. Default 1. |
+| `intensity` | `number` | How strong it is (brightness and contrast, not opacity), 0–2. Default 1. |
+| `static` | `boolean` | One frame, never the loop: for a shader background that is wallpaper. Default false. |
+| `frame` | `number` | With `static`, the moment drawn, in seconds. Default 12. |
+| `interactive` | `boolean` | Lean towards the pointer, on devices that hover. Default false. |
+| `opacity` | `number` | Its opacity, 0–1, to fade it against the section without changing the shader. Default 1. |
+| `blend` | `string` | CSS `mix-blend-mode` with what is behind it (`screen`, `lighten`, `plus-lighter`…), for layering over imagery. Default normal. |
+| `fade` | `'none' \| 'bottom' \| 'top' \| 'both'` | Fade it out towards an edge, so it melts into the page: 'bottom', 'top', 'both' (top and bottom) or 'none'. Default 'bottom'. |
+| `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
+| `class` | `string` | Classes for the element. |
 
 ## `<SignalLines>`
 

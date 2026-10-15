@@ -38,7 +38,7 @@ export { REGIONS } from './runtime/world-map.js';
 export { isLand, LAND } from './runtime/world-land.js';
 export { inView } from './runtime/in-view.js';
 export { scrollReveal, REVEAL_CLASSES } from './runtime/scroll-reveal.js';
-export { backdrop, backdropPalette, backdropSettings } from './runtime/backdrop.js';
+export { shaderBackground, shaderBackgroundPalette, shaderBackgroundSettings } from './runtime/shader-background.js';
 export { inkField, inkFieldSettings } from './runtime/ink-field.js';
 export { PALETTES, findPalette, pickColors } from './runtime/palettes.js';
 export { neonSwarm } from './runtime/neon-swarm.js';

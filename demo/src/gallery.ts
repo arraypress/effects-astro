@@ -6,7 +6,6 @@
 /** The pages, in the order the bar lists them. */
 export const PAGES = [
 	{ name: 'Backgrounds', href: '/' },
-	{ name: 'Backdrop', href: '/backdrop' },
 	{ name: 'Paper', href: '/paper' },
 	{ name: 'Logos', href: '/logos' },
 	{ name: 'Wordmarks', href: '/wordmarks' },

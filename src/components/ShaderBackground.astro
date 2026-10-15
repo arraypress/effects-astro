@@ -1,9 +1,9 @@
 ---
 /**
- * Backdrop: six animated shader backgrounds for a hero or section,
+ * ShaderBackground: six animated shader backgrounds for a hero or section,
  * tinted from `--color-accent` with no settings (the page's, or a
  * section's own): mesh-gradient, grain-gradient, silk, band-lens, grid
- * and waves. See src/runtime/backdrop.js.
+ * and waves. See src/runtime/shader-background.js.
  *
  * Fills its nearest positioned ancestor (or the viewport with `fixed`)
  * and fades out towards the bottom by default. Each is light over the
@@ -13,15 +13,15 @@
  *
  * @example
  * <section style="position: relative">
- *   <Backdrop effect="silk" speed={0.6} intensity={0.7} />
+ *   <ShaderBackground effect="silk" speed={0.6} intensity={0.7} />
  *   <h1>Your hero</h1>
  * </section>
- * <Backdrop effect="mesh-gradient" static frame={14} intensity={0.45} fade="none" fixed />
+ * <ShaderBackground effect="mesh-gradient" static frame={14} intensity={0.45} fade="none" fixed />
  */
 import EffectCanvas from './EffectCanvas.astro';
-import type { BackdropConfig } from '../runtime/backdrop.js';
+import type { ShaderBackgroundConfig } from '../runtime/shader-background.js';
 
-interface Props extends BackdropConfig {
+interface Props extends ShaderBackgroundConfig {
 	/** Its opacity, 0–1, to fade it against the section without changing the shader. Default 1. */
 	opacity?: number;
 	/** CSS `mix-blend-mode` with what is behind it (`screen`, `lighten`, `plus-lighter`…), for layering over imagery. Default normal. */
@@ -37,7 +37,7 @@ const { opacity = 1, blend, fade = 'bottom', fixed = false, class: className, ..
 ---
 
 <EffectCanvas
-	name="backdrop"
+	name="shader-background"
 	config={config}
 	fixed={fixed}
 	behind
@@ -49,7 +49,7 @@ const { opacity = 1, blend, fade = 'bottom', fixed = false, class: className, ..
 
 <script>
 	import { mount } from '../runtime/mount.js';
-	import { backdrop } from '../runtime/backdrop.js';
+	import { shaderBackground } from '../runtime/shader-background.js';
 
-	mount('[data-effect-backdrop]', backdrop);
+	mount('[data-effect-shader-background]', shaderBackground);
 </script>

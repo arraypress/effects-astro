@@ -14,7 +14,7 @@ Pick by what is asked for:
 | Ink in water, a lit fluid background, or a hero whose colours a palette switcher changes | `<InkField palette="…">` (Lumetri, Forest, Cadmium, Peacock, Vermillion, Barbie, Uranium, Azure, Ruby, Ultramarine, Saffron, Crimson); `setColors(el, INK_PALETTES[name].colors, INK_PALETTES[name].glint)` recolours it live |
 | Something to play with: ink, smoke, liquid, "interactive" | `<Ink>` over a section, or `<LightField>` (it has the fluid under it), or `<DotGrid>` (click ripples) |
 | A gradient, noise, halftone or liquid-metal look by name | `<PaperShader shader="…" preset="…">`; the demo has a hero for every shader, its presets in the tag |
-| A themed hero background by name (mesh gradient, grainy gradient, silk, light bands, synthwave grid, neon waves), tinted from the site's accent | `<Backdrop effect="…">`; `static` when it sits behind body copy or is `fixed` |
+| A themed hero background by name (mesh gradient, grainy gradient, silk, light bands, synthwave grid, neon waves), tinted from the site's accent | `<ShaderBackground effect="…">`; `static` when it sits behind body copy or is `fixed` |
 | A halftone or dotted wave surface, a dark tech, launch or hiring hero | `<DotSurface>` (one colour or a gradient; `quiet` behind the copy) |
 | A "we sell worldwide" or "we ship from here" section | `<WorldRoutes>` with the cities that matter to the shop; `home="…"` for a hub, `colors` + `gradient` for colour, `labels`, `region="europe"` (or `routes`) to crop |
 | A still light or texture over a background | `<GlowField>`, `<Grain>` |

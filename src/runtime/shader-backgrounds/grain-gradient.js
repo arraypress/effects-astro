@@ -1,15 +1,15 @@
 /**
- * @module @arraypress/effects-astro/backdrops/grain-gradient
+ * @module @arraypress/effects-astro/shader-backgrounds/grain-gradient
  *
  * Grain gradient: noise-bent colour bands under heavy grain: the grainy-gradient poster
  * look. Texture and colour more than motion; best at a low `speed`.
  * `intensity` also sets how hard the noise chews the bands' edges.
  */
 
-import { BACKDROP_GLSL } from './common.js';
+import { SHADER_BACKGROUND_GLSL } from './common.js';
 
-/** The grain gradient backdrop's fragment shader. */
-export const GRAIN_GRADIENT = `${BACKDROP_GLSL}
+/** The grain gradient shader background's fragment shader. */
+export const GRAIN_GRADIENT = `${SHADER_BACKGROUND_GLSL}
 void main(){
 	vec2 uv=gl_FragCoord.xy/uRes;
 	float ar=uRes.x/uRes.y;

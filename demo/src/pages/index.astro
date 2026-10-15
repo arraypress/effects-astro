@@ -17,6 +17,10 @@ import WaveBars from '@arraypress/effects-astro/WaveBars.astro';
 import WorldRoutes from '@arraypress/effects-astro/WorldRoutes.astro';
 import GlowField from '@arraypress/effects-astro/GlowField.astro';
 import Grain from '@arraypress/effects-astro/Grain.astro';
+import ShaderBackground from '@arraypress/effects-astro/ShaderBackground.astro';
+import { SHADER_BACKGROUNDS } from '@arraypress/effects-astro/runtime/shader-background';
+import { ACCENTS, pitch } from '../gallery';
+const shaders = Object.keys(SHADER_BACKGROUNDS) as (keyof typeof SHADER_BACKGROUNDS)[];
 ---
 
 <Gallery page="Backgrounds">
@@ -120,4 +124,17 @@ import Grain from '@arraypress/effects-astro/Grain.astro';
 		<p class="lede">Post us your rolls. We develop, scan and archive them, and your prints come back within the week.</p>
 		<div class="actions"><a class="btn" href="#">Send a roll</a></div>
 	</Hero>
+	{
+		shaders.map((effect, i) => (
+			<Hero id={`shader-${effect}`} name={`ShaderBackground · ${effect}`} code={`<ShaderBackground effect="${effect}" interactive />`} style={`--color-accent: ${ACCENTS[i % ACCENTS.length]}`}>
+				<ShaderBackground slot="effect" effect={effect} interactive />
+				<span class="eyebrow">{pitch(i).brand}</span>
+				<h2 class="headline">{pitch(i).headline}</h2>
+				<p class="lede">{pitch(i).lede}</p>
+				<div class="actions"><a class="btn" href="#">{pitch(i).cta}</a></div>
+				<span slot="tools" class="chip is-note">--color-accent: {ACCENTS[i % ACCENTS.length]}</span>
+				<PaletteChips slot="tools" />
+			</Hero>
+		))
+	}
 </Gallery>

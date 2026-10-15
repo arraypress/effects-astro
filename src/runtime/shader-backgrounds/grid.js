@@ -1,14 +1,14 @@
 /**
- * @module @arraypress/effects-astro/backdrops/grid
+ * @module @arraypress/effects-astro/shader-backgrounds/grid
  *
  * Grid: a perspective floor grid scrolling towards a glowing horizon: retro,
  * synthwave.
  */
 
-import { BACKDROP_GLSL } from './common.js';
+import { SHADER_BACKGROUND_GLSL } from './common.js';
 
-/** The grid backdrop's fragment shader. */
-export const GRID = `${BACKDROP_GLSL}
+/** The grid shader background's fragment shader. */
+export const GRID = `${SHADER_BACKGROUND_GLSL}
 void main(){
 	vec2 uv=gl_FragCoord.xy/uRes;
 	float ar=uRes.x/uRes.y;

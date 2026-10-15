@@ -1,24 +1,24 @@
 /**
- * @module @arraypress/effects-astro/backdrop
+ * @module @arraypress/effects-astro/shader-background
  *
  * Six animated backgrounds for a hero or a section, each one shader
  * tinted from the colour tokens it sits under: mesh-gradient, grain-gradient,
- * silk, band-lens, grid and waves. The shaders are in ./backdrops, one a
+ * silk, band-lens, grid and waves. The shaders are in ./shader-backgrounds, one a
  * file.
  *
  * Colours: up to four. Those not given come from the live `--color-accent`
- * where the backdrop sits (a section can set its own): the accent itself, the accent 55% of the way to
+ * where the shader background sits (a section can set its own): the accent itself, the accent 55% of the way to
  * `--color-bg` (a pale tint on a light page, a deep shade on a dark one),
  * the accent's hue turned +36°, and its hue turned −32° and lifted. They
  * are read when the effect starts, so a theme's accent tints every
- * backdrop with no settings, and again when `setColors` gives new ones.
+ * shader background with no settings, and again when `setColors` gives new ones.
  *
  * Each draws light whose alpha follows its brightness, so the page shows
  * through where it is dark. With `interactive`, it leans towards the
  * pointer.
  *
  * `static` draws one frame, at `frame` seconds, and never runs the loop:
- * for a backdrop that is wallpaper rather than a feature (a fixed,
+ * for a shader background that is wallpaper rather than a feature (a fixed,
  * full-page one is always in view, so it would otherwise never pause).
  * With prefers-reduced-motion, one frame at 0. Without WebGL, soft
  * gradients in the same colours stand in.
@@ -33,34 +33,34 @@ import { parseColor, mixOklab } from './color.js';
 import { canHover, prefersReducedMotion } from './device.js';
 import { pointerIn } from './pointer.js';
 import { watchColors } from './mount.js';
-import { WAVES } from './backdrops/waves.js';
-import { GRID } from './backdrops/grid.js';
-import { MESH_GRADIENT } from './backdrops/mesh-gradient.js';
-import { GRAIN_GRADIENT } from './backdrops/grain-gradient.js';
-import { BAND_LENS } from './backdrops/band-lens.js';
-import { SILK } from './backdrops/silk.js';
+import { WAVES } from './shader-backgrounds/waves.js';
+import { GRID } from './shader-backgrounds/grid.js';
+import { MESH_GRADIENT } from './shader-backgrounds/mesh-gradient.js';
+import { GRAIN_GRADIENT } from './shader-backgrounds/grain-gradient.js';
+import { BAND_LENS } from './shader-backgrounds/band-lens.js';
+import { SILK } from './shader-backgrounds/silk.js';
 import { pickColors } from './palettes.js';
 
 /** @typedef {import('./color.js').Rgb} Rgb */
 
 /**
- * @typedef {'mesh-gradient' | 'grain-gradient' | 'silk' | 'band-lens' | 'grid' | 'waves'} BackdropName
+ * @typedef {'mesh-gradient' | 'grain-gradient' | 'silk' | 'band-lens' | 'grid' | 'waves'} ShaderBackgroundName
  */
 
 /**
- * @typedef {object} BackdropConfig
- * @property {BackdropName} effect Which backdrop.
+ * @typedef {object} ShaderBackgroundConfig
+ * @property {ShaderBackgroundName} effect Which shader background.
  * @property {string[]} [colors] Up to four colours (hex or `rgb()`); those missing or unreadable come from `--color-accent`.
  * @property {string} [palette] A shared palette by name (PALETTES; any case), when there are no `colors`. Its three colours and its glint as the fourth.
  * @property {number} [speed=1] How fast it moves, 0–4.
  * @property {number} [intensity=1] How strong it is (brightness and contrast, not opacity), 0–2.
- * @property {boolean} [static=false] One frame, never the loop: for a backdrop that is wallpaper.
+ * @property {boolean} [static=false] One frame, never the loop: for a shader background that is wallpaper.
  * @property {number} [frame=12] With `static`, the moment drawn, in seconds.
  * @property {boolean} [interactive=false] Lean towards the pointer (on devices that hover).
  */
 
-/** Every backdrop's fragment shader, by name. */
-export const BACKDROPS = {
+/** Every shader background's fragment shader, by name. */
+export const SHADER_BACKGROUNDS = {
 	'mesh-gradient': MESH_GRADIENT,
 	'grain-gradient': GRAIN_GRADIENT,
 	silk: SILK,
@@ -77,7 +77,7 @@ const PAGE = /** @type {Rgb} */ ([0, 0, 0]);
 const EASE = 0.06;
 
 /**
- * Reads a colour as the backdrops take it: hex (`#rgb`, `#rrggbb`) or
+ * Reads a colour as the shader backgrounds take it: hex (`#rgb`, `#rrggbb`) or
  * `rgb()` / `rgba()` with whole-number channels.
  *
  * @param {string} value The colour, as CSS writes it.
@@ -126,7 +126,7 @@ export function hueRotate(rgb, deg) {
 }
 
 /**
- * The four colours a backdrop is drawn in: those given, in order (any
+ * The four colours a shader background is drawn in: those given, in order (any
  * that cannot be read are skipped), and the rest from the accent.
  *
  * @param {object} from Where they come from.
@@ -135,7 +135,7 @@ export function hueRotate(rgb, deg) {
  * @param {string[]} [from.colors] Colours given, hex or `rgb()`.
  * @returns {[Rgb, Rgb, Rgb, Rgb]} The four colours.
  */
-export function backdropPalette({ accent, background, colors = [] }) {
+export function shaderBackgroundPalette({ accent, background, colors = [] }) {
 	const a = readColor(accent ?? '') ?? ACCENT;
 	const bg = readColor(background ?? '') ?? PAGE;
 	/** @type {[Rgb, Rgb, Rgb, Rgb]} */
@@ -166,11 +166,11 @@ function clamp(value, fallback, min, max) {
 /**
  * The settings that steer the shader, read and clamped.
  *
- * @param {Partial<BackdropConfig>} config The config.
+ * @param {Partial<ShaderBackgroundConfig>} config The config.
  * @returns {{ speed: number, intensity: number, frame: number }} Speed (0–4),
  *   intensity (0–2) and the still frame, in seconds.
  */
-export function backdropSettings(config) {
+export function shaderBackgroundSettings(config) {
 	return {
 		speed: clamp(config.speed, 1, 0, 4),
 		intensity: clamp(config.intensity, 1, 0, 2),
@@ -182,10 +182,10 @@ export function backdropSettings(config) {
  * The stand-in without WebGL: two soft pools of the first and third
  * colours.
  *
- * @param {Rgb[]} palette The backdrop's colours.
+ * @param {Rgb[]} palette The shader background's colours.
  * @returns {string} A CSS `background`.
  */
-export function fallbackBackground(palette) {
+export function shaderBackgroundFallback(palette) {
 	/**
 	 * A colour as CSS, at an alpha.
 	 *
@@ -204,13 +204,13 @@ export function fallbackBackground(palette) {
  * The palette now: the accent and background tokens as the element sees
  * them (so a section can set its own), under the colours given.
  *
- * @param {HTMLElement} el The backdrop's element.
+ * @param {HTMLElement} el The shader background's element.
  * @param {string[] | undefined} colors Colours given.
  * @returns {[Rgb, Rgb, Rgb, Rgb]} The four colours.
  */
 function livePalette(el, colors) {
 	const styles = getComputedStyle(el);
-	return backdropPalette({
+	return shaderBackgroundPalette({
 		accent: styles.getPropertyValue('--color-accent'),
 		background: styles.getPropertyValue('--color-bg'),
 		colors,
@@ -218,19 +218,19 @@ function livePalette(el, colors) {
 }
 
 /**
- * Starts a backdrop on an element: a canvas inside it, filling it.
+ * Starts a shader background on an element: a canvas inside it, filling it.
  *
  * @param {HTMLElement} el The element (its first canvas is drawn into).
- * @param {BackdropConfig} config The settings.
+ * @param {ShaderBackgroundConfig} config The settings.
  * @returns {() => void} Stops it.
  */
-export function backdrop(el, config) {
-	const fragment = BACKDROPS[config.effect];
+export function shaderBackground(el, config) {
+	const fragment = SHADER_BACKGROUNDS[config.effect];
 	if (!fragment) {
-		console.warn('[effects-astro]', `No backdrop "${config.effect}"`);
+		console.warn('[effects-astro]', `No shader background "${config.effect}"`);
 		return () => {};
 	}
-	const { speed, intensity, frame } = backdropSettings(config);
+	const { speed, intensity, frame } = shaderBackgroundSettings(config);
 	const reduced = prefersReducedMotion();
 	let palette = livePalette(el, pickColors(config, [], (p) => [...p.colors, p.glint]));
 	const start = performance.now();
@@ -261,7 +261,7 @@ export function backdrop(el, config) {
 		},
 	});
 	if (!stage) {
-		el.style.background = fallbackBackground(palette);
+		el.style.background = shaderBackgroundFallback(palette);
 		return stop;
 	}
 
