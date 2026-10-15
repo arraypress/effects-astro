@@ -12,9 +12,10 @@
  *
  * - The shape is a distance field (src/runtime/shape.js) over the logo's
  *   box: its bevel, and the rest the metal returns to.
- * - The surface is a wave simulation on the GPU (liquid-metal/wave.js):
- *   heights and speeds over the box, a damped wave equation with a spring
- *   back to rest. The waves tilt the surface and move its outline.
+ * - The surface is a wave simulation on the GPU (liquid-metal/wave.js, on
+ *   height-field.js): heights and speeds over the box, a damped wave
+ *   equation with a spring back to rest. The waves tilt the surface and
+ *   move its outline.
  * - The droplets are worked out on the CPU (liquid-metal/beads.js).
  * - The chrome is a reflection of a studio made in the shader
  *   (liquid-metal/shaders.js): sky, horizon, floor, softboxes and a key
@@ -33,7 +34,8 @@ import { canHover, isMobileGpu } from './device.js';
 import { pointerIn, trail, pressAt } from './pointer.js';
 import { watchColors } from './mount.js';
 import { pickColors } from './palettes.js';
-import { RENDER, MAX_PUSHES, MAX_BEADS } from './liquid-metal/shaders.js';
+import { RENDER, MAX_BEADS } from './liquid-metal/shaders.js';
+import { MAX_PUSHES } from './height-field.js';
 import { createWave } from './liquid-metal/wave.js';
 import { createField } from './liquid-metal/field.js';
 import { fieldSampler, splash, stepBeads, packBeads } from './liquid-metal/beads.js';
@@ -284,7 +286,7 @@ export function liquidMetal(el, config) {
 					const sdf = blurField(distanceField(mask, Math.max(2, Math.round(spread * height))), width, height, width / 400);
 					field?.upload(sdf, width, height);
 					sample = fieldSampler(sdf, width, height, spread, aspect);
-					wave?.shape({ aspect, spread, bevel, bulge: bevel * 1.6 });
+					wave?.shape({ spread, bevel, bulge: bevel * 1.6 });
 					gl.useProgram(program);
 					gl.uniform2f(uniform('uSdfTexel'), 1 / width, 1 / height);
 					gl.uniform1f(uniform('uSpread'), spread);

@@ -1,8 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
-import { SHADER_BACKGROUNDS, readColor, hueRotate, shaderBackgroundPalette, shaderBackgroundSettings, shaderBackgroundFallback } from '../src/runtime/shader-background.js';
-import { parseColor, mixOklab } from '../src/runtime/color.js';
+import { SHADER_BACKGROUNDS, readColor, shaderBackgroundPalette, shaderBackgroundSettings, shaderBackgroundFallback } from '../src/runtime/shader-background.js';
+import { parseColor, mixOklab, turnHue } from '../src/runtime/color.js';
 
 /**
  * Asserts two colours match to within rounding.
@@ -49,23 +49,24 @@ test('readColor reads hex and rgb(), and nothing else', () => {
 	assert.equal(readColor(''), null);
 });
 
-test('hueRotate turns the hue and leaves greys alone', () => {
-	near(hueRotate([1, 0, 0], 120), [0, 1, 0]);
-	near(hueRotate([1, 0, 0], -120), [0, 0, 1]);
-	near(hueRotate([0.2, 0.5, 0.8], 360), [0.2, 0.5, 0.8]);
-	assert.deepEqual(hueRotate([0.4, 0.4, 0.4], 90), [0.4, 0.4, 0.4]);
-});
-
 test('shaderBackgroundPalette derives all four colours from the accent and background', () => {
 	const accent = parseColor('#00e472');
 	const bg = parseColor('#ffffff');
 	const [c1, c2, c3, c4] = shaderBackgroundPalette({ accent: '#00e472', background: '#ffffff' });
 	assert.deepEqual(c1, accent);
 	near(c2, mixOklab(accent, bg, 0.55));
-	near(c3, hueRotate(accent, 36));
-	near(c4, hueRotate(accent, -32).map((c) => Math.min(1, c * 1.2)));
+	// A green's yellow side is the lesser turn: the third turns that way and is lifted.
+	near(c3, turnHue(accent, -30, 0.06));
+	near(c4, turnHue(accent, 45));
 	// On a light page the second is a pale tint, not a dark shade.
 	assert.ok(c2.every((c, i) => c >= accent[i]));
+});
+
+test('shaderBackgroundPalette turns the third towards yellow from either side', () => {
+	const amber = parseColor('#f59e0b');
+	const [, , c3, c4] = shaderBackgroundPalette({ accent: '#f59e0b' });
+	near(c3, turnHue(amber, 30, 0.06));
+	near(c4, turnHue(amber, -45));
 });
 
 test('shaderBackgroundPalette falls back to a green accent on black', () => {

@@ -60,3 +60,13 @@ export const title = (name: string) => name.replace(/(^|-)(\w)/g, (_, dash, c) =
 /** Paper shaders that bend a photo, and those that work on a logo's shape. */
 export const PICTURES = ['fluted-glass', 'water', 'lens-distortion', 'image-dithering', 'halftone-dots', 'halftone-cmyk', 'paper-texture'];
 export const LOGOS = ['liquid-metal', 'heatmap', 'gem-smoke'];
+
+/** Loamworks' covers for the ProductStack hero, each a link to its product. */
+export const COVERS = [
+	{ src: '/covers/product-stack-quiet-mix.webp', href: '#', alt: 'The Quiet Mix, an ebook on mixing' },
+	{ src: '/covers/product-stack-polar.webp', href: '#', alt: 'Polar, a preset bank for wavetable synths' },
+	{ src: '/covers/product-stack-night-drums.webp', href: '#', alt: 'Night Drums, a sample pack' },
+	{ src: '/covers/product-stack-halden-serif.webp', href: '#', alt: 'Halden Serif, a type family' },
+	{ src: '/covers/product-stack-launchpad.webp', href: '#', alt: 'Launchpad, a landing page kit' },
+	{ src: '/covers/product-stack-golden-hour.webp', href: '#', alt: 'Golden Hour, a pack of film looks' },
+];

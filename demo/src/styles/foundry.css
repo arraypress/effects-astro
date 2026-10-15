@@ -1,0 +1,70 @@
+/* The VariableType hero: a type specimen poster, bar at the top, the word between, notes at the foot. */
+.foundry {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	width: 88vw;
+	min-height: calc(100dvh - 184px);
+	font-family: 'Roboto Flex Variable', ui-sans-serif, system-ui, sans-serif;
+}
+.foundry__bar,
+.foundry__foot {
+	display: flex;
+	justify-content: space-between;
+	gap: 24px;
+	color: #3f3d39;
+	font-size: 13px;
+	letter-spacing: 0.02em;
+}
+.foundry__bar {
+	padding-bottom: 14px;
+	border-bottom: 1px solid rgb(17 17 19 / 0.18);
+	font-variation-settings: 'wdth' 110;
+	text-transform: uppercase;
+}
+.foundry .foundry__word {
+	margin: 0.04em 0 0.02em;
+	color: #141311;
+	font-size: 22vw;
+	font-weight: 400;
+	line-height: 0.9;
+	letter-spacing: -0.02em;
+	text-align: center;
+}
+.foundry .foundry__word [data-letter] {
+	color: color-mix(in oklab, #141311, #ff4d1a clamp(0%, calc(var(--swell, 0) * 320% - 200%), 100%));
+}
+.foundry__foot {
+	align-items: end;
+	padding-top: 16px;
+	border-top: 1px solid rgb(17 17 19 / 0.18);
+}
+.foundry__foot p {
+	max-width: 26rem;
+	margin: 0;
+	font-size: 16px;
+	line-height: 1.5;
+	letter-spacing: 0;
+	font-variation-settings: 'wdth' 100, 'opsz' 16;
+}
+.foundry__foot dl {
+	display: flex;
+	gap: 32px;
+	margin: 0;
+}
+.foundry__foot dt {
+	color: #8a857c;
+	text-transform: uppercase;
+	font-size: 11px;
+}
+.foundry__foot dd {
+	margin: 2px 0 0;
+	font-size: 15px;
+	font-variant-numeric: tabular-nums;
+}
+@media (max-width: 640px) {
+	.foundry__bar span:last-child,
+	.foundry__foot dl {
+		display: none;
+	}
+}

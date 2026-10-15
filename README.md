@@ -38,19 +38,22 @@ Astro 6 or 7. The runtime underneath (`@arraypress/effects-astro`) works without
 |---|---|---|
 | `<LightField>` | Liquid light in three colours with caustic glints and a pointer lens, over a real fluid that the pointer stirs and a click drops ink into | WebGL |
 | `<Ink>` | The fluid on its own: ink in water over whatever is behind | WebGL 2 |
-| `<InkField>` | Ink in water, lit by a lamp that follows the pointer: slow emitters keep it moving, the pointer stirs it, twelve named palettes (`palette="Peacock"`) that a palette switcher recolours live | WebGL |
+| `<InkField>` | Ink in water, lit by a lamp that follows the pointer: slow emitters keep it moving, the pointer stirs it, twelve named palettes (`palette="Peacock"`) that a palette switcher recolours live; with `audio`, the beat stirs it | WebGL |
 | `<AsciiRain>` | Streams of data in text characters, rows sliding at their own pace, a cool cyan-green cast, a lens fringe and the odd glitch (or, with `pattern="waves"`, streaks on a rippling 3D surface) | WebGL |
 | `<FlutedGlass>` | Slanted fluted glass bending soft blooms of colour, one following the pointer | WebGL |
 | `<DotGrid>` | A sea of dots with a drifting current; a click sends a ripple across | Canvas |
-| `<SignalLines>` | Waveform lines drawn as light: sharp in front, out of focus and lens-fringed behind, a shimmer where they cross, pulses of light running along them, and the pointer a lens they part round | WebGL |
-| `<WaveBars>` | A glowing bar waveform over its reflection, retuning like a meter with peak caps that hold and fall, a playhead that lights the bars it plays, and the pointer scrubbing | WebGL |
+| `<SignalLines>` | Waveform lines drawn as light: sharp in front, out of focus and lens-fringed behind, a shimmer where they cross, pulses of light running along them, and the pointer a lens they part round; with `audio`, the waveform of the sound playing | WebGL |
+| `<WaveBars>` | A glowing bar waveform over its reflection, retuning like a meter with peak caps that hold and fall, a playhead that lights the bars it plays, and the pointer scrubbing; with `audio`, the spectrum of the sound playing on the page | WebGL |
 | `<DotSurface>` | A halftone sea: dots on a slowly rolling sheet in perspective, sized and lit by the light; the pointer raises a swell, a click sends a ring | WebGL |
 | `<ShaderBackground>` | Six shader backgrounds by name (`mesh-gradient`, `grain-gradient`, `silk`, `band-lens`, `grid`, `waves`), tinted from the page's `--color-accent` unless given `colors`; `static` for wallpaper | WebGL |
 | `<HaloRing>` | A ring of light around centred copy: a soft-cornered outline drifting between a hexagon and a rounded rectangle, colour travelling round it and burning white where it is hottest, glowing far outward; the pointer draws it close | WebGL |
 | `<SilkRibbon>` | A wide ribbon of satin twisting across a light ground, folds gathering where it turns and a sheen along each, over a soft glow; the folds undulate and lean to the pointer | WebGL |
+| `<Topography>` | A survey map that never sits still: crisp contour lines of a slowly drifting landscape, every fifth heavier; the pointer lifts the ground and lights its lines, `labels` adds elevation numbers | WebGL |
+| `<Caustics>` | Sunlight rippling through water onto a pool floor: a shifting net of light with a faint rainbow at its edges, stirred by the pointer; optional tiles | WebGL |
+| `<RainOnGlass>` | Rain on a window over a photo: beads, drops running down in clearing trails, each a lens holding the scene upside down, soft bokeh behind fog; the pointer wipes a patch | WebGL |
 | `<WorldRoutes>` | A dotted world map with comets of light arcing between cities: a home hub, per-route colours and Oklab gradients, labels, regions, great-circle arcs, hover | Canvas |
-| `<GlowField>` | A still light (bloom, beam, horizon or wash) to lay over a background | CSS |
-| `<Grain>` | Film grain, to dither smooth gradients | CSS |
+| `<GlowField>` | A light to lay over a background: a bloom, a swaying stage spotlight, a horizon or a wash, breathing gently | CSS |
+| `<Grain>` | Flickering film grain, to dither smooth gradients and make a picture read as film | CSS |
 
 **Paper shaders**: `<PaperShader shader="mesh-gradient" preset="beach">`, any of the 30 shaders from [Paper](https://shaders.paper.design) with each of their 124 presets, run on the same loop and guarantees as the rest. Pass `params` to change any setting, `colors` for the palette, and `image` for the shaders that work on a picture (your logo in `liquid-metal`, `heatmap` or `gem-smoke`; a photo in `fluted-glass`, `halftone-dots`, `water` or `image-dithering`).
 
@@ -82,11 +85,15 @@ Astro 6 or 7. The runtime underneath (`@arraypress/effects-astro`) works without
 | `<ScrollReveal>` | Once in a layout: anything with a reveal.css class (`fade-in-up`, `zoom-in`, `flip-left`…) arrives on scroll | CSS + JS |
 | `<HighlightSweep>` | A marker underline sweeping in under a word | CSS |
 | `<Marquee>` | An endless strip of names or logos, with a pause button | CSS + JS |
+| `<VariableType>` | A variable-font headline whose letters swell heavier and wider under the pointer in a springy wave, and drift gently on their own | JS |
 
 **Surfaces and interaction**
 
 | Component | | Drawn with |
 |---|---|---|
+| `<ImageRipple>` | A hero photo that ripples like water under the pointer: a wake as it moves, a ring where you click, a soft colour split at the wave fronts and light on the crests, then back to the still, sharp photo; a real `<img>` underneath | WebGL |
+| `<ProductStack>` | A store's product covers floating in a 3D fan, stack or carousel arc with depth of field and a glossy sheen; leans to the pointer, fans apart on hover, lifts the cover under it; real, focusable links | CSS + JS |
+| `<MosaicReveal>` | A slideshow whose pictures change through a GPU transition: tiles flipping in a diagonal wave, a pixel-sort melt, pixelation or a glowing dissolve | WebGL |
 | `<RadiantGlass>` | A cluster of frosted glass tiles on a dark ground, glowing from inside with soft drifting light that shifts with the pointer; a two-tone rim and a halo on each | WebGL |
 | `<Glass>` | A liquid glass panel with a lit rim and a pointer sheen | CSS + JS |
 | `<BorderSweep>` | A light travelling round an outline | CSS |
@@ -129,7 +136,7 @@ Every effect that takes `colors` also takes `palette`, one of eighteen named set
 
 ## Changing colours
 
-The WebGL effects (`<LightField>`, `<InkField>`, `<Ink>`, `<AsciiRain>`, `<FlutedGlass>`, `<GlassGlyph>`, `<LiquidMetal>`, `<ParticleLogo>`, `<NeonSwarm>`, `<NebulaLogo>`, `<PointCloud>`, `<VoxelLogo>`, `<SignalLines>`, `<WaveBars>`, `<DotSurface>`, `<HaloRing>`, `<SilkRibbon>`, `<RadiantGlass>`) read a `data-colors` attribute; `setColors` writes it. A light or an ink field eases to the new palette in about a second; ink, rain and the rest take it from their next frame. Set before an effect starts, it is its colours from the first frame.
+The WebGL effects (`<LightField>`, `<InkField>`, `<Ink>`, `<AsciiRain>`, `<FlutedGlass>`, `<GlassGlyph>`, `<LiquidMetal>`, `<ParticleLogo>`, `<NeonSwarm>`, `<NebulaLogo>`, `<PointCloud>`, `<VoxelLogo>`, `<SignalLines>`, `<WaveBars>`, `<DotSurface>`, `<HaloRing>`, `<SilkRibbon>`, `<RadiantGlass>`, `<Topography>`, `<Caustics>`, `<RainOnGlass>`, `<MosaicReveal>`) read a `data-colors` attribute; `setColors` writes it. A light or an ink field eases to the new palette in about a second; ink, rain and the rest take it from their next frame. Set before an effect starts, it is its colours from the first frame.
 
 ```js
 import { setColors } from '@arraypress/effects-astro';
@@ -162,7 +169,7 @@ The package's main entry is the runtime the components are built on, for use wit
 
 ## Demo
 
-`demo/` is an Astro site: a page for each group (backgrounds, Paper, logos, wordmarks, text, surfaces), every effect on it a working hero, each ShaderBackground and Paper shader on its own (a hero's effect runs only while it is near the screen):
+`demo/` is an Astro site: a page for each group (backgrounds, Paper, logos, wordmarks, text, surfaces), every effect on it a working hero, each ShaderBackground and Paper shader on its own, shown one at a time with its own URL (`/logos#liquid-metal`), arrows and ← → keys to step through them all, and a Customise panel to set each one up and copy the line:
 
 ```bash
 cd demo && npm install && npm run dev   # http://127.0.0.1:4400
@@ -172,7 +179,7 @@ cd demo && npm install && npm run dev   # http://127.0.0.1:4400
 
 - The fluid is Jos Stam's Stable Fluids, after Pavel Dobryakov's [WebGL-Fluid-Simulation](https://github.com/PavelDoGreat/WebGL-Fluid-Simulation) (MIT, © 2017 Pavel Dobryakov).
 - `<FlutedGlass>`'s flute geometry and `<GlassGlyph>`'s lens model are adapted from the FlutedGlass and Glass components of [Shaders](https://github.com/shader-effects-inc/shaders) (MIT, © 2026 Shader Effects Inc.).
-- `<ShaderBackground>` is the shader set from the earlier `@arraypress/effect-canvas-astro` package; `silk` follows Inigo Quilez's domain-warping technique.
+- `<ShaderBackground>` is the shader set from the earlier `@arraypress/effect-canvas-astro` package; `silk` follows Inigo Quilez's domain-warping technique; `grain-gradient` dithers along its colour ramp as Paper's grain gradient does, with Dave Hoskins' [Hash without Sine](https://www.shadertoy.com/view/4djSRW) (MIT, © 2014 David Hoskins).
 - `<PaperShader>` runs [Paper Shaders](https://github.com/paper-design/shaders) (Apache-2.0, © 2026 Paper), vendored unchanged in `src/vendor/paper/` with their presets. Powered by Paper Shaders: https://shaders.paper.design
 - `<InkField>` is adapted from Trirat's ink shader for LumiThemes (its sim, display shader, emitters, lamp and twelve palettes), on Jos Stam's Stable Fluids in the shape of Pavel Dobryakov's WebGL-Fluid-Simulation (MIT, © 2017 Pavel Dobryakov).
 - `<WorldRoutes>`'s land is sampled from [Natural Earth](https://www.naturalearthdata.com)'s 1:110m land (public domain).

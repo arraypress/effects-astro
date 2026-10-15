@@ -82,22 +82,83 @@ export function toOklab(rgb) {
 }
 
 /**
+ * Oklab to linear light, unclamped (a channel outside 0–1 is out of gamut).
+ *
+ * @param {[number, number, number]} lab L, a, b.
+ * @returns {Rgb} Linear red, green and blue.
+ */
+function oklabToLinear([L, a, b]) {
+	const l = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3;
+	const m = (L - 0.1055613458 * a - 0.0638541728 * b) ** 3;
+	const s = (L - 0.0894841775 * a - 1.291485548 * b) ** 3;
+	return [
+		4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+		-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+		-0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
+	];
+}
+
+/**
  * Oklab back to sRGB.
  *
  * @param {[number, number, number]} lab L, a, b.
  * @returns {Rgb} The colour, 0–1 (out-of-gamut channels clamped).
  */
-export function fromOklab([L, a, b]) {
-	const l = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3;
-	const m = (L - 0.1055613458 * a - 0.0638541728 * b) ** 3;
-	const s = (L - 0.0894841775 * a - 1.291485548 * b) ** 3;
-	return /** @type {Rgb} */ (
-		[
-			4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
-			-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
-			-0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
-		].map((c) => Math.min(1, toSrgb(c)))
-	);
+export function fromOklab(lab) {
+	return /** @type {Rgb} */ (oklabToLinear(lab).map((c) => Math.min(1, toSrgb(c))));
+}
+
+/**
+ * The most chroma a lightness and hue can have and still be an sRGB colour.
+ *
+ * @param {number} L The lightness, 0–1.
+ * @param {number} hue The hue, in radians.
+ * @returns {number} The chroma (to within 1e-5).
+ */
+function maxChroma(L, hue) {
+	/**
+	 * Whether a chroma at this lightness and hue is in gamut.
+	 *
+	 * @param {number} c The chroma.
+	 * @returns {boolean} True when every linear channel is within 0–1.
+	 */
+	const fits = (c) => oklabToLinear([L, c * Math.cos(hue), c * Math.sin(hue)]).every((v) => v >= -1e-4 && v <= 1 + 1e-4);
+	let lo = 0;
+	let hi = 0.4;
+	for (let i = 0; i < 16; i++) {
+		const mid = (lo + hi) / 2;
+		if (fits(mid)) lo = mid;
+		else hi = mid;
+	}
+	return lo;
+}
+
+/**
+ * Turns a colour's hue in Oklab: a companion colour for a palette built
+ * from one. Each hue is most vivid at its own lightness (yellow light,
+ * blue deep), so the colour moves 60% of the way to that lightness rather
+ * than greying out at the old one, keeps its chroma where the gamut
+ * allows, and can be lifted on top.
+ *
+ * @param {Rgb} rgb The colour.
+ * @param {number} degrees Degrees to turn the hue by.
+ * @param {number} [lighten=0] Oklab lightness to add, after the move.
+ * @returns {Rgb} The turned colour; a grey stays grey (lifted).
+ */
+export function turnHue(rgb, degrees, lighten = 0) {
+	const [L, a, b] = toOklab(rgb);
+	const chroma = Math.hypot(a, b);
+	const hue = Math.atan2(b, a) + (degrees * Math.PI) / 180;
+	let vivid = L;
+	let most = 0;
+	for (let l = 0.3; l <= 0.96; l += 0.02) {
+		const c = maxChroma(l, hue);
+		if (c > most) [most, vivid] = [c, l];
+	}
+	const lightness = chroma < 1e-4 ? L + lighten : L + (vivid - L) * 0.6 + lighten;
+	const to = Math.min(0.97, Math.max(0, lightness));
+	const c = Math.min(chroma, maxChroma(to, hue));
+	return fromOklab([to, c * Math.cos(hue), c * Math.sin(hue)]);
 }
 
 /**

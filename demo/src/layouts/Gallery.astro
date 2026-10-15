@@ -1,10 +1,17 @@
 ---
 /**
- * A gallery page: the bar across the top (the pages, and which hero is in
- * view), the page's heroes, and a way on to the next page.
+ * A gallery page: the bar across the top (the pages, the arrows through
+ * every hero in the gallery, and the "All effects" overview), the page's
+ * heroes, one on show at a time, and the customise panel.
  */
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
 import '../styles/gallery.css';
+import '../styles/bar.css';
+import Panel from '../components/Panel.astro';
+import Overview from '../components/Overview.astro';
 import { PAGES } from '../gallery';
+import { collect } from '../tour/stops';
 
 interface Props {
 	/** This page's name, as PAGES lists it. */
@@ -12,8 +19,10 @@ interface Props {
 }
 
 const { page } = Astro.props;
-const at = PAGES.findIndex((p) => p.name === page);
-const next = PAGES[(at + 1) % PAGES.length];
+// Collecting the tour renders every page; those renders need no tour of their own.
+const groups = (Astro.locals as { collecting?: boolean }).collecting ? [] : await collect();
+const total = groups.reduce((sum, group) => sum + group.stops.length, 0);
+const href = PAGES.find((p) => p.name === page)?.href;
 ---
 
 <html lang="en-GB">
@@ -25,14 +34,33 @@ const next = PAGES[(at + 1) % PAGES.length];
 	<body>
 		<nav class="bar" aria-label="Gallery">
 			<a class="bar__brand" href="/">effects-astro</a>
-			{PAGES.map((p) => <a href={p.href} aria-current={p.name === page ? 'page' : undefined}>{p.name}</a>)}
-			<span class="bar__readout" data-readout></span>
+			<div class="bar__pages">
+				{PAGES.map((p) => <a href={p.href} aria-current={p.name === page ? 'page' : undefined}>{p.name}</a>)}
+			</div>
+			<div class="bar__step">
+				<a class="bar__arrow" href={href} aria-label="Previous effect" data-step="-1">
+					<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M10 3.5L5.5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+				</a>
+				<span class="bar__count" aria-live="polite"><b data-count>1</b> / {total}<span class="bar__group"> · {page}</span></span>
+				<a class="bar__arrow" href={href} aria-label="Next effect" data-step="1">
+					<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M6 3.5L10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+				</a>
+			</div>
+			<button type="button" class="bar__all" aria-controls="overview" aria-expanded="false" data-overview-open>
+				<svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M2.5 2.5h4v4h-4zm7 0h4v4h-4zm-7 7h4v4h-4zm7 0h4v4h-4z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"></path></svg>
+				<span>All effects</span>
+			</button>
 		</nav>
 		<slot />
-		<a class="next" href={next.href}>
-			<span>Next</span>
-			<strong>{next.name} →</strong>
-		</a>
-		<script src="../scripts/gallery.js"></script>
+		<Panel />
+		<Overview groups={groups} />
+		<script>
+			import '../scripts/gallery.js';
+			import '../scripts/bar.js';
+			import '../scripts/overview.js';
+			import '../scripts/keys.js';
+			import { start } from '../scripts/viewer.js';
+			start();
+		</script>
 	</body>
 </html>

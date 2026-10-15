@@ -1,0 +1,33 @@
+/* The audio heroes: copy beside a stack of WaveformPlayers. */
+.hero__copy:has(.audio-split) {
+	max-width: 72rem;
+	min-width: 0;
+	justify-self: stretch;
+}
+.audio-split {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 26rem);
+	align-items: center;
+	gap: 48px;
+}
+@media (max-width: 860px) {
+	.audio-split {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 28px;
+	}
+}
+.audio-pack {
+	box-sizing: border-box;
+	display: grid;
+	gap: 6px;
+	width: min(30rem, 100%);
+	padding: 12px 18px;
+	border: 1px solid rgb(255 255 255 / 0.1);
+	border-radius: 18px;
+	background: rgb(5 11 13 / 0.55);
+	backdrop-filter: blur(14px);
+	text-align: left;
+}
+.audio-pack--one {
+	margin: 30px auto 0;
+}

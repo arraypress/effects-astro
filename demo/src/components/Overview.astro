@@ -1,0 +1,51 @@
+---
+/**
+ * The "All effects" overview: every hero in the gallery as a card, grouped
+ * by page, over the hero on show. Its cards are also the tour's list
+ * (src/scripts/viewer.js reads them, in order); src/scripts/overview.js
+ * opens and closes it and marks the hero on show.
+ */
+import '../styles/overview.css';
+import type { Group } from '../tour/stops';
+
+interface Props {
+	/** Every page's heroes. */
+	groups: Group[];
+}
+
+const { groups } = Astro.props;
+const total = groups.reduce((sum, group) => sum + group.stops.length, 0);
+---
+
+<div class="overview" id="overview" role="dialog" aria-modal="true" aria-labelledby="overview-title" hidden data-overview data-effect-ignore>
+	<header class="overview__head">
+		<h2 class="overview__title" id="overview-title">All effects <span>{total}</span></h2>
+		<button type="button" class="overview__close" data-overview-close>
+			<kbd>Esc</kbd>
+			<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3.5 3.5l9 9m0-9l-9 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path></svg>
+			<span class="overview__hidden">Close</span>
+		</button>
+	</header>
+	<div class="overview__body">
+		{
+			groups.map((group) => (
+				<section class="overview__group" aria-label={group.name}>
+					<h3 class="overview__label">
+						{group.name} <span>{group.stops.length}</span>
+					</h3>
+					<ol class="overview__grid">
+						{group.stops.map((stop) => (
+							<li>
+								<a class="card" href={stop.href} data-stop data-group={group.name} style={stop.accent && `--card-accent: ${stop.accent}`}>
+									<span class="card__n">{String(stop.n).padStart(2, '0')}</span>
+									<strong class="card__name">{stop.name}</strong>
+									{stop.blurb && <span class="card__blurb">{stop.blurb}</span>}
+								</a>
+							</li>
+						))}
+					</ol>
+				</section>
+			))
+		}
+	</div>
+</div>

@@ -1,0 +1,196 @@
+---
+/**
+ * MosaicReveal: a slideshow of pictures that change through a GPU
+ * transition: tiles flipping over in a diagonal wave, a melt into sorted
+ * streaks, blocks coarsening and refining, or a dissolve with a glowing
+ * edge. For a product gallery or a portfolio hero. See
+ * src/runtime/mosaic-reveal.js.
+ *
+ * Fills its nearest positioned ancestor. It moves on every `interval`,
+ * held while hovered, focused or off screen; the arrow keys (once it has
+ * focus), a swipe and the dots move it too. The pictures are real images,
+ * so they are read out and show without WebGL, where they crossfade, as
+ * they do with reduced motion.
+ *
+ * @example
+ * <section class="hero" style="position: relative">
+ *   <MosaicReveal images={[{ src: '/work/1.jpg', alt: 'A walnut stool' }, { src: '/work/2.jpg', alt: 'An oak bench' }]} transition="dissolve" />
+ *   <h1>Furniture made <em>to outlive us.</em></h1>
+ * </section>
+ */
+import type { MosaicRevealConfig } from '../runtime/mosaic-reveal.js';
+
+interface Props extends MosaicRevealConfig {
+	/** The pictures, in order, each `{ src, alt }`: same origin, or served with CORS. */
+	images: { src: string; alt: string }[];
+	/** Dots that pick a picture, the current one filling as it plays. Default true. */
+	controls?: boolean;
+	/** What the slideshow is called, for assistive technology. Default `'Gallery'`. */
+	label?: string;
+	class?: string;
+	style?: string;
+}
+
+const { images, controls = true, label = 'Gallery', class: className, style, ...config } = Astro.props;
+---
+
+<div
+	class:list={['mosaic-reveal', { 'has-controls': controls && images.length > 1 }, className]}
+	role="region"
+	aria-roledescription="carousel"
+	aria-label={label}
+	tabindex="0"
+	data-effect-mosaic-reveal
+	data-effect-config={JSON.stringify(config)}
+	style={[`background: ${config.background ?? '#0c0b0a'}`, style].filter(Boolean).join('; ')}
+>
+	{
+		images.map((image, i) => (
+			<img
+				data-slide
+				src={image.src}
+				alt={image.alt}
+				crossorigin="anonymous"
+				decoding="async"
+				draggable="false"
+				loading={i === 0 ? 'eager' : 'lazy'}
+				fetchpriority={i === 0 ? 'high' : undefined}
+				class:list={{ 'is-front': i === 0 }}
+				hidden={i !== 0}
+			/>
+		))
+	}
+	<canvas aria-hidden="true"></canvas>
+	<div class="mosaic-reveal__dots">
+		{images.map((image, i) => <button type="button" data-slide-dot aria-current={i === 0 ? 'true' : undefined} aria-label={`Show picture ${i + 1} of ${images.length}: ${image.alt}`}></button>)}
+	</div>
+	<p class="mosaic-reveal__live" aria-live="polite" aria-atomic="true" data-slide-live></p>
+</div>
+
+<style>
+	.mosaic-reveal {
+		position: absolute;
+		inset: 0;
+		overflow: hidden;
+		touch-action: pan-y;
+		-webkit-user-select: none;
+		user-select: none;
+		-webkit-tap-highlight-color: transparent;
+	}
+	.mosaic-reveal:focus {
+		outline: none;
+	}
+	.mosaic-reveal:focus-visible {
+		outline: 2px solid rgb(255 255 255 / 0.85);
+		outline-offset: -6px;
+	}
+	img,
+	canvas {
+		position: absolute;
+		inset: 0;
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+	img {
+		object-fit: cover;
+	}
+	img[hidden] {
+		display: none;
+	}
+	img.is-front {
+		z-index: 1;
+	}
+	/* The canvas lies over the images once it has drawn (the runtime adds is-drawn). */
+	canvas {
+		z-index: 2;
+		opacity: 0;
+		pointer-events: none;
+	}
+	.is-drawn canvas {
+		opacity: 1;
+	}
+	.mosaic-reveal__dots {
+		position: absolute;
+		left: 50%;
+		bottom: var(--mosaic-reveal-dots-bottom, 28px);
+		z-index: 3;
+		display: none;
+		padding: 0 6px;
+		border-radius: 999px;
+		background: rgb(10 10 10 / 0.32);
+		-webkit-backdrop-filter: blur(10px);
+		backdrop-filter: blur(10px);
+		translate: -50% 0;
+	}
+	.has-controls .mosaic-reveal__dots {
+		display: flex;
+	}
+	/* A dot: a wide target round a small pill; the current one a longer track that fills as it plays. */
+	button {
+		position: relative;
+		width: 20px;
+		height: 28px;
+		padding: 0;
+		border: 0;
+		background: none;
+		cursor: pointer;
+		transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+	}
+	button[aria-current] {
+		width: 44px;
+	}
+	button::before,
+	button::after {
+		content: '';
+		position: absolute;
+		top: 50%;
+		left: 6px;
+		right: 6px;
+		height: 8px;
+		margin-top: -4px;
+		border-radius: 4px;
+		background: rgb(255 255 255 / 0.42);
+		transition: background 0.2s;
+	}
+	button:hover::before {
+		background: rgb(255 255 255 / 0.7);
+	}
+	button::after {
+		background: #fff;
+		transform-origin: left;
+		scale: 0 1;
+	}
+	button[aria-current]::after {
+		scale: var(--slide-progress, 1) 1;
+	}
+	button:focus-visible {
+		outline: 2px solid #fff;
+		outline-offset: -2px;
+		border-radius: 8px;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		button {
+			transition: none;
+		}
+		button[aria-current]::after {
+			scale: 1 1;
+		}
+	}
+	.mosaic-reveal__live {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		margin: -1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+</style>
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { mosaicReveal } from '../runtime/mosaic-reveal.js';
+
+	mount('[data-effect-mosaic-reveal]', mosaicReveal);
+</script>

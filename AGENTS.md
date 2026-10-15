@@ -18,14 +18,22 @@ Pick by what is asked for:
 | A launch, waitlist or coming-soon hero: light around centred copy | `<HaloRing>` |
 | A dark, premium product or smart-home hero: frosted glass lit from within, copy beside it | `<RadiantGlass>` (`side="right"` mirrors it; `layout`, `shape`) |
 | A soft, luxurious light hero (beauty, fragrance, fashion) | `<SilkRibbon>` (`side="left"` mirrors it) |
+| A hero that moves with the music on the page (sample packs, a label, a podcast) | `<WaveBars audio="page">`, `<SignalLines audio="page">`, `<InkField audio="page">`; `audio="#id"` follows one `<audio>` or WaveformPlayer |
 | A halftone or dotted wave surface, a dark tech, launch or hiring hero | `<DotSurface>` (one colour or a gradient; `quiet` behind the copy) |
+| A moody photo hero: rain on a window, a café or bar on a wet night, city lights through fogged glass | `<RainOnGlass src="…" alt="…">` (a night-street or city-lights photo suits it best; `tint` for the fog, `palette` for the bokeh) |
+| A pool, spa, swimwear or summer hero: sunlight rippling on water | `<Caustics>` (`tiles` for a pool floor; `colors` for deep ocean, or `palette="Saffron"` for light through amber glass) |
+| A map, outdoors, travel or trail hero: contour lines like a survey map | `<Topography>` (dark by default; `background="#f3ead6" colors={['#9a6b43']}` for a paper map; `labels` for elevation numbers, `quiet` behind copy) |
 | A "we sell worldwide" or "we ship from here" section | `<WorldRoutes>` with the cities that matter to the shop; `home="…"` for a hub, `colors` + `gradient` for colour, `labels`, `region="europe"` (or `routes`) to crop |
-| A still light or texture over a background | `<GlowField>`, `<Grain>` |
+| A light or texture over a background (a spotlight, film grain) | `<GlowField>`, `<Grain>` (`still` for either to hold) |
 | The brand's logo as the hero's centrepiece | `<GlassGlyph>`, `<LiquidMetal>` (liquid chrome you can poke and splash; `tint="gold"`…), `<ParticleLogo>`, `<NeonSwarm>` (a flowing neon swarm), `<NebulaLogo>` (filled with nebula gas), `<VoxelLogo>`, `<PointCloud>`, all with `src="/logo.svg"` or `text` |
 | A footer wordmark | `<SpotlightText fit>`, `<PixelGlitchText fit>`, `<OutlineWordmark>` |
 | Sections that arrive on scroll, site-wide | `<ScrollReveal />` once in the layout, then reveal.css classes (`fade-in-up`…) on elements |
+| A type foundry or bold brand headline: big variable-font letters that swell under the pointer | `<VariableType as="h1" fit>` set in a variable font (`axes` for which axes swell) |
 | Text that arrives or moves | `<Reveal>`, `<ScrambleText>`, `<Typewriter>`, `<HighlightSweep>`, `<Marquee>` |
 | A small logo mark, a loading or "live" sign | `<PulseMark>`, `.fx-live` from `motion.css` |
+| A hero photo that reacts like water: ripples, a pond, "touch the photo" | `<ImageRipple src="…" alt="…">` (`strength`, `size`, `viscosity`, `fringe`, `fit="contain"`) |
+| A digital-goods or shop hero showing the products: their covers as the centrepiece, copy beside them | `<ProductStack items={[{ src, href, alt }, …]}>` (`layout="fan"`, `"stack"` or `"arc"`), or the covers as `<a><img></a>` children |
+| A product gallery or portfolio hero that cycles pictures with a striking change | `<MosaicReveal images={[{ src, alt }, …]} transition="…">` (tiles, pixel-sort, pixelate, dissolve) |
 | Cards and buttons that respond | `<Glass>`, `<BorderSweep>`, `<Tilt>`, `<Magnetic>`, `<Parallax>`; `<Cursor>` once per site |
 | Small motions on a shop's own elements | `motion.css` (`.fx-heartbeat`, `.fx-bump`, `.fx-pulse-ring`, `.fx-live`) |
 | UI pieces: countdowns, sliders, drop zones, timelines, tooltips, skeletons, scroll progress, back to top, vinyl and equalizer | Not here: `@arraypress/ui-astro`. Counters and drag-to-scroll rails: `@arraypress/behaviors-astro`. |
@@ -36,6 +44,7 @@ Things that trip people up:
 - **Non-fixed effects fill their nearest positioned ancestor.** Give the section `position: relative`, and put the effect before the content.
 - **Headlines over a busy background:** pass `quiet` (`<LightField>`, `<AsciiRain>`) so it dims behind them.
 - **Logos:** `src` takes any image URL; only where it is opaque counts. A `font` puts the weight first: `"900 Anton, sans-serif"`.
+- **Audio from another origin** needs CORS to be followed: `crossorigin="anonymous"` on the element (WaveformPlayer: `data-cross-origin="anonymous"`) and `Access-Control-Allow-Origin` on the server. Without it the effect keeps its own motion.
 - **Clicks:** effects that react to clicks ignore links, buttons and form fields. Add `data-effect-ignore` to anything else whose clicks are its own.
 - **`<SpotlightText fill="dodge">`** blends with what is behind it: no stacking context may sit between them (no `z-index` on a positioned ancestor, no `opacity`, `transform`, `filter` or `isolation`). Use `fill="solid"` where that cannot be arranged.
 - **Styling a component's element** from the page needs `:global(.its-class)`, since the element belongs to the component.
@@ -46,7 +55,7 @@ Things that trip people up:
 
 ## Working on this package
 
-Plain ES modules in `src/` with hand-written `.d.ts` files beside them: components in `src/components/`, the runtime in `src/runtime/` (one concern a file), stylesheets in `src/styles/`. No build step and no dependencies. `demo/` is an Astro site (not published): a page for each group, every effect on it a working hero (`src/components/Hero.astro` stamps each effect in only while it is near the screen).
+Plain ES modules in `src/` with hand-written `.d.ts` files beside them: components in `src/components/`, the runtime in `src/runtime/` (one concern a file), stylesheets in `src/styles/`. No build step and no dependencies. `demo/` is an Astro site (not published): a page for each group, every effect on it a working hero, shown one at a time (`src/scripts/viewer.js`; only the hero on show has its effect stamped in). Each hero's Customise panel is generated from the components' prop docs by `npm run docs`, so every prop needs a doc comment with its default and, for numbers, a range written "0–1".
 
 | | |
 |---|---|

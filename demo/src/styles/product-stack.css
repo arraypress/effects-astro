@@ -1,0 +1,18 @@
+/* The ProductStack hero: the stack takes the left half, the copy the right. On a phone, the stack sits above the copy. */
+.stack-side {
+	position: absolute;
+	inset: 64px 47% 56px 1vw;
+	display: grid;
+	place-items: center;
+}
+.stack-copy {
+	max-width: 33rem;
+}
+@media (max-width: 760px) {
+	.stack-side {
+		inset: 56px 8px 58vh 8px;
+	}
+	.stack-copy {
+		padding-top: 30vh;
+	}
+}

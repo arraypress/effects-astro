@@ -1,0 +1,59 @@
+---
+/**
+ * VariableType: a headline in a variable font whose letters swell under
+ * the pointer, heavier and wider in a smooth wave, and ease back when it
+ * leaves; with nothing over it, a gentle swell travels along the line.
+ * For a type foundry, or any bold brand. The text stays real text. See
+ * src/runtime/variable-type.js.
+ *
+ * Set it in a variable font with the axes it moves (CSS `font-family`).
+ * Each letter carries `--swell` (0 rest, 1 peak), so CSS can follow it:
+ * `color: color-mix(in oklab, currentColor, #ff5a1f calc(var(--swell) * 100%))`.
+ * A swell widens the line, so leave it room; with `fit`, the line is sized
+ * so that at its widest swell it spans its parent's width.
+ *
+ * @example
+ * <VariableType as="h1" fit>Torsion</VariableType>
+ * <VariableType as="h2" axes={{ wght: [300, 1000], wdth: [100, 151], slnt: [0, -10] }}>Bend</VariableType>
+ */
+import type { HTMLTag } from 'astro/types';
+import type { VariableTypeConfig } from '../runtime/variable-type.js';
+import { axisList, variation } from '../runtime/variable-type.js';
+import { withStyle } from './style.js';
+
+interface Props extends VariableTypeConfig {
+	/** The element to render. Default `div`. */
+	as?: HTMLTag;
+	class?: string;
+	[attribute: string]: unknown;
+}
+
+const { as: Tag = 'div', axes, radius, falloff, idle, fit = false, class: className, style: given, ...attributes } = Astro.props;
+---
+
+<Tag
+	class:list={['effect-variable-type', { 'is-fit': fit }, className]}
+	data-effect-variable-type
+	data-effect-config={JSON.stringify({ axes, radius, falloff, idle, fit })}
+	style={withStyle(`font-variation-settings: ${variation(axisList(axes), 0)}`, given)}
+	{...attributes}
+>
+	<slot />
+</Tag>
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { variableType } from '../runtime/variable-type.js';
+
+	mount('[data-effect-variable-type]', variableType);
+</script>
+
+<style>
+	.effect-variable-type {
+		/* A finger dragged across the line swells it; up and down still scrolls. */
+		touch-action: pan-y;
+	}
+	.is-fit {
+		white-space: nowrap;
+	}
+</style>

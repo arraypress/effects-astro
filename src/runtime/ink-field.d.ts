@@ -1,4 +1,5 @@
 import type { PaletteName } from './palettes.js';
+import type { AudioSource } from './audio.js';
 
 export interface InkFieldConfig {
 	/** One of the shared palettes (`PALETTES`, any case). Default `'Lumetri'`. */
@@ -17,6 +18,8 @@ export interface InkFieldConfig {
 	still?: boolean;
 	/** Share of the pixel ratio drawn at. Default 0.5. */
 	scale?: number;
+	/** Follow the sound playing: `'page'` for whatever plays, or a CSS selector for an `<audio>`/`<video>` or a player's container (a WaveformPlayer). Kicks stir the ink and it brightens with the beat; while nothing plays it keeps its own motion. Default none. */
+	audio?: AudioSource;
 }
 
 /** The settings an ink field runs with: three colours (the palette's, or those given over it), a glint, the lamp's rest (0–1 from the top left) and the rest, defaults filled in. */

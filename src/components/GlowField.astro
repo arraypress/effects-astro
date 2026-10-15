@@ -1,14 +1,15 @@
 ---
 /**
- * GlowField: a still light laid over a section's background, or over a
- * shader: a hard light source above an organic wash, so a headline has
- * something to sit in. Pure CSS gradients, so it costs nothing on the GPU
- * and cannot fail to start.
+ * GlowField: a light laid over a section's background, or over a shader: a
+ * hard light source above an organic wash, so a headline has something to
+ * sit in. Pure CSS gradients that move only by transform and opacity, so it
+ * costs next to nothing and cannot fail to start.
  *
  * Variants:
  *   - `bloom`: a soft ellipse of light high on the section. The safe default.
- *   - `beam`: a spotlight cone from the top edge with a hot origin; wants a
- *     short headline under it.
+ *   - `beam`: a stage spotlight: a cone from the top edge with a hot origin,
+ *     landing in a pool of light low on the section; wants a short headline
+ *     under it.
  *   - `horizon`: a bright band along the top edge, like a light just out of
  *     frame. Suits a grid or waves underneath.
  *   - `wash`: a diagonal tint from one corner fading into the ground.
@@ -16,8 +17,9 @@
  * On a dark ground the light adds (`screen`). On a light one a coloured
  * light would read as a stain, so `tone="light"` multiplies instead, at
  * about a fifth of the strength. Fills its nearest positioned ancestor;
- * put it before the content, which needs to sit above it. Static: nothing
- * animates.
+ * put it before the content, which needs to sit above it. The light
+ * breathes, and a beam sways slowly on its rig; `still` holds it, and so
+ * does reduced motion.
  *
  * From the AgentGrid and LinkGrid themes.
  *
@@ -39,16 +41,18 @@ interface Props {
 	tone?: 'dark' | 'light';
 	/** Where across the top the light comes from, 0–100 (%). Default 50. */
 	x?: number;
+	/** Hold the light still. Default false. */
+	still?: boolean;
 	class?: string;
 }
 
-const { variant = 'bloom', color = '#ffffff', intensity = 1, tone = 'dark', x = 50, class: className } = Astro.props;
+const { variant = 'bloom', color = '#ffffff', intensity = 1, tone = 'dark', x = 50, still = false, class: className } = Astro.props;
 // Light on a light ground is a fifth as strong: see the docblock.
 const scale = intensity * (tone === 'light' ? 0.2 : 1);
 ---
 
 <div
-	class:list={['effect-glow-field', `is-${variant}`, `on-${tone}`, className]}
+	class:list={['effect-glow-field', `is-${variant}`, `on-${tone}`, { 'is-still': still }, className]}
 	style={`--glow-color: ${color}; --glow-scale: ${scale}; --glow-x: ${x}%`}
 	aria-hidden="true"
 >
@@ -58,10 +62,11 @@ const scale = intensity * (tone === 'light' ? 0.2 : 1);
 	.effect-glow-field {
 		position: absolute;
 		inset: 0;
+		overflow: hidden;
 		pointer-events: none;
-		--glow-core: calc(42% * var(--glow-scale));
-		--glow-halo: calc(16% * var(--glow-scale));
-		--glow-edge: calc(55% * var(--glow-scale));
+		--glow-core: calc(60% * var(--glow-scale));
+		--glow-halo: calc(22% * var(--glow-scale));
+		--glow-edge: calc(85% * var(--glow-scale));
 		/* Light adds to what is underneath rather than painting over it. */
 		mix-blend-mode: screen;
 	}
@@ -69,43 +74,104 @@ const scale = intensity * (tone === 'light' ? 0.2 : 1);
 	.effect-glow-field.on-light {
 		mix-blend-mode: multiply;
 	}
-
-	.is-bloom {
-		background:
-			radial-gradient(ellipse 58% 48% at var(--glow-x) 8%, color-mix(in srgb, var(--glow-color) var(--glow-core), transparent), transparent 72%),
-			radial-gradient(ellipse 90% 70% at var(--glow-x) 0%, color-mix(in srgb, var(--glow-color) var(--glow-halo), transparent), transparent 78%);
+	/* Two layers: the light itself (::before), which moves, and its source
+	   and spill (::after), which breathe. */
+	.effect-glow-field::before,
+	.effect-glow-field::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+	}
+	.effect-glow-field::after {
+		animation: glow-breathe 7s ease-in-out infinite;
 	}
 
-	/* A cone from a conic gradient, a hot origin, and an ambient fill so the
-	   cone does not float in a void; faded out before it reaches the copy. */
-	.is-beam {
+	.is-bloom::before {
+		inset: -10%;
+		background: radial-gradient(ellipse 52% 44% at var(--glow-x) 14%, color-mix(in srgb, var(--glow-color) var(--glow-core), transparent), transparent 72%);
+		animation: glow-drift 16s ease-in-out infinite alternate;
+	}
+	.is-bloom::after {
+		background: radial-gradient(ellipse 90% 70% at var(--glow-x) 0%, color-mix(in srgb, var(--glow-color) var(--glow-halo), transparent), transparent 78%);
+	}
+
+	/* The cone: a conic gradient, softened, swinging a few degrees about the
+	   rig at the top edge. Faded out before it reaches the foot. */
+	.is-beam::before {
+		inset: -12% -30% 0;
+		background: conic-gradient(
+			at var(--glow-x) 0%,
+			transparent 0deg,
+			transparent 156deg,
+			color-mix(in srgb, var(--glow-color) calc(var(--glow-core) * 0.35), transparent) 166deg,
+			color-mix(in srgb, var(--glow-color) var(--glow-core), transparent) 180deg,
+			color-mix(in srgb, var(--glow-color) calc(var(--glow-core) * 0.35), transparent) 194deg,
+			transparent 204deg,
+			transparent 360deg
+		);
+		filter: blur(14px);
+		-webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 45%, transparent 92%);
+		mask-image: linear-gradient(to bottom, #000 0%, #000 45%, transparent 92%);
+		transform-origin: var(--glow-x) 0%;
+		animation: glow-sway 11s ease-in-out infinite alternate;
+	}
+	/* The hot source at the rig, the haze round it, and the pool where the
+	   beam lands. */
+	.is-beam::after {
 		background:
-			radial-gradient(ellipse 26% 16% at var(--glow-x) -2%, color-mix(in srgb, var(--glow-color) var(--glow-edge), transparent), transparent 70%),
-			conic-gradient(
-				from 180deg at var(--glow-x) -8%,
-				transparent 0deg,
-				transparent 158deg,
-				color-mix(in srgb, var(--glow-color) var(--glow-core), transparent) 180deg,
-				transparent 202deg,
-				transparent 360deg
-			),
+			radial-gradient(ellipse 14% 9% at var(--glow-x) 0%, color-mix(in srgb, var(--glow-color) var(--glow-edge), transparent), transparent 70%),
+			radial-gradient(ellipse 34% 7% at var(--glow-x) 84%, color-mix(in srgb, var(--glow-color) calc(var(--glow-core) * 0.55), transparent), transparent 72%),
 			radial-gradient(ellipse 80% 60% at var(--glow-x) 0%, color-mix(in srgb, var(--glow-color) var(--glow-halo), transparent), transparent 76%);
-		-webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 34%, transparent 82%);
-		mask-image: linear-gradient(to bottom, #000 0%, #000 34%, transparent 82%);
 	}
 
-	.is-horizon {
-		background:
-			linear-gradient(to bottom, color-mix(in srgb, var(--glow-color) var(--glow-edge), transparent) 0%, transparent 14%),
-			radial-gradient(ellipse 70% 40% at var(--glow-x) 0%, color-mix(in srgb, var(--glow-color) var(--glow-core), transparent), transparent 70%);
+	.is-horizon::before {
+		background: linear-gradient(to bottom, color-mix(in srgb, var(--glow-color) var(--glow-edge), transparent) 0%, transparent 14%);
+	}
+	.is-horizon::after {
+		background: radial-gradient(ellipse 70% 40% at var(--glow-x) 0%, color-mix(in srgb, var(--glow-color) var(--glow-core), transparent), transparent 70%);
 	}
 
-	.is-wash {
+	.is-wash::before {
+		inset: -15%;
 		background: linear-gradient(
 			155deg,
 			color-mix(in srgb, var(--glow-color) var(--glow-core), transparent) 0%,
 			color-mix(in srgb, var(--glow-color) calc(var(--glow-halo) * 0.5), transparent) 52%,
 			transparent 100%
 		);
+		animation: glow-drift 18s ease-in-out infinite alternate;
+	}
+
+	@keyframes glow-breathe {
+		50% {
+			opacity: 0.72;
+		}
+	}
+	@keyframes glow-sway {
+		from {
+			transform: rotate(-4deg);
+		}
+		to {
+			transform: rotate(4deg);
+		}
+	}
+	@keyframes glow-drift {
+		from {
+			transform: translate(-3%, -1%) scale(1);
+		}
+		to {
+			transform: translate(3%, 2%) scale(1.06);
+		}
+	}
+
+	.is-still::before,
+	.is-still::after {
+		animation: none;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.effect-glow-field::before,
+		.effect-glow-field::after {
+			animation: none;
+		}
 	}
 </style>

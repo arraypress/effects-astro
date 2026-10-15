@@ -6,7 +6,8 @@
  *
  * Adapted from Trirat's ink shader for LumiThemes (smoke-sim.ts), itself
  * ported from a reference stable-fluids sim (Jos Stam's Stable Fluids). The
- * GLSL is his, unchanged: the display's noise is glsl.js's `GLSL_NOISE`,
+ * GLSL is his, unchanged but for the display's `uGain` (the sound it
+ * follows brightening it): the display's noise is glsl.js's `GLSL_NOISE`,
  * which is the same code, and every pass uses gl.js's `VERTEX`, which is his
  * vertex shader with its precision written out.
  *
@@ -140,7 +141,7 @@ void main() {
  * where it is thick, clear water between. It stands as a surface, lit by one
  * lamp (a point above the plane): wrapped diffuse, soft shade from ink in
  * front, light coming through the thin parts, and only the faintest sheen.
- * The glint colour is unused here.
+ * The glint colour is unused here. `uGain` brightens it all (0 for as is).
  *
  * Tunable, at the top: BUMP (how steep the ink's surface is), LAMP_Z (how
  * high the lamp hangs), AMBIENT (light left on the shadowed side) and SHEEN.
@@ -155,6 +156,7 @@ uniform vec3 uPal[3];
 uniform vec3 uGlint;
 uniform vec2 uDyeTxl;
 uniform vec2 uLight;
+uniform float uGain;
 
 // Tunable: how steep the ink's surface is, how high the lamp hangs, how much
 // of the ambient light is left on the shadowed side, and the (very soft) sheen.
@@ -239,6 +241,9 @@ void main() {
 	// The water itself: a faint, slow glow the ink sits in, pushed aside by it.
 	vec3 water = mix(pal(t * 0.6 + 0.15 * uv.y), pal(t * 0.6 + 0.5 + 0.2 * fbm(uv * 1.3)), 0.5);
 	col += water * 0.07 * (1.0 - ink);
+
+	// Brighter with the sound the field follows, if any (0 without).
+	col *= 1.0 + uGain;
 
 	// Dim behind the copy, and towards the corners.
 	float copy = smoothstep(0.05, 0.8, length((uv - vec2(0.0, 0.02)) * vec2(1.05, 1.0)));

@@ -1,0 +1,38 @@
+---
+/**
+ * Topography: a survey map that never sits still. The contour lines of a
+ * slowly drifting landscape, every fifth an index line drawn heavier, at
+ * a constant pixel width. Under the pointer the ground swells and its
+ * lines glow; `labels` sets small elevation numbers on a few index lines.
+ * See src/runtime/topography.js.
+ *
+ * Opaque: it is the whole background of what it fills (its nearest
+ * positioned ancestor, or the viewport with `fixed`). Without WebGL the
+ * `background` colour shows.
+ *
+ * @example
+ * <section class="hero" style="position: relative">
+ *   <Topography colors={['#8a5a33']} background="#f3ead6" labels />
+ *   <h1>Every trail, <em>walked first.</em></h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { TopographyConfig } from '../runtime/topography.js';
+
+interface Props extends TopographyConfig {
+	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
+	fixed?: boolean;
+	class?: string;
+}
+
+const { fixed = false, class: className, ...config } = Astro.props;
+---
+
+<EffectCanvas name="topography" config={config} fixed={fixed} class={className} behind background={config.background ?? '#0c1a2b'} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { topography } from '../runtime/topography.js';
+
+	mount('[data-effect-topography]', topography);
+</script>

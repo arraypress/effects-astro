@@ -19,7 +19,9 @@ export type { VoxelLogoConfig } from './runtime/voxel-logo.js';
 export { pixelGlitch } from './runtime/pixel-glitch.js';
 export type { PixelGlitchConfig } from './runtime/pixel-glitch.js';
 export { fit, fitText } from './runtime/fit-text.js';
-export { textNodes, textRange } from './runtime/text.js';
+export { textNodes, textRange, splitLetters, joinLetters } from './runtime/text.js';
+export { variableType, DEFAULT_AXES } from './runtime/variable-type.js';
+export type { VariableTypeConfig, Axes } from './runtime/variable-type.js';
 export { dotGrid } from './runtime/dot-grid.js';
 export type { DotGridConfig } from './runtime/dot-grid.js';
 export { signalLines, waveBars } from './runtime/waves.js';
@@ -62,14 +64,34 @@ export { silkRibbon } from './runtime/silk-ribbon.js';
 export type { SilkRibbonConfig } from './runtime/silk-ribbon.js';
 export { radiantGlass } from './runtime/radiant-glass.js';
 export type { RadiantGlassConfig } from './runtime/radiant-glass.js';
+export { topography } from './runtime/topography.js';
+export type { TopographyConfig } from './runtime/topography.js';
+export { caustics, causticTones } from './runtime/caustics.js';
+export type { CausticsConfig, CausticTones } from './runtime/caustics.js';
+export { rainOnGlass } from './runtime/rain-on-glass.js';
+export type { RainOnGlassConfig } from './runtime/rain-on-glass.js';
+export { mosaicReveal, tileGrid } from './runtime/mosaic-reveal.js';
+export type { MosaicRevealConfig, MosaicTransition } from './runtime/mosaic-reveal.js';
+export { slideshow } from './runtime/slideshow.js';
+export type { SlideshowOptions } from './runtime/slideshow.js';
+export { productStack } from './runtime/product-stack.js';
+export type { ProductStackConfig } from './runtime/product-stack.js';
+export { imageRipple, fitScale } from './runtime/image-ripple.js';
+export type { ImageRippleConfig } from './runtime/image-ripple.js';
+export { stackPoses, stackBounds, poseTransform, poseFilter, LAYOUTS as STACK_LAYOUTS } from './runtime/stack-poses.js';
+export type { Layout as StackLayout, Pose, PoseState } from './runtime/stack-poses.js';
 export { createCanvas2D, grainPattern, grainOnto } from './runtime/canvas2d.js';
 export type { Canvas2D } from './runtime/canvas2d.js';
+export { loadImage, imageTexture, coverScale, GLSL_COVER } from './runtime/image.js';
+export { boxBlur } from './runtime/blur.js';
 export { paperShader, paperSettings, paperUniforms } from './runtime/paper.js';
 export type { PaperConfig, PaperShaderName } from './runtime/paper.js';
 export { createStage } from './runtime/stage.js';
 export type { Stage, StageOptions } from './runtime/stage.js';
 export { createPingPong, floatFormats } from './runtime/ping-pong.js';
 export type { PingPong, FloatFormat } from './runtime/ping-pong.js';
+export { createHeightField, GLSL_HEIGHT_FIELD, MAX_PUSHES } from './runtime/height-field.js';
+export type { HeightField, WaveMotion } from './runtime/height-field.js';
 export { createPoints, projectPoint, GLSL_PROJECT } from './runtime/points.js';
 export type { Points } from './runtime/points.js';
 export { createTrackers } from './runtime/trackers.js';
@@ -77,12 +99,15 @@ export type { TrackerBox } from './runtime/trackers.js';
 export { drawShape, samplePoints, gridPoints, distanceField, blurField, fontAt } from './runtime/shape.js';
 export type { ShapeSource, Mask } from './runtime/shape.js';
 export { createGlyphs, GLYPH_SETS, GLSL_GLYPHS } from './runtime/glyphs.js';
+export { GLSL_RAMP } from './runtime/ramp.js';
 export { GLSL_NOISE, GLSL_PALETTE, GLSL_QUIET, paletteUniform, quietUniform } from './runtime/glsl.js';
 export { createFluid, stir } from './runtime/fluid.js';
 export type { Fluid, FluidOptions, StirOptions } from './runtime/fluid.js';
-export { parseColor, toHex, toOklab, fromOklab, mixOklab, paletteAt, GLSL_OKLAB } from './runtime/color.js';
+export { parseColor, toHex, toOklab, fromOklab, mixOklab, paletteAt, turnHue, GLSL_OKLAB } from './runtime/color.js';
 export type { Rgb } from './runtime/color.js';
 export { animate } from './runtime/loop.js';
+export { audioSignal } from './runtime/audio.js';
+export type { AudioSignal, AudioReading, AudioSource } from './runtime/audio.js';
 export { pointerIn, trail, pressAt, CLICK_IGNORE } from './runtime/pointer.js';
 export type { StrokePoint } from './runtime/pointer.js';
 export { pixelRatio, isMobileGpu, prefersReducedMotion, canHover } from './runtime/device.js';
@@ -93,7 +118,7 @@ export { mount, readConfig, watchColors } from './runtime/mount.js';
 /**
  * Changes the colours of a WebGL effect (`<LightField>`, `<Ink>`, `<AsciiRain>`,
  * `<FlutedGlass>`, `<GlassGlyph>`, `<LiquidMetal>`, `<ParticleLogo>`, `<PointCloud>`,
- * `<VoxelLogo>`, `<HaloRing>`, `<SilkRibbon>`, `<RadiantGlass>`),
+ * `<VoxelLogo>`, `<HaloRing>`, `<SilkRibbon>`, `<RadiantGlass>`, `<Topography>`, `<Caustics>`, `<RainOnGlass>`, `<MosaicReveal>`),
  * in the order its `colors` takes. A light eases to them; the others take them next frame.
  */
 export function setColors(el: Element | null, colors: string[], glint?: string): void;

@@ -60,6 +60,31 @@ BorderSweep: a light travelling round an element's outline, on hover and focus o
 | `always` | `boolean` | Run all the time, not only on hover. Default false. |
 | `class` | `string` | Classes for the element. |
 
+## `<Caustics>`
+
+Caustics: sunlight through rippling water onto a pool floor, a bright, shifting net of light over an aqua ground, with a faint rainbow at the edges of its lines. The pointer stirs the water where it is; faint tiles can lie on the floor. See src/runtime/caustics.js.
+
+```astro
+<section class="hero" style="position: relative">
+  <Caustics tiles quiet={{ radius: 0.5 }} />
+  <h1>The pool is <em>open.</em></h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `colors` | `string[]` | The water and the light, in any order: the darkest is the deep water towards the edges, the lightest the light, the one between the floor. One or two colours work too. Default aqua `#2cc3d0`, deep teal `#0b7ea8`, sun `#f2fff9`. |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`. |
+| `background` | `string` | The ground the edges fall away into, and what shows without WebGL. Default: the deep water, darkened. |
+| `scale` | `number` | How large the net of light is, 0.4–3: 2 doubles it. Default 1. |
+| `speed` | `number` | How fast the water moves, 0–3; 0 holds it still. Default 1. |
+| `intensity` | `number` | How bright the light is, 0–2. Default 1. |
+| `tiles` | `boolean` | Faint pool tiles on the floor, bent by the water. Default false. |
+| `interactive` | `boolean` | Whether the pointer disturbs the water where it is. Default true. |
+| `quiet` | `{ x?: number; y?: number; radius?: number; depth?: number } \| null` | An area where the light is kept low behind copy: centre (0–1 from the top left), radius (a share of the height), depth (0–1). Default none; `{}` for the middle. |
+| `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
+| `class` | `string` | Classes for the element. |
+
 ## `<Cursor>`
 
 Cursor: a custom cursor for the whole page: a dot at the pointer and a ring that trails it. Over links, buttons and anything with `data-cursor` the ring swells, showing that element's `data-cursor` text as a label (`<a data-cursor="View">`). The system cursor stays; it is not hidden. Only with a mouse or trackpad; no trail with reduced motion. Place it once, in the layout. See src/runtime/cursor.js.
@@ -183,7 +208,7 @@ Glass: a liquid glass panel, with a rim that catches the light and a sheen that 
 
 ## `<GlassGlyph>`
 
-GlassGlyph: a character or a logo as a thick slab of bevelled glass over a dark ground, lit from behind by beams of one coloured light. The slab turns slowly on its own and leans away from the pointer; the light stays put. The glass bends the beams through its bevels and its rims catch the light. See src/runtime/glass-glyph.js.
+GlassGlyph: a character or a logo as a thick slab of dark, smoked glass, lit from behind by beams of one coloured light. The light barely shows on the near-black ground; the glass catches it and glows with it through its body and bevels. The slab turns slowly on its own and leans away from the pointer; the light stays put. See src/runtime/glass-glyph.js.
 
 ```astro
 <section class="hero" style="position: relative">
@@ -202,24 +227,25 @@ GlassGlyph: a character or a logo as a thick slab of bevelled glass over a dark 
 | `colors` | `string[]` | The light's colour, then the glass's tint. Default acid green, white. |
 | `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`. |
 | `background` | `string` | The ground. Default `#050505`. |
-| `refraction` | `number` | How hard the glass bends what is behind it, most of all across its bevels. Default 1. |
-| `thickness` | `number` | How wide the bevel round the edge is, a share of the height. Default 0.035. |
-| `zoom` | `number` | How much the glass magnifies what is behind it. Default 1.04. |
-| `aberration` | `number` | How far the colours part where it bends; 0 for none. Default 0.6. |
-| `frost` | `number` | Frosted glass: how much more what is behind is blurred, 0–1. Default 0. |
+| `refraction` | `number` | How hard the glass bends what is behind it, most of all across its bevels, 0–2. Default 1. |
+| `thickness` | `number` | How wide the bevel round the edge is, a share of the height, 0.01–0.1. Default 0.035. |
+| `zoom` | `number` | How much the glass magnifies the light behind it, 1–1.3. Default 1.04. |
+| `aberration` | `number` | How far the colours part where it bends, 0–2; 0 for none. Default 0.6. |
+| `frost` | `number` | Frosted glass: how much more the light through it is blurred, 0–1. Default 0. |
 | `tint` | `number` | How much the glass takes the tint colour, 0–1. Default 0.1. |
-| `highlight` | `number` | The lit rims and the glints. Default 0.8. |
-| `fresnel` | `number` | How much the bevels mirror the light. Default 0.5. |
-| `lightAngle` | `number` | Where the light on the rims comes from, degrees (0 right, 90 top). Default 135. |
-| `glow` | `number` | How strong the coloured light behind is. Default 1. |
-| `halftone` | `boolean` | Dither the light's fading edges into dots. Default true. |
-| `sway` | `number` | How far the slab turns on its own and away from the pointer; 0 holds it still. Default 1. |
+| `highlight` | `number` | The lit rims and the glints, 0–2. Default 0.8. |
+| `fresnel` | `number` | How much the bevels mirror the light, 0–1. Default 0.5. |
+| `lightAngle` | `number` | Where the light on the rims comes from, degrees, 0–360 (0 right, 90 top). Default 135. |
+| `glow` | `number` | How strong the coloured light is, 0–2. Default 1. |
+| `ambient` | `number` | How much of the light shows outside the glass, 0–1: 0 is a black ground, 1 the full beams. Default 0.1. |
+| `halftone` | `boolean` | Dither the light outside the glass into dots where it fades. Default false. |
+| `sway` | `number` | How far the slab turns on its own and away from the pointer, 0–2; 0 holds it still. Default 1. |
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
 | `class` | `string` | Classes for the element. |
 
 ## `<GlowField>`
 
-GlowField: a still light laid over a section's background, or over a shader: a hard light source above an organic wash, so a headline has something to sit in. Pure CSS gradients, so it costs nothing on the GPU and cannot fail to start.
+GlowField: a light laid over a section's background, or over a shader: a hard light source above an organic wash, so a headline has something to sit in. Pure CSS gradients that move only by transform and opacity, so it costs next to nothing and cannot fail to start.
 
 ```astro
 <section class="hero" style="position: relative">
@@ -235,6 +261,7 @@ GlowField: a still light laid over a section's background, or over a shader: a h
 | `intensity` | `number` | A multiplier on its strength; 1 as designed. Default 1. |
 | `tone` | `'dark' \| 'light'` | The ground it is on: `dark` adds light, `light` shades. Default `dark`. |
 | `x` | `number` | Where across the top the light comes from, 0–100 (%). Default 50. |
+| `still` | `boolean` | Hold the light still. Default false. |
 | `class` | `string` | Classes for the element. |
 
 ## `<Grain>`
@@ -255,6 +282,7 @@ Grain: a film-grain texture over a section (or the whole page with `fixed`). Big
 | `frequency` | `number` | How fine; higher is finer (0.75 is about 1px). Default 0.75. |
 | `fixed` | `boolean` | Cover the viewport (position: fixed). Default false. |
 | `blend` | `string` | The blend with what is under it. Default `overlay`. |
+| `still` | `boolean` | Hold the grain still. Default false. |
 | `class` | `string` | Classes for the element. |
 
 ## `<HaloRing>`
@@ -299,6 +327,29 @@ HighlightSweep: a marker-pen underline that sweeps in under a word, once, after 
 | `opacity` | `number` | How strong, 0–1. Default 0.45. |
 | `delay` | `number` | Seconds before it starts. Default 0.4. |
 | `duration` | `number` | Seconds the sweep takes. Default 1.6. |
+| `class` | `string` | Classes for the element. |
+
+## `<ImageRipple>`
+
+ImageRipple: a photo under a skin of water. The pointer drags a wake through it and a click drops a ring; the waves bend the photo, part its colours a little at their fronts and catch the light on their crests, then settle back to the still, sharp photo. See src/runtime/image-ripple.js.
+
+```astro
+<section class="hero" style="position: relative">
+  <ImageRipple src="/photos/lake.jpg" alt="A misty lake at dawn" />
+  <h1>…</h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `src` (required) | `string` | The photo's URL (same origin, or served with CORS). |
+| `strength` | `number` | How far the ripples bend the photo, 0–3. Default 1. |
+| `size` | `number` | How wide the ripples the pointer makes are, 0.3–3. Default 1. |
+| `viscosity` | `number` | How thick the water is: more settles sooner, with smaller ripples, 0.25–4. Default 1. |
+| `fringe` | `number` | How far the colours part at the wave fronts, 0–3; 0 for none. Default 1. |
+| `interactive` | `boolean` | Whether the pointer ripples it; false leaves the plain photo. Default true. |
+| `fit` | `'cover' \| 'contain'` | How the photo fills the element, as CSS `object-fit`. Default `cover`. |
+| `alt` | `string` | The photo's text alternative. Default empty: decoration. |
 | `class` | `string` | Classes for the element. |
 
 ## `<Ink>`
@@ -347,6 +398,7 @@ InkField: ink in water, lit by a lamp that follows the pointer. Slow emitters ke
 | `lamp` | `{ x?: number; y?: number }` | Where the lamp rests when the pointer is away, 0–1 from the top left. Default `{ x: 0.14, y: 0.14 }`. |
 | `still` | `boolean` | Hold one frame of settled ink and never animate, as with reduced motion: for a field behind body copy. Default false. |
 | `scale` | `number` | Share of the pixel ratio drawn at. Default 0.5. |
+| `audio` | `AudioSource` | Follow the sound playing: `'page'` for whatever plays, or a CSS selector for an `<audio>`/`<video>` or a player's container (a WaveformPlayer). Kicks stir the ink and it brightens with the beat; while nothing plays it keeps its own motion. Default none. |
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
 | `class` | `string` | Classes for the element. |
 
@@ -443,6 +495,34 @@ Marquee: an endless strip that scrolls sideways, for "as featured in" logos, art
 | `labels` | `{ pause: string; resume: string }` | The pause button's labels, for other languages. Default English. |
 | `label` | `string` | What the strip is, for screen readers. Default the items joined. |
 | `class` | `string` | Classes for the element. |
+
+## `<MosaicReveal>`
+
+MosaicReveal: a slideshow of pictures that change through a GPU transition: tiles flipping over in a diagonal wave, a melt into sorted streaks, blocks coarsening and refining, or a dissolve with a glowing edge. For a product gallery or a portfolio hero. See src/runtime/mosaic-reveal.js.
+
+```astro
+<section class="hero" style="position: relative">
+  <MosaicReveal images={[{ src: '/work/1.jpg', alt: 'A walnut stool' }, { src: '/work/2.jpg', alt: 'An oak bench' }]} transition="dissolve" />
+  <h1>Furniture made <em>to outlive us.</em></h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `transition` | `MosaicTransition` | How one picture becomes the next: tiles flipping in a diagonal wave, melting into sorted streaks, blocks coarsening and refining, or a noise dissolve with a glowing edge. Default `'tiles'`. |
+| `interval` | `number` | Seconds each picture stays, 2–12. Default 5. |
+| `duration` | `number` | Seconds a change takes, 0.4–3. Default 1.6. |
+| `tiles` | `number` | Tiles across the longer side, 3–24; also the coarsest blocks for `pixelate`. Default 9. |
+| `autoplay` | `boolean` | Move on by itself (held while hovered, focused or off screen). Default true. |
+| `colors` | `string[]` | The dissolve's glowing edge: its outer colour, then its core. Default amber, cream. |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`: its first colour round its glint. |
+| `background` | `string` | What shows between the tiles as they flip. Default `#0c0b0a`. |
+| `reducedMotion` | `'fade' \| 'swap'` | With prefers-reduced-motion: a short crossfade, or a swap at once. Default `'fade'`. |
+| `images` (required) | `{ src: string; alt: string }[]` | The pictures, in order, each `{ src, alt }`: same origin, or served with CORS. |
+| `controls` | `boolean` | Dots that pick a picture, the current one filling as it plays. Default true. |
+| `label` | `string` | What the slideshow is called, for assistive technology. Default `'Gallery'`. |
+| `class` | `string` | Classes for the element. |
+| `style` | `string` |  |
 
 ## `<NebulaLogo>`
 
@@ -647,6 +727,30 @@ PointCloud: a word drawn as a matrix of bright dots among rippling sheets of poi
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
 | `class` | `string` | Classes for the element. |
 
+## `<ProductStack>`
+
+ProductStack: a store's product covers floating in 3D, in a fan, a stack or a carousel arc, with depth of field, soft shadows and a gloss that sweeps across the cover in front. The stack leans towards the pointer; hovered, the covers fan apart and the one under the pointer lifts forward and comes into focus; left alone, they drift. See src/runtime/product-stack.js.
+
+```astro
+<ProductStack items={[{ src: '/covers/drums.webp', href: '/p/drums', alt: 'Night Drums, a sample pack' }, …]} />
+<ProductStack layout="arc"><a href="/p/serif"><img src="/covers/serif.webp" alt="Halden Serif" /></a>…</ProductStack>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `items` | `StackItem[]` | The covers. Without them, the children are the covers: each a link (or another element) holding one image. |
+| `layout` | `'fan' \| 'stack' \| 'arc'` | How the covers are laid out: a hand of cards (`fan`, the middle cover in front), a deck seen at an angle (`stack`, the first in front) or a carousel arc (`arc`). Default `fan`. |
+| `spread` | `number` | How far apart the covers sit, 0–2. Default 1. |
+| `tilt` | `number` | How far the stack leans towards the pointer, degrees, 0–30. Default 12. |
+| `float` | `number` | How far the covers drift when left alone, 0–1; 0 holds them still. Default 0.5. |
+| `depth` | `number` | Depth of field: how much the covers behind dim and soften, 0–1. Default 0.6. |
+| `interactive` | `boolean` | Lean towards the pointer, fan apart on hover and lift the cover under the pointer or in focus. Default true. |
+| `size` | `string` | The widest a cover gets, a CSS length; covers shrink to fit the container. Default `280px`. |
+| `ratio` | `number` | A cover's width over its height: 1 square, 0.75 a book. Default 1. |
+| `radius` | `number` | The covers' corner radius, px, 0–40. Default 10. |
+| `label` | `string` | The group's name for screen readers. Default `Products`. |
+| `class` | `string` | Classes for the element. |
+
 ## `<PulseMark>`
 
 PulseMark: a small animated mark for a logo, a loading state or a "live" badge, drawn in SVG and moved by CSS alone (no script).
@@ -690,6 +794,33 @@ RadiantGlass: a cluster of frosted glass tiles on a dark ground, lit from inside
 | `glow` | `number` | How strong the halo round each tile is; 0 for none. Default 1. |
 | `rim` | `number` | How bright the rim line is; 0 for none. Default 1. |
 | `speed` | `number` | How fast the lights drift. Default 1. |
+| `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
+| `class` | `string` | Classes for the element. |
+
+## `<RainOnGlass>`
+
+RainOnGlass: rain on a window over a photo, like looking out of a café on a wet evening. Beads sit on the glass; larger drops run down it, leaving clear trails that fog over again; each drop holds the photo sharp and upside down, while the rest is soft behind the condensation, its lights opened into bokeh. The pointer wipes a clear patch. See src/runtime/rain-on-glass.js.
+
+```astro
+<section class="hero" style="position: relative">
+  <RainOnGlass src="/photos/street-at-night.jpg" alt="A wet street of neon signs at night" />
+  <h1>Come in out of the rain.</h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `src` (required) | `string` | The photo behind the glass (same origin, or served with CORS). |
+| `rain` | `number` | How much rain, 0–1: beads on the glass and drops running down it. Default 0.6. |
+| `blur` | `number` | How soft the photo is behind the glass, 0–1. Default 0.6. |
+| `fog` | `number` | How thick the condensation is, 0–1. Default 0.5. |
+| `speed` | `number` | How fast the drops run and the beads come and go, 0–3. Default 1. |
+| `interactive` | `boolean` | The pointer wipes a clear patch that fogs back over. Default true. |
+| `tint` | `string` | The colour of the fog. Default `#a3b8cc`. |
+| `bokeh` | `number` | How strongly the photo's lights open into bokeh discs, 0–1. Default 0.6. |
+| `colors` | `string[]` | Colours for the bokeh discs. Default: each light's own colour. |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`. |
+| `alt` | `string` | What the photo shows, for the `<img>` under the glass. Default empty (decorative). |
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
 | `class` | `string` | Classes for the element. |
 
@@ -765,7 +896,7 @@ ShaderBackground: six animated shader backgrounds for a hero or section, tinted 
 | Prop | Type | |
 |---|---|---|
 | `effect` (required) | `ShaderBackgroundName` | Which shader background. |
-| `colors` | `string[]` | Up to four colours (hex or `rgb()`); those missing come from `--color-accent` where it sits: the accent, the accent towards `--color-bg`, its hue +36°, its hue −32° lifted. Only mesh-gradient, grain-gradient and silk use the fourth. Default all four from the accent. |
+| `colors` | `string[]` | Up to four colours (hex or `rgb()`); those missing come from `--color-accent` where it sits: the accent, the accent towards `--color-bg`, its hue turned 30° towards yellow and lifted, its hue turned 45° away from yellow (in Oklab). Only mesh-gradient, grain-gradient and silk use the fourth. Default all four from the accent. |
 | `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`. |
 | `speed` | `number` | How fast it moves, 0–4. Default 1. |
 | `intensity` | `number` | How strong it is (brightness and contrast, not opacity), 0–2. Default 1. |
@@ -803,6 +934,7 @@ SignalLines: layered waveform lines drawn as light, with a drifting loudness: sh
 | `grain` | `number` | Film grain in the light, 0–1. Default 0.5. |
 | `depth` | `number` | How far out of focus the back lines are, and how much their colours fringe; 0 for all sharp. Default 1. |
 | `bend` | `number` | How far the lines part round the pointer and how much it lights them; 0 for not at all. Default 1. |
+| `audio` | `AudioSource` | Follow the sound playing: `'page'` for whatever plays, or a CSS selector for an `<audio>`/`<video>` or a player's container (a WaveformPlayer). The lines carry its waveform, as tall as it is loud, and kicks send pulses; while nothing plays they keep their own motion. Default none. |
 | `quiet` | `{ x?: number; y?: number; radius?: number; depth?: number } \| null` | An area where the light dims (behind a headline): centre x/y (0–1, from the top left), radius (a share of the height) and depth (0 none, 1 dark). Default none. |
 | `fade` | `boolean` | Fade the left and right edges out. Default true. |
 | `class` | `string` | Classes for the element. |
@@ -867,6 +999,34 @@ Tilt: a card, an image or an object that leans towards the pointer in perspectiv
 | `within` | `string` | A selector for a larger region to follow the pointer over. Default the element. |
 | `class` | `string` | Classes for the element. |
 
+## `<Topography>`
+
+Topography: a survey map that never sits still. The contour lines of a slowly drifting landscape, every fifth an index line drawn heavier, at a constant pixel width. Under the pointer the ground swells and its lines glow; `labels` sets small elevation numbers on a few index lines. See src/runtime/topography.js.
+
+```astro
+<section class="hero" style="position: relative">
+  <Topography colors={['#8a5a33']} background="#f3ead6" labels />
+  <h1>Every trail, <em>walked first.</em></h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `colors` | `string[]` | The lines' colour, or a gradient by elevation from the valleys to the peaks (up to five), blended in Oklab. Default a pale blue. |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), as a gradient by elevation, when there are no `colors`. |
+| `background` | `string` | The ground the lines are drawn on. Default `#0c1a2b`. |
+| `density` | `number` | About how many lines cross the screen from top to bottom, 6–60. Default 24. |
+| `thickness` | `number` | The lines' width, CSS px, 0.5–3; index lines are twice as wide. Default 1. |
+| `major` | `number` | Every n-th line is an index line, drawn heavier, 0–10; 0 for none. Default 5. |
+| `scale` | `number` | How large the hills are, 0.4–3. Default 1. |
+| `speed` | `number` | How fast the land drifts, 0–4; 0 holds it still. Default 1. |
+| `glow` | `number` | How strongly the lines glow under the pointer, 0–2; 0 for none. Default 1. |
+| `interactive` | `boolean` | Whether the pointer raises the ground and lights its lines. Default true. |
+| `labels` | `boolean` | Small elevation numbers on a few index lines. Default false. |
+| `quiet` | `{ x?: number; y?: number; radius?: number; depth?: number } \| null` | An area kept dim behind copy: centre (0–1 from the top left), radius (a share of the height), depth (0–1). Default none; `{}` for the middle. |
+| `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
+| `class` | `string` | Classes for the element. |
+
 ## `<Typewriter>`
 
 Typewriter: types phrases one after another behind a blinking caret, deleting each before the next. "Sell beats / sample packs / presets." Screen readers get the phrases as a list once, not a stream of letters; with reduced motion the first phrase simply shows. See src/runtime/text-motion.js.
@@ -882,6 +1042,25 @@ Typewriter: types phrases one after another behind a blinking caret, deleting ea
 | `pause` | `number` | Milliseconds a finished phrase stays. Default 1600. |
 | `loop` | `boolean` | Start again after the last. Default true. |
 | `caret` | `string` | The caret's colour. Default the text colour. |
+| `class` | `string` | Classes for the element. |
+
+## `<VariableType>`
+
+VariableType: a headline in a variable font whose letters swell under the pointer, heavier and wider in a smooth wave, and ease back when it leaves; with nothing over it, a gentle swell travels along the line. For a type foundry, or any bold brand. The text stays real text. See src/runtime/variable-type.js.
+
+```astro
+<VariableType as="h1" fit>Torsion</VariableType>
+<VariableType as="h2" axes={{ wght: [300, 1000], wdth: [100, 151], slnt: [0, -10] }}>Bend</VariableType>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `axes` | `Axes` | The axes that swell, `{ tag: [rest, peak] }`. Axes the font lacks do nothing. Default `{ wght: [100, 900], wdth: [75, 125] }`. |
+| `radius` | `number` | How far a swell reaches from the pointer, in ems (0.3–4). Default 1.1. |
+| `falloff` | `number` | How it drops off: 0 a broad hill, 1 a sharp peak (0–1). Default 0.5. |
+| `idle` | `number` | How far the travelling swell rises with nothing over the text: 0 none, 1 to the peak (0–1). Default 0.35. |
+| `fit` | `boolean` | Size the line so that at its widest swell it spans its parent's width. Default false. |
+| `as` | `HTMLTag` | The element to render. Default `div`. |
 | `class` | `string` | Classes for the element. |
 
 ## `<VoxelLogo>`
@@ -937,6 +1116,7 @@ WaveBars: a glowing bar waveform over its reflection, retuning every couple of s
 | `peaks` | `boolean` | Peak marks over the bars that hold, then drop, as a meter's do. Default true. |
 | `glow` | `number` | How much light the bars and playhead give off, 0–2. Default 1. |
 | `scrub` | `number` | How much the bars under the pointer rise and light; 0 for not at all. Default 1. |
+| `audio` | `AudioSource` | Follow the sound playing: `'page'` for whatever plays, or a CSS selector for an `<audio>`/`<video>` or a player's container (a WaveformPlayer). The bars show its spectrum (bass in the middle) and the playhead follows the track; while nothing plays they keep their own motion. Default none. |
 | `quiet` | `{ x?: number; y?: number; radius?: number; depth?: number } \| null` | An area where the light dims (behind a headline): centre x/y (0–1, from the top left), radius (a share of the height) and depth (0 none, 1 dark). Default none. |
 | `fade` | `boolean` | Fade the left and right edges out. Default true. |
 | `class` | `string` | Classes for the element. |

@@ -1,0 +1,52 @@
+---
+/**
+ * The customise panel: a drawer (a bottom sheet on a phone) where a
+ * visitor configures a hero's effect live and copies the line that makes
+ * it. One for the page; src/scripts/panel.js fills it for the hero whose
+ * "Customise" was pressed. The palettes are drawn here, each as its colours.
+ */
+import '../styles/panel.css';
+import { PALETTES } from '@arraypress/effects-astro/runtime/palettes';
+---
+
+<aside class="panel" id="customise" role="dialog" aria-modal="false" aria-labelledby="customise-title" hidden data-panel data-effect-ignore>
+	<header class="panel__head">
+		<div>
+			<span class="panel__eyebrow">Customise</span>
+			<h2 class="panel__title" id="customise-title" data-panel-title></h2>
+		</div>
+		<button type="button" class="panel__close" aria-label="Close" data-panel-close>
+			<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3.5 3.5l9 9m0-9l-9 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path></svg>
+		</button>
+	</header>
+	<div class="panel__body">
+		<section class="panel__group" aria-labelledby="customise-colour" data-panel-colour>
+			<h3 class="panel__label" id="customise-colour">Colour <span class="panel__note" data-panel-palette></span></h3>
+			<div class="swatches" role="group" aria-label="Palettes" data-panel-swatches>
+				{
+					Object.entries(PALETTES).map(([name, { colors }]) => (
+						<button type="button" class="swatch" title={name} aria-label={name} aria-pressed="false" data-swatch={name} style={`--swatch: linear-gradient(90deg, ${colors.join(', ')})`}>
+							<span class="swatch__pill" />
+						</button>
+					))
+				}
+			</div>
+			<div class="colours" data-panel-colours></div>
+		</section>
+		<section class="panel__group" aria-labelledby="customise-settings" data-panel-settings>
+			<h3 class="panel__label" id="customise-settings">Settings</h3>
+			<div class="controls" data-panel-controls></div>
+		</section>
+	</div>
+	<footer class="panel__foot">
+		<code class="panel__code" data-panel-code></code>
+		<div class="panel__actions">
+			<button type="button" class="panel__button" data-panel-reset>Reset</button>
+			<button type="button" class="panel__button is-primary" data-panel-copy>Copy code</button>
+		</div>
+	</footer>
+</aside>
+
+<script>
+	import '../scripts/panel.js';
+</script>

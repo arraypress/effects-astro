@@ -1,0 +1,71 @@
+---
+/**
+ * RainOnGlass: rain on a window over a photo, like looking out of a café on
+ * a wet evening. Beads sit on the glass; larger drops run down it, leaving
+ * clear trails that fog over again; each drop holds the photo sharp and
+ * upside down, while the rest is soft behind the condensation, its lights
+ * opened into bokeh. The pointer wipes a clear patch. See
+ * src/runtime/rain-on-glass.js.
+ *
+ * A real `<img>` sits under the glass, with its `alt`: it is what shows,
+ * softened, without WebGL and while the photo loads. Fills its nearest
+ * positioned ancestor, or the viewport with `fixed`.
+ *
+ * @example
+ * <section class="hero" style="position: relative">
+ *   <RainOnGlass src="/photos/street-at-night.jpg" alt="A wet street of neon signs at night" />
+ *   <h1>Come in out of the rain.</h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { RainOnGlassConfig } from '../runtime/rain-on-glass.js';
+
+interface Props extends RainOnGlassConfig {
+	/** What the photo shows, for the `<img>` under the glass. Default empty (decorative). */
+	alt?: string;
+	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
+	fixed?: boolean;
+	class?: string;
+}
+
+const { alt = '', fixed = false, class: className, ...config } = Astro.props;
+---
+
+<div class:list={['rain-on-glass', { 'is-fixed': fixed }, className]} style={`--rain-soft: ${4 + (config.blur ?? 0.6) * 18}px`}>
+	<img src={config.src} alt={alt} decoding="async" />
+	<EffectCanvas name="rain-on-glass" config={config} />
+</div>
+
+<style>
+	.rain-on-glass {
+		position: absolute;
+		inset: 0;
+		overflow: hidden;
+		pointer-events: none;
+	}
+	.rain-on-glass.is-fixed {
+		position: fixed;
+		z-index: -1;
+	}
+	/* The photo, softened as the glass would soften it: what shows without
+	   WebGL and while the photo loads, hidden once the glass has drawn. */
+	img {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		filter: blur(var(--rain-soft)) brightness(0.85);
+		transform: scale(1.06);
+	}
+	.rain-on-glass:has([data-drawn]) img {
+		opacity: 0;
+	}
+</style>
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { rainOnGlass } from '../runtime/rain-on-glass.js';
+
+	mount('[data-effect-rain-on-glass]', rainOnGlass);
+</script>

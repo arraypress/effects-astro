@@ -20,6 +20,12 @@
  *     glowing behind it. The pointer scrubs: the bars under it rise and
  *     light.
  *
+ * Both can follow the sound playing on the page (`audio`, ./audio.js):
+ * the lines then carry its waveform, as tall as it is loud, and a kick
+ * sends a pulse along one; the bars show its spectrum, bass in the middle
+ * and treble out to the edges, and the playhead follows the track. While
+ * nothing plays, each keeps its own motion, and eases back to it.
+ *
  * Both are drawn in one fragment pass each, every line and bar measured
  * per pixel, so edges are smooth at any pixel ratio and light adds up as
  * light does: summed, tone-mapped (hot cores run to white), with moving
@@ -41,6 +47,8 @@ import { pointerIn } from './pointer.js';
 import { watchColors } from './mount.js';
 import { GLSL_QUIET, quietUniform } from './glsl.js';
 import { pickColors } from './palettes.js';
+import { audioSignal } from './audio.js';
+import { sampleAt, smoothInto } from './audio-meter.js';
 
 /**
  * @typedef {object} SignalLinesConfig
@@ -56,6 +64,7 @@ import { pickColors } from './palettes.js';
  * @property {number} [grain=0.5] Film grain in the light, 0–1.
  * @property {number} [depth=1] How far out of focus the back lines are, and how much their colours fringe; 0 for all sharp.
  * @property {number} [bend=1] How far the lines part round the pointer and how much it lights them; 0 for not at all.
+ * @property {string} [audio] Follow the sound playing: `'page'` for whatever plays, or a CSS selector for an `<audio>`/`<video>` or a player's container (a WaveformPlayer). The lines carry its waveform, as tall as it is loud, and kicks send pulses; while nothing plays they keep their own motion. Default none.
  * @property {{ x?: number, y?: number, radius?: number, depth?: number } | null} [quiet=null]
  *   An area where the light dims (behind a headline): centre x/y (0–1, from
  *   the top left), radius (a share of the height) and depth (0 none, 1 dark).
@@ -75,6 +84,7 @@ import { pickColors } from './palettes.js';
  * @property {boolean} [peaks=true] Peak marks over the bars that hold, then drop, as a meter's do.
  * @property {number} [glow=1] How much light the bars and playhead give off, 0–2.
  * @property {number} [scrub=1] How much the bars under the pointer rise and light; 0 for not at all.
+ * @property {string} [audio] Follow the sound playing: `'page'` for whatever plays, or a CSS selector for an `<audio>`/`<video>` or a player's container (a WaveformPlayer). The bars show its spectrum (bass in the middle) and the playhead follows the track; while nothing plays they keep their own motion. Default none.
  * @property {{ x?: number, y?: number, radius?: number, depth?: number } | null} [quiet=null]
  *   An area where the light dims (behind a headline): centre x/y (0–1, from
  *   the top left), radius (a share of the height) and depth (0 none, 1 dark).
@@ -92,6 +102,9 @@ const GRADIENT = 256;
 const INK_UNIT = 0;
 /** Texture unit of the bars' heights. */
 const BARS_UNIT = 1;
+/** Texture unit of the sound's waveform, for the lines, and its width: the trace smoothed onto this many points has no visible corners. */
+const WAVE_UNIT = 1;
+const WAVE_POINTS = 256;
 
 /**
  * GLSL shared by both: the colour gradient (`ink(u)`, linear light, u 0–1
@@ -140,8 +153,20 @@ uniform float uBend;
 uniform vec3 uPointer;
 uniform vec4 uPulse[PULSES];
 uniform vec3 uPulseInk;
+uniform sampler2D uWave;
+uniform float uLive;
+uniform float uLevel;
 ${GLSL_LIGHT}
 float H;
+float W;
+
+// The sound's waveform under line L at x (CSS px), -1–1: each line reads
+// it stretched and shifted its own way, there and back so it has no seam.
+float wave(float L, float x) {
+	float s = x / W * (0.55 + 0.12 * L) + L * 0.173;
+	vec4 t = texture2D(uWave, vec2(abs(fract(s * 0.5) * 2.0 - 1.0), 0.5));
+	return (t.r * 255.0 * 256.0 + t.g * 255.0) / 65535.0 * 2.0 - 1.0;
+}
 
 // A line at x (CSS px): its height (CSS px, up), slope, and loudness 0.32–1.
 vec3 lineAt(float L, float x) {
@@ -152,15 +177,23 @@ vec3 lineAt(float L, float x) {
 	float a1 = x * 0.0032 - uTime * 0.45 + ph;
 	float a2 = x * 0.0016 + uTime * 0.22;
 	float u = sin(a1) * 0.7 + sin(a2) * 0.3;
-	float env = 0.32 + 0.68 * abs(u);
-	float dEnv = 0.68 * sign(u) * (cos(a1) * 0.00224 + cos(a2) * 0.00048);
+	// Following sound, the loudness is the sound's, and its waveform rides the line.
+	float env = mix(0.32 + 0.68 * abs(u), 0.3 + 0.7 * uLevel, uLive);
+	float dEnv = 0.68 * sign(u) * (cos(a1) * 0.00224 + cos(a2) * 0.00048) * (1.0 - uLive);
 	float b1 = x * 0.006 + uTime * pace + ph;
 	float b2 = x * 0.015 - uTime * pace * 0.8 + ph * 1.5;
 	float b3 = x * 0.033 + uTime * pace * 1.4 + ph;
 	float shape = sin(b1) * 0.55 + sin(b2) * 0.3 + sin(b3) * 0.16;
 	float dShape = cos(b1) * 0.0033 + cos(b2) * 0.0045 + cos(b3) * 0.00528;
-	float y = H * 0.5 + amp * env * shape;
-	float slope = amp * (dEnv * shape + env * dShape);
+	float own = 1.0 - 0.6 * uLive;
+	float y = H * 0.5 + amp * env * shape * own;
+	float slope = amp * (dEnv * shape + env * dShape) * own;
+	if (uLive > 0.0) {
+		float tall = uLive * H * 0.2 * uAmp * mix(1.0, 0.4, k) * (0.15 + 0.85 * uLevel);
+		float w0 = wave(L, x);
+		y += tall * w0;
+		slope += tall * (wave(L, x + 1.5) - w0) / 1.5;
+	}
 	// The pointer's lens: lines near it spread away from it.
 	vec2 d = vec2(x, y) - uPointer.xy;
 	float m = 0.6 * uBend * uPointer.z * exp(-(d.x * d.x + d.y * d.y) / 26000.0);
@@ -169,7 +202,7 @@ vec3 lineAt(float L, float x) {
 
 void main() {
 	H = uRes.y / uRatio;
-	float W = uRes.x / uRatio;
+	W = uRes.x / uRatio;
 	vec2 p = gl_FragCoord.xy / uRatio;
 	vec3 light = vec3(0.0);
 
@@ -361,6 +394,32 @@ function makeTexture(gl, unit, filter) {
 }
 
 /**
+ * Writes a value as 16 bits in two bytes, high first, for a shader to read
+ * back from two channels.
+ *
+ * @param {number} value The value, 0–1.
+ * @param {Uint8Array} data The bytes.
+ * @param {number} at Where the first byte goes.
+ */
+function pack16(value, data, at) {
+	const v = Math.round(Math.min(1, Math.max(0, value)) * 65535);
+	data[at] = v >> 8;
+	data[at + 1] = v & 255;
+}
+
+/**
+ * The sound an effect follows, if it has `audio` and moves: started with
+ * the stage, stopped with it.
+ *
+ * @param {import('./stage.js').Stage} stage The stage.
+ * @param {string | undefined} source The `audio` setting.
+ * @returns {import('./audio.js').AudioSignal | null} The signal, or null.
+ */
+function listen(stage, source) {
+	return source && !stage.still ? audioSignal(source) : null;
+}
+
+/**
  * The colour gradient both effects read (`uInk`): made on INK_UNIT, and
  * filled again when the element's `data-colors` changes (redrawing a still
  * frame).
@@ -471,6 +530,19 @@ export function signalLines(el, config) {
 	const pointer = follower(el, (config.bend ?? 1) > 0);
 	// Started a little way in, so the still frame and the first are a good moment.
 	const start = performance.now() - 7_300 / Math.max(speed, 0.01);
+	/** @type {import('./audio.js').AudioSignal | null} */
+	let sound = null;
+	/** The sound's waveform: its texture, the smoothed trace and the bytes it is filled from; and the kicks already answered with a pulse. */
+	/** @type {WebGLTexture | null} */
+	let waveTexture = null;
+	const wave = new Float32Array(WAVE_POINTS);
+	const waveData = new Uint8Array(WAVE_POINTS * 4);
+	let beats = 0;
+
+	/** Sets a pulse off along a random line, from the left edge. */
+	const launch = () => {
+		if (pulses.length < PULSES) pulses.push({ line: (Math.random() * lines) | 0, x: -40, speed: 240 + Math.random() * 260, len: 90 + Math.random() * 110, strength: 0.75 + Math.random() * 0.35 });
+	};
 
 	const { stop } = createStage(el, {
 		fragment: linesFragment(lines),
@@ -485,7 +557,17 @@ export function signalLines(el, config) {
 			gl.uniform3fv(uniform('uPulseInk'), parseColor(config.pulse ?? '#fafafa').map((c) => c ** 2.2));
 			// The still frame keeps one pulse, part way along the second line.
 			if (stage.still && rate > 0) pulses.push({ line: 1, x: 0, speed: 0, len: 150, strength: 1 });
-			return inkGradient(stage, el, startColors(config, LINE_COLORS));
+			const freeInk = inkGradient(stage, el, startColors(config, LINE_COLORS));
+			sound = listen(stage, config.audio);
+			if (!sound) return freeInk;
+			const texture = makeTexture(gl, WAVE_UNIT, gl.LINEAR);
+			waveTexture = texture;
+			gl.uniform1i(uniform('uWave'), WAVE_UNIT);
+			return () => {
+				sound?.stop();
+				freeInk();
+				gl.deleteTexture(texture);
+			};
 		},
 		resize({ gl, uniform, canvas }) {
 			gl.uniform4f(uniform('uQuiet'), ...quietUniform(config.quiet, canvas.width / canvas.height));
@@ -493,9 +575,21 @@ export function signalLines(el, config) {
 		uniforms({ gl, uniform, canvas, ratio, still }, now, dt) {
 			const w = canvas.width / ratio;
 			if (still && pulses[0]) pulses[0].x = w * 0.64;
-			// Pulses: now and then one sets off along a line.
-			if (dt && pulses.length < PULSES && Math.random() < rate * 0.9 * dt) {
-				pulses.push({ line: (Math.random() * lines) | 0, x: -40, speed: 240 + Math.random() * 260, len: 90 + Math.random() * 110, strength: 0.75 + Math.random() * 0.35 });
+			// Pulses: now and then one sets off along a line, and on each kick of the sound.
+			const heard = sound?.read(now, dt) ?? null;
+			if (dt && Math.random() < rate * 0.9 * dt) launch();
+			if (heard && heard.beats !== beats) {
+				beats = heard.beats;
+				if (rate > 0 && heard.on > 0.5) launch();
+			}
+			gl.uniform1f(uniform('uLive'), heard ? heard.on : 0);
+			if (heard) {
+				smoothInto(heard.waveform, wave);
+				for (let i = 0; i < WAVE_POINTS; i++) pack16(wave[i] * 0.5 + 0.5, waveData, i * 4);
+				gl.activeTexture(gl.TEXTURE0 + WAVE_UNIT);
+				gl.bindTexture(gl.TEXTURE_2D, waveTexture);
+				gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, WAVE_POINTS, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, waveData);
+				gl.uniform1f(uniform('uLevel'), heard.level);
 			}
 			for (let i = pulses.length - 1; i >= 0; i--) {
 				pulses[i].x += pulses[i].speed * speed * dt;
@@ -535,9 +629,14 @@ export function waveBars(el, config) {
 	let bars = { cur: new Float32Array(0), tgt: new Float32Array(0), peak: new Float32Array(0), hold: new Float32Array(0), fall: new Float32Array(0) };
 	let data = new Uint8Array(0);
 	let lastTune = 0;
-	const start = performance.now();
+	let start = performance.now();
 	/** @type {WebGLTexture | null} */
 	let heights = null;
+	/** @type {import('./audio.js').AudioSignal | null} */
+	let sound = null;
+	/** The playhead (CSS px across), and whether it followed a track last frame. */
+	let head = 0;
+	let following = false;
 
 	/**
 	 * A take: heights that rise and fall together over a few bars, under a
@@ -589,21 +688,30 @@ export function waveBars(el, config) {
 	 * @param {number} offset The first bar's left edge, CSS px.
 	 * @param {number} play The playhead, CSS px across.
 	 * @param {[number, number, number]} at The pointer: x, y (CSS px) and presence.
+	 * @param {import('./audio.js').AudioReading | null} heard The sound, if one plays: the bars head for its spectrum, bass in the middle, and move as quickly as it does.
 	 */
-	const stepBars = (now, dt, offset, play, at) => {
+	const stepBars = (now, dt, offset, play, at, heard) => {
 		const { cur, tgt, peak, hold, fall } = bars;
 		if (now - lastTune > every) {
 			lastTune = now;
 			const seed = Array.from({ length: 5 }, () => Math.random() * 100);
 			for (let i = 0; i < tgt.length; i++) tgt[i] = take(i, seed);
 		}
-		const rise = 1 - Math.exp(-dt / 0.09);
-		const ease = 1 - Math.exp(-dt / 0.55);
+		const on = heard ? heard.on : 0;
+		const rise = 1 - Math.exp(-dt / (0.09 - 0.05 * on));
+		const ease = 1 - Math.exp(-dt / (0.55 - 0.4 * on));
 		for (let i = 0; i < cur.length; i++) {
 			const x = offset + (i + 0.5) * step;
+			let base = tgt[i];
+			if (heard) {
+				const level = sampleAt(heard.spectrum, Math.abs(((i + 0.5) / cur.length) * 2 - 1));
+				// The spectrum's middle range, opened out: quiet bins low, loud ones tall.
+				const heardAt = Math.min(1, Math.max(0, (level - 0.3) / 0.55)) ** 1.5;
+				base += (Math.max(0.05, heardAt) - base) * on;
+			}
 			// Lifted under the pointer, and kicked up as the playhead plays them.
 			const lift = Math.max(scrub * at[2] * Math.exp(-((x - at[0]) ** 2) / 2400) * 0.35, Math.exp(-(((x - play) / (step * 2.5)) ** 2)) * 0.3);
-			const goal = Math.min(1, tgt[i] + lift * (1 - tgt[i]));
+			const goal = Math.min(1, base + lift * (1 - base));
 			cur[i] += (goal - cur[i]) * (goal > cur[i] ? rise : ease);
 			if (cur[i] >= peak[i]) {
 				peak[i] = cur[i];
@@ -612,7 +720,8 @@ export function waveBars(el, config) {
 			} else if (hold[i] > 0) {
 				hold[i] -= dt;
 			} else {
-				fall[i] += 0.9 * dt;
+				// Following sound, they drop sooner, as the bars do.
+				fall[i] += 0.9 * (1 + 3 * on) * dt;
 				peak[i] = Math.max(cur[i], peak[i] - fall[i] * dt);
 			}
 		}
@@ -626,12 +735,8 @@ export function waveBars(el, config) {
 	const upload = (gl) => {
 		const { cur, peak } = bars;
 		for (let i = 0; i < cur.length; i++) {
-			const a = Math.round(cur[i] * 65535);
-			const b = Math.round(peak[i] * 65535);
-			data[i * 4] = a >> 8;
-			data[i * 4 + 1] = a & 255;
-			data[i * 4 + 2] = b >> 8;
-			data[i * 4 + 3] = b & 255;
+			pack16(cur[i], data, i * 4);
+			pack16(peak[i], data, i * 4 + 2);
 		}
 		gl.activeTexture(gl.TEXTURE0 + BARS_UNIT);
 		gl.bindTexture(gl.TEXTURE_2D, heights);
@@ -651,7 +756,9 @@ export function waveBars(el, config) {
 			const texture = makeTexture(gl, BARS_UNIT, gl.NEAREST);
 			heights = texture;
 			const freeInk = inkGradient(stage, el, startColors(config, BAR_COLORS));
+			sound = listen(stage, config.audio);
 			return () => {
+				sound?.stop();
 				freeInk();
 				gl.deleteTexture(texture);
 			};
@@ -669,10 +776,16 @@ export function waveBars(el, config) {
 			const w = canvas.width / ratio;
 			const h = canvas.height / ratio;
 			const at = still ? /** @type {[number, number, number]} */ ([0, 0, 0]) : pointer(dt, w, h);
-			// The playhead: across in about ten seconds, then a pause off the edge.
-			const t = (now - start) / 1000;
-			const play = config.sweep === false ? -1e5 : still ? w * 0.62 : ((t * 0.1) % 1.4) * w - w * 0.2;
-			if (!still) stepBars(now, dt, (w - bars.cur.length * step) / 2, play, at);
+			// The playhead: across in about ten seconds, then a pause off the edge;
+			// following a track, where the track is, and from there when it stops.
+			const heard = sound?.read(now, dt) ?? null;
+			const track = heard && heard.progress >= 0 ? heard.progress * w : null;
+			if (track === null && following) start = now - ((head + w * 0.2) / w / 0.1) * 1000;
+			following = track !== null;
+			const sweepAt = (((now - start) / 1000) * 0.1 % 1.4) * w - w * 0.2;
+			head = track === null ? sweepAt : head + (track - head) * (1 - Math.exp(-dt / 0.12));
+			const play = config.sweep === false ? -1e5 : still ? w * 0.62 : head;
+			if (!still) stepBars(now, dt, (w - bars.cur.length * step) / 2, play, at, heard);
 			upload(gl);
 			gl.uniform1f(uniform('uRatio'), ratio);
 			gl.uniform1f(uniform('uMax'), h * (config.height ?? 0.34));

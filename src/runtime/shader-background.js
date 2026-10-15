@@ -9,7 +9,9 @@
  * Colours: up to four. Those not given come from the live `--color-accent`
  * where the shader background sits (a section can set its own): the accent itself, the accent 55% of the way to
  * `--color-bg` (a pale tint on a light page, a deep shade on a dark one),
- * the accent's hue turned +36°, and its hue turned −32° and lifted. They
+ * the accent's hue turned 30° towards yellow and lifted, and its hue
+ * turned 45° away from yellow (turned in Oklab, towards the lightness where
+ * each new hue is most vivid; yellows only glow when light). They
  * are read when the effect starts, so a theme's accent tints every
  * shader background with no settings, and again when `setColors` gives new ones.
  *
@@ -29,7 +31,7 @@
  */
 
 import { createStage } from './stage.js';
-import { parseColor, mixOklab } from './color.js';
+import { parseColor, mixOklab, toOklab, turnHue } from './color.js';
 import { canHover, prefersReducedMotion } from './device.js';
 import { pointerIn } from './pointer.js';
 import { watchColors } from './mount.js';
@@ -73,6 +75,12 @@ export const SHADER_BACKGROUNDS = {
 const ACCENT = /** @type {Rgb} */ ([0, 0.89, 0.45]);
 /** The page background when the page sets none. */
 const PAGE = /** @type {Rgb} */ ([0, 0, 0]);
+/** Yellow's hue in Oklab, degrees. */
+const YELLOW = 110;
+/** How far the third colour turns from the accent's hue, towards yellow, degrees. */
+const TOWARD = 30;
+/** How far the fourth turns, away from yellow, degrees. */
+const AWAY = 45;
 /** How far the smoothed pointer closes on the real one each frame. */
 const EASE = 0.06;
 
@@ -91,41 +99,6 @@ export function readColor(value) {
 }
 
 /**
- * Turns a colour's hue, keeping its saturation and lightness (in HSL).
- *
- * @param {Rgb} rgb The colour.
- * @param {number} deg Degrees to turn it by.
- * @returns {Rgb} The turned colour; a grey comes back as it was.
- */
-export function hueRotate(rgb, deg) {
-	const [r, g, b] = rgb;
-	const max = Math.max(r, g, b);
-	const min = Math.min(r, g, b);
-	const l = (max + min) / 2;
-	if (max === min) return rgb;
-	const d = max - min;
-	const sat = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-	let h = max === r ? (g - b) / d + (g < b ? 6 : 0) : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
-	h = (((h / 6 + deg / 360) % 1) + 1) % 1;
-	const q = l < 0.5 ? l * (1 + sat) : l + sat - l * sat;
-	const p = 2 * l - q;
-	/**
-	 * One channel from its place on the hue circle.
-	 *
-	 * @param {number} t The place, in turns (wrapped).
-	 * @returns {number} The channel, 0–1.
-	 */
-	const channel = (t) => {
-		t = ((t % 1) + 1) % 1;
-		if (t < 1 / 6) return p + (q - p) * 6 * t;
-		if (t < 1 / 2) return q;
-		if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-		return p;
-	};
-	return [channel(h + 1 / 3), channel(h), channel(h - 1 / 3)];
-}
-
-/**
  * The four colours a shader background is drawn in: those given, in order (any
  * that cannot be read are skipped), and the rest from the accent.
  *
@@ -138,13 +111,21 @@ export function hueRotate(rgb, deg) {
 export function shaderBackgroundPalette({ accent, background, colors = [] }) {
 	const a = readColor(accent ?? '') ?? ACCENT;
 	const bg = readColor(background ?? '') ?? PAGE;
+	const [, la, lb] = toOklab(a);
+	const hue = (Math.atan2(lb, la) * 180) / Math.PI;
+	/**
+	 * How far a hue sits from yellow, round the circle.
+	 *
+	 * @param {number} h The hue, degrees.
+	 * @returns {number} Degrees, 0–180.
+	 */
+	const fromYellow = (h) => Math.abs(((((h - YELLOW + 180) % 360) + 360) % 360) - 180);
+	// A hue nearer yellow only glows when light (dim, it is olive), so the
+	// third turns a little that way and is lifted, and the fourth turns
+	// further the other way and can sit deep.
+	const side = fromYellow(hue + AWAY) >= fromYellow(hue - AWAY) ? 1 : -1;
 	/** @type {[Rgb, Rgb, Rgb, Rgb]} */
-	const derived = [
-		a,
-		mixOklab(a, bg, 0.55),
-		hueRotate(a, 36),
-		/** @type {Rgb} */ (hueRotate(a, -32).map((c) => Math.min(1, c * 1.2))),
-	];
+	const derived = [a, mixOklab(a, bg, 0.55), turnHue(a, -side * TOWARD, 0.06), turnHue(a, side * AWAY)];
 	const given = colors.map(readColor).filter((c) => c !== null);
 	return /** @type {[Rgb, Rgb, Rgb, Rgb]} */ (derived.map((d, i) => given[i] ?? d));
 }
@@ -234,7 +215,7 @@ export function shaderBackground(el, config) {
 	const reduced = prefersReducedMotion();
 	let palette = livePalette(el, pickColors(config, [], (p) => [...p.colors, p.glint]));
 	const start = performance.now();
-	const mouse = { x: 0.5, y: 0.5 };
+	const mouse = { x: 0.5, y: 0.5, on: 0 };
 
 	/**
 	 * The shader's clock at a moment.
@@ -253,9 +234,12 @@ export function shaderBackground(el, config) {
 				const p = pointerIn(el);
 				mouse.x += ((p.inside ? p.x : 0.5) - mouse.x) * EASE;
 				mouse.y += ((p.inside ? p.y : 0.5) - mouse.y) * EASE;
+				mouse.on += ((p.inside ? 1 : 0) - mouse.on) * EASE;
 			}
 			gl.uniform1f(uniform('uTime'), reduced ? 0 : still ? frame : clock(now));
+			gl.uniform1f(uniform('uClock'), reduced || still ? 0 : (now - start) / 1000);
 			gl.uniform2f(uniform('uMouse'), still ? 0.5 : mouse.x, still ? 0.5 : mouse.y);
+			gl.uniform1f(uniform('uPointer'), still ? 0 : mouse.on);
 			gl.uniform1f(uniform('uIntensity'), intensity);
 			palette.forEach((c, i) => gl.uniform3fv(uniform(`uColor${i + 1}`), c));
 		},

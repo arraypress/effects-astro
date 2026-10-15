@@ -1,4 +1,5 @@
 import type { PaletteName } from './palettes.js';
+import type { AudioSource } from './audio.js';
 
 export interface SignalLinesConfig {
 	/** One colour for every line. Default: the `colors` gradient. */
@@ -25,6 +26,8 @@ export interface SignalLinesConfig {
 	depth?: number;
 	/** How far the lines part round the pointer and how much it lights them; 0 for not at all. Default 1. */
 	bend?: number;
+	/** Follow the sound playing: `'page'` for whatever plays, or a CSS selector for an `<audio>`/`<video>` or a player's container (a WaveformPlayer). The lines carry its waveform, as tall as it is loud, and kicks send pulses; while nothing plays they keep their own motion. Default none. */
+	audio?: AudioSource;
 	/** An area where the light dims (behind a headline): centre x/y (0–1, from the top left), radius (a share of the height) and depth (0 none, 1 dark). Default none. */
 	quiet?: { x?: number; y?: number; radius?: number; depth?: number } | null;
 }
@@ -54,6 +57,8 @@ export interface WaveBarsConfig {
 	glow?: number;
 	/** How much the bars under the pointer rise and light; 0 for not at all. Default 1. */
 	scrub?: number;
+	/** Follow the sound playing: `'page'` for whatever plays, or a CSS selector for an `<audio>`/`<video>` or a player's container (a WaveformPlayer). The bars show its spectrum (bass in the middle) and the playhead follows the track; while nothing plays they keep their own motion. Default none. */
+	audio?: AudioSource;
 	/** An area where the light dims (behind a headline): centre x/y (0–1, from the top left), radius (a share of the height) and depth (0 none, 1 dark). Default none. */
 	quiet?: { x?: number; y?: number; radius?: number; depth?: number } | null;
 }

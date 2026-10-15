@@ -13,6 +13,13 @@ export function toOklab(rgb: Rgb): [number, number, number];
 /** Oklab back to sRGB, out-of-gamut channels clamped. */
 export function fromOklab(lab: [number, number, number]): Rgb;
 
+/**
+ * Turns a colour's hue in Oklab, moving it 60% of the way to the lightness
+ * where the new hue is most vivid and keeping its chroma where the gamut
+ * allows; `lighten` adds Oklab lightness after. A grey stays grey.
+ */
+export function turnHue(rgb: Rgb, degrees: number, lighten?: number): Rgb;
+
 /** Blends two colours in Oklab; `t` 0 is `from`, 1 is `to`. */
 export function mixOklab(from: Rgb, to: Rgb, t: number): Rgb;
 

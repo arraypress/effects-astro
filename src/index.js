@@ -22,7 +22,8 @@ export { pointCloud } from './runtime/point-cloud.js';
 export { voxelLogo } from './runtime/voxel-logo.js';
 export { pixelGlitch } from './runtime/pixel-glitch.js';
 export { fit, fitText } from './runtime/fit-text.js';
-export { textNodes, textRange } from './runtime/text.js';
+export { textNodes, textRange, splitLetters, joinLetters } from './runtime/text.js';
+export { variableType, DEFAULT_AXES } from './runtime/variable-type.js';
 export { dotGrid } from './runtime/dot-grid.js';
 export { signalLines, waveBars } from './runtime/waves.js';
 export { dotSurface } from './runtime/dot-surface.js';
@@ -47,18 +48,31 @@ export { liquidMetal } from './runtime/liquid-metal.js';
 export { haloRing } from './runtime/halo-ring.js';
 export { silkRibbon } from './runtime/silk-ribbon.js';
 export { radiantGlass } from './runtime/radiant-glass.js';
+export { topography } from './runtime/topography.js';
+export { caustics, causticTones } from './runtime/caustics.js';
+export { rainOnGlass } from './runtime/rain-on-glass.js';
+export { mosaicReveal, tileGrid } from './runtime/mosaic-reveal.js';
+export { slideshow } from './runtime/slideshow.js';
+export { productStack } from './runtime/product-stack.js';
+export { imageRipple, fitScale } from './runtime/image-ripple.js';
+export { stackPoses, stackBounds, poseTransform, poseFilter, LAYOUTS as STACK_LAYOUTS } from './runtime/stack-poses.js';
 export { createCanvas2D, grainPattern, grainOnto } from './runtime/canvas2d.js';
+export { loadImage, imageTexture, coverScale, GLSL_COVER } from './runtime/image.js';
+export { boxBlur } from './runtime/blur.js';
 export { paperShader, paperSettings, paperUniforms } from './runtime/paper.js';
 export { createStage } from './runtime/stage.js';
 export { createPingPong, floatFormats } from './runtime/ping-pong.js';
+export { createHeightField, GLSL_HEIGHT_FIELD, MAX_PUSHES } from './runtime/height-field.js';
 export { createPoints, projectPoint, GLSL_PROJECT } from './runtime/points.js';
 export { createTrackers } from './runtime/trackers.js';
 export { drawShape, samplePoints, gridPoints, distanceField, blurField, fontAt } from './runtime/shape.js';
 export { createGlyphs, GLYPH_SETS, GLSL_GLYPHS } from './runtime/glyphs.js';
+export { GLSL_RAMP } from './runtime/ramp.js';
 export { GLSL_NOISE, GLSL_PALETTE, GLSL_QUIET, paletteUniform, quietUniform } from './runtime/glsl.js';
 export { createFluid, stir } from './runtime/fluid.js';
-export { parseColor, toHex, toOklab, fromOklab, mixOklab, paletteAt, GLSL_OKLAB } from './runtime/color.js';
+export { parseColor, toHex, toOklab, fromOklab, mixOklab, paletteAt, turnHue, GLSL_OKLAB } from './runtime/color.js';
 export { animate } from './runtime/loop.js';
+export { audioSignal } from './runtime/audio.js';
 export { pointerIn, trail, pressAt, CLICK_IGNORE } from './runtime/pointer.js';
 export { pixelRatio, isMobileGpu, prefersReducedMotion, canHover } from './runtime/device.js';
 export { getContext, createProgram, bindTriangle, VERTEX } from './runtime/gl.js';
@@ -67,7 +81,7 @@ export { mount, readConfig, watchColors } from './runtime/mount.js';
 /**
  * Changes the colours of a WebGL effect (`<LightField>`, `<Ink>`,
  * `<AsciiRain>`, `<FlutedGlass>`, `<GlassGlyph>`, `<LiquidMetal>`,
- * `<ParticleLogo>`, `<PointCloud>`, `<VoxelLogo>`, `<HaloRing>`, `<SilkRibbon>`, `<RadiantGlass>`): a light
+ * `<ParticleLogo>`, `<PointCloud>`, `<VoxelLogo>`, `<HaloRing>`, `<SilkRibbon>`, `<RadiantGlass>`, `<Topography>`, `<Caustics>`, `<RainOnGlass>`, `<MosaicReveal>`): a light
  * eases to them in about a second, the others take them from their next frame.
  *
  * @param {Element | null} el The effect's element (`[data-effect-light-field]` and so on).

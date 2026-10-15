@@ -1,0 +1,96 @@
+---
+/**
+ * A slow, warm film scene for the Grain hero to sit on: a low sun drifting
+ * through haze over a dark teal ground, with light leaks breathing at the
+ * frame's edges, as on a roll of film. Gradients moved by transform and
+ * opacity only. Demo scenery, not part of the package.
+ */
+---
+
+<div class="film" aria-hidden="true">
+	<div class="film__sun"></div>
+	<div class="film__haze"></div>
+	<div class="film__leak film__leak--left"></div>
+	<div class="film__leak film__leak--right"></div>
+</div>
+
+<style>
+	.film {
+		position: absolute;
+		inset: 0;
+		overflow: hidden;
+		background:
+			radial-gradient(120% 80% at 50% 110%, #2a1410, transparent 60%),
+			linear-gradient(180deg, #0c1c22 0%, #13262b 45%, #3a2318 78%, #1a0f0c 100%);
+	}
+	.film > * {
+		position: absolute;
+		pointer-events: none;
+	}
+	.film__sun {
+		left: 50%;
+		top: 52%;
+		width: 70vmax;
+		height: 70vmax;
+		margin: -35vmax 0 0 -35vmax;
+		background: radial-gradient(circle, #ffd29a 0%, #ff8a4c 14%, rgb(232 84 60 / 0.55) 30%, rgb(120 40 60 / 0.25) 48%, transparent 66%);
+		animation: film-sun 26s ease-in-out infinite alternate;
+	}
+	.film__haze {
+		inset: 38% -20% 18%;
+		background: linear-gradient(180deg, transparent, rgb(255 170 120 / 0.22) 45%, rgb(255 140 90 / 0.12) 60%, transparent);
+		filter: blur(20px);
+		animation: film-haze 19s ease-in-out infinite alternate;
+	}
+	.film__leak {
+		top: -20%;
+		bottom: -20%;
+		width: 42%;
+		filter: blur(30px);
+		mix-blend-mode: screen;
+	}
+	.film__leak--left {
+		left: -18%;
+		background: radial-gradient(60% 50% at 30% 40%, rgb(255 80 40 / 0.75), rgb(255 160 60 / 0.35) 45%, transparent 75%);
+		animation: film-leak 9s ease-in-out infinite;
+	}
+	.film__leak--right {
+		right: -22%;
+		background: radial-gradient(60% 50% at 70% 65%, rgb(255 190 110 / 0.6), rgb(255 90 70 / 0.25) 50%, transparent 78%);
+		animation: film-leak 13s ease-in-out -5s infinite;
+	}
+	@keyframes film-sun {
+		from {
+			transform: translate(-8%, 6%) scale(0.92);
+		}
+		to {
+			transform: translate(9%, -4%) scale(1.06);
+		}
+	}
+	@keyframes film-haze {
+		from {
+			transform: translateX(-6%);
+		}
+		to {
+			transform: translateX(6%);
+		}
+	}
+	@keyframes film-leak {
+		0%, 100% {
+			opacity: 0.25;
+			transform: translateY(-4%);
+		}
+		45% {
+			opacity: 1;
+		}
+		60% {
+			opacity: 0.7;
+			transform: translateY(5%);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.film > * {
+			animation: none;
+		}
+	}
+</style>

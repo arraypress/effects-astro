@@ -1,0 +1,298 @@
+---
+/**
+ * ProductStack: a store's product covers floating in 3D, in a fan, a
+ * stack or a carousel arc, with depth of field, soft shadows and a gloss
+ * that sweeps across the cover in front. The stack leans towards the
+ * pointer; hovered, the covers fan apart and the one under the pointer
+ * lifts forward and comes into focus; left alone, they drift. See
+ * src/runtime/product-stack.js.
+ *
+ * The covers are real links and images moved by CSS transforms (no
+ * canvas): crisp at any size, focusable from the keyboard (focus lifts a
+ * cover as hover does), and clicked like any link. Give them as `items`,
+ * or as children: each a link (or another element) holding one image.
+ * It fills its container's width, shrinking the covers to fit. Still with
+ * reduced motion; no lean or fanning on a touch screen.
+ *
+ * @example
+ * <ProductStack items={[{ src: '/covers/drums.webp', href: '/p/drums', alt: 'Night Drums, a sample pack' }, …]} />
+ * <ProductStack layout="arc"><a href="/p/serif"><img src="/covers/serif.webp" alt="Halden Serif" /></a>…</ProductStack>
+ */
+import { withStyle } from './style.js';
+import { layoutOf, poseFilter, poseTransform, stackBounds, stackPoses } from '../runtime/stack-poses.js';
+
+/** One cover. */
+interface StackItem {
+	/** The cover image. */
+	src: string;
+	/** What it shows, for screen readers: the product's name and kind. */
+	alt: string;
+	/** The product's page. Without it the cover is not a link. */
+	href?: string;
+}
+
+interface Props {
+	/** The covers. Without them, the children are the covers: each a link (or another element) holding one image. */
+	items?: StackItem[];
+	/** How the covers are laid out: a hand of cards (`fan`, the middle cover in front), a deck seen at an angle (`stack`, the first in front) or a carousel arc (`arc`). Default `fan`. */
+	layout?: 'fan' | 'stack' | 'arc';
+	/** How far apart the covers sit, 0–2. Default 1. */
+	spread?: number;
+	/** How far the stack leans towards the pointer, degrees, 0–30. Default 12. */
+	tilt?: number;
+	/** How far the covers drift when left alone, 0–1; 0 holds them still. Default 0.5. */
+	float?: number;
+	/** Depth of field: how much the covers behind dim and soften, 0–1. Default 0.6. */
+	depth?: number;
+	/** Lean towards the pointer, fan apart on hover and lift the cover under the pointer or in focus. Default true. */
+	interactive?: boolean;
+	/** The widest a cover gets, a CSS length; covers shrink to fit the container. Default `280px`. */
+	size?: string;
+	/** A cover's width over its height: 1 square, 0.75 a book. Default 1. */
+	ratio?: number;
+	/** The covers' corner radius, px, 0–40. Default 10. */
+	radius?: number;
+	/** The group's name for screen readers. Default `Products`. */
+	label?: string;
+	class?: string;
+	[attribute: string]: unknown;
+}
+
+const {
+	items,
+	layout = 'fan',
+	spread = 1,
+	tilt = 12,
+	float = 0.5,
+	depth = 0.6,
+	interactive = true,
+	size = '280px',
+	ratio = 1,
+	radius = 10,
+	label = 'Products',
+	class: className,
+	style: given,
+	...attributes
+} = Astro.props;
+
+// With items, the resting poses are written here, so the stack stands before any script runs.
+const shape = layoutOf(layout);
+const poses = items ? stackPoses(shape, items.length, { spread }) : [];
+const bounds = items ? stackBounds(shape, items.length, spread, ratio) : null;
+const geometry = bounds ? `--ps-wide: ${bounds.wide}; --ps-tall: ${bounds.tall}` : '';
+---
+
+<div
+	class:list={['effect-product-stack', { 'is-still': float === 0 }, className]}
+	data-effect-product-stack
+	data-effect-config={JSON.stringify({ layout, spread, tilt, depth, interactive, ratio })}
+	style={withStyle(`--ps-size: ${size}; --ps-ratio: ${ratio}; --ps-float: ${float}; --ps-radius: ${radius}px; ${geometry}`, given)}
+	{...attributes}
+>
+	<div class="ps-scene" role="group" aria-label={label}>
+		<span class="ps-ground" aria-hidden="true"></span>
+		<div class="ps-stage">
+			{
+				items
+					? items.map((item, i) => {
+							const style = `--ps-i: ${i}; transform: ${poseTransform(poses[i])}; filter: ${poseFilter(poses[i], depth)}`;
+							const image = <img src={item.src} alt={item.alt} decoding="async" draggable="false" />;
+							return item.href ? (
+								<a href={item.href} style={style}>
+									{image}
+								</a>
+							) : (
+								<div style={style}>{image}</div>
+							);
+						})
+					: <slot />
+			}
+		</div>
+	</div>
+</div>
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { productStack } from '../runtime/product-stack.js';
+
+	mount('[data-effect-product-stack]', productStack);
+</script>
+
+<style>
+	.effect-product-stack {
+		--ps-wide: 2.6;
+		--ps-tall: 1.6;
+		--ps-shadow: rgb(0 0 0 / 0.5);
+		container-type: inline-size;
+		display: grid;
+		place-items: center;
+		width: 100%;
+	}
+	/* The box the stack needs at its widest, so nothing it does leaves it. */
+	.ps-scene {
+		--ps-w: min(var(--ps-size), calc(100cqi / var(--ps-wide)));
+		position: relative;
+		display: grid;
+		place-items: center;
+		width: calc(var(--ps-w) * var(--ps-wide));
+		height: calc(var(--ps-w) * var(--ps-tall));
+		perspective: calc(var(--ps-w) * 5);
+	}
+	.ps-stage {
+		position: relative;
+		width: var(--ps-w);
+		aspect-ratio: var(--ps-ratio);
+		transform-style: preserve-3d;
+		transform: rotateX(var(--ps-lean-x, 0deg)) rotateY(var(--ps-lean-y, 0deg));
+		/* Its own box sits at the front of the 3D scene: it must not catch the pointer over the covers behind it. */
+		pointer-events: none;
+		transition: transform 1.1s cubic-bezier(0.2, 0.7, 0.2, 1);
+		animation: ps-sway 13s ease-in-out infinite alternate;
+	}
+	/* A soft shadow on the ground under the stack, breathing with the float. */
+	.ps-ground {
+		position: absolute;
+		left: 50%;
+		top: calc(50% + var(--ps-w) / var(--ps-ratio) * 0.56);
+		width: calc(var(--ps-w) * min(var(--ps-wide) * 0.72, 2.4));
+		height: calc(var(--ps-w) * 0.2);
+		translate: -50% -50%;
+		border-radius: 50%;
+		background: radial-gradient(closest-side, var(--ps-shadow), transparent);
+		pointer-events: none;
+		animation: ps-ground 7s ease-in-out infinite alternate;
+	}
+
+	/* The covers: the items, or the children given. */
+	.ps-stage > :global(*) {
+		position: absolute;
+		inset: 0;
+		display: block;
+		border-radius: var(--ps-radius);
+		overflow: hidden;
+		pointer-events: auto;
+		color: inherit;
+		background: #111;
+		box-shadow:
+			0 calc(var(--ps-w) * 0.09) calc(var(--ps-w) * 0.16) calc(var(--ps-w) * -0.05) var(--ps-shadow),
+			0 calc(var(--ps-w) * 0.015) calc(var(--ps-w) * 0.03) rgb(0 0 0 / 0.22);
+		outline: 1px solid rgb(255 255 255 / 0.12);
+		outline-offset: -1px;
+		backface-visibility: hidden;
+		-webkit-tap-highlight-color: transparent;
+		animation: ps-float calc(3.4s + var(--ps-i, 0) * 0.45s) ease-in-out calc(var(--ps-i, 0) * -1.3s) infinite alternate;
+	}
+	.effect-product-stack:global(.is-ready) .ps-stage > :global(*) {
+		transition:
+			transform 0.75s cubic-bezier(0.2, 0.85, 0.25, 1),
+			filter 0.6s ease;
+	}
+	.ps-stage > :global(*:focus-visible) {
+		outline: 2px solid currentColor;
+		outline-offset: 4px;
+	}
+	.ps-stage :global(img) {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		user-select: none;
+		-webkit-user-drag: none;
+	}
+	/* The gloss: a laminate's soft highlight and a hairline edge, moving against the lean as a light would. */
+	.ps-stage > :global(*)::before {
+		content: '';
+		position: absolute;
+		inset: -20%;
+		z-index: 1;
+		pointer-events: none;
+		background:
+			radial-gradient(70% 55% at 30% 22%, rgb(255 255 255 / 0.2), transparent 70%),
+			linear-gradient(180deg, rgb(255 255 255 / 0.08), transparent 40%, rgb(0 0 0 / 0.14));
+		translate: calc(var(--ps-glint-x, 0) * 8%) calc(var(--ps-glint-y, 0) * 8%);
+		transition: translate 1.1s cubic-bezier(0.2, 0.7, 0.2, 1);
+	}
+	/* The sheen: a band of light that sweeps across the cover in front now and then, and once over a cover as it lifts. */
+	.ps-stage > :global(*)::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: 2;
+		pointer-events: none;
+		background: linear-gradient(105deg, transparent 28%, rgb(255 255 255 / 0.06) 40%, rgb(255 255 255 / 0.36) 50%, rgb(255 255 255 / 0.06) 60%, transparent 72%);
+		translate: -100% 0;
+	}
+	.ps-stage > :global(.is-front)::after {
+		animation: ps-sheen 8s ease-in-out 1.5s infinite;
+	}
+	.ps-stage > :global(.is-lifted)::after {
+		animation: ps-sheen-once 1.2s cubic-bezier(0.3, 0.6, 0.2, 1) both;
+	}
+
+	.effect-product-stack.is-still .ps-stage,
+	.effect-product-stack.is-still .ps-ground,
+	.effect-product-stack.is-still .ps-stage > :global(*) {
+		animation: none;
+	}
+	.effect-product-stack:global(.is-asleep) *,
+	.effect-product-stack:global(.is-asleep) :global(*)::after {
+		animation-play-state: paused;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.ps-stage,
+		.ps-ground,
+		.ps-stage > :global(*),
+		.ps-stage > :global(*)::after {
+			animation: none !important;
+		}
+		.effect-product-stack:global(.is-ready) .ps-stage > :global(*),
+		.ps-stage > :global(*)::before {
+			transition: none;
+		}
+	}
+
+	@keyframes ps-float {
+		from {
+			translate: 0 calc(var(--ps-w) * var(--ps-float) * 0.03) 0;
+		}
+		to {
+			translate: 0 calc(var(--ps-w) * var(--ps-float) * -0.03) 0;
+		}
+	}
+	@keyframes ps-sway {
+		from {
+			rotate: 0.25 1 0 calc(var(--ps-float) * -7deg);
+		}
+		to {
+			rotate: -0.25 1 0 calc(var(--ps-float) * 7deg);
+		}
+	}
+	@keyframes ps-ground {
+		from {
+			scale: 1;
+			opacity: 1;
+		}
+		to {
+			scale: calc(1 - var(--ps-float) * 0.12);
+			opacity: calc(1 - var(--ps-float) * 0.3);
+		}
+	}
+	/* The band starts off the left edge and sweeps off the right; then it waits. */
+	@keyframes ps-sheen {
+		0% {
+			translate: -100% 0;
+		}
+		22%,
+		100% {
+			translate: 100% 0;
+		}
+	}
+	@keyframes ps-sheen-once {
+		from {
+			translate: -100% 0;
+		}
+		to {
+			translate: 100% 0;
+		}
+	}
+</style>

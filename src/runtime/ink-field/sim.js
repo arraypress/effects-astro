@@ -5,7 +5,8 @@
  * dye) that six ambient emitters keep moving and the pointer stirs.
  * Adapted from Trirat's ink shader for LumiThemes (smoke-sim.ts), itself
  * ported from a reference stable-fluids sim; its constants, emitters and
- * passes are his, unchanged.
+ * passes are his, unchanged. `kick` (a beat of the sound the field follows)
+ * is ours.
  *
  * - Velocity and pressure live on a coarse grid (GRID cells on the short
  *   side); the dye on one DYE_SCALE times finer, for sharper edges.
@@ -63,6 +64,8 @@ import { ADVECT, DIVERGENCE, PRESSURE, GRADIENT, CURL, VORTICITY, SPLAT } from '
  *   just moved (dx, dy, the same units) in `dt` seconds.
  * @property {(x: number, y: number) => void} drop Drops a dollop of ink at a
  *   point (0–1 across, 0–1 up), pushed out on every side so it blooms open.
+ * @property {(strength: number) => void} kick Stirs the whole field at once, as a beat would: every
+ *   emitter pushes hard along its way, and lays a little ink. `strength` 0–1.
  * @property {(frames: number) => void} warm Runs `frames` steps of 1/60 s at once.
  * @property {(unit: number) => [number, number]} bindDye Binds the dye to a
  *   texture unit, for the display; returns its texel size.
@@ -83,6 +86,10 @@ const EMITTERS = [
 	{ cx: 0.5, cy: 0.5, rx: 0.32, ry: 0.28, speed: 0.2, phase: 0.67 },
 	{ cx: 0.5, cy: 0.18, rx: 0.38, ry: 0.14, speed: 0.35, phase: 0.84 },
 ];
+
+/** A kick: how hard each emitter pushes (grid cells a second, at full strength), and how much ink it lays. */
+const KICK_PUSH = 50;
+const KICK_INK = 0.025;
 
 /** Where the first spread of ink is laid, 0–1 across and up. */
 const SEEDS = [
@@ -546,6 +553,16 @@ export function createInkSim(gl) {
 			// Smaller and fainter than the ambient ink, and it fades as the hand slows.
 			const phase = 0.5 + 0.5 * Math.sin(simTime * 0.4);
 			ink(x, y, 0.06 * strength * frames, phase, 0.035, simTime * 0.7);
+		},
+		kick(strength) {
+			bindTriangle(gl, triangle);
+			EMITTERS.forEach((e, i) => {
+				const { x, y } = last[i];
+				// Along the emitter's way round its orbit, so the beat swirls rather than bursts.
+				const a = simTime * e.speed + e.phase * 6.28 + Math.PI / 2;
+				splat(vel, x, y, Math.cos(a) * KICK_PUSH * strength, Math.sin(a) * KICK_PUSH * strength, 0, 0.09);
+				ink(x, y, KICK_INK * strength, e.phase, 0.05, simTime * 0.5 + i);
+			});
 		},
 		warm(frames) {
 			bindTriangle(gl, triangle);

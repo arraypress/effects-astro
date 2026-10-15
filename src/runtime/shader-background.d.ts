@@ -7,7 +7,7 @@ export type ShaderBackgroundName = 'mesh-gradient' | 'grain-gradient' | 'silk' |
 export interface ShaderBackgroundConfig {
 	/** Which shader background. */
 	effect: ShaderBackgroundName;
-	/** Up to four colours (hex or `rgb()`); those missing come from `--color-accent` where it sits: the accent, the accent towards `--color-bg`, its hue +36°, its hue −32° lifted. Only mesh-gradient, grain-gradient and silk use the fourth. Default all four from the accent. */
+	/** Up to four colours (hex or `rgb()`); those missing come from `--color-accent` where it sits: the accent, the accent towards `--color-bg`, its hue turned 30° towards yellow and lifted, its hue turned 45° away from yellow (in Oklab). Only mesh-gradient, grain-gradient and silk use the fourth. Default all four from the accent. */
 	colors?: string[];
 	/** A shared palette by name (`PALETTES`, any case), when there are no `colors`. */
 	palette?: PaletteName | (string & {});
@@ -28,9 +28,6 @@ export const SHADER_BACKGROUNDS: Record<ShaderBackgroundName, string>;
 
 /** Reads `#rgb`, `#rrggbb` or `rgb()`/`rgba()`; null for anything else. */
 export function readColor(value: string): Rgb | null;
-
-/** Turns a colour's hue by `deg` degrees in HSL; a grey comes back unchanged. */
-export function hueRotate(rgb: Rgb, deg: number): Rgb;
 
 /** The four colours: those given (unreadable ones skipped), the rest derived from the accent and background tokens. */
 export function shaderBackgroundPalette(from: { accent?: string; background?: string; colors?: string[] }): [Rgb, Rgb, Rgb, Rgb];

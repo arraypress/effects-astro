@@ -1,0 +1,5218 @@
+{
+	"AsciiRain": {
+		"selector": "[data-effect-ascii-rain]",
+		"props": [
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "Three CSS hex colours the glyphs take, the brightest nearly white. Default a cool cyan and green.",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), when there are no `colors`.",
+				"live": "config"
+			},
+			{
+				"name": "glitch",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How often rows jump sideways for a moment, their colours splitting wider; 0 for never. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "glyphs",
+				"kind": "string",
+				"doc": "A character set (`data`: hollow and solid bars; `bars`, `ascii`, `blocks`, `binary`, `boxes`) or the characters, darkest first. Default `data`.",
+				"default": "data",
+				"live": "config"
+			},
+			{
+				"name": "cell",
+				"kind": "number",
+				"min": 3,
+				"max": 42,
+				"step": 1,
+				"doc": "A character cell's height in CSS px. Default 14.",
+				"default": 14,
+				"live": "config"
+			},
+			{
+				"name": "aspect",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "A cell's width over its height. Default 1 for `data`, 0.6 for type.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "angle",
+				"kind": "number",
+				"min": 0,
+				"max": 360,
+				"step": 1,
+				"doc": "Which way the streaks run, degrees: 0 rightwards, 90 down, 180 left, 270 up. Default 0.",
+				"default": 0,
+				"live": "config"
+			},
+			{
+				"name": "lines",
+				"kind": "number",
+				"min": 10,
+				"max": 120,
+				"step": 1,
+				"doc": "Streak lanes across the surface. Default 40.",
+				"default": 40,
+				"live": "config"
+			},
+			{
+				"name": "trail",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "A streak's length, a share of the gap between them (0–1). Default 0.3.",
+				"default": 0.3,
+				"live": "config"
+			},
+			{
+				"name": "density",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How many lanes have a streak at any time, 0–1. Default 0.7.",
+				"default": 0.7,
+				"live": "config"
+			},
+			{
+				"name": "width",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "A lane's streak width, a share of the lane (0–1). Default 0.9.",
+				"default": 0.9,
+				"live": "config"
+			},
+			{
+				"name": "pattern",
+				"kind": "enum",
+				"options": [
+					"cloud",
+					"waves"
+				],
+				"doc": "A still cloud of data, or streaks running on a rippling surface. Default `cloud`.",
+				"default": "cloud",
+				"live": "config"
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How fast it moves: the rows stream, or the streaks run; 0 for one still frame. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "variance",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How much each lane's speed differs, 0–1. Default 0.6.",
+				"default": 0.6,
+				"live": "config"
+			},
+			{
+				"name": "ripple",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How tall the surface's waves are; 0 for flat. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "waves",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How close together the waves are. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "tilt",
+				"kind": "number",
+				"min": 0,
+				"max": 80,
+				"step": 1,
+				"doc": "How far the surface leans back, degrees (0 face-on, 80 nearly edge-on). Default 58.",
+				"default": 58,
+				"live": "config"
+			},
+			{
+				"name": "zoom",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How much of the surface fills the frame (larger is closer). Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "lighting",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How strongly the waves are lit and shaded; 0 for flat. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "aberration",
+				"kind": "number",
+				"min": 0,
+				"max": 9,
+				"step": 0.05,
+				"doc": "How far blue bleeds left and red right of each glyph, CSS px; 0 for none. Default 3.",
+				"default": 3,
+				"live": "config"
+			},
+			{
+				"name": "interactive",
+				"kind": "boolean",
+				"doc": "With `waves`, whether the pointer ripples the surface and a click drops a ring. Default true.",
+				"default": true,
+				"live": "config"
+			},
+			{
+				"name": "quiet",
+				"kind": "point",
+				"fields": [
+					{
+						"name": "x",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "radius",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "depth",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "An area kept clear: centre (0–1 from the top left), radius (share of the height), depth (0–1).",
+				"live": "config"
+			},
+			{
+				"name": "font",
+				"kind": "string",
+				"doc": "The font the glyphs are drawn in. Default a monospace stack.",
+				"live": "config"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport (position: fixed). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"BorderSweep": {
+		"selector": ".sweep-ring",
+		"props": [
+			{
+				"name": "as",
+				"kind": "other",
+				"doc": "The element to render. Default `div`.",
+				"default": "div"
+			},
+			{
+				"name": "color",
+				"kind": "color",
+				"doc": "The light's colour. Default the text colour.",
+				"live": {
+					"css": "--sweep-color",
+					"unit": ""
+				}
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 0.65,
+				"max": 7.8,
+				"step": 0.05,
+				"doc": "Seconds a lap takes. Default 2.6.",
+				"default": 2.6,
+				"live": {
+					"css": "--sweep-speed",
+					"unit": "s"
+				}
+			},
+			{
+				"name": "width",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "The ring's width, px. Default 1.",
+				"default": 1,
+				"live": {
+					"css": "--sweep-width",
+					"unit": "px"
+				}
+			},
+			{
+				"name": "always",
+				"kind": "boolean",
+				"doc": "Run all the time, not only on hover. Default false.",
+				"default": false,
+				"live": {
+					"class": "sweep-ring--always"
+				}
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"Caustics": {
+		"selector": "[data-effect-caustics]",
+		"props": [
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "The water and the light, in any order: the darkest is the deep water towards the edges, the lightest the light, the one between the floor. One or two colours work too. Default aqua `#2cc3d0`, deep teal `#0b7ea8`, sun `#f2fff9`.",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), when there are no `colors`.",
+				"live": "config"
+			},
+			{
+				"name": "background",
+				"kind": "string",
+				"doc": "The ground the edges fall away into, and what shows without WebGL. Default: the deep water, darkened.",
+				"live": "config"
+			},
+			{
+				"name": "scale",
+				"kind": "number",
+				"min": 0.4,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How large the net of light is, 0.4–3: 2 doubles it. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How fast the water moves, 0–3; 0 holds it still. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "intensity",
+				"kind": "number",
+				"min": 0,
+				"max": 2,
+				"step": 0.01,
+				"doc": "How bright the light is, 0–2. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "tiles",
+				"kind": "boolean",
+				"doc": "Faint pool tiles on the floor, bent by the water. Default false.",
+				"default": false,
+				"live": "config"
+			},
+			{
+				"name": "interactive",
+				"kind": "boolean",
+				"doc": "Whether the pointer disturbs the water where it is. Default true.",
+				"default": true,
+				"live": "config"
+			},
+			{
+				"name": "quiet",
+				"kind": "point",
+				"fields": [
+					{
+						"name": "x",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "radius",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "depth",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "An area where the light is kept low behind copy: centre (0–1 from the top left), radius (a share of the height), depth (0–1). Default none; `{}` for the middle.",
+				"live": "config"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"Cursor": {
+		"selector": null,
+		"props": [
+			{
+				"name": "ease",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How quickly the ring catches up, 0–1 (1 is no trail). Default 0.18.",
+				"default": 0.18,
+				"live": "config"
+			},
+			{
+				"name": "targets",
+				"kind": "string",
+				"doc": "What makes the ring swell. Default `a, button, [data-cursor]`.",
+				"default": "a, button, [data-cursor]",
+				"live": "config"
+			},
+			{
+				"name": "color",
+				"kind": "color",
+				"doc": "The dot's and ring's colour. Default white.",
+				"default": "#ffffff",
+				"live": {
+					"css": "--cursor-color",
+					"unit": ""
+				}
+			},
+			{
+				"name": "size",
+				"kind": "number",
+				"min": 8,
+				"max": 96,
+				"step": 1,
+				"doc": "The ring's size at rest, px. Default 32.",
+				"default": 32,
+				"live": {
+					"css": "--cursor-size",
+					"unit": "px"
+				}
+			},
+			{
+				"name": "blend",
+				"kind": "string",
+				"doc": "Blend with the page: `difference` inverts what is under it, readable on any ground. Default `difference`.",
+				"default": "difference"
+			}
+		]
+	},
+	"DotGrid": {
+		"selector": "[data-effect-dot-grid]",
+		"props": [
+			{
+				"name": "color",
+				"kind": "color",
+				"doc": "The dots' colour. Default `#ffffff`.",
+				"default": "#ffffff",
+				"live": "config"
+			},
+			{
+				"name": "pitch",
+				"kind": "number",
+				"min": 6,
+				"max": 78,
+				"step": 1,
+				"doc": "Space between dots, CSS px. Default 26.",
+				"default": 26,
+				"live": "config"
+			},
+			{
+				"name": "dot",
+				"kind": "number",
+				"min": 0.4,
+				"max": 4.8,
+				"step": 0.05,
+				"doc": "A dot's size at rest, CSS px. Default 1.6.",
+				"default": 1.6,
+				"live": "config"
+			},
+			{
+				"name": "round",
+				"kind": "boolean",
+				"doc": "Round dots rather than square. Default false.",
+				"default": false,
+				"live": "config"
+			},
+			{
+				"name": "flow",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How strongly the noise current lights and nudges the dots; 0 for none. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 160,
+				"max": 1900,
+				"step": 1,
+				"doc": "How fast a ripple travels, CSS px a second. Default 620.",
+				"default": 620,
+				"live": "config"
+			},
+			{
+				"name": "life",
+				"kind": "number",
+				"min": 0.65,
+				"max": 7.8,
+				"step": 0.05,
+				"doc": "Seconds before a ripple is spent. Default 2.6.",
+				"default": 2.6,
+				"live": "config"
+			},
+			{
+				"name": "push",
+				"kind": "number",
+				"min": 2,
+				"max": 27,
+				"step": 1,
+				"doc": "How far a ripple displaces dots, CSS px. Default 9.",
+				"default": 9,
+				"live": "config"
+			},
+			{
+				"name": "radius",
+				"kind": "number",
+				"min": 0,
+				"max": 630,
+				"step": 1,
+				"doc": "The pointer's swell, CSS px; 0 for none. Default 210.",
+				"default": 210,
+				"live": "config"
+			},
+			{
+				"name": "greet",
+				"kind": "boolean",
+				"doc": "Drop one ripple from the middle soon after it first comes on screen. Default true.",
+				"default": true,
+				"live": "config"
+			},
+			{
+				"name": "ripples",
+				"kind": "boolean",
+				"doc": "Whether clicks drop ripples. Default true.",
+				"default": true,
+				"live": "config"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"DotSurface": {
+		"selector": "[data-effect-dot-surface]",
+		"props": [
+			{
+				"name": "color",
+				"kind": "color",
+				"doc": "The dots' colour. Default `#ff8a1f`.",
+				"default": "#ff8a1f",
+				"live": "config"
+			},
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "A gradient instead (up to five), blended in Oklab, from near to far or left to right (see `gradient`).",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), when there are no `colors` or `color`.",
+				"live": "config"
+			},
+			{
+				"name": "gradient",
+				"kind": "enum",
+				"options": [
+					"depth",
+					"width"
+				],
+				"doc": "Which way `colors` runs: near to far, or left to right. Default `depth`.",
+				"default": "depth",
+				"live": "config"
+			},
+			{
+				"name": "pitch",
+				"kind": "number",
+				"min": 2,
+				"max": 30,
+				"step": 1,
+				"doc": "Space between dots, CSS px, at the middle of the sheet (nearer is wider, further closer). Default 10.",
+				"default": 10,
+				"live": "config"
+			},
+			{
+				"name": "dot",
+				"kind": "number",
+				"min": 1,
+				"max": 18,
+				"step": 1,
+				"doc": "The largest dot, CSS px, at the middle of the sheet. Default 6.",
+				"default": 6,
+				"live": "config"
+			},
+			{
+				"name": "amplitude",
+				"kind": "number",
+				"min": 0,
+				"max": 2,
+				"step": 0.01,
+				"doc": "How tall the swells are: 1 a gentle roll, 2 a heavy sea, 0 flat. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How fast the sheet rolls; 0 holds it still. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "tilt",
+				"kind": "number",
+				"min": 10,
+				"max": 70,
+				"step": 1,
+				"doc": "The camera's angle above the sheet, degrees (10 grazing, 70 nearly overhead). Default 42.",
+				"default": 42,
+				"live": "config"
+			},
+			{
+				"name": "light",
+				"kind": "vector",
+				"fields": [
+					{
+						"name": "x",
+						"min": -1,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": -1,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "z",
+						"min": -1,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "Where the light comes from: x right, y up, z into the distance. Default `[-0.5, 0.6, -0.6]`.",
+				"default": [
+					-0.5,
+					0.6,
+					-0.6
+				],
+				"live": "config"
+			},
+			{
+				"name": "interactive",
+				"kind": "boolean",
+				"doc": "Whether the pointer raises a swell and a click sends a ring. Default true.",
+				"default": true,
+				"live": "config"
+			},
+			{
+				"name": "quiet",
+				"kind": "point",
+				"fields": [
+					{
+						"name": "x",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "radius",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "depth",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "An area kept dim behind copy: centre (0–1 from the top left), radius (a share of the height), depth (0–1). Default none; `{}` for the middle.",
+				"live": "config"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"FitText": {
+		"selector": ".effect-fit-text",
+		"props": [
+			{
+				"name": "as",
+				"kind": "other",
+				"doc": "The element to render. Default `div`.",
+				"default": "div"
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"FlutedGlass": {
+		"selector": "[data-effect-fluted-glass]",
+		"props": [
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "The blooms' colours, the one that follows the pointer first. Default indigo, violet, pink.",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), when there are no `colors`.",
+				"live": "config"
+			},
+			{
+				"name": "background",
+				"kind": "color",
+				"doc": "The ground behind the glass. Default `#f4f4f5`.",
+				"default": "#f4f4f5",
+				"live": "config"
+			},
+			{
+				"name": "angle",
+				"kind": "number",
+				"min": -90,
+				"max": 90,
+				"step": 1,
+				"doc": "The flutes' slant, degrees from vertical. Default -35.",
+				"default": -35,
+				"live": "config"
+			},
+			{
+				"name": "frequency",
+				"kind": "number",
+				"min": 2,
+				"max": 27,
+				"step": 1,
+				"doc": "Flutes across the longer side. Default 9.",
+				"default": 9,
+				"live": "config"
+			},
+			{
+				"name": "softness",
+				"kind": "number",
+				"min": 0.13,
+				"max": 1.5,
+				"step": 0.01,
+				"doc": "0: flat flutes with sharp seams; 1: a gentle curve all across. Default 0.5.",
+				"default": 0.5,
+				"live": "config"
+			},
+			{
+				"name": "refraction",
+				"kind": "number",
+				"min": 0.35,
+				"max": 4.5,
+				"step": 0.05,
+				"doc": "How hard each flute bends what is behind it. Default 1.5.",
+				"default": 1.5,
+				"live": "config"
+			},
+			{
+				"name": "dispersion",
+				"kind": "number",
+				"min": 0,
+				"max": 1.8,
+				"step": 0.01,
+				"doc": "How far the colours part at the seams; 0 for none. Default 0.6.",
+				"default": 0.6,
+				"live": "config"
+			},
+			{
+				"name": "highlight",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "The highlight along each flute; 0 for none. Default 0.35.",
+				"default": 0.35,
+				"live": "config"
+			},
+			{
+				"name": "bloom",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How strong the blooms are. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"Glass": {
+		"selector": ".glass",
+		"props": [
+			{
+				"name": "as",
+				"kind": "other",
+				"doc": "The element to render. Default `div`.",
+				"default": "div"
+			},
+			{
+				"name": "tint",
+				"kind": "color",
+				"doc": "The body's tint colour. Default near-black.",
+				"live": {
+					"css": "--glass-tint",
+					"unit": ""
+				}
+			},
+			{
+				"name": "amount",
+				"kind": "number",
+				"min": 0,
+				"max": 100,
+				"step": 1,
+				"doc": "How much of the tint the body takes, 0–100 (%). Default 30.",
+				"default": 30,
+				"live": {
+					"css": "--glass-tint-amount",
+					"unit": "%"
+				}
+			},
+			{
+				"name": "blur",
+				"kind": "number",
+				"min": 5,
+				"max": 60,
+				"step": 1,
+				"doc": "How much it blurs what is behind, px. Default 20.",
+				"default": 20,
+				"live": {
+					"css": "--glass-blur",
+					"unit": "px"
+				}
+			},
+			{
+				"name": "lift",
+				"kind": "number",
+				"min": 0,
+				"max": 6,
+				"step": 0.05,
+				"doc": "How far it rises on hover, px; 0 for none. Default 2.",
+				"default": 2,
+				"live": {
+					"css": "--glass-lift",
+					"unit": "px"
+				}
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"GlassGlyph": {
+		"selector": "[data-effect-glass-glyph]",
+		"props": [
+			{
+				"name": "text",
+				"kind": "string",
+				"doc": "The character or word to make of glass.",
+				"live": "config"
+			},
+			{
+				"name": "font",
+				"kind": "string",
+				"doc": "Its CSS font, without the size. Default: the page's, bold.",
+				"live": "config"
+			},
+			{
+				"name": "src",
+				"kind": "string",
+				"doc": "An image (an SVG logo) to make of glass instead.",
+				"live": "config"
+			},
+			{
+				"name": "area",
+				"kind": "point",
+				"fields": [
+					{
+						"name": "x",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "width",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "height",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "Where the shape sits, each 0–1 from the top left. Default the right half.",
+				"live": "config"
+			},
+			{
+				"name": "light",
+				"kind": "point",
+				"fields": [
+					{
+						"name": "x",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "Where the beams of light cross, each 0–1 from the top left. Default two fifths of the way into the shape's area, a little below its middle.",
+				"live": "config"
+			},
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "The light's colour, then the glass's tint. Default acid green, white.",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), when there are no `colors`.",
+				"live": "config"
+			},
+			{
+				"name": "background",
+				"kind": "color",
+				"doc": "The ground. Default `#050505`.",
+				"default": "#050505",
+				"live": "config"
+			},
+			{
+				"name": "refraction",
+				"kind": "number",
+				"min": 0,
+				"max": 2,
+				"step": 0.01,
+				"doc": "How hard the glass bends what is behind it, most of all across its bevels, 0–2. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "thickness",
+				"kind": "number",
+				"min": 0.01,
+				"max": 0.1,
+				"step": 0.0005,
+				"doc": "How wide the bevel round the edge is, a share of the height, 0.01–0.1. Default 0.035.",
+				"default": 0.035,
+				"live": "config"
+			},
+			{
+				"name": "zoom",
+				"kind": "number",
+				"min": 1,
+				"max": 1.3,
+				"step": 0.002,
+				"doc": "How much the glass magnifies the light behind it, 1–1.3. Default 1.04.",
+				"default": 1.04,
+				"live": "config"
+			},
+			{
+				"name": "aberration",
+				"kind": "number",
+				"min": 0,
+				"max": 2,
+				"step": 0.01,
+				"doc": "How far the colours part where it bends, 0–2; 0 for none. Default 0.6.",
+				"default": 0.6,
+				"live": "config"
+			},
+			{
+				"name": "frost",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "Frosted glass: how much more the light through it is blurred, 0–1. Default 0.",
+				"default": 0,
+				"live": "config"
+			},
+			{
+				"name": "tint",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How much the glass takes the tint colour, 0–1. Default 0.1.",
+				"default": 0.1,
+				"live": "config"
+			},
+			{
+				"name": "highlight",
+				"kind": "number",
+				"min": 0,
+				"max": 2,
+				"step": 0.01,
+				"doc": "The lit rims and the glints, 0–2. Default 0.8.",
+				"default": 0.8,
+				"live": "config"
+			},
+			{
+				"name": "fresnel",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How much the bevels mirror the light, 0–1. Default 0.5.",
+				"default": 0.5,
+				"live": "config"
+			},
+			{
+				"name": "lightAngle",
+				"kind": "number",
+				"min": 0,
+				"max": 360,
+				"step": 1,
+				"doc": "Where the light on the rims comes from, degrees, 0–360 (0 right, 90 top). Default 135.",
+				"default": 135,
+				"live": "config"
+			},
+			{
+				"name": "glow",
+				"kind": "number",
+				"min": 0,
+				"max": 2,
+				"step": 0.01,
+				"doc": "How strong the coloured light is, 0–2. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "ambient",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How much of the light shows outside the glass, 0–1: 0 is a black ground, 1 the full beams. Default 0.1.",
+				"default": 0.1,
+				"live": "config"
+			},
+			{
+				"name": "halftone",
+				"kind": "boolean",
+				"doc": "Dither the light outside the glass into dots where it fades. Default false.",
+				"default": false,
+				"live": "config"
+			},
+			{
+				"name": "sway",
+				"kind": "number",
+				"min": 0,
+				"max": 2,
+				"step": 0.01,
+				"doc": "How far the slab turns on its own and away from the pointer, 0–2; 0 holds it still. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"GlowField": {
+		"selector": ".effect-glow-field",
+		"props": [
+			{
+				"name": "variant",
+				"kind": "enum",
+				"options": [
+					"bloom",
+					"beam",
+					"horizon",
+					"wash"
+				],
+				"doc": "The shape of the light. Default `bloom`.",
+				"default": "bloom",
+				"live": {
+					"classPrefix": "is-"
+				}
+			},
+			{
+				"name": "color",
+				"kind": "color",
+				"doc": "The light's colour. Default white.",
+				"default": "#ffffff",
+				"live": {
+					"css": "--glow-color",
+					"unit": ""
+				}
+			},
+			{
+				"name": "intensity",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "A multiplier on its strength; 1 as designed. Default 1.",
+				"default": 1
+			},
+			{
+				"name": "tone",
+				"kind": "enum",
+				"options": [
+					"dark",
+					"light"
+				],
+				"doc": "The ground it is on: `dark` adds light, `light` shades. Default `dark`.",
+				"default": "dark",
+				"live": {
+					"classPrefix": "on-"
+				}
+			},
+			{
+				"name": "x",
+				"kind": "number",
+				"min": 0,
+				"max": 100,
+				"step": 1,
+				"doc": "Where across the top the light comes from, 0–100 (%). Default 50.",
+				"default": 50,
+				"live": {
+					"css": "--glow-x",
+					"unit": "%"
+				}
+			},
+			{
+				"name": "still",
+				"kind": "boolean",
+				"doc": "Hold the light still. Default false.",
+				"default": false,
+				"live": {
+					"class": "is-still"
+				}
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"Grain": {
+		"selector": ".effect-grain",
+		"props": [
+			{
+				"name": "opacity",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How strong, 0–1 (stronger than the number suggests, with overlay). Default 0.22.",
+				"default": 0.22,
+				"live": {
+					"css": "--grain-opacity",
+					"unit": ""
+				}
+			},
+			{
+				"name": "frequency",
+				"kind": "number",
+				"min": 0.18,
+				"max": 2.3,
+				"step": 0.02,
+				"doc": "How fine; higher is finer (0.75 is about 1px). Default 0.75.",
+				"default": 0.75
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Cover the viewport (position: fixed). Default false.",
+				"default": false,
+				"live": {
+					"class": "is-fixed"
+				}
+			},
+			{
+				"name": "blend",
+				"kind": "string",
+				"doc": "The blend with what is under it. Default `overlay`.",
+				"default": "overlay"
+			},
+			{
+				"name": "still",
+				"kind": "boolean",
+				"doc": "Hold the grain still. Default false.",
+				"default": false,
+				"live": {
+					"class": "is-still"
+				}
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"HaloRing": {
+		"selector": "[data-effect-halo-ring]",
+		"props": [
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "Three colours looped around the ring, blended in Oklab. Default amber, coral, electric blue (`['#ffb020', '#ff5a6e', '#2f7bff']`).",
+				"default": [
+					"#ffb020",
+					"#ff5a6e",
+					"#2f7bff"
+				],
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), when there are no `colors`.",
+				"live": "config"
+			},
+			{
+				"name": "shape",
+				"kind": "enum",
+				"options": [
+					"morph",
+					"hexagon",
+					"rect",
+					"circle"
+				],
+				"doc": "The outline: a rounded hexagon, a rounded rectangle fitted to the element, a circle, or a slow drift between the hexagon and a squarer rectangle. Default `morph`.",
+				"default": "morph",
+				"live": "config"
+			},
+			{
+				"name": "corner",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How round the corners are: 0 sharp, 1 as round as they go. Default 0.3.",
+				"default": 0.3,
+				"live": "config"
+			},
+			{
+				"name": "margin",
+				"kind": "number",
+				"min": 0.013,
+				"max": 0.2,
+				"step": 0.001,
+				"doc": "Space between the ring and the element's edge, a share of its shorter side. Default 0.05.",
+				"default": 0.05,
+				"live": "config"
+			},
+			{
+				"name": "thickness",
+				"kind": "number",
+				"min": 2,
+				"max": 30,
+				"step": 1,
+				"doc": "The bright core line, CSS px. Default 10.",
+				"default": 10,
+				"live": "config"
+			},
+			{
+				"name": "glow",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How far and how strongly the light spreads; 0 for the bare line. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How fast the colour travels and the shape drifts; 0 holds it still. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "background",
+				"kind": "color",
+				"doc": "The ground. Default `#0d0c10`.",
+				"default": "#0d0c10",
+				"live": "config"
+			},
+			{
+				"name": "interactive",
+				"kind": "boolean",
+				"doc": "Whether the ring leans towards the pointer and lights up near it. Default true.",
+				"default": true,
+				"live": "config"
+			},
+			{
+				"name": "quiet",
+				"kind": "point",
+				"fields": [
+					{
+						"name": "x",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "radius",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "depth",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "An area kept dim behind copy: centre (0–1 from the top left), radius (a share of the height), depth (0–1). Default none; `{}` for the middle.",
+				"live": "config"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"HighlightSweep": {
+		"selector": ".effect-highlight",
+		"props": [
+			{
+				"name": "color",
+				"kind": "color",
+				"doc": "The underline's colour. Default the text colour.",
+				"default": "currentColor",
+				"live": {
+					"css": "--hl-color",
+					"unit": ""
+				}
+			},
+			{
+				"name": "thickness",
+				"kind": "number",
+				"min": 0.045,
+				"max": 0.54,
+				"step": 0.005,
+				"doc": "How thick, em. Default 0.18.",
+				"default": 0.18,
+				"live": {
+					"css": "--hl-thickness",
+					"unit": "em"
+				}
+			},
+			{
+				"name": "opacity",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How strong, 0–1. Default 0.45.",
+				"default": 0.45,
+				"live": {
+					"css": "--hl-opacity",
+					"unit": ""
+				}
+			},
+			{
+				"name": "delay",
+				"kind": "number",
+				"min": 0.1,
+				"max": 1.2,
+				"step": 0.01,
+				"doc": "Seconds before it starts. Default 0.4.",
+				"default": 0.4,
+				"live": {
+					"css": "--hl-delay",
+					"unit": "s"
+				}
+			},
+			{
+				"name": "duration",
+				"kind": "number",
+				"min": 0.4,
+				"max": 4.8,
+				"step": 0.05,
+				"doc": "Seconds the sweep takes. Default 1.6.",
+				"default": 1.6,
+				"live": {
+					"css": "--hl-duration",
+					"unit": "s"
+				}
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"ImageRipple": {
+		"selector": "[data-effect-image-ripple]",
+		"props": [
+			{
+				"name": "src",
+				"kind": "string",
+				"doc": "The photo's URL (same origin, or served with CORS).",
+				"live": "config"
+			},
+			{
+				"name": "strength",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How far the ripples bend the photo, 0–3. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "size",
+				"kind": "number",
+				"min": 0.3,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How wide the ripples the pointer makes are, 0.3–3. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "viscosity",
+				"kind": "number",
+				"min": 0.24,
+				"max": 4,
+				"step": 0.02,
+				"doc": "How thick the water is: more settles sooner, with smaller ripples, 0.25–4. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "fringe",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How far the colours part at the wave fronts, 0–3; 0 for none. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "interactive",
+				"kind": "boolean",
+				"doc": "Whether the pointer ripples it; false leaves the plain photo. Default true.",
+				"default": true,
+				"live": "config"
+			},
+			{
+				"name": "fit",
+				"kind": "enum",
+				"options": [
+					"cover",
+					"contain"
+				],
+				"doc": "How the photo fills the element, as CSS `object-fit`. Default `cover`.",
+				"default": "cover",
+				"live": "config"
+			},
+			{
+				"name": "alt",
+				"kind": "string",
+				"doc": "The photo's text alternative. Default empty: decoration.",
+				"default": ""
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"Ink": {
+		"selector": "[data-effect-ink]",
+		"props": [
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "The ink's colours, as CSS hex, looped through as it is laid. Default the palette's, or Peacock's.",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), when there are no `colors`.",
+				"live": "config"
+			},
+			{
+				"name": "trail",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How much ink a stroke leaves, 0 for none (strokes still push). Default 0.35.",
+				"default": 0.35,
+				"live": "config"
+			},
+			{
+				"name": "drops",
+				"kind": "boolean",
+				"doc": "Whether a click or tap drops a bloom of ink. Default true.",
+				"default": true,
+				"live": "config"
+			},
+			{
+				"name": "force",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How hard the pointer pushes. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "curl",
+				"kind": "number",
+				"min": 7,
+				"max": 84,
+				"step": 1,
+				"doc": "Swirl kept alive between strokes. Default 28.",
+				"default": 28,
+				"live": "config"
+			},
+			{
+				"name": "fade",
+				"kind": "number",
+				"min": 0.14,
+				"max": 1.7,
+				"step": 0.01,
+				"doc": "How fast the ink fades, per second. Default 0.55.",
+				"default": 0.55,
+				"live": "config"
+			},
+			{
+				"name": "diffusion",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How much the ink spreads and softens as it moves, 0–1. Default 0.35.",
+				"default": 0.35,
+				"live": "config"
+			},
+			{
+				"name": "radius",
+				"kind": "number",
+				"doc": "The size of a stroke's splats and of a drop, 1 as standard.",
+				"live": "config"
+			},
+			{
+				"name": "momentum",
+				"kind": "number",
+				"min": 0.06,
+				"max": 0.75,
+				"step": 0.005,
+				"doc": "How fast the motion dies away, per second (lower flows on longer). Default 0.25.",
+				"default": 0.25,
+				"live": "config"
+			},
+			{
+				"name": "opacity",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "The ink's strongest cover, 0–1. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "ignore",
+				"kind": "string",
+				"doc": "Clicks on these are theirs, not the ink's. Default: links, buttons, form fields and `[data-effect-ignore]`.",
+				"default": "[data-effect-ignore]",
+				"live": "config"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport (position: fixed). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"InkField": {
+		"selector": "[data-effect-ink-field]",
+		"props": [
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "One of the shared palettes (`PALETTES`, any case). Default `'Lumetri'`.",
+				"default": "Lumetri",
+				"live": "config"
+			},
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "Three colours as CSS hex, in place of the palette's (fewer are looped). Default the palette's.",
+				"live": "config"
+			},
+			{
+				"name": "glint",
+				"kind": "color",
+				"doc": "A glint colour, in place of the palette's (unused by the ink look). Default the palette's.",
+				"live": "config"
+			},
+			{
+				"name": "interactive",
+				"kind": "boolean",
+				"doc": "The pointer stirs the ink and the lamp follows it, on devices that hover. Default true.",
+				"default": true,
+				"live": "config"
+			},
+			{
+				"name": "drops",
+				"kind": "boolean",
+				"doc": "A press drops ink that blooms open (not on links, buttons or fields). Off by default: on a page-wide field, stray clicks would splash. Default false.",
+				"default": false,
+				"live": "config"
+			},
+			{
+				"name": "lamp",
+				"kind": "point",
+				"fields": [
+					{
+						"name": "x",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "Where the lamp rests when the pointer is away, 0–1 from the top left. Default `{ x: 0.14, y: 0.14 }`.",
+				"default": {
+					"x": 0.14,
+					"y": 0.14
+				},
+				"live": "config"
+			},
+			{
+				"name": "still",
+				"kind": "boolean",
+				"doc": "Hold one frame of settled ink and never animate, as with reduced motion: for a field behind body copy. Default false.",
+				"default": false,
+				"live": "config"
+			},
+			{
+				"name": "scale",
+				"kind": "number",
+				"min": 0.13,
+				"max": 1.5,
+				"step": 0.01,
+				"doc": "Share of the pixel ratio drawn at. Default 0.5.",
+				"default": 0.5,
+				"live": "config"
+			},
+			{
+				"name": "audio",
+				"kind": "other",
+				"doc": "Follow the sound playing: `'page'` for whatever plays, or a CSS selector for an `<audio>`/`<video>` or a player's container (a WaveformPlayer). Kicks stir the ink and it brightens with the beat; while nothing plays it keeps its own motion. Default none.",
+				"live": "config"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"LightField": {
+		"selector": "[data-effect-light-field]",
+		"props": [
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "The light's three colours, as CSS hex. Default the palette's, or Lumetri's.",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), when there are no `colors`.",
+				"live": "config"
+			},
+			{
+				"name": "glint",
+				"kind": "color",
+				"doc": "The caustic bands' colour. Default the palette's glint, or a warm white, `#fff3c4`.",
+				"live": "config"
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How fast the light moves. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "lens",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How strongly the pointer bends the light; 0 for not at all. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "prism",
+				"kind": "boolean",
+				"doc": "Split the colours at the edges. Default true; always off on phones.",
+				"default": true,
+				"live": "config"
+			},
+			{
+				"name": "fluid",
+				"kind": "boolean",
+				"doc": "The fluid under the light: false for none, or its settings. Default true.",
+				"default": true,
+				"live": "config"
+			},
+			{
+				"name": "quiet",
+				"kind": "point",
+				"fields": [
+					{
+						"name": "x",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "radius",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "depth",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "An area where the light dims: centre (0–1 from the top left), radius (share of the height), depth (0–1).",
+				"live": "config"
+			},
+			{
+				"name": "vignette",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How much the corners darken, 0–1. Default 0.45.",
+				"default": 0.45,
+				"live": "config"
+			},
+			{
+				"name": "grain",
+				"kind": "number",
+				"min": 0.008,
+				"max": 0.11,
+				"step": 0.001,
+				"doc": "Film grain. Default 0.035.",
+				"default": 0.035,
+				"live": "config"
+			},
+			{
+				"name": "scale",
+				"kind": "number",
+				"min": 0.13,
+				"max": 1.5,
+				"step": 0.01,
+				"doc": "Share of the pixel ratio drawn at. Default 0.5.",
+				"default": 0.5,
+				"live": "config"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "background",
+				"kind": "color",
+				"doc": "The colour under the light, and under the fallback gradient. Default `#08080a`.",
+				"default": "#08080a"
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"LiquidMetal": {
+		"selector": "[data-effect-liquid-metal]",
+		"props": [
+			{
+				"name": "text",
+				"kind": "string",
+				"doc": "A word to make of metal.",
+				"live": "config"
+			},
+			{
+				"name": "font",
+				"kind": "string",
+				"doc": "Its CSS font, without the size. Default: the page's, bold.",
+				"live": "config"
+			},
+			{
+				"name": "src",
+				"kind": "string",
+				"doc": "An image (an SVG logo) to make of metal instead.",
+				"live": "config"
+			},
+			{
+				"name": "area",
+				"kind": "point",
+				"fields": [
+					{
+						"name": "x",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "width",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "height",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "Where the logo sits, each 0–1 from the top left. Default the right half.",
+				"live": "config"
+			},
+			{
+				"name": "size",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How much of its area the logo fills: 1 fits it, less shrinks it about the area's middle. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "tint",
+				"kind": "enum",
+				"options": [
+					"chrome",
+					"gold",
+					"rose-gold",
+					"copper",
+					"black-chrome"
+				],
+				"doc": "The metal: a name, or a CSS hex colour (its colour face on). Default `chrome`.",
+				"default": "chrome",
+				"live": "config"
+			},
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "The studio's colours, reflected in the metal: the sky, the horizon, the floor. Default a neutral studio.",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), when there are no `colors`: it tints the studio.",
+				"live": "config"
+			},
+			{
+				"name": "bevel",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How wide its rounded edges are. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "viscosity",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How thick the metal is: more settles sooner, with smaller ripples. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "tension",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How hard it pulls back into shape: more reforms sooner, with a quicker wobble. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "ripple",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How hard the pointer pushes into it. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "interactive",
+				"kind": "boolean",
+				"doc": "Whether it reacts to the pointer at all. Default true.",
+				"default": true,
+				"live": "config"
+			},
+			{
+				"name": "shadow",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "The soft shadow under it; 0 for none. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "background",
+				"kind": "string",
+				"doc": "A ground behind the metal (any CSS background). Default none: transparent."
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"Magnetic": {
+		"selector": ".effect-magnetic",
+		"props": [
+			{
+				"name": "strength",
+				"kind": "number",
+				"min": 0.075,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How far it follows the pointer, a share of the pointer's distance from its centre. Default 0.3.",
+				"default": 0.3,
+				"live": "config"
+			},
+			{
+				"name": "reach",
+				"kind": "number",
+				"min": 10,
+				"max": 120,
+				"step": 1,
+				"doc": "How far outside the element the pull starts, CSS px. Default 40.",
+				"default": 40,
+				"live": "config"
+			},
+			{
+				"name": "as",
+				"kind": "other",
+				"doc": "The element to render. Default `span`.",
+				"default": "span"
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"Marquee": {
+		"selector": ".effect-marquee",
+		"props": [
+			{
+				"name": "items",
+				"kind": "list",
+				"doc": "Text items; or pass content as the slot."
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 10,
+				"max": 120,
+				"step": 1,
+				"doc": "Seconds for one set to pass. Default 40.",
+				"default": 40,
+				"live": {
+					"css": "--marquee-speed",
+					"unit": "s"
+				}
+			},
+			{
+				"name": "direction",
+				"kind": "enum",
+				"options": [
+					"left",
+					"right"
+				],
+				"doc": "`left` scrolls right to left. Default `left`.",
+				"default": "left",
+				"live": {
+					"classPrefix": "is-"
+				}
+			},
+			{
+				"name": "separator",
+				"kind": "string",
+				"doc": "Shown between items (text items only)."
+			},
+			{
+				"name": "gap",
+				"kind": "string",
+				"doc": "Space between items, CSS length. Default `2.5rem`.",
+				"default": "2.5rem",
+				"live": {
+					"css": "--marquee-gap",
+					"unit": ""
+				}
+			},
+			{
+				"name": "pauseOnHover",
+				"kind": "boolean",
+				"doc": "Pause while the pointer is over it. Default true.",
+				"default": true,
+				"live": {
+					"class": "pause-on-hover"
+				}
+			},
+			{
+				"name": "pauseButton",
+				"kind": "boolean",
+				"doc": "Show a pause button. Default true.",
+				"default": true
+			},
+			{
+				"name": "fade",
+				"kind": "number",
+				"min": 2,
+				"max": 24,
+				"step": 1,
+				"doc": "How wide the faded edges are, % of the strip. Default 8.",
+				"default": 8,
+				"live": {
+					"css": "--marquee-fade",
+					"unit": "%"
+				}
+			},
+			{
+				"name": "labels",
+				"kind": "other",
+				"doc": "The pause button's labels, for other languages. Default English."
+			},
+			{
+				"name": "label",
+				"kind": "string",
+				"doc": "What the strip is, for screen readers. Default the items joined."
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"MosaicReveal": {
+		"selector": ".mosaic-reveal",
+		"props": [
+			{
+				"name": "transition",
+				"kind": "enum",
+				"options": [
+					"tiles",
+					"pixel-sort",
+					"pixelate",
+					"dissolve"
+				],
+				"doc": "How one picture becomes the next: tiles flipping in a diagonal wave, melting into sorted streaks, blocks coarsening and refining, or a noise dissolve with a glowing edge. Default `'tiles'`.",
+				"default": "tiles",
+				"live": "config"
+			},
+			{
+				"name": "interval",
+				"kind": "number",
+				"min": 2,
+				"max": 12,
+				"step": 1,
+				"doc": "Seconds each picture stays, 2–12. Default 5.",
+				"default": 5,
+				"live": "config"
+			},
+			{
+				"name": "duration",
+				"kind": "number",
+				"min": 0.4,
+				"max": 3,
+				"step": 0.02,
+				"doc": "Seconds a change takes, 0.4–3. Default 1.6.",
+				"default": 1.6,
+				"live": "config"
+			},
+			{
+				"name": "tiles",
+				"kind": "number",
+				"min": 3,
+				"max": 24,
+				"step": 1,
+				"doc": "Tiles across the longer side, 3–24; also the coarsest blocks for `pixelate`. Default 9.",
+				"default": 9,
+				"live": "config"
+			},
+			{
+				"name": "autoplay",
+				"kind": "boolean",
+				"doc": "Move on by itself (held while hovered, focused or off screen). Default true.",
+				"default": true,
+				"live": "config"
+			},
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "The dissolve's glowing edge: its outer colour, then its core. Default amber, cream.",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), when there are no `colors`: its first colour round its glint.",
+				"live": "config"
+			},
+			{
+				"name": "background",
+				"kind": "color",
+				"doc": "What shows between the tiles as they flip. Default `#0c0b0a`.",
+				"default": "#0c0b0a",
+				"live": "config"
+			},
+			{
+				"name": "reducedMotion",
+				"kind": "enum",
+				"options": [
+					"fade",
+					"swap"
+				],
+				"doc": "With prefers-reduced-motion: a short crossfade, or a swap at once. Default `'fade'`.",
+				"default": "fade",
+				"live": "config"
+			},
+			{
+				"name": "images",
+				"kind": "other",
+				"doc": "The pictures, in order, each `{ src, alt }`: same origin, or served with CORS."
+			},
+			{
+				"name": "controls",
+				"kind": "boolean",
+				"doc": "Dots that pick a picture, the current one filling as it plays. Default true.",
+				"default": true
+			},
+			{
+				"name": "label",
+				"kind": "string",
+				"doc": "What the slideshow is called, for assistive technology. Default `'Gallery'`.",
+				"default": "Gallery"
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			},
+			{
+				"name": "style",
+				"kind": "string",
+				"doc": ""
+			}
+		]
+	},
+	"NebulaLogo": {
+		"selector": "[data-effect-nebula-logo]",
+		"props": [
+			{
+				"name": "text",
+				"kind": "string",
+				"doc": "A word (or a character) to fill with gas.",
+				"live": "config"
+			},
+			{
+				"name": "font",
+				"kind": "string",
+				"doc": "Its CSS font, without the size. Default: the page's, bold.",
+				"live": "config"
+			},
+			{
+				"name": "src",
+				"kind": "string",
+				"doc": "An image (an SVG logo, a PNG) to fill instead.",
+				"live": "config"
+			},
+			{
+				"name": "area",
+				"kind": "point",
+				"fields": [
+					{
+						"name": "x",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "width",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "height",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "Where the shape sits, each 0–1 from the top left. Default the right half.",
+				"live": "config"
+			},
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "The gas's palette, three colours; the first, darkened, is also the thin gas's. Default teal, amber, rose.",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), when there are no `colors`.",
+				"live": "config"
+			},
+			{
+				"name": "background",
+				"kind": "color",
+				"doc": "The ground. Default `#05070a`.",
+				"default": "#05070a",
+				"live": "config"
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How fast the gas drifts. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "glow",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "The rim and the halo leaking past the edge; 0 for neither. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "stars",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How many stars twinkle inside; 0 for none. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "stir",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How much the pointer stirs and brightens the gas; 0 for not at all. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "scale",
+				"kind": "number",
+				"min": 0.15,
+				"max": 1.8,
+				"step": 0.01,
+				"doc": "Share of the pixel ratio the gas is drawn at: it is soft, so a little below full costs nothing visible and saves most of the work. Default 0.6.",
+				"default": 0.6,
+				"live": "config"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"NeonSwarm": {
+		"selector": "[data-effect-neon-swarm]",
+		"props": [
+			{
+				"name": "text",
+				"kind": "string",
+				"doc": "A word (or a character) to gather the swarm into.",
+				"live": "config"
+			},
+			{
+				"name": "font",
+				"kind": "string",
+				"doc": "Its CSS font, without the size. Default: the page's, bold.",
+				"live": "config"
+			},
+			{
+				"name": "src",
+				"kind": "string",
+				"doc": "An image (an SVG logo, a PNG) to gather it into instead.",
+				"live": "config"
+			},
+			{
+				"name": "area",
+				"kind": "point",
+				"fields": [
+					{
+						"name": "x",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "width",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "height",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "Where the shape sits, each 0–1 from the top left. Default the right half.",
+				"live": "config"
+			},
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "The palette across the swarm, three colours. Default neon cyan, lime, magenta.",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), when there are no `colors`.",
+				"live": "config"
+			},
+			{
+				"name": "background",
+				"kind": "color",
+				"doc": "The ground. Default `#030406`.",
+				"default": "#030406",
+				"live": "config"
+			},
+			{
+				"name": "count",
+				"kind": "number",
+				"min": 1500,
+				"max": 18000,
+				"step": 1,
+				"doc": "How many particles (half on phones). Default 6000.",
+				"default": 6000,
+				"live": "config"
+			},
+			{
+				"name": "size",
+				"kind": "number",
+				"min": 0.55,
+				"max": 7.2,
+				"step": 0.05,
+				"doc": "A particle's glowing core, CSS px. Default 2.4.",
+				"default": 2.4,
+				"live": "config"
+			},
+			{
+				"name": "trail",
+				"kind": "number",
+				"min": 0.2,
+				"max": 2.5,
+				"step": 0.02,
+				"doc": "How long the trails are, 0 (none) to 0.95. Default 0.82.",
+				"default": 0.82,
+				"live": "config"
+			},
+			{
+				"name": "flow",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How far the swarm drifts and breathes round the shape; 0 holds it still. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "scatter",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How hard the pointer scatters them; 0 for not at all. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"OutlineWordmark": {
+		"selector": ".effect-outline-wordmark",
+		"props": [
+			{
+				"name": "text",
+				"kind": "string",
+				"doc": "The name."
+			},
+			{
+				"name": "color",
+				"kind": "color",
+				"doc": "The colour of the outline and the beam. Default `currentColor`.",
+				"default": "currentColor",
+				"live": {
+					"css": "--ow-color",
+					"unit": ""
+				}
+			},
+			{
+				"name": "crop",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "Share of the glyph height left showing, 0–1. Default 0.68.",
+				"default": 0.68,
+				"live": {
+					"css": "--ow-crop",
+					"unit": ""
+				}
+			},
+			{
+				"name": "size",
+				"kind": "number",
+				"min": 4,
+				"max": 54,
+				"step": 1,
+				"doc": "Type size, as a share of the box's width (18 is 18% of it). Default 18.",
+				"default": 18,
+				"live": {
+					"css": "--ow-size",
+					"unit": "cqw"
+				}
+			},
+			{
+				"name": "stroke",
+				"kind": "number",
+				"min": 0.5,
+				"max": 6,
+				"step": 0.05,
+				"doc": "The outline's width, px. Default 2.",
+				"default": 2
+			},
+			{
+				"name": "opacity",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How strong the resting outline is, 0–1. Default 0.42.",
+				"default": 0.42,
+				"live": {
+					"css": "--ow-opacity",
+					"unit": ""
+				}
+			},
+			{
+				"name": "beam",
+				"kind": "boolean",
+				"doc": "The travelling beam. Default true.",
+				"default": true
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 1.3,
+				"max": 17,
+				"step": 0.1,
+				"doc": "Seconds the beam takes to cross. Default 5.5.",
+				"default": 5.5,
+				"live": {
+					"css": "--ow-speed",
+					"unit": "s"
+				}
+			},
+			{
+				"name": "spotlight",
+				"kind": "boolean",
+				"doc": "A light under the pointer that fills the letters. Default true.",
+				"default": true
+			},
+			{
+				"name": "radius",
+				"kind": "number",
+				"min": 0.15,
+				"max": 1,
+				"step": 0.005,
+				"doc": "The light's radius, a share of the type size. Default 0.6.",
+				"default": 0.6,
+				"live": "config"
+			},
+			{
+				"name": "tracking",
+				"kind": "number",
+				"min": -0.04,
+				"max": 0.04,
+				"step": 0.0005,
+				"doc": "Letter spacing, em. Default -0.02.",
+				"default": -0.02,
+				"live": {
+					"css": "--ow-tracking",
+					"unit": "em"
+				}
+			},
+			{
+				"name": "font",
+				"kind": "string",
+				"doc": "CSS font-family. Default inherited.",
+				"default": "inherit",
+				"live": {
+					"css": "--ow-font",
+					"unit": ""
+				}
+			},
+			{
+				"name": "weight",
+				"kind": "number",
+				"min": 180,
+				"max": 2100,
+				"step": 1,
+				"doc": "CSS font-weight. Default 700.",
+				"default": 700,
+				"live": {
+					"css": "--ow-weight",
+					"unit": ""
+				}
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"PaperShader": {
+		"selector": "[data-effect-paper]",
+		"props": [
+			{
+				"name": "shader",
+				"kind": "enum",
+				"options": [
+					"color-panels",
+					"dithering",
+					"dot-grid",
+					"dot-orbit",
+					"fluted-glass",
+					"gem-smoke",
+					"god-rays",
+					"grain-gradient",
+					"halftone-cmyk",
+					"halftone-dots",
+					"heatmap",
+					"image-dithering",
+					"lens-distortion",
+					"liquid-metal",
+					"mesh-gradient",
+					"metaballs",
+					"neuro-noise",
+					"paper-texture",
+					"perlin-noise",
+					"pulsing-border",
+					"simplex-noise",
+					"smoke-ring",
+					"spiral",
+					"static-mesh-gradient",
+					"static-radial-gradient",
+					"swirl",
+					"voronoi",
+					"warp",
+					"water",
+					"waves"
+				],
+				"doc": "The shader, by its file name.",
+				"live": "config"
+			},
+			{
+				"name": "preset",
+				"kind": "string",
+				"doc": "One of the shader's presets, by name (any case). Default its first.",
+				"live": "config"
+			},
+			{
+				"name": "params",
+				"kind": "other",
+				"doc": "Paper's settings for the shader (`distortion`, `colorBack`…), over the preset's.",
+				"live": "config"
+			},
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "The shader's colours, over the preset's.",
+				"live": "config"
+			},
+			{
+				"name": "image",
+				"kind": "string",
+				"doc": "A picture for the shaders that bend or trace one.",
+				"live": "config"
+			},
+			{
+				"name": "gradient",
+				"kind": "colors",
+				"doc": "Colours to make a picture from, when there is no `image`.",
+				"live": "config"
+			},
+			{
+				"name": "gradientAngle",
+				"kind": "number",
+				"min": 0,
+				"max": 360,
+				"step": 1,
+				"doc": "The made picture's angle, degrees. Default 135.",
+				"default": 135,
+				"live": "config"
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"doc": "How fast it moves, over the preset's (0 is still).",
+				"live": "config"
+			},
+			{
+				"name": "scale",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "Share of the pixel ratio drawn at. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "background",
+				"kind": "color",
+				"doc": "The colour shown before it draws, and without WebGL 2. Default transparent."
+			},
+			{
+				"name": "opacity",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "Its opacity, 0–1, for backdrops under copy. Default 1.",
+				"default": 1
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"Parallax": {
+		"selector": ".effect-parallax",
+		"props": [
+			{
+				"name": "as",
+				"kind": "other",
+				"doc": "The element to render. Default `div`.",
+				"default": "div"
+			},
+			{
+				"name": "depth",
+				"kind": "number",
+				"min": 4,
+				"max": 54,
+				"step": 1,
+				"doc": "How far it drifts at the region's edge, px; negative moves against the pointer. Default 18.",
+				"default": 18,
+				"live": "config"
+			},
+			{
+				"name": "within",
+				"kind": "string",
+				"doc": "A selector for the region. Default the nearest `[data-parallax-root]`, or the parent.",
+				"default": "[data-parallax-root]",
+				"live": "config"
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"ParticleLogo": {
+		"selector": "[data-effect-particle-logo]",
+		"props": [
+			{
+				"name": "text",
+				"kind": "string",
+				"doc": "A word (or a character, an emoji) to draw in particles.",
+				"live": "config"
+			},
+			{
+				"name": "font",
+				"kind": "string",
+				"doc": "Its CSS font, without the size. Default: the page's, bold.",
+				"live": "config"
+			},
+			{
+				"name": "src",
+				"kind": "string",
+				"doc": "An image (an SVG logo, a PNG) to draw in particles instead.",
+				"live": "config"
+			},
+			{
+				"name": "area",
+				"kind": "point",
+				"fields": [
+					{
+						"name": "x",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "width",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "height",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "Where the shape sits, each 0–1 from the top left. Default the middle.",
+				"live": "config"
+			},
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "The dots' two colours, then the two blooms'. Default white, ice blue, deep teal, midnight blue.",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), when there are no `colors`.",
+				"live": "config"
+			},
+			{
+				"name": "background",
+				"kind": "color",
+				"doc": "The ground. Default `#030305`.",
+				"default": "#030305",
+				"live": "config"
+			},
+			{
+				"name": "count",
+				"kind": "number",
+				"min": 4000,
+				"max": 48000,
+				"step": 1,
+				"doc": "How many particles (half on phones). Default 16000.",
+				"default": 16000,
+				"live": "config"
+			},
+			{
+				"name": "size",
+				"kind": "number",
+				"min": 0.55,
+				"max": 6.6,
+				"step": 0.05,
+				"doc": "A particle's size, CSS px. Default 2.2.",
+				"default": 2.2,
+				"live": "config"
+			},
+			{
+				"name": "swarm",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How strongly they scatter round the pointer; 0 for not at all. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "tilt",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How far the mark tilts towards the pointer. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "aberration",
+				"kind": "number",
+				"min": 0,
+				"max": 4.5,
+				"step": 0.05,
+				"doc": "How far red and blue part, CSS px; 0 for none. Default 1.5.",
+				"default": 1.5,
+				"live": "config"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"PixelGlitchText": {
+		"selector": ".effect-pixel-glitch",
+		"props": [
+			{
+				"name": "cell",
+				"kind": "number",
+				"min": 3,
+				"max": 42,
+				"step": 1,
+				"doc": "The heat grid's cell, CSS px. Default 14.",
+				"default": 14,
+				"live": "config"
+			},
+			{
+				"name": "reach",
+				"kind": "number",
+				"min": 30,
+				"max": 360,
+				"step": 1,
+				"doc": "How far the pointer's heat reaches, CSS px. Default 120.",
+				"default": 120,
+				"live": "config"
+			},
+			{
+				"name": "decay",
+				"kind": "number",
+				"min": 0.22,
+				"max": 2.7,
+				"step": 0.02,
+				"doc": "Heat kept each frame (0.9 is gone in about half a second). Default 0.9.",
+				"default": 0.9,
+				"live": "config"
+			},
+			{
+				"name": "block",
+				"kind": "number",
+				"min": 5,
+				"max": 66,
+				"step": 1,
+				"doc": "The pixel block size at full heat, CSS px. Default 22.",
+				"default": 22,
+				"live": "config"
+			},
+			{
+				"name": "shift",
+				"kind": "number",
+				"min": 4,
+				"max": 48,
+				"step": 1,
+				"doc": "How far the hottest rows slip sideways, CSS px. Default 16.",
+				"default": 16,
+				"live": "config"
+			},
+			{
+				"name": "stroke",
+				"kind": "number",
+				"min": 0,
+				"max": 40,
+				"step": 1,
+				"doc": "With a width (CSS px), the text at rest is an outline that the pixels fill. Default 0 (solid).",
+				"default": 0,
+				"live": "config"
+			},
+			{
+				"name": "as",
+				"kind": "other",
+				"doc": "The element to render. Default `span`.",
+				"default": "span"
+			},
+			{
+				"name": "fit",
+				"kind": "boolean",
+				"doc": "Size the text to span its parent's width. Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"PointCloud": {
+		"selector": "[data-effect-point-cloud]",
+		"props": [
+			{
+				"name": "text",
+				"kind": "string",
+				"doc": "The word drawn in dots.",
+				"live": "config"
+			},
+			{
+				"name": "font",
+				"kind": "string",
+				"doc": "Its CSS font, without the size. Default: the page's, bold.",
+				"live": "config"
+			},
+			{
+				"name": "src",
+				"kind": "string",
+				"doc": "An image (an SVG logo) to draw in dots instead.",
+				"live": "config"
+			},
+			{
+				"name": "area",
+				"kind": "point",
+				"fields": [
+					{
+						"name": "x",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "width",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "height",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "Where the word sits, each 0–1 from the top left. Default across the middle.",
+				"live": "config"
+			},
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "The word's dots, then the clouds' low and high colours. Default white, deep blue, sky blue.",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), when there are no `colors`.",
+				"live": "config"
+			},
+			{
+				"name": "background",
+				"kind": "color",
+				"doc": "The ground. Default `#020205`.",
+				"default": "#020205",
+				"live": "config"
+			},
+			{
+				"name": "columns",
+				"kind": "number",
+				"min": 28,
+				"max": 330,
+				"step": 1,
+				"doc": "Dots across the word's grid. Default 110.",
+				"default": 110,
+				"live": "config"
+			},
+			{
+				"name": "dot",
+				"kind": "number",
+				"min": 0.18,
+				"max": 1,
+				"step": 0.005,
+				"doc": "A word dot's size, a share of the grid's spacing. Default 0.72.",
+				"default": 0.72,
+				"live": "config"
+			},
+			{
+				"name": "sheets",
+				"kind": "number",
+				"min": 2,
+				"max": 27,
+				"step": 1,
+				"doc": "How many sheets of point cloud. Default 9.",
+				"default": 9,
+				"live": "config"
+			},
+			{
+				"name": "pointSize",
+				"kind": "number",
+				"min": 0.55,
+				"max": 6.6,
+				"step": 0.05,
+				"doc": "A cloud point's size, CSS px. Default 2.2.",
+				"default": 2.2,
+				"live": "config"
+			},
+			{
+				"name": "trackers",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "Tracker boxes locking onto the word, a detector's debug look (try 4); 0 for none. Default 0.",
+				"default": 0,
+				"live": "config"
+			},
+			{
+				"name": "tilt",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How far the scene tilts towards the pointer. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"ProductStack": {
+		"selector": ".effect-product-stack",
+		"props": [
+			{
+				"name": "items",
+				"kind": "other",
+				"doc": "The covers. Without them, the children are the covers: each a link (or another element) holding one image."
+			},
+			{
+				"name": "layout",
+				"kind": "enum",
+				"options": [
+					"fan",
+					"stack",
+					"arc"
+				],
+				"doc": "How the covers are laid out: a hand of cards (`fan`, the middle cover in front), a deck seen at an angle (`stack`, the first in front) or a carousel arc (`arc`). Default `fan`.",
+				"default": "fan",
+				"live": "config"
+			},
+			{
+				"name": "spread",
+				"kind": "number",
+				"min": 0,
+				"max": 2,
+				"step": 0.01,
+				"doc": "How far apart the covers sit, 0–2. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "tilt",
+				"kind": "number",
+				"min": 0,
+				"max": 30,
+				"step": 1,
+				"doc": "How far the stack leans towards the pointer, degrees, 0–30. Default 12.",
+				"default": 12,
+				"live": "config"
+			},
+			{
+				"name": "float",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How far the covers drift when left alone, 0–1; 0 holds them still. Default 0.5.",
+				"default": 0.5,
+				"live": {
+					"css": "--ps-float",
+					"unit": ""
+				}
+			},
+			{
+				"name": "depth",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "Depth of field: how much the covers behind dim and soften, 0–1. Default 0.6.",
+				"default": 0.6,
+				"live": "config"
+			},
+			{
+				"name": "interactive",
+				"kind": "boolean",
+				"doc": "Lean towards the pointer, fan apart on hover and lift the cover under the pointer or in focus. Default true.",
+				"default": true,
+				"live": "config"
+			},
+			{
+				"name": "size",
+				"kind": "string",
+				"doc": "The widest a cover gets, a CSS length; covers shrink to fit the container. Default `280px`.",
+				"default": "280px",
+				"live": {
+					"css": "--ps-size",
+					"unit": ""
+				}
+			},
+			{
+				"name": "ratio",
+				"kind": "number",
+				"min": 0.75,
+				"max": 1,
+				"step": 0.002,
+				"doc": "A cover's width over its height: 1 square, 0.75 a book. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "radius",
+				"kind": "number",
+				"min": 0,
+				"max": 40,
+				"step": 1,
+				"doc": "The covers' corner radius, px, 0–40. Default 10.",
+				"default": 10,
+				"live": {
+					"css": "--ps-radius",
+					"unit": "px"
+				}
+			},
+			{
+				"name": "label",
+				"kind": "string",
+				"doc": "The group's name for screen readers. Default `Products`.",
+				"default": "Products"
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"PulseMark": {
+		"selector": ".effect-pulse-mark",
+		"props": [
+			{
+				"name": "variant",
+				"kind": "enum",
+				"options": [
+					"matrix",
+					"rings",
+					"sonar"
+				],
+				"doc": "The mark. Default `matrix`.",
+				"default": "matrix",
+				"live": {
+					"classPrefix": "is-"
+				}
+			},
+			{
+				"name": "size",
+				"kind": "number",
+				"doc": "Its width and height, px or any CSS length. Default `1em`.",
+				"default": "1em"
+			},
+			{
+				"name": "color",
+				"kind": "color",
+				"doc": "Its colour. Default the text colour.",
+				"live": {
+					"css": "--mark-color",
+					"unit": ""
+				}
+			},
+			{
+				"name": "glow",
+				"kind": "boolean",
+				"doc": "A soft glow round it. Default false.",
+				"default": false,
+				"live": {
+					"class": "has-glow"
+				}
+			},
+			{
+				"name": "cells",
+				"kind": "number",
+				"min": 1,
+				"max": 18,
+				"step": 1,
+				"doc": "Blocks along each side of the matrix. Default 6.",
+				"default": 6
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "Speed, as a multiple. Default 1.",
+				"default": 1
+			},
+			{
+				"name": "label",
+				"kind": "string",
+				"doc": "Its accessible name; without one it is decorative."
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"RadiantGlass": {
+		"selector": "[data-effect-radiant-glass]",
+		"props": [
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "The lights' colours, the last the hot colour where they gather. Default amber, blue, white.",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), when there are no `colors`. Its colours light the glass; its glint is the hot colour.",
+				"live": "config"
+			},
+			{
+				"name": "background",
+				"kind": "color",
+				"doc": "The ground. Default `#060818`.",
+				"default": "#060818",
+				"live": "config"
+			},
+			{
+				"name": "layout",
+				"kind": "enum",
+				"options": [
+					"cross",
+					"diagonal",
+					"single"
+				],
+				"doc": "The tiles: four in a plus, three on a slant, or one large. Default `cross`.",
+				"default": "cross",
+				"live": "config"
+			},
+			{
+				"name": "shape",
+				"kind": "enum",
+				"options": [
+					"diamond",
+					"square",
+					"circle"
+				],
+				"doc": "Each tile's shape: a rounded square on its corner, square on, or round. Default `diamond`.",
+				"default": "diamond",
+				"live": "config"
+			},
+			{
+				"name": "side",
+				"kind": "enum",
+				"options": [
+					"left",
+					"right"
+				],
+				"doc": "Which side the cluster sits on, leaving the other for the copy. Default `left`.",
+				"default": "left",
+				"live": "config"
+			},
+			{
+				"name": "size",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "The cluster's size; 1 fills the height. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "frost",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How blurred the light through the glass is; 0 for clear. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "glow",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How strong the halo round each tile is; 0 for none. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "rim",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How bright the rim line is; 0 for none. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How fast the lights drift. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"RainOnGlass": {
+		"selector": "[data-effect-rain-on-glass]",
+		"props": [
+			{
+				"name": "src",
+				"kind": "string",
+				"doc": "The photo behind the glass (same origin, or served with CORS).",
+				"live": "config"
+			},
+			{
+				"name": "rain",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How much rain, 0–1: beads on the glass and drops running down it. Default 0.6.",
+				"default": 0.6,
+				"live": "config"
+			},
+			{
+				"name": "blur",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How soft the photo is behind the glass, 0–1. Default 0.6.",
+				"default": 0.6,
+				"live": "config"
+			},
+			{
+				"name": "fog",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How thick the condensation is, 0–1. Default 0.5.",
+				"default": 0.5,
+				"live": "config"
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How fast the drops run and the beads come and go, 0–3. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "interactive",
+				"kind": "boolean",
+				"doc": "The pointer wipes a clear patch that fogs back over. Default true.",
+				"default": true,
+				"live": "config"
+			},
+			{
+				"name": "tint",
+				"kind": "color",
+				"doc": "The colour of the fog. Default `#a3b8cc`.",
+				"default": "#a3b8cc",
+				"live": "config"
+			},
+			{
+				"name": "bokeh",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How strongly the photo's lights open into bokeh discs, 0–1. Default 0.6.",
+				"default": 0.6,
+				"live": "config"
+			},
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "Colours for the bokeh discs. Default: each light's own colour.",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), when there are no `colors`.",
+				"live": "config"
+			},
+			{
+				"name": "alt",
+				"kind": "string",
+				"doc": "What the photo shows, for the `<img>` under the glass. Default empty (decorative).",
+				"default": ""
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false,
+				"live": {
+					"class": "is-fixed"
+				}
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"Reveal": {
+		"selector": ".effect-reveal",
+		"props": [
+			{
+				"name": "from",
+				"kind": "enum",
+				"options": [
+					"up",
+					"down",
+					"left",
+					"right",
+					"fade",
+					"zoom",
+					"blur"
+				],
+				"doc": "How it arrives. Default `up`.",
+				"default": "up",
+				"live": {
+					"classPrefix": "from-"
+				}
+			},
+			{
+				"name": "words",
+				"kind": "boolean",
+				"doc": "Each word arrives on its own, one after another. Default false.",
+				"default": false
+			},
+			{
+				"name": "stagger",
+				"kind": "number",
+				"min": 0.015,
+				"max": 0.18,
+				"step": 0.001,
+				"doc": "Seconds between words. Default 0.06.",
+				"default": 0.06,
+				"live": {
+					"css": "--reveal-stagger",
+					"unit": "s"
+				}
+			},
+			{
+				"name": "delay",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "Seconds before it starts. Default 0.",
+				"default": 0,
+				"live": {
+					"css": "--reveal-delay",
+					"unit": "s"
+				}
+			},
+			{
+				"name": "once",
+				"kind": "boolean",
+				"doc": "Only the first time it comes into view. Default true.",
+				"default": true,
+				"live": "config"
+			},
+			{
+				"name": "as",
+				"kind": "other",
+				"doc": "The element to render. Default `div`.",
+				"default": "div"
+			},
+			{
+				"name": "text",
+				"kind": "string",
+				"doc": "With `words`: the text, split into words."
+			},
+			{
+				"name": "duration",
+				"kind": "number",
+				"min": 0.17,
+				"max": 2.1,
+				"step": 0.01,
+				"doc": "Seconds the arrival takes. Default 0.7.",
+				"default": 0.7,
+				"live": {
+					"css": "--reveal-duration",
+					"unit": "s"
+				}
+			},
+			{
+				"name": "distance",
+				"kind": "number",
+				"min": 6,
+				"max": 72,
+				"step": 1,
+				"doc": "How far it travels, px. Default 24.",
+				"default": 24,
+				"live": {
+					"css": "--reveal-distance",
+					"unit": "px"
+				}
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"ScrambleText": {
+		"selector": ".effect-scramble",
+		"props": [
+			{
+				"name": "characters",
+				"kind": "string",
+				"doc": "What it scrambles through. Default letters, digits and a few symbols.",
+				"live": "config"
+			},
+			{
+				"name": "duration",
+				"kind": "number",
+				"min": 0.22,
+				"max": 2.7,
+				"step": 0.02,
+				"doc": "Seconds to resolve. Default 0.9.",
+				"default": 0.9,
+				"live": "config"
+			},
+			{
+				"name": "hover",
+				"kind": "boolean",
+				"doc": "Scramble again when the pointer comes over it. Default false.",
+				"default": false,
+				"live": "config"
+			},
+			{
+				"name": "text",
+				"kind": "string",
+				"doc": "The text."
+			},
+			{
+				"name": "as",
+				"kind": "other",
+				"doc": "The element to render. Default `span`.",
+				"default": "span"
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"ScrollReveal": {
+		"selector": null,
+		"props": [
+			{
+				"name": "selector",
+				"kind": "string",
+				"doc": "What to reveal. Default the reveal.css classes."
+			},
+			{
+				"name": "visibleClass",
+				"kind": "string",
+				"doc": "The class added on arrival. Default `is-visible`.",
+				"default": "is-visible"
+			},
+			{
+				"name": "threshold",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How much must be in view, 0–1. Default 0.08.",
+				"default": 0.08
+			},
+			{
+				"name": "rootMargin",
+				"kind": "string",
+				"doc": "The observer's margin. Default `0px 0px -10% 0px`.",
+				"default": "0px 0px -10% 0px"
+			},
+			{
+				"name": "once",
+				"kind": "boolean",
+				"doc": "Reveal once; false hides it again when it leaves, to replay. Default true.",
+				"default": true
+			}
+		]
+	},
+	"ShaderBackground": {
+		"selector": "[data-effect-shader-background]",
+		"props": [
+			{
+				"name": "effect",
+				"kind": "enum",
+				"options": [
+					"mesh-gradient",
+					"grain-gradient",
+					"silk",
+					"band-lens",
+					"grid",
+					"waves"
+				],
+				"doc": "Which shader background.",
+				"live": "config"
+			},
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "Up to four colours (hex or `rgb()`); those missing come from `--color-accent` where it sits: the accent, the accent towards `--color-bg`, its hue turned 30° towards yellow and lifted, its hue turned 45° away from yellow (in Oklab). Only mesh-gradient, grain-gradient and silk use the fourth. Default all four from the accent.",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), when there are no `colors`.",
+				"live": "config"
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 0,
+				"max": 4,
+				"step": 0.02,
+				"doc": "How fast it moves, 0–4. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "intensity",
+				"kind": "number",
+				"min": 0,
+				"max": 2,
+				"step": 0.01,
+				"doc": "How strong it is (brightness and contrast, not opacity), 0–2. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "static",
+				"kind": "boolean",
+				"doc": "One frame, never the loop: for a shader background that is wallpaper. Default false.",
+				"default": false,
+				"live": "config"
+			},
+			{
+				"name": "frame",
+				"kind": "number",
+				"min": 3,
+				"max": 36,
+				"step": 1,
+				"doc": "With `static`, the moment drawn, in seconds. Default 12.",
+				"default": 12,
+				"live": "config"
+			},
+			{
+				"name": "interactive",
+				"kind": "boolean",
+				"doc": "Lean towards the pointer, on devices that hover. Default false.",
+				"default": false,
+				"live": "config"
+			},
+			{
+				"name": "opacity",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "Its opacity, 0–1, to fade it against the section without changing the shader. Default 1.",
+				"default": 1
+			},
+			{
+				"name": "blend",
+				"kind": "string",
+				"doc": "CSS `mix-blend-mode` with what is behind it (`screen`, `lighten`, `plus-lighter`…), for layering over imagery. Default normal."
+			},
+			{
+				"name": "fade",
+				"kind": "enum",
+				"options": [
+					"none",
+					"bottom",
+					"top",
+					"both"
+				],
+				"doc": "Fade it out towards an edge, so it melts into the page: 'bottom', 'top', 'both' (top and bottom) or 'none'. Default 'bottom'.",
+				"default": "bottom"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"SignalLines": {
+		"selector": "[data-effect-signal-lines]",
+		"props": [
+			{
+				"name": "color",
+				"kind": "color",
+				"doc": "One colour for every line. Default: the `colors` gradient.",
+				"live": "config"
+			},
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "Colours the lines run through from left to right, blended in Oklab. Default sea-glass, ice and pale gold.",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), when there are no `colors` or `color`.",
+				"live": "config"
+			},
+			{
+				"name": "pulse",
+				"kind": "color",
+				"doc": "The pulses' colour. Default `#fafafa`.",
+				"default": "#fafafa",
+				"live": "config"
+			},
+			{
+				"name": "lines",
+				"kind": "number",
+				"min": 2,
+				"max": 12,
+				"step": 1,
+				"doc": "How many lines, 2–12. Default 7.",
+				"default": 7,
+				"live": "config"
+			},
+			{
+				"name": "amplitude",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How tall the waves are. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How fast they move. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "pulses",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How often pulses run; 0 for none. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "glow",
+				"kind": "number",
+				"min": 0,
+				"max": 2,
+				"step": 0.01,
+				"doc": "How much light the lines and pulses give off, 0–2. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "grain",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "Film grain in the light, 0–1. Default 0.5.",
+				"default": 0.5,
+				"live": "config"
+			},
+			{
+				"name": "depth",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How far out of focus the back lines are, and how much their colours fringe; 0 for all sharp. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "bend",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How far the lines part round the pointer and how much it lights them; 0 for not at all. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "audio",
+				"kind": "other",
+				"doc": "Follow the sound playing: `'page'` for whatever plays, or a CSS selector for an `<audio>`/`<video>` or a player's container (a WaveformPlayer). The lines carry its waveform, as tall as it is loud, and kicks send pulses; while nothing plays they keep their own motion. Default none.",
+				"live": "config"
+			},
+			{
+				"name": "quiet",
+				"kind": "point",
+				"fields": [
+					{
+						"name": "x",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "radius",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "depth",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "An area where the light dims (behind a headline): centre x/y (0–1, from the top left), radius (a share of the height) and depth (0 none, 1 dark). Default none.",
+				"live": "config"
+			},
+			{
+				"name": "fade",
+				"kind": "boolean",
+				"doc": "Fade the left and right edges out. Default true.",
+				"default": true
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"SilkRibbon": {
+		"selector": "[data-effect-silk-ribbon]",
+		"props": [
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "The satin's colours, shaded from the darkest to the lightest whatever their order. Default hot pink, coral, peach.",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), when there are no `colors`.",
+				"live": "config"
+			},
+			{
+				"name": "background",
+				"kind": "color",
+				"doc": "The ground around the ribbon. Default `#f6f4f1`.",
+				"default": "#f6f4f1",
+				"live": "config"
+			},
+			{
+				"name": "side",
+				"kind": "enum",
+				"options": [
+					"right",
+					"left",
+					"center"
+				],
+				"doc": "Where the ribbon runs. Default `right`.",
+				"default": "right",
+				"live": "config"
+			},
+			{
+				"name": "twist",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How tightly it turns along its length; 0 lies flat. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "folds",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How deep the folds along it are; 0 for flat satin. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "glow",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "The soft out-of-focus glow behind it; 0 for none. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How fast the folds move. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"SpotlightText": {
+		"selector": ".effect-spotlight",
+		"props": [
+			{
+				"name": "radius",
+				"kind": "number",
+				"min": 0.21,
+				"max": 1,
+				"step": 0.005,
+				"doc": "The light's radius, a share of the font size. Default 0.85.",
+				"default": 0.85,
+				"live": "config"
+			},
+			{
+				"name": "reach",
+				"kind": "number",
+				"min": 10,
+				"max": 120,
+				"step": 1,
+				"doc": "How far outside the text (CSS px) the pointer still lights it. Default 40.",
+				"default": 40,
+				"live": "config"
+			},
+			{
+				"name": "as",
+				"kind": "other",
+				"doc": "The element to render. Default `span`.",
+				"default": "span"
+			},
+			{
+				"name": "stroke",
+				"kind": "string",
+				"doc": "The outline's width. Default `1.5px`.",
+				"default": "1.5px",
+				"live": {
+					"css": "--spot-stroke",
+					"unit": ""
+				}
+			},
+			{
+				"name": "fill",
+				"kind": "enum",
+				"options": [
+					"dodge",
+					"solid"
+				],
+				"doc": "How the lit letters fill. Default `dodge`.",
+				"default": "dodge"
+			},
+			{
+				"name": "fit",
+				"kind": "boolean",
+				"doc": "Size the text to span its parent's width. Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"Tilt": {
+		"selector": ".effect-tilt",
+		"props": [
+			{
+				"name": "as",
+				"kind": "other",
+				"doc": "The element to render. Default `div`.",
+				"default": "div"
+			},
+			{
+				"name": "max",
+				"kind": "number",
+				"min": 2,
+				"max": 24,
+				"step": 1,
+				"doc": "The most it leans, degrees. Default 8.",
+				"default": 8,
+				"live": "config"
+			},
+			{
+				"name": "perspective",
+				"kind": "number",
+				"min": 230,
+				"max": 2700,
+				"step": 1,
+				"doc": "The perspective's distance, px; smaller is more dramatic. Default 900.",
+				"default": 900,
+				"live": {
+					"css": "--tilt-perspective",
+					"unit": "px"
+				}
+			},
+			{
+				"name": "glare",
+				"kind": "boolean",
+				"doc": "A light glare that follows the pointer. Default false.",
+				"default": false,
+				"live": {
+					"class": "has-glare"
+				}
+			},
+			{
+				"name": "lift",
+				"kind": "number",
+				"min": 0,
+				"max": 40,
+				"step": 1,
+				"doc": "How far it lifts towards the viewer while tilted, px. Default 0.",
+				"default": 0,
+				"live": {
+					"css": "--tilt-lift",
+					"unit": "px"
+				}
+			},
+			{
+				"name": "within",
+				"kind": "string",
+				"doc": "A selector for a larger region to follow the pointer over. Default the element.",
+				"live": "config"
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"Topography": {
+		"selector": "[data-effect-topography]",
+		"props": [
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "The lines' colour, or a gradient by elevation from the valleys to the peaks (up to five), blended in Oklab. Default a pale blue.",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), as a gradient by elevation, when there are no `colors`.",
+				"live": "config"
+			},
+			{
+				"name": "background",
+				"kind": "color",
+				"doc": "The ground the lines are drawn on. Default `#0c1a2b`.",
+				"default": "#0c1a2b",
+				"live": "config"
+			},
+			{
+				"name": "density",
+				"kind": "number",
+				"min": 6,
+				"max": 60,
+				"step": 1,
+				"doc": "About how many lines cross the screen from top to bottom, 6–60. Default 24.",
+				"default": 24,
+				"live": "config"
+			},
+			{
+				"name": "thickness",
+				"kind": "number",
+				"min": 0.5,
+				"max": 3,
+				"step": 0.02,
+				"doc": "The lines' width, CSS px, 0.5–3; index lines are twice as wide. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "major",
+				"kind": "number",
+				"min": 0,
+				"max": 10,
+				"step": 1,
+				"doc": "Every n-th line is an index line, drawn heavier, 0–10; 0 for none. Default 5.",
+				"default": 5,
+				"live": "config"
+			},
+			{
+				"name": "scale",
+				"kind": "number",
+				"min": 0.4,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How large the hills are, 0.4–3. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 0,
+				"max": 4,
+				"step": 0.02,
+				"doc": "How fast the land drifts, 0–4; 0 holds it still. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "glow",
+				"kind": "number",
+				"min": 0,
+				"max": 2,
+				"step": 0.01,
+				"doc": "How strongly the lines glow under the pointer, 0–2; 0 for none. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "interactive",
+				"kind": "boolean",
+				"doc": "Whether the pointer raises the ground and lights its lines. Default true.",
+				"default": true,
+				"live": "config"
+			},
+			{
+				"name": "labels",
+				"kind": "boolean",
+				"doc": "Small elevation numbers on a few index lines. Default false.",
+				"default": false,
+				"live": "config"
+			},
+			{
+				"name": "quiet",
+				"kind": "point",
+				"fields": [
+					{
+						"name": "x",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "radius",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "depth",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "An area kept dim behind copy: centre (0–1 from the top left), radius (a share of the height), depth (0–1). Default none; `{}` for the middle.",
+				"live": "config"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"Typewriter": {
+		"selector": ".effect-typewriter",
+		"props": [
+			{
+				"name": "phrases",
+				"kind": "list",
+				"doc": "What it types, in turn.",
+				"live": "config"
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 14,
+				"max": 170,
+				"step": 1,
+				"doc": "Milliseconds a character when typing. Default 55.",
+				"default": 55,
+				"live": "config"
+			},
+			{
+				"name": "pause",
+				"kind": "number",
+				"min": 400,
+				"max": 4800,
+				"step": 1,
+				"doc": "Milliseconds a finished phrase stays. Default 1600.",
+				"default": 1600,
+				"live": "config"
+			},
+			{
+				"name": "loop",
+				"kind": "boolean",
+				"doc": "Start again after the last. Default true.",
+				"default": true,
+				"live": "config"
+			},
+			{
+				"name": "caret",
+				"kind": "color",
+				"doc": "The caret's colour. Default the text colour.",
+				"default": "currentColor",
+				"live": {
+					"css": "--caret",
+					"unit": ""
+				}
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"VariableType": {
+		"selector": ".effect-variable-type",
+		"props": [
+			{
+				"name": "axes",
+				"kind": "other",
+				"doc": "The axes that swell, `{ tag: [rest, peak] }`. Axes the font lacks do nothing. Default `{ wght: [100, 900], wdth: [75, 125] }`.",
+				"default": {
+					"wght": [
+						100,
+						900
+					],
+					"wdth": [
+						75,
+						125
+					]
+				},
+				"live": "config"
+			},
+			{
+				"name": "radius",
+				"kind": "number",
+				"min": 0.3,
+				"max": 4,
+				"step": 0.02,
+				"doc": "How far a swell reaches from the pointer, in ems (0.3–4). Default 1.1.",
+				"default": 1.1,
+				"live": "config"
+			},
+			{
+				"name": "falloff",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How it drops off: 0 a broad hill, 1 a sharp peak (0–1). Default 0.5.",
+				"default": 0.5,
+				"live": "config"
+			},
+			{
+				"name": "idle",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How far the travelling swell rises with nothing over the text: 0 none, 1 to the peak (0–1). Default 0.35.",
+				"default": 0.35,
+				"live": "config"
+			},
+			{
+				"name": "fit",
+				"kind": "boolean",
+				"doc": "Size the line so that at its widest swell it spans its parent's width. Default false.",
+				"default": false,
+				"live": "config"
+			},
+			{
+				"name": "as",
+				"kind": "other",
+				"doc": "The element to render. Default `div`.",
+				"default": "div"
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"VoxelLogo": {
+		"selector": "[data-effect-voxel-logo]",
+		"props": [
+			{
+				"name": "text",
+				"kind": "string",
+				"doc": "A character or word to build in cubes.",
+				"live": "config"
+			},
+			{
+				"name": "font",
+				"kind": "string",
+				"doc": "Its CSS font, without the size. Default: the page's, bold.",
+				"live": "config"
+			},
+			{
+				"name": "src",
+				"kind": "string",
+				"doc": "An image (an SVG logo) to build instead.",
+				"live": "config"
+			},
+			{
+				"name": "area",
+				"kind": "point",
+				"fields": [
+					{
+						"name": "x",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "width",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "height",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "Where the solid sits, each 0–1 from the top left. Default the right half.",
+				"live": "config"
+			},
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "The ink, then the paper. Default mint on near-black.",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), when there are no `colors`.",
+				"live": "config"
+			},
+			{
+				"name": "size",
+				"kind": "number",
+				"min": 0.32,
+				"max": 3.9,
+				"step": 0.02,
+				"doc": "How large the solid is in its area (1 just fits when face-on). Default 1.3.",
+				"default": 1.3,
+				"live": "config"
+			},
+			{
+				"name": "cells",
+				"kind": "number",
+				"min": 7,
+				"max": 84,
+				"step": 1,
+				"doc": "Cubes across the shape. Default 28.",
+				"default": 28,
+				"live": "config"
+			},
+			{
+				"name": "depth",
+				"kind": "number",
+				"min": 1,
+				"max": 12,
+				"step": 1,
+				"doc": "Cubes deep. Default 4.",
+				"default": 4,
+				"live": "config"
+			},
+			{
+				"name": "dither",
+				"kind": "number",
+				"min": 0,
+				"max": 6,
+				"step": 0.05,
+				"doc": "The dither's pixel size, CSS px; 0 for smooth shading. Default 2.",
+				"default": 2,
+				"live": "config"
+			},
+			{
+				"name": "markers",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "Tracking markers ringing the solid (try 6); 0 for none. Default 0.",
+				"default": 0,
+				"live": "config"
+			},
+			{
+				"name": "rock",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How far it rocks and turns towards the pointer. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"WaveBars": {
+		"selector": "[data-effect-wave-bars]",
+		"props": [
+			{
+				"name": "color",
+				"kind": "color",
+				"doc": "One colour for every bar. Default: the `colors` gradient.",
+				"live": "config"
+			},
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "Colours the bars run through from left to right, blended in Oklab. Default teal, ice and apricot.",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), when there are no `colors` or `color`.",
+				"live": "config"
+			},
+			{
+				"name": "step",
+				"kind": "number",
+				"min": 2,
+				"max": 24,
+				"step": 1,
+				"doc": "Space between bars, CSS px. Default 8.",
+				"default": 8,
+				"live": "config"
+			},
+			{
+				"name": "bar",
+				"kind": "number",
+				"min": 0.75,
+				"max": 9,
+				"step": 0.05,
+				"doc": "A bar's width, CSS px. Default 3.",
+				"default": 3,
+				"live": "config"
+			},
+			{
+				"name": "height",
+				"kind": "number",
+				"min": 0.085,
+				"max": 1,
+				"step": 0.005,
+				"doc": "The tallest bar, a share of the height either side of the middle. Default 0.34.",
+				"default": 0.34,
+				"live": "config"
+			},
+			{
+				"name": "every",
+				"kind": "number",
+				"min": 0.5,
+				"max": 6,
+				"step": 0.05,
+				"doc": "Seconds between retunes. Default 2.",
+				"default": 2,
+				"live": "config"
+			},
+			{
+				"name": "sweep",
+				"kind": "boolean",
+				"doc": "The playhead sweeping across, lighting the bars it plays. Default true.",
+				"default": true,
+				"live": "config"
+			},
+			{
+				"name": "grain",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "Film grain in the light, 0–1. Default 0.4.",
+				"default": 0.4,
+				"live": "config"
+			},
+			{
+				"name": "peaks",
+				"kind": "boolean",
+				"doc": "Peak marks over the bars that hold, then drop, as a meter's do. Default true.",
+				"default": true,
+				"live": "config"
+			},
+			{
+				"name": "glow",
+				"kind": "number",
+				"min": 0,
+				"max": 2,
+				"step": 0.01,
+				"doc": "How much light the bars and playhead give off, 0–2. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "scrub",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How much the bars under the pointer rise and light; 0 for not at all. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "audio",
+				"kind": "other",
+				"doc": "Follow the sound playing: `'page'` for whatever plays, or a CSS selector for an `<audio>`/`<video>` or a player's container (a WaveformPlayer). The bars show its spectrum (bass in the middle) and the playhead follows the track; while nothing plays they keep their own motion. Default none.",
+				"live": "config"
+			},
+			{
+				"name": "quiet",
+				"kind": "point",
+				"fields": [
+					{
+						"name": "x",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "radius",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "depth",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "An area where the light dims (behind a headline): centre x/y (0–1, from the top left), radius (a share of the height) and depth (0 none, 1 dark). Default none.",
+				"live": "config"
+			},
+			{
+				"name": "fade",
+				"kind": "boolean",
+				"doc": "Fade the left and right edges out. Default true.",
+				"default": true
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"WorldRoutes": {
+		"selector": "[data-effect-world-routes]",
+		"props": [
+			{
+				"name": "routes",
+				"kind": "other",
+				"doc": "The routes: `[from, to]`, a place alone (from `home`), or `{ from, to, color, label, speed, width, dashed }`. A place is a key of CITIES, [degrees north, degrees east], or `{ name, lat, lon }`. Default ten routes round the world, or, with a `home`, routes from it to ten cities round the world.",
+				"live": "config"
+			},
+			{
+				"name": "home",
+				"kind": "other",
+				"doc": "A hub: routes with no `from` start here, and it is marked out with a ring and a halo. Default none.",
+				"live": "config"
+			},
+			{
+				"name": "color",
+				"kind": "color",
+				"doc": "The routes' colour. Default `#38bdf8`.",
+				"default": "#38bdf8",
+				"live": "config"
+			},
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "A palette in place of `color`: each city takes the next colour in the order they appear (a home city takes the first and keeps it), and each route the colour of the city it runs to. Default none.",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), when there are no `colors`.",
+				"live": "config"
+			},
+			{
+				"name": "gradient",
+				"kind": "boolean",
+				"doc": "Blend each route from its origin's colour to its destination's, in Oklab (with `colors`). Default false.",
+				"default": false,
+				"live": "config"
+			},
+			{
+				"name": "land",
+				"kind": "color",
+				"doc": "The land dots' colour, and the names'. Default `#ffffff`.",
+				"default": "#ffffff",
+				"live": "config"
+			},
+			{
+				"name": "landOpacity",
+				"kind": "number",
+				"min": 0.045,
+				"max": 0.54,
+				"step": 0.005,
+				"doc": "The land dots' opacity. Default 0.18.",
+				"default": 0.18,
+				"live": "config"
+			},
+			{
+				"name": "pitch",
+				"kind": "number",
+				"min": 1,
+				"max": 21,
+				"step": 1,
+				"doc": "Space between land dots, CSS px. Default 7.",
+				"default": 7,
+				"live": "config"
+			},
+			{
+				"name": "dot",
+				"kind": "number",
+				"min": 0.34,
+				"max": 4.2,
+				"step": 0.02,
+				"doc": "A land dot's radius, CSS px. Default 1.4.",
+				"default": 1.4,
+				"live": "config"
+			},
+			{
+				"name": "dotShape",
+				"kind": "enum",
+				"options": [
+					"round",
+					"square"
+				],
+				"doc": "The land dots' shape: `round` or `square`. Default `round`.",
+				"default": "round",
+				"live": "config"
+			},
+			{
+				"name": "graticule",
+				"kind": "boolean",
+				"doc": "Faint lines of latitude and longitude, in dots: true for every 30°, or the degrees between them. Default false.",
+				"default": false,
+				"live": "config"
+			},
+			{
+				"name": "region",
+				"kind": "other",
+				"doc": "What the map shows: `world`, `europe`, `north-america`, `south-america`, `africa`, `middle-east`, `asia`, `oceania`, `routes` (fitted round the cities and the arcs between them), or [[south, west], [north, east]]. Default `world`.",
+				"default": "world",
+				"live": "config"
+			},
+			{
+				"name": "fit",
+				"kind": "enum",
+				"options": [
+					"contain",
+					"cover"
+				],
+				"doc": "`contain` shows all of the region; `cover` fills the box with it. Default `contain`.",
+				"default": "contain",
+				"live": "config"
+			},
+			{
+				"name": "drift",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "Pan the map east this many degrees a second (negative for west), round and round the world. Default 0.",
+				"default": 0,
+				"live": "config"
+			},
+			{
+				"name": "lap",
+				"kind": "number",
+				"min": 0.8,
+				"max": 9.6,
+				"step": 0.05,
+				"doc": "Seconds a comet takes along a route. Default 3.2.",
+				"default": 3.2,
+				"live": "config"
+			},
+			{
+				"name": "lift",
+				"kind": "number",
+				"min": 0.075,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How high the arcs bow, a share of their length. Default 0.3, or 0.08 with a great-circle `curve`.",
+				"default": 0.3,
+				"live": "config"
+			},
+			{
+				"name": "curve",
+				"kind": "enum",
+				"options": [
+					"bow",
+					"great-circle"
+				],
+				"doc": "`bow`: arcs bow up between the cities. `great-circle`: they follow the shortest way over the globe, over the date line where that is shorter. Default `bow`.",
+				"default": "bow",
+				"live": "config"
+			},
+			{
+				"name": "arcOpacity",
+				"kind": "number",
+				"min": 0.034,
+				"max": 0.42,
+				"step": 0.002,
+				"doc": "The faint arcs' opacity. Default 0.14.",
+				"default": 0.14,
+				"live": "config"
+			},
+			{
+				"name": "dashed",
+				"kind": "boolean",
+				"doc": "Dash the faint arcs, the dashes running from origin to destination. Default false.",
+				"default": false,
+				"live": "config"
+			},
+			{
+				"name": "width",
+				"kind": "number",
+				"min": 0.55,
+				"max": 6.6,
+				"step": 0.05,
+				"doc": "The comets' width, CSS px; the faint arcs are a line half as wide. Default 2.2.",
+				"default": 2.2,
+				"live": "config"
+			},
+			{
+				"name": "tail",
+				"kind": "number",
+				"min": 0.07,
+				"max": 1,
+				"step": 0.005,
+				"doc": "A comet's length, a share of its route. Default 0.28.",
+				"default": 0.28,
+				"live": "config"
+			},
+			{
+				"name": "glow",
+				"kind": "number",
+				"min": 0,
+				"max": 30,
+				"step": 1,
+				"doc": "The glow round a comet's head, CSS px; 0 for none. Default 10.",
+				"default": 10,
+				"live": "config"
+			},
+			{
+				"name": "comets",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "Comets on each route at once. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "ping",
+				"kind": "number",
+				"min": 0,
+				"max": 51,
+				"step": 1,
+				"doc": "How wide the ring a landing comet opens grows, CSS px; 0 for none. Default 17.",
+				"default": 17,
+				"live": "config"
+			},
+			{
+				"name": "markers",
+				"kind": "boolean",
+				"doc": "Mark the cities with a dot. Default true.",
+				"default": true,
+				"live": "config"
+			},
+			{
+				"name": "markerSize",
+				"kind": "number",
+				"min": 0.55,
+				"max": 6.6,
+				"step": 0.05,
+				"doc": "A city dot's radius, CSS px. Default 2.2.",
+				"default": 2.2,
+				"live": "config"
+			},
+			{
+				"name": "halo",
+				"kind": "boolean",
+				"doc": "A soft halo breathing round every city (the home city always has one). Default false.",
+				"default": false,
+				"live": "config"
+			},
+			{
+				"name": "labels",
+				"kind": "boolean",
+				"doc": "Name the cities, leaving out names that would overlap (hovering a city names it either way). Default false.",
+				"default": false,
+				"live": "config"
+			},
+			{
+				"name": "font",
+				"kind": "string",
+				"doc": "The names' CSS font. Default `500 11px system-ui, sans-serif`.",
+				"default": "500 11px system-ui, sans-serif",
+				"live": "config"
+			},
+			{
+				"name": "interactive",
+				"kind": "boolean",
+				"doc": "Hovering a city or a route (not through a link or button) brightens it and names it. Default true.",
+				"default": true,
+				"live": "config"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "fade",
+				"kind": "boolean",
+				"doc": "Fade the edges out, for a cropped map: true for the left and right, or 'top', 'bottom' or 'both'. Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	}
+}

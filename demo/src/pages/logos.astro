@@ -2,7 +2,6 @@
 /** The gallery's Logos page. */
 import Gallery from '../layouts/Gallery.astro';
 import Hero from '../components/Hero.astro';
-import PaletteChips from '../components/PaletteChips.astro';
 import GlassGlyph from '@arraypress/effects-astro/GlassGlyph.astro';
 import LiquidMetal from '@arraypress/effects-astro/LiquidMetal.astro';
 import NebulaLogo from '@arraypress/effects-astro/NebulaLogo.astro';
@@ -18,7 +17,6 @@ import VoxelLogo from '@arraypress/effects-astro/VoxelLogo.astro';
 		<h2 class="headline" style="font: 900 clamp(64px, 10vw, 150px)/0.9 Impact, 'Arial Narrow', sans-serif; text-transform: uppercase; letter-spacing: 0">Heavy<br />Rotation</h2>
 		<p class="lede">The station that plays whole albums, start to finish. On air every night from ten.</p>
 		<div class="actions"><a class="btn" href="#">Listen live</a><a class="btn btn--ghost" href="#">Tonight's album</a></div>
-		<PaletteChips slot="tools" />
 	</Hero>
 	<Hero id="liquid-metal" name="LiquidMetal" code={`<LiquidMetal src="/logo.svg" />`} align="left" style="--hero-ground: radial-gradient(90% 70% at 72% 45%, #23262b, #0d0e10 60%, #060607)">
 		<LiquidMetal slot="effect" src="/logo.svg" />
@@ -26,14 +24,12 @@ import VoxelLogo from '@arraypress/effects-astro/VoxelLogo.astro';
 		<h2 class="headline" style="max-width: 9ch">Poured, not <em>made.</em></h2>
 		<p class="lede" style="max-width: 24rem">Handles, hinges and pulls cast in solid brass and plated to a mirror. Go on, press the metal.</p>
 		<div class="actions"><a class="btn" href="#">Shop the finishes</a></div>
-		<PaletteChips slot="tools" />
 	</Hero>
 	<Hero id="particle-logo" name="ParticleLogo" code={`<ParticleLogo src="/logo.svg" />`}>
 		<ParticleLogo slot="effect" src="/logo.svg" />
 		<span class="eyebrow">Rewind · vinyl reissues</span>
 		<h2 class="headline">Rewind <em>wild.</em></h2>
 		<p class="lede">Lost albums, remastered from the tapes and pressed on heavyweight vinyl. Move through the dust.</p>
-		<PaletteChips slot="tools" />
 	</Hero>
 	<Hero id="neon-swarm" name="NeonSwarm" code={`<NeonSwarm src="/logo.svg" />`} align="left" style="--hero-ground: #030406">
 		<NeonSwarm slot="effect" src="/logo.svg" />
@@ -41,7 +37,6 @@ import VoxelLogo from '@arraypress/effects-astro/VoxelLogo.astro';
 		<h2 class="headline" style="max-width: 8ch">Never <em>still.</em></h2>
 		<p class="lede" style="max-width: 24rem">Brand systems that move, from the logo to the launch film. Push through the swarm.</p>
 		<div class="actions"><a class="btn" href="#">See the reel</a></div>
-		<PaletteChips slot="tools" />
 	</Hero>
 	<Hero id="nebula-logo" name="NebulaLogo" code={`<NebulaLogo src="/logo.svg" />`} align="left" style="--hero-ground: #05070a">
 		<NebulaLogo slot="effect" src="/logo.svg" />
@@ -49,13 +44,11 @@ import VoxelLogo from '@arraypress/effects-astro/VoxelLogo.astro';
 		<h2 class="headline" style="max-width: 8ch">Lit from <em>within.</em></h2>
 		<p class="lede" style="max-width: 24rem">Overnight serums made in small batches, with nothing on the label you can't pronounce.</p>
 		<div class="actions"><a class="btn" href="#">Find your serum</a></div>
-		<PaletteChips slot="tools" />
 	</Hero>
 	<Hero id="point-cloud" name="PointCloud" code={`<PointCloud text="inference" font="700 ui-monospace, Menlo, monospace" />`} align="bottom">
 		<PointCloud slot="effect" text="inference" font="700 ui-monospace, Menlo, monospace" />
 		<span class="eyebrow">Sightline · edge vision</span>
 		<p class="lede" style="margin: 0">Vision models on live video at the edge: detection, tracking and segmentation in milliseconds.</p>
-		<PaletteChips slot="tools" />
 	</Hero>
 	<Hero id="voxel-logo" name="VoxelLogo" code={`<VoxelLogo src="/logo.svg" cells={30} />`} align="left">
 		<VoxelLogo slot="effect" src="/logo.svg" cells={30} />
@@ -63,6 +56,5 @@ import VoxelLogo from '@arraypress/effects-astro/VoxelLogo.astro';
 		<h2 class="headline" style="max-width: 9ch">Build the world, then play it.</h2>
 		<p class="lede" style="max-width: 24rem">A sandbox where every cube is yours to place. Early access opens on the first of the month.</p>
 		<div class="actions"><a class="btn" href="#">Join early access</a></div>
-		<PaletteChips slot="tools" />
 	</Hero>
 </Gallery>

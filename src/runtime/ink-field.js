@@ -7,7 +7,8 @@
  * lights. The lamp follows the pointer and rests at the upper left; moving
  * the pointer pushes the ink aside and leaves a small, faint trail of its
  * own, and a still pointer does nothing. The field dims itself in the
- * middle, behind the copy.
+ * middle, behind the copy. Following sound (`audio`, ./audio.js), each
+ * kick in its low end stirs the whole field and the ink brightens with it.
  *
  * Adapted from Trirat's ink shader for LumiThemes (smoke-sim.ts and its
  * LumiField driver), with his twelve palettes. The sim, the display and
@@ -34,6 +35,7 @@ import { PALETTES, findPalette } from './palettes.js';
 import { colorPools } from './pools.js';
 import { createInkSim } from './ink-field/sim.js';
 import { DISPLAY } from './ink-field/shaders.js';
+import { audioSignal } from './audio.js';
 
 /**
  * @typedef {object} InkFieldConfig
@@ -45,6 +47,7 @@ import { DISPLAY } from './ink-field/shaders.js';
  * @property {{ x?: number, y?: number }} [lamp] Where the lamp rests, 0–1 from the top left. Default `{ x: 0.14, y: 0.14 }`.
  * @property {boolean} [still=false] Hold one frame of settled ink and never animate, as with reduced motion.
  * @property {number} [scale=0.5] Share of the pixel ratio drawn at.
+ * @property {string} [audio] Follow the sound playing: `'page'` for whatever plays, or a CSS selector for an `<audio>`/`<video>` or a player's container (a WaveformPlayer). Kicks stir the ink and it brightens with the beat; while nothing plays it keeps its own motion.
  */
 
 
@@ -66,6 +69,9 @@ const POINTER_EASE = 0.06;
 const LAMP_EASE = 0.035;
 /** The colours' easing time constant, seconds: about a second to new colours. */
 const COLOR_EASE = 0.35;
+/** How much brighter the ink gets on a kick, and with the sound's level. */
+const KICK_GAIN = 0.4;
+const LEVEL_GAIN = 0.15;
 
 
 /**
@@ -153,6 +159,11 @@ export function inkField(el, config) {
 	let fitted = { width: 0, height: 0 };
 	/** @type {import('./ink-field/sim.js').InkSim | null} */
 	let sim = null;
+	/** @type {import('./audio.js').AudioSignal | null} */
+	let sound = null;
+	/** The kicks already answered, and how much brighter the ink is drawn now. */
+	let beats = 0;
+	let gain = 0;
 
 	const { stage, stop } = createStage(el, {
 		fragment: DISPLAY,
@@ -160,12 +171,14 @@ export function inkField(el, config) {
 		alpha: false,
 		scale: settings.scale,
 		still: settings.still,
-		setup({ gl }) {
+		setup({ gl, still }) {
 			const made = createInkSim(gl);
 			if (!made) return false;
 			sim = made;
+			if (config.audio && !still) sound = audioSignal(config.audio);
 			return () => {
 				clearTimeout(timer);
+				sound?.stop();
 				made.destroy();
 			};
 		},
@@ -193,10 +206,18 @@ export function inkField(el, config) {
 				if (s.still) s.redraw();
 			}, RESIZE_WAIT);
 		},
-		update({ still }, _now, frameDt) {
+		update({ still }, now, frameDt) {
 			if (still || !sim || !frameDt) return;
 			const dt = Math.min(frameDt, MAX_STEP);
 			clock += dt;
+
+			// The sound: each kick stirs the field, and the ink brightens with it.
+			const heard = sound?.read(now, frameDt) ?? null;
+			gain = heard ? heard.on * (heard.kick * KICK_GAIN + heard.level * LEVEL_GAIN) : 0;
+			if (heard && heard.beats !== beats) {
+				beats = heard.beats;
+				sim.kick(heard.kick * heard.on);
+			}
 
 			// The pointer eases, by the clock; its inertia is the ink's input.
 			if (hover) {
@@ -242,6 +263,7 @@ export function inkField(el, config) {
 			gl.uniform2f(uniform('uDyeTxl'), tx, ty);
 			const light = still ? rest : lamp;
 			gl.uniform2f(uniform('uLight'), light.x, light.y);
+			gl.uniform1f(uniform('uGain'), gain);
 		},
 	});
 

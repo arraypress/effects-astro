@@ -1,17 +1,20 @@
 /**
  * @module @arraypress/effects-astro/glass-glyph
  *
- * A character or a logo as a thick slab of bevelled glass over a dark
- * ground, lit from behind by one coloured light: four beams turning out
- * from a point like a pinwheel, sharp on one side and fading on the other,
- * dithered into halftone dots where they fade. The light stays put; the
- * slab turns slowly on its own and leans a little away from the pointer, so
- * its side walls show and the highlights slide along its bevels.
+ * A character or a logo as a thick slab of dark, smoked glass, lit from
+ * behind by one coloured light: four beams turning out from a point like a
+ * pinwheel, sharp on one side and fading on the other. Outside the glass the
+ * light is only a dim trace on a near-black ground; the slab catches it,
+ * carries it through its body and glows with it along its bevels, so the
+ * glass is the lit thing. The light stays put; the slab turns slowly on its
+ * own and leans a little away from the pointer, so its side walls show and
+ * the highlights slide along its bevels.
  *
  * Through the glass the beams are softened, shifted and split into colour,
- * hardest across the bevels; a bright rim runs round the outer edge and a
- * fainter crease where the bevel meets the face, both brightest where they
- * face the light, and the bevels mirror the light back.
+ * hardest across the bevels, and muted by the smoke; a bright rim runs round
+ * the outer edge and a fainter crease where the bevel meets the face, both
+ * brightest where they face the light or the beams, and the bevels mirror
+ * the light back.
  *
  * The lens model (edge-weighted refraction, rim, glint and fresnel) is
  * adapted from shaders.com's Glass component (MIT, © 2026 Shader Effects
@@ -24,7 +27,7 @@
 
 import { createStage } from './stage.js';
 import { drawShape, distanceField, blurField } from './shape.js';
-import { parseColor } from './color.js';
+import { parseColor, toOklab, fromOklab } from './color.js';
 import { canHover } from './device.js';
 import { pointerIn } from './pointer.js';
 import { watchColors } from './mount.js';
@@ -41,18 +44,19 @@ import { pickColors } from './palettes.js';
  * @property {string[]} [colors] The light's colour, then the glass's tint (default acid green, white).
  * @property {string} [palette] A shared palette by name (PALETTES; any case), when there are no `colors`. Its first colour lights the glass; its glint is the highlight.
  * @property {string} [background='#050505'] The ground.
- * @property {number} [refraction=1] How hard the glass bends what is behind it, most of all across its bevels.
- * @property {number} [thickness=0.035] How wide the bevel round the edge is, a share of the height.
- * @property {number} [zoom=1.04] How much the glass magnifies what is behind it.
- * @property {number} [aberration=0.6] How far the colours part where it bends; 0 for none.
- * @property {number} [frost=0] Frosted glass: how much more what is behind is blurred, 0–1.
+ * @property {number} [refraction=1] How hard the glass bends what is behind it, most of all across its bevels, 0–2.
+ * @property {number} [thickness=0.035] How wide the bevel round the edge is, a share of the height, 0.01–0.1.
+ * @property {number} [zoom=1.04] How much the glass magnifies the light behind it, 1–1.3.
+ * @property {number} [aberration=0.6] How far the colours part where it bends, 0–2; 0 for none.
+ * @property {number} [frost=0] Frosted glass: how much more the light through it is blurred, 0–1.
  * @property {number} [tint=0.1] How much the glass takes the tint colour, 0–1.
- * @property {number} [highlight=0.8] The lit rims and the glints.
- * @property {number} [fresnel=0.5] How much the bevels mirror the light.
- * @property {number} [lightAngle=135] Where the light on the rims comes from, degrees (0 right, 90 top).
- * @property {number} [glow=1] How strong the coloured light behind is.
- * @property {boolean} [halftone=true] Dither the light's fading edges into dots.
- * @property {number} [sway=1] How far the slab turns on its own and away from the pointer; 0 holds it still.
+ * @property {number} [highlight=0.8] The lit rims and the glints, 0–2.
+ * @property {number} [fresnel=0.5] How much the bevels mirror the light, 0–1.
+ * @property {number} [lightAngle=135] Where the light on the rims comes from, degrees, 0–360 (0 right, 90 top).
+ * @property {number} [glow=1] How strong the coloured light is, 0–2.
+ * @property {number} [ambient=0.1] How much of the light shows outside the glass, 0–1: 0 is a black ground, 1 the full beams.
+ * @property {boolean} [halftone=false] Dither the light outside the glass into dots where it fades.
+ * @property {number} [sway=1] How far the slab turns on its own and away from the pointer, 0–2; 0 holds it still.
  */
 
 const FRAG = `
@@ -64,6 +68,7 @@ uniform float uSpread;
 uniform vec2 uCross;
 uniform vec2 uTilt;
 uniform vec3 uGlow;
+uniform vec3 uGlass;
 uniform vec3 uTint;
 uniform vec3 uGround;
 uniform float uRefraction;
@@ -76,11 +81,13 @@ uniform float uHighlight;
 uniform float uFresnel;
 uniform vec2 uLightDir;
 uniform float uGlowAmount;
+uniform float uAmbient;
 uniform float uHalftone;
 
 const float TAU = 6.2831853;
 // How deep the slab is, in heights: how far its back face slides as it turns.
 const float SLAB = 0.15;
+const vec3 LUMA = vec3(0.299, 0.587, 0.114);
 
 // The distance field: 0.5 at the shape's edge, more inside.
 float field(vec2 uv) { return texture2D(uSdf, vec2(uv.x, 1.0 - uv.y)).r; }
@@ -96,12 +103,10 @@ float beam(float angle, float r, float axis, float width, float edge) {
 	return smoothstep(-e, e, s) * exp(-max(s, 0.0) / width);
 }
 
-// What is behind the glass: four beams turning out from where they cross,
-// dithered into dots where they fade. 'soft' (0 sharp, 1 through thick
-// glass) blurs the edges and the dots away.
-vec3 ground(vec2 uv, float soft) {
-	float aspect = uRes.x / uRes.y;
-	vec2 d = (uv - uCross) * vec2(aspect, 1.0);
+// The light behind the glass, 0 dark to about 1: four beams turning out from
+// where they cross. 'soft' (0 sharp, 1 through thick glass) blurs their edges.
+float light(vec2 uv, float soft) {
+	vec2 d = (uv - uCross) * vec2(uRes.x / uRes.y, 1.0);
 	float r = length(d);
 	float a = atan(d.y, d.x);
 	float edge = mix(1.5 / uRes.y, 0.05, soft);
@@ -111,16 +116,28 @@ vec3 ground(vec2 uv, float soft) {
 		+ beam(a, r, 1.5708, 0.22 * spread, edge) * 0.85
 		+ beam(a, r, -1.5708, 0.18 * spread, edge) * 0.24
 		+ beam(a, r, 3.14159, 0.16 * spread, edge) * 0.18;
-	// Brighter away from the crossing, and a faint haze round it.
+	// Brighter away from the crossing, and a haze round it.
 	b *= smoothstep(0.0, 0.6, r) * 0.8 + 0.2;
-	b += exp(-r * r * 12.0) * 0.04;
-	b *= uGlowAmount;
-	// Halftone: dots on a fine grid, as big as the light is bright, mixed in where it fades.
+	b += exp(-r * r * 12.0) * 0.06;
+	return b * uGlowAmount;
+}
+
+// The light as the smoked glass shows it: its colour, muted, going pale where it is brightest.
+vec3 lit(vec2 uv, float soft) {
+	float b = light(uv, soft);
+	return uGlass * b + vec3(pow(clamp(b, 0.0, 1.0), 3.0) * 0.15);
+}
+
+// The ground outside the glass: near black, the light only a dim trace of
+// itself ('uAmbient'), dithered into dots with 'uHalftone'.
+vec3 ground(vec2 uv) {
+	float b = light(uv, 0.0);
+	// Dots on a fine grid, as big as the light is bright, mixed in where it fades.
 	vec2 cell = fract(uv * uRes / (4.0 * max(uRes.y / 760.0, 1.0))) - 0.5;
 	float spot = smoothstep(0.08, -0.08, length(cell) - sqrt(clamp(b, 0.0, 1.0)) * 0.62);
 	float fade = smoothstep(0.02, 0.2, b) * (1.0 - smoothstep(0.35, 0.8, b));
-	b = mix(b, spot * min(b * 1.6, 1.0), fade * uHalftone * 0.5 * (1.0 - smoothstep(0.0, 0.3, soft)));
-	return uGround + uGlow * b + vec3(pow(clamp(b, 0.0, 1.0), 3.0) * 0.22);
+	b = mix(b, spot * min(b * 1.6, 1.0), fade * uHalftone * 0.5);
+	return uGround + uGlow * b * uAmbient;
 }
 
 void main() {
@@ -128,8 +145,12 @@ void main() {
 	float aspect = uRes.x / uRes.y;
 	float pxH = 1.0 / uRes.y;
 	vec2 toUv = vec2(1.0 / aspect, 1.0);
-	vec3 back = ground(uv, 0.0);
 	float d = depthAt(uv);
+	// The light the slab gathers and carries through its body, broad and soft.
+	float carry = light(uv, 1.0);
+
+	// Outside: the dark ground, and a faint haze where the lit glass glows into it.
+	vec3 back = ground(uv) + uGlass * carry * exp(min(d, 0.0) / 0.01) * 0.08;
 
 	// The back face: the shape slid against the turn, a slab's depth behind.
 	// Between it and the front are the side walls.
@@ -138,18 +159,20 @@ void main() {
 	float wall = max(max(dBack, depthAt(uv - slide * 0.5)), d);
 	if (wall < -pxH * 2.0) { gl_FragColor = vec4(back, 1.0); return; }
 
-	float soft = clamp(0.65 + uFrost, 0.0, 1.0);
-	vec3 rimTone = mix(vec3(1.0), uGlow, 0.15);
+	float soft = clamp(0.4 + uFrost, 0.0, 1.0);
+	vec3 rimTone = mix(vec3(1.0), uGlass, 0.3);
 	vec3 L = normalize(vec3(uLightDir, 0.9));
+	// The smoked glass itself: near black, warmed by the light it carries.
+	vec3 smoke = uGround + uGlass * (0.01 + carry * 0.04);
 
-	// The side walls: glass seen edge on, lit where they face the light, with
-	// the back face's edge as a fainter line.
+	// The side walls: glass seen edge on, carrying the light and lit where
+	// they face it, with the back face's edge as a fainter line.
 	float wallCover = clamp(wall / (pxH * 1.2), 0.0, 1.0);
 	float wallLit = clamp(dot(normalize(uTilt + 1e-5), uLightDir) * 0.5 + 0.5, 0.0, 1.0);
-	vec3 side = ground(uv + slide * 2.0, soft) * 0.55 + uGlow * 0.06 + vec3(0.05);
-	side += rimTone * (0.08 + 0.22 * wallLit) * uHighlight;
+	vec3 side = smoke + lit(uv + slide * 2.0, soft) * 0.5 + uGlass * carry * 0.2;
+	side += rimTone * (0.05 + 0.18 * wallLit) * uHighlight;
 	float backLine = clamp(1.0 - abs(dBack - pxH) / (pxH * 1.3), 0.0, 1.0);
-	side += rimTone * backLine * 0.5 * uHighlight;
+	side += rimTone * backLine * (0.25 + carry) * 0.5 * uHighlight;
 	vec3 col = mix(back, side, wallCover);
 
 	// The front face.
@@ -162,31 +185,34 @@ void main() {
 	float slope = (0.9 + 1.6 * pow(1.0 - s, 4.0)) * crease;
 	vec3 n = normalize(vec3(-inward * slope + uTilt, 1.0));
 
-	// Through the glass: refracted by the surface, magnified about the light,
-	// softened, and split into colour.
+	// Through the glass: the light at full strength, refracted by the surface,
+	// magnified about the crossing, softened, and split into colour.
 	vec3 r = refract(vec3(0.0, 0.0, -1.0), n, 0.67);
 	vec2 offset = r.xy / max(-r.z, 0.2) * 0.12 * uRefraction * toUv;
 	vec2 lens = uCross + (uv - uCross) / uZoom + offset;
-	vec2 split = offset * uAberration * 0.3;
-	float thick = mix(soft, 1.0, (1.0 - s) * 0.5);
-	vec3 through = vec3(ground(lens + split, thick).r, ground(lens, thick).g, ground(lens - split, thick).b);
-	// Tinted, keeping its brightness, and a touch brighter where the slab gathers the light.
-	float lum = dot(through, vec3(0.299, 0.587, 0.114));
-	vec3 tinted = mix(through, uTint * lum / max(dot(uTint, vec3(0.299, 0.587, 0.114)), 1e-3), uTintAmount) * 1.15;
+	vec2 split = offset * uAberration * 0.18;
+	float thick = mix(soft, 1.0, (1.0 - s) * 0.2);
+	vec3 through = vec3(lit(lens + split, thick).r, lit(lens, thick).g, lit(lens - split, thick).b) * 1.35;
+	// Tinted, keeping its brightness.
+	vec3 tinted = mix(through, uTint * dot(through, LUMA) / max(dot(uTint, LUMA), 1e-3), uTintAmount);
 
-	// The bevels mirror the light: what lies along the reflected ray, far off.
+	// The bevels catch the light: they mirror it from along the reflected ray,
+	// and the light trapped in the slab glows out of them.
+	float edge = 1.0 - s;
 	float fres = pow(1.0 - n.z, 1.5) * uFresnel * 2.2;
 	vec3 m = reflect(vec3(0.0, 0.0, -1.0), n);
-	vec3 mirrored = ground(uv + m.xy * 0.45 * toUv, 1.0) * 1.3 + uGlow * 0.08 + vec3(0.16);
-	vec3 face = tinted * (1.0 - fres * 0.35) + mirrored * fres;
+	vec3 mirrored = lit(uv + m.xy * 0.45 * toUv, 0.4) * 1.3 + uGlass * carry * 0.3 + vec3(0.02);
+	vec3 face = smoke + tinted * (1.0 - fres * 0.35) + mirrored * fres + uGlass * carry * edge * edge * 0.12;
 
-	// The rim at the lip, the crease where the bevel meets the face, and the glints on the slope.
+	// The rim at the lip, the crease where the bevel meets the face, and the
+	// glints on the slope; brightest where they face the light or the beams.
 	float facing = clamp(dot(-inward, uLightDir) * 0.5 + 0.5, 0.0, 1.0);
 	float rim = clamp(1.0 - abs(d - pxH * 1.2) / (pxH * 1.4), 0.0, 1.0);
 	float seam = clamp(1.0 - abs(d - uBevel) / (pxH * 1.4), 0.0, 1.0);
 	vec3 h = normalize(L + vec3(0.0, 0.0, 1.0));
 	float glint = pow(max(dot(n, h), 0.0), 70.0) * (1.0 - s * 0.6);
-	face += rimTone * uHighlight * (rim * (0.45 + 0.9 * facing) + seam * (0.12 + 0.4 * facing) + glint * 1.4);
+	float catchLight = 0.5 + min(carry, 1.0) * 0.9;
+	face += rimTone * uHighlight * catchLight * (rim * (0.7 + 0.9 * facing) + seam * (0.12 + 0.4 * facing) + glint * 1.4);
 
 	float inside = clamp(d / (pxH * 1.5), 0.0, 1.0);
 	gl_FragColor = vec4(mix(col, face, smoothstep(0.0, 1.0, inside)), 1.0);
@@ -206,6 +232,22 @@ const LEAN = 0.16;
 /** How far the light shifts with the pointer: a touch of parallax, no more. */
 const PARALLAX = 0.012;
 
+/** How much of the light's colour the smoked glass keeps. */
+const SMOKE = 0.8;
+
+/**
+ * The light's colour and the colour it takes in the smoked glass: the same
+ * lightness, its chroma muted in Oklab.
+ *
+ * @param {string} color The light's colour.
+ * @returns {{ glow: import('./color.js').Rgb, glass: import('./color.js').Rgb }} Both, as RGB 0–1.
+ */
+function lightColors(color) {
+	const glow = parseColor(color);
+	const [L, a, b] = toOklab(glow);
+	return { glow, glass: fromOklab([L, a * SMOKE, b * SMOKE]) };
+}
+
 /**
  * Starts glass on an element: an opaque canvas inside it, filling it.
  *
@@ -215,6 +257,7 @@ const PARALLAX = 0.012;
  */
 export function glassGlyph(el, config) {
 	let colors = pickColors(config, COLORS, (p) => [p.colors[0], p.glint]);
+	let lit = lightColors(colors[0]);
 	const start = performance.now();
 	const area = config.area ?? AREA;
 	// The light's crossing, 0–1 with y up as the shader has it.
@@ -239,7 +282,8 @@ export function glassGlyph(el, config) {
 			gl.uniform1f(uniform('uHighlight'), config.highlight ?? 0.8);
 			gl.uniform1f(uniform('uFresnel'), config.fresnel ?? 0.5);
 			gl.uniform1f(uniform('uGlowAmount'), config.glow ?? 1);
-			gl.uniform1f(uniform('uHalftone'), config.halftone === false ? 0 : 1);
+			gl.uniform1f(uniform('uAmbient'), config.ambient ?? 0.1);
+			gl.uniform1f(uniform('uHalftone'), config.halftone ? 1 : 0);
 			const angle = ((config.lightAngle ?? 135) * Math.PI) / 180;
 			gl.uniform2f(uniform('uLightDir'), Math.cos(angle), Math.sin(angle));
 			gl.uniform3fv(uniform('uGround'), parseColor(config.background ?? '#050505'));
@@ -292,7 +336,8 @@ export function glassGlyph(el, config) {
 			shift.y += (-lean.y * PARALLAX - shift.y) * ease;
 			gl.uniform2f(uniform('uTilt'), tilt.x, tilt.y);
 			gl.uniform2f(uniform('uCross'), cross.x + shift.x, cross.y + shift.y);
-			gl.uniform3fv(uniform('uGlow'), parseColor(colors[0]));
+			gl.uniform3fv(uniform('uGlow'), lit.glow);
+			gl.uniform3fv(uniform('uGlass'), lit.glass);
 			gl.uniform3fv(uniform('uTint'), parseColor(colors[1] ?? colors[0]));
 		},
 	});
@@ -300,6 +345,7 @@ export function glassGlyph(el, config) {
 
 	const unwatch = watchColors(el, (next) => {
 		colors = next.colors;
+		lit = lightColors(colors[0]);
 		if (stage.still) stage.redraw();
 	});
 	return () => {

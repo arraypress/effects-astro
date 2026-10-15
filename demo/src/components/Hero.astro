@@ -1,10 +1,18 @@
 ---
 /**
  * One section of the gallery: an effect behind real copy, labelled with
- * the line that makes it. The effect waits in a <template> and is stamped
- * into the section only while it is near the screen (src/scripts/gallery.js),
- * so the page never holds more than a few GPU contexts however long it is.
+ * the line that makes it, filling the screen. Heroes start hidden and
+ * src/scripts/viewer.js shows one at a time; the effect waits in a
+ * <template> and is stamped in only while its hero is on show, so the page
+ * holds one GPU context however many heroes it has.
+ * When the panel can configure the component its line makes, the tag has a
+ * "Customise" button that opens it (src/scripts/panel.js). The section's
+ * `--hero-accent` is the effect's lead colour, for copy that echoes it; the
+ * panel keeps it in step as the colours change.
  */
+import { componentOf, describe } from '../customise/controls.js';
+import { leadColour } from '../customise/colours.js';
+import { parseLine } from '../customise/markup.js';
 
 interface Props {
 	/** The anchor, and the name in the rail. */
@@ -15,8 +23,6 @@ interface Props {
 	code: string;
 	/** The ground the copy sits on. Default `dark`. */
 	theme?: 'dark' | 'light';
-	/** Full screen or a shorter band. Default `full`. */
-	size?: 'full' | 'short';
 	/** Where the copy sits. Default `center`. */
 	align?: 'center' | 'left' | 'right' | 'bottom';
 	/** A soft shade behind the copy, for busy or bright backgrounds. Default false. */
@@ -25,15 +31,18 @@ interface Props {
 	style?: string;
 }
 
-const { id, name, code, theme = 'dark', size = 'full', align = 'center', scrim = false, style } = Astro.props;
+const { id, name, code, theme = 'dark', align = 'center', scrim = false, style } = Astro.props;
+const component = describe(componentOf(code));
+const accent = component && leadColour({ component, values: parseLine(code).props });
 ---
 
 <section
-	class:list={['hero', `is-${theme}`, `is-${size}`, `align-${align}`, { 'has-scrim': scrim }]}
+	class:list={['hero', `is-${theme}`, `align-${align}`, { 'has-scrim': scrim }]}
 	id={id}
-	style={style}
+	style={[accent && `--hero-accent: ${accent}`, style].filter(Boolean).join('; ') || undefined}
 	data-hero
 	data-name={name}
+	hidden
 >
 	<template data-live-template><slot name="effect" /></template>
 	<div class="hero__live" data-live></div>
@@ -41,6 +50,14 @@ const { id, name, code, theme = 'dark', size = 'full', align = 'center', scrim =
 	<footer class="hero__tag">
 		<span class="hero__name">{name}</span>
 		<button type="button" class="hero__code" data-copy={code} title="Copy">{code}</button>
+		{
+			Boolean(component?.controls.length) && (
+				<button type="button" class="hero__customise" aria-controls="customise" aria-expanded="false" data-customise>
+					<svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M2 4.5h7m3 0h2M2 11.5h2m3 0h7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" /><circle cx="10.5" cy="4.5" r="1.6" fill="none" stroke="currentColor" stroke-width="1.3" /><circle cx="5.5" cy="11.5" r="1.6" fill="none" stroke="currentColor" stroke-width="1.3" /></svg>
+					Customise
+				</button>
+			)
+		}
 		<slot name="tools" />
 	</footer>
 </section>

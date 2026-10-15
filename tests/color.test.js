@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseColor, toHex, toOklab, fromOklab, mixOklab, paletteAt, GLSL_OKLAB } from '../src/runtime/color.js';
+import { parseColor, toHex, toOklab, fromOklab, mixOklab, paletteAt, turnHue, GLSL_OKLAB } from '../src/runtime/color.js';
 
 /**
  * Asserts two colours match to within a rounding step.
@@ -63,6 +63,34 @@ test('paletteAt loops through the colours and wraps', () => {
 
 test('paletteAt needs a colour', () => {
 	assert.throws(() => paletteAt([], 0), RangeError);
+});
+
+test('turnHue turns the Oklab hue and stays in gamut', () => {
+	/**
+	 * A colour's Oklab hue.
+	 *
+	 * @param {[number, number, number]} rgb The colour.
+	 * @returns {number} Degrees.
+	 */
+	const hue = (rgb) => {
+		const [, a, b] = toOklab(rgb);
+		return (Math.atan2(b, a) * 180) / Math.PI;
+	};
+	for (const hex of ['#10b981', '#f59e0b', '#3b82f6', '#ef4444']) {
+		const from = parseColor(hex);
+		for (const degrees of [-45, 30]) {
+			const to = turnHue(from, degrees);
+			const turned = (((hue(to) - hue(from) - degrees + 540) % 360) + 360) % 360 - 180;
+			assert.ok(Math.abs(turned) < 0.5, `${hex} turned ${degrees}° is off by ${turned}°`);
+			assert.ok(to.every((c) => c >= 0 && c <= 1));
+		}
+	}
+});
+
+test('turnHue lifts on request and leaves greys grey', () => {
+	const amber = parseColor('#f59e0b');
+	assert.ok(toOklab(turnHue(amber, 30, 0.06))[0] > toOklab(turnHue(amber, 30))[0]);
+	close(turnHue([0.5, 0.5, 0.5], 90), [0.5, 0.5, 0.5]);
 });
 
 test('GLSL_OKLAB defines oklabMix', () => {

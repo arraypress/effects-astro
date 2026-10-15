@@ -24,6 +24,7 @@
 
 import { createStage } from './stage.js';
 import { watchColors } from './mount.js';
+import { loadImage, imageTexture } from './image.js';
 import { vertexShaderSource } from '../vendor/paper/vertex-shader.js';
 import { getShaderColorFromString } from '../vendor/paper/get-shader-color-from-string.js';
 import { getShaderNoiseTexture } from '../vendor/paper/get-shader-noise-texture.js';
@@ -112,19 +113,6 @@ export function paperUniforms(shader, settings) {
 		}
 	}
 	return out;
-}
-
-/**
- * Loads an image.
- *
- * @param {string} src Its URL.
- * @returns {Promise<HTMLImageElement>} The image, decoded.
- */
-function loadImage(src) {
-	const img = new Image();
-	img.crossOrigin = 'anonymous';
-	img.src = src;
-	return img.decode().then(() => img);
 }
 
 /**
@@ -248,17 +236,7 @@ async function start(el, config) {
 				const slot = active.get(name);
 				if (!slot) continue;
 				gl.activeTexture(gl.TEXTURE0 + unit);
-				gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-				gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-				gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-				if (name === 'u_image' && MIPMAPPED.has(config.shader)) {
-					gl.generateMipmap(gl.TEXTURE_2D);
-					gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-				}
+				imageTexture(gl, img, { mipmap: name === 'u_image' && MIPMAPPED.has(config.shader) });
 				gl.uniform1i(slot.location, unit);
 				const ratio = active.get(`${name}AspectRatio`);
 				if (ratio) gl.uniform1f(ratio.location, img.naturalWidth / img.naturalHeight);

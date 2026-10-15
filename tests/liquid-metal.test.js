@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import { logoBox } from '../src/runtime/liquid-metal.js';
 import { METALS, metalColor, studioTints } from '../src/runtime/liquid-metal/look.js';
 import { fieldSampler, splash, stepBeads, packBeads } from '../src/runtime/liquid-metal/beads.js';
-import { RENDER, STEP, SMOOTH, MAX_BEADS, MAX_PUSHES } from '../src/runtime/liquid-metal/shaders.js';
+import { RENDER, STEP, SMOOTH, MAX_BEADS } from '../src/runtime/liquid-metal/shaders.js';
+import { MAX_PUSHES } from '../src/runtime/height-field.js';
 import { distanceField } from '../src/runtime/shape.js';
 import { parseColor, toOklab } from '../src/runtime/color.js';
 

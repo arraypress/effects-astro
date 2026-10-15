@@ -8,8 +8,10 @@
  *
  * SVG turbulence in a data URI: no request, any pixel ratio. Fills its
  * nearest positioned ancestor; place it after the background and before
- * the content. Static, but high-frequency noise can trouble some people,
- * so it is reduced (not removed) with prefers-reduced-motion.
+ * the content. The grain jumps a dozen times a second, as film does
+ * (a transform on one layer, so it costs next to nothing); `still` holds
+ * it. High-frequency noise can trouble some people, so with
+ * prefers-reduced-motion it holds still and is reduced (not removed).
  *
  * From the SellGrid and ArrayPress themes.
  *
@@ -30,19 +32,21 @@ interface Props {
 	fixed?: boolean;
 	/** The blend with what is under it. Default `overlay`. */
 	blend?: string;
+	/** Hold the grain still. Default false. */
+	still?: boolean;
 	class?: string;
 }
 
-const { opacity = 0.22, frequency = 0.75, fixed = false, blend = 'overlay', class: className } = Astro.props;
+const { opacity = 0.22, frequency = 0.75, fixed = false, blend = 'overlay', still = false, class: className } = Astro.props;
 // numOctaves 4 gives a natural grain; 1 looks like regular dithering.
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="${frequency}" numOctaves="4" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect width="256" height="256" filter="url(#n)"/></svg>`;
 const uri = `data:image/svg+xml,${encodeURIComponent(svg)}`;
 ---
 
 <div
-	class:list={['effect-grain', { 'is-fixed': fixed }, className]}
+	class:list={['effect-grain', { 'is-fixed': fixed, 'is-still': still }, className]}
 	aria-hidden="true"
-	style={`--grain-opacity: ${opacity}; mix-blend-mode: ${blend}; background-image: url("${uri}")`}
+	style={`--grain-opacity: ${opacity}; --grain-image: url("${uri}"); mix-blend-mode: ${blend}`}
 >
 </div>
 
@@ -52,16 +56,43 @@ const uri = `data:image/svg+xml,${encodeURIComponent(svg)}`;
 		inset: 0;
 		z-index: 1;
 		pointer-events: none;
+		overflow: hidden;
 		opacity: var(--grain-opacity);
-		background-repeat: repeat;
-		background-size: 256px 256px;
 	}
 	.effect-grain.is-fixed {
 		position: fixed;
 	}
+	/* The grain, twice the size of what it covers, so it can jump about
+	   without showing an edge. */
+	.effect-grain::before {
+		content: '';
+		position: absolute;
+		inset: -50%;
+		background: var(--grain-image) repeat;
+		background-size: 256px 256px;
+		animation: grain-jump 0.8s steps(1) infinite;
+	}
+	.effect-grain.is-still::before {
+		animation: none;
+	}
+	@keyframes grain-jump {
+		0%, 100% { transform: translate(0, 0); }
+		10% { transform: translate(-4%, -8%); }
+		20% { transform: translate(-12%, 4%); }
+		30% { transform: translate(6%, -18%); }
+		40% { transform: translate(-4%, 18%); }
+		50% { transform: translate(-12%, 8%); }
+		60% { transform: translate(12%, 0); }
+		70% { transform: translate(0, 12%); }
+		80% { transform: translate(3%, 16%); }
+		90% { transform: translate(-8%, 8%); }
+	}
 	@media (prefers-reduced-motion: reduce) {
 		.effect-grain {
 			opacity: min(var(--grain-opacity), 0.1);
+		}
+		.effect-grain::before {
+			animation: none;
 		}
 	}
 </style>

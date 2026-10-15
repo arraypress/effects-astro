@@ -12,9 +12,8 @@
  */
 
 import { GLSL_OKLAB } from '../color.js';
+import { GLSL_HEIGHT_FIELD } from '../height-field.js';
 
-/** The most pushes one step takes. */
-export const MAX_PUSHES = 20;
 /** The most droplets the render draws. */
 export const MAX_BEADS = 24;
 
@@ -49,52 +48,29 @@ void main() {
 `;
 
 /**
- * One step of the wave:a damped wave equation on the height, with a
- * spring pulling every cell back to its rest (the surface tension that
- * reforms the logo) and a little viscosity smoothing the speed, so small
- * ripples die first. Waves run only through the metal (and just past its
- * edge, where a swell pushes the outline out); elsewhere they are damped
- * away. Pushes add a dent ringed by a smaller swell (a difference of
- * gaussians, so the metal pushed down piles up beside it).
- *
- * `uMotion`: wave speed squared (cells a step, at most 0.5), spring, the
- * share of speed kept each step, viscosity.
+ * One step of the wave (on src/runtime/height-field.js): a damped wave
+ * equation on the height, with a spring pulling every cell back to its
+ * rest (the surface tension that reforms the logo) and a little viscosity
+ * smoothing the speed, so small ripples die first. Waves run only through
+ * the metal (and just past its edge, where a swell pushes the outline
+ * out); elsewhere they are damped away.
  */
 export const STEP = `
 precision highp float;
 varying vec2 vUv;
-uniform sampler2D uState;
-uniform vec2 uTexel;
-uniform float uAspect;
 uniform float uBevel;
 uniform float uBulge;
-uniform vec4 uMotion;
-uniform vec4 uPush[${MAX_PUSHES}];
-uniform int uPushes;
+${GLSL_HEIGHT_FIELD}
 ${FIELD}
 void main() {
-	vec2 s = texture2D(uState, vUv).rg;
-	vec2 l = texture2D(uState, vUv - vec2(uTexel.x, 0.0)).rg;
-	vec2 r = texture2D(uState, vUv + vec2(uTexel.x, 0.0)).rg;
-	vec2 t = texture2D(uState, vUv + vec2(0.0, uTexel.y)).rg;
-	vec2 b = texture2D(uState, vUv - vec2(0.0, uTexel.y)).rg;
-	float h = s.r;
-	float v = s.g;
-	vec2 lap = l + r + t + b - 4.0 * s;
+	vec4 s = waveState(vUv);
+	float h = s.x;
 	// Metal is where the shape is, or where a swell has pushed its edge out to.
 	float metal = smoothstep(-uBevel * 1.5, 0.0, field(vUv) + max(h, 0.0) * uBulge);
-	v += uMotion.x * lap.x - uMotion.y * h + uMotion.w * lap.y;
-	vec2 p = vUv * vec2(uAspect, 1.0);
-	for (int i = 0; i < ${MAX_PUSHES}; i++) {
-		if (i >= uPushes) break;
-		vec4 push = uPush[i];
-		vec2 d = p - push.xy;
-		float k = dot(d, d) / (push.z * push.z);
-		v -= push.w * (exp(-k) - 0.25 * exp(-k * 0.25));
-	}
+	float v = s.y + waveForce(s) - wavePushes(vUv);
 	v *= mix(0.55, uMotion.z, metal);
 	h = (h + v) * mix(0.8, 1.0, metal);
-	gl_FragColor = vec4(clamp(h, -6.0, 6.0), clamp(v, -3.0, 3.0), 0.0, 1.0);
+	gl_FragColor = wavePack(h, v);
 }
 `;
 

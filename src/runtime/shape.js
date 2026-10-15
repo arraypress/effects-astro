@@ -10,6 +10,8 @@
  * font the page uses, not a fallback.
  */
 
+import { loadImage } from './image.js';
+
 /**
  * @typedef {object} ShapeSource
  * @property {string} [text] A word or short line to draw.
@@ -28,23 +30,6 @@
  * @property {number} width The canvas width.
  * @property {number} height The canvas height.
  */
-
-/**
- * Loads an image.
- *
- * @param {string} src Its URL.
- * @returns {Promise<HTMLImageElement>} The image, decoded.
- * @throws {Error} When it cannot be loaded.
- */
-function loadImage(src) {
-	return new Promise((resolve, reject) => {
-		const img = new Image();
-		img.crossOrigin = 'anonymous';
-		img.onload = () => resolve(img);
-		img.onerror = () => reject(new Error(`Could not load ${src}`));
-		img.src = src;
-	});
-}
 
 /**
  * A CSS font at a size: the style and weight words of `font` go before the

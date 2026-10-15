@@ -12,10 +12,14 @@
  *
  * - `uRes`: the canvas size in pixels.
  * - `uTime`: seconds since it started, times `speed`.
+ * - `uClock`: seconds since it started, whatever the `speed` (0 when
+ *   still), for what keeps real time, such as grain.
  * - `uColor1`…`uColor4`: the colours, 0–1. Only mesh-gradient,
  *   grain-gradient and silk read the fourth.
  * - `uIntensity`: the strength, 0–2.
  * - `uMouse`: the smoothed pointer, 0–1 from the bottom left (the middle when idle).
+ * - `uPointer`: how present the pointer is, eased 0–1 (0 when it is away,
+ *   still, or not `interactive`).
  *
  * Each shader works out a straight colour and an alpha that follows its
  * brightness, so dark pixels let the page through, and hands them to
@@ -27,12 +31,14 @@ export const SHADER_BACKGROUND_GLSL = `
 precision highp float;
 uniform vec2 uRes;
 uniform float uTime;
+uniform float uClock;
 uniform vec3 uColor1;
 uniform vec3 uColor2;
 uniform vec3 uColor3;
 uniform vec3 uColor4;
 uniform float uIntensity;
 uniform vec2 uMouse;
+uniform float uPointer;
 float hash(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}
 float vnoise(vec2 p){vec2 i=floor(p);vec2 f=fract(p);f=f*f*(3.-2.*f);
 	float a=hash(i),b=hash(i+vec2(1.,0.)),c=hash(i+vec2(0.,1.)),d=hash(i+vec2(1.,1.));
