@@ -1,0 +1,41 @@
+---
+/**
+ * LiquidMetal: a logo or a word made of liquid chrome. At rest it is a
+ * polished slab of metal reflecting a slowly turning studio; the pointer
+ * dents it and sends ripples across it, a stroke parts it, a click
+ * splashes it (a crater, a ring wave, droplets that fall and crawl back),
+ * and surface tension pulls it back into shape with a last wobble.
+ * See src/runtime/liquid-metal.js.
+ *
+ * Transparent round the logo, so it lays over any section (or give it a
+ * `background`). Fills its nearest positioned ancestor, or the viewport
+ * with `fixed`. Without WebGL nothing is drawn.
+ *
+ * @example
+ * <section class="hero" style="position: relative; background: #0b0c0e">
+ *   <LiquidMetal src="/logo.svg" />
+ *   <h1>…</h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { LiquidMetalConfig } from '../runtime/liquid-metal.js';
+
+interface Props extends LiquidMetalConfig {
+	/** A ground behind the metal (any CSS background). Default none: transparent. */
+	background?: string;
+	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
+	fixed?: boolean;
+	class?: string;
+}
+
+const { background, fixed = false, class: className, ...config } = Astro.props;
+---
+
+<EffectCanvas name="liquid-metal" config={config} fixed={fixed} class={className} behind background={background} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { liquidMetal } from '../runtime/liquid-metal.js';
+
+	mount('[data-effect-liquid-metal]', liquidMetal);
+</script>

@@ -21,11 +21,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `<DotSurface>`: a halftone sea, round dots on a slowly rolling sheet in perspective, each sized and lit by the light; the pointer raises a swell and a click sends a ring; `color` or an Oklab `colors` gradient across depth or width, `quiet`.
   - `<ShaderBackground effect="…">`: the six strongest shader backgrounds of `@arraypress/effect-canvas-astro`, which it replaces (mesh-gradient, grain-gradient, silk, band-lens, grid, waves; its faint and plain ones are left to `<GlowField>` and `<Grain>`), tinted from `--color-accent` (the second colour mixed towards `--color-bg` in Oklab); `speed`, `intensity`, `static` + `frame`, `interactive`, `blend`, `fade` and `fixed`; a CSS gradient without WebGL.
   - `<WorldRoutes>`: a dotted world map (from Natural Earth) with comets between cities; routes as `[from, to]`, `{ from, to, color, label, speed, width, dashed }` or a lone place from a `home` hub; a `colors` palette and Oklab `gradient`s; city `markers`, `halo`s and collision-aware `labels`; `curve="great-circle"`, `dashed` arcs, `arcOpacity`, `width`, `tail`, `glow`, `comets`, `ping`; `region` (named, `routes`, or a lat/lon box) with `fit`, `dotShape`, `graticule` and a wrapping `drift`; hovering a city or route picks it out and names it.
+  - `<HaloRing>`: a ring of light around centred copy on a dark ground: a soft-cornered outline drifting between a rounded hexagon and a rounded rectangle (or held as `hexagon`, `rect` or `circle`), colour travelling round it in Oklab, the hottest stretches burning to white, a little glow inward and a long one outward; the pointer draws it close and lights it up. `corner`, `margin`, `thickness`, `glow`, `speed`, `quiet`.
+  - `<SilkRibbon>`: a wide ribbon of satin twisting across a light ground, folds gathering where it turns and a sheen along each one, over a soft out-of-focus glow; the folds undulate and lean towards the pointer. `side`, `twist`, `folds`, `glow`, `speed`.
   - `<GlowField>`: bloom, beam, horizon and wash.
   - `<Grain>`.
 - `<PaperShader>`: Paper's 30 shaders and 124 presets (Apache-2.0, vendored), with `params`, `colors` and `image`.
 - Logos and shapes, each from text or an SVG or PNG (`src`):
-  - `<GlassGlyph>`.
+  - `<GlassGlyph>`: a thick bevelled slab lit from behind by fixed beams of light in a pinwheel, dithered to halftone where they fade; it sways slowly on its own and leans away from the pointer, showing its side walls, while the light barely moves. Bright rims, bevels that reflect the light, beams refracted and split through the glass. `light`, `sway`.
+  - `<LiquidMetal>`: the logo as a slab of polished chrome in a studio made in the shader (sky, horizon, floor, softboxes, a key light; Fresnel), turning slowly so the reflections glide, over a GPU wave simulation: the pointer dents it and ripples run out, a stroke parts it and it flows back, a click splashes a crater with a ring wave and droplets that fall and crawl back in; surface tension reforms the exact logo with a last wobble, then the simulation sleeps. `tint` (chrome, gold, rose-gold, copper, black-chrome or hex), `palette`/`colors` tint the studio, `bevel`, `viscosity`, `tension`, `ripple`, `interactive`, `shadow`.
   - `<ParticleLogo>`.
   - `<NeonSwarm>`: a few thousand neon particles on curl-noise springs hold the logo, shimmering and breathing, with fading trails and bloom; the pointer scatters them; they gather from a cloud on arrival.
   - `<NebulaLogo>`: domain-warped nebula gas inside the logo, densest at its edges, with dust lanes, a glowing rim, a halo past the edge and twinkling stars; the pointer brightens the gas and leaves a wake that stirs it.
@@ -43,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `<HighlightSweep>`.
   - `<Marquee>`: a pause button.
 - Surfaces and interaction:
+  - `<RadiantGlass>`: a cluster of frosted glass tiles on a dark ground, glowing from inside with soft peach, blue and white light that drifts and shifts with the pointer, each with a two-tone rim and a halo; one cheap shader, the frosting an analytic blur. `layout` (cross, diagonal, single), `shape` (diamond, square, circle), `side`, `size`, `frost`, `glow`, `rim`, `speed`.
   - `<Glass>` (and `glass.css`).
   - `<BorderSweep>` (and `border-sweep.css`).
   - `<Tilt>`.
@@ -57,6 +61,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Shared set-up:** `createStage` (WebGL) and `createCanvas2D`; one animation loop that runs only what is near the screen; view-transition-safe mounting.
   - **Simulation and drawing:** a Stable Fluids solve with pointer strokes as ribbons; points, shapes, distance fields, glyph textures and tracker overlays.
   - **Colour:** Oklab on the CPU and in GLSL.
+  - **GPU simulations:** `createPingPong` and `floatFormats`, a pair of float render targets, full or half floats, WebGL 1 or 2.
   - **Device checks:** pixel-ratio cap, phones, reduced motion, hover.
 - COMPONENTS.md, generated from the components' types (`npm run docs`).
 - A demo (`demo/`): a page for each group, every effect a working hero, each ShaderBackground and Paper shader on its own, live only while near the screen.

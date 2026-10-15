@@ -15,10 +15,13 @@ Pick by what is asked for:
 | Something to play with: ink, smoke, liquid, "interactive" | `<Ink>` over a section, or `<LightField>` (it has the fluid under it), or `<DotGrid>` (click ripples) |
 | A gradient, noise, halftone or liquid-metal look by name | `<PaperShader shader="…" preset="…">`; the demo has a hero for every shader, its presets in the tag |
 | A themed hero background by name (mesh gradient, grainy gradient, silk, light bands, synthwave grid, neon waves), tinted from the site's accent | `<ShaderBackground effect="…">`; `static` when it sits behind body copy or is `fixed` |
+| A launch, waitlist or coming-soon hero: light around centred copy | `<HaloRing>` |
+| A dark, premium product or smart-home hero: frosted glass lit from within, copy beside it | `<RadiantGlass>` (`side="right"` mirrors it; `layout`, `shape`) |
+| A soft, luxurious light hero (beauty, fragrance, fashion) | `<SilkRibbon>` (`side="left"` mirrors it) |
 | A halftone or dotted wave surface, a dark tech, launch or hiring hero | `<DotSurface>` (one colour or a gradient; `quiet` behind the copy) |
 | A "we sell worldwide" or "we ship from here" section | `<WorldRoutes>` with the cities that matter to the shop; `home="…"` for a hub, `colors` + `gradient` for colour, `labels`, `region="europe"` (or `routes`) to crop |
 | A still light or texture over a background | `<GlowField>`, `<Grain>` |
-| The brand's logo as the hero's centrepiece | `<GlassGlyph>`, `<ParticleLogo>`, `<NeonSwarm>` (a flowing neon swarm), `<NebulaLogo>` (filled with nebula gas), `<VoxelLogo>`, `<PointCloud>`, all with `src="/logo.svg"` or `text` |
+| The brand's logo as the hero's centrepiece | `<GlassGlyph>`, `<LiquidMetal>` (liquid chrome you can poke and splash; `tint="gold"`…), `<ParticleLogo>`, `<NeonSwarm>` (a flowing neon swarm), `<NebulaLogo>` (filled with nebula gas), `<VoxelLogo>`, `<PointCloud>`, all with `src="/logo.svg"` or `text` |
 | A footer wordmark | `<SpotlightText fit>`, `<PixelGlitchText fit>`, `<OutlineWordmark>` |
 | Sections that arrive on scroll, site-wide | `<ScrollReveal />` once in the layout, then reveal.css classes (`fade-in-up`…) on elements |
 | Text that arrives or moves | `<Reveal>`, `<ScrambleText>`, `<Typewriter>`, `<HighlightSweep>`, `<Marquee>` |

@@ -4,6 +4,7 @@ import Gallery from '../layouts/Gallery.astro';
 import Hero from '../components/Hero.astro';
 import PaletteChips from '../components/PaletteChips.astro';
 import GlassGlyph from '@arraypress/effects-astro/GlassGlyph.astro';
+import LiquidMetal from '@arraypress/effects-astro/LiquidMetal.astro';
 import NebulaLogo from '@arraypress/effects-astro/NebulaLogo.astro';
 import NeonSwarm from '@arraypress/effects-astro/NeonSwarm.astro';
 import ParticleLogo from '@arraypress/effects-astro/ParticleLogo.astro';
@@ -17,6 +18,14 @@ import VoxelLogo from '@arraypress/effects-astro/VoxelLogo.astro';
 		<h2 class="headline" style="font: 900 clamp(64px, 10vw, 150px)/0.9 Impact, 'Arial Narrow', sans-serif; text-transform: uppercase; letter-spacing: 0">Heavy<br />Rotation</h2>
 		<p class="lede">The station that plays whole albums, start to finish. On air every night from ten.</p>
 		<div class="actions"><a class="btn" href="#">Listen live</a><a class="btn btn--ghost" href="#">Tonight's album</a></div>
+		<PaletteChips slot="tools" />
+	</Hero>
+	<Hero id="liquid-metal" name="LiquidMetal" code={`<LiquidMetal src="/logo.svg" />`} align="left" style="--hero-ground: radial-gradient(90% 70% at 72% 45%, #23262b, #0d0e10 60%, #060607)">
+		<LiquidMetal slot="effect" src="/logo.svg" />
+		<span class="eyebrow">Mercury · hand-finished hardware</span>
+		<h2 class="headline" style="max-width: 9ch">Poured, not <em>made.</em></h2>
+		<p class="lede" style="max-width: 24rem">Handles, hinges and pulls cast in solid brass and plated to a mirror. Go on, press the metal.</p>
+		<div class="actions"><a class="btn" href="#">Shop the finishes</a></div>
 		<PaletteChips slot="tools" />
 	</Hero>
 	<Hero id="particle-logo" name="ParticleLogo" code={`<ParticleLogo src="/logo.svg" />`}>

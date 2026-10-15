@@ -183,7 +183,7 @@ Glass: a liquid glass panel, with a rim that catches the light and a sheen that 
 
 ## `<GlassGlyph>`
 
-GlassGlyph: a character or a logo as a thick slab of moulded glass over a dark ground lit by one coloured light, which follows the pointer. The glass bends the light through its rims and glints where it faces it. See src/runtime/glass-glyph.js.
+GlassGlyph: a character or a logo as a thick slab of bevelled glass over a dark ground, lit from behind by beams of one coloured light. The slab turns slowly on its own and leans away from the pointer; the light stays put. The glass bends the beams through its bevels and its rims catch the light. See src/runtime/glass-glyph.js.
 
 ```astro
 <section class="hero" style="position: relative">
@@ -198,20 +198,22 @@ GlassGlyph: a character or a logo as a thick slab of moulded glass over a dark g
 | `font` | `string` | Its CSS font, without the size. Default: the page's, bold. |
 | `src` | `string` | An image (an SVG logo) to make of glass instead. |
 | `area` | `{ x: number; y: number; width: number; height: number }` | Where the shape sits, each 0–1 from the top left. Default the right half. |
+| `light` | `{ x: number; y: number }` | Where the beams of light cross, each 0–1 from the top left. Default two fifths of the way into the shape's area, a little below its middle. |
 | `colors` | `string[]` | The light's colour, then the glass's tint. Default acid green, white. |
 | `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`. |
 | `background` | `string` | The ground. Default `#050505`. |
-| `refraction` | `number` | How hard the glass bends what is behind it at its edges. Default 1. |
-| `thickness` | `number` | How far in from the edge the bending reaches, a share of the height. Default 0.06. |
-| `zoom` | `number` | How much the glass magnifies what is behind its middle. Default 1.04. |
+| `refraction` | `number` | How hard the glass bends what is behind it, most of all across its bevels. Default 1. |
+| `thickness` | `number` | How wide the bevel round the edge is, a share of the height. Default 0.035. |
+| `zoom` | `number` | How much the glass magnifies what is behind it. Default 1.04. |
 | `aberration` | `number` | How far the colours part where it bends; 0 for none. Default 0.6. |
-| `frost` | `number` | Frosted glass: how much what is behind is blurred, 0–1. Default 0. |
+| `frost` | `number` | Frosted glass: how much more what is behind is blurred, 0–1. Default 0. |
 | `tint` | `number` | How much the glass takes the tint colour, 0–1. Default 0.1. |
-| `highlight` | `number` | The lit rim and the glint. Default 0.8. |
-| `fresnel` | `number` | The soft glow just inside the edge. Default 0.5. |
-| `lightAngle` | `number` | Where the light comes from, degrees (0 right, 90 top). Default 135. |
+| `highlight` | `number` | The lit rims and the glints. Default 0.8. |
+| `fresnel` | `number` | How much the bevels mirror the light. Default 0.5. |
+| `lightAngle` | `number` | Where the light on the rims comes from, degrees (0 right, 90 top). Default 135. |
 | `glow` | `number` | How strong the coloured light behind is. Default 1. |
-| `halftone` | `boolean` | The patch of dots behind the light. Default true. |
+| `halftone` | `boolean` | Dither the light's fading edges into dots. Default true. |
+| `sway` | `number` | How far the slab turns on its own and away from the pointer; 0 holds it still. Default 1. |
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
 | `class` | `string` | Classes for the element. |
 
@@ -253,6 +255,33 @@ Grain: a film-grain texture over a section (or the whole page with `fixed`). Big
 | `frequency` | `number` | How fine; higher is finer (0.75 is about 1px). Default 0.75. |
 | `fixed` | `boolean` | Cover the viewport (position: fixed). Default false. |
 | `blend` | `string` | The blend with what is under it. Default `overlay`. |
+| `class` | `string` | Classes for the element. |
+
+## `<HaloRing>`
+
+HaloRing: a ring of light on a dark ground, a soft-cornered outline around the copy whose bright core line glows inward a little and far outward. Colour travels around it, and its hottest stretches burn to white; the pointer draws it close and lights it up. See src/runtime/halo-ring.js.
+
+```astro
+<section class="hero" style="position: relative">
+  <HaloRing colors={['#ffb020', '#ff5a6e', '#2f7bff']} />
+  <h1>Something new arrives Friday.</h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `colors` | `string[]` | Three colours looped around the ring, blended in Oklab. Default amber, coral, electric blue (`['#ffb020', '#ff5a6e', '#2f7bff']`). |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`. |
+| `shape` | `HaloShape` | The outline: a rounded hexagon, a rounded rectangle fitted to the element, a circle, or a slow drift between the hexagon and a squarer rectangle. Default `morph`. |
+| `corner` | `number` | How round the corners are: 0 sharp, 1 as round as they go. Default 0.3. |
+| `margin` | `number` | Space between the ring and the element's edge, a share of its shorter side. Default 0.05. |
+| `thickness` | `number` | The bright core line, CSS px. Default 10. |
+| `glow` | `number` | How far and how strongly the light spreads; 0 for the bare line. Default 1. |
+| `speed` | `number` | How fast the colour travels and the shape drifts; 0 holds it still. Default 1. |
+| `background` | `string` | The ground. Default `#0d0c10`. |
+| `interactive` | `boolean` | Whether the ring leans towards the pointer and lights up near it. Default true. |
+| `quiet` | `{ x?: number; y?: number; radius?: number; depth?: number } \| null` | An area kept dim behind copy: centre (0–1 from the top left), radius (a share of the height), depth (0–1). Default none; `{}` for the middle. |
+| `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
 | `class` | `string` | Classes for the element. |
 
 ## `<HighlightSweep>`
@@ -344,6 +373,37 @@ LightField: liquid light in three colours, bending around the pointer, with a re
 | `scale` | `number` | Share of the pixel ratio drawn at. Default 0.5. |
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
 | `background` | `string` | The colour under the light, and under the fallback gradient. Default `#08080a`. |
+| `class` | `string` | Classes for the element. |
+
+## `<LiquidMetal>`
+
+LiquidMetal: a logo or a word made of liquid chrome. At rest it is a polished slab of metal reflecting a slowly turning studio; the pointer dents it and sends ripples across it, a stroke parts it, a click splashes it (a crater, a ring wave, droplets that fall and crawl back), and surface tension pulls it back into shape with a last wobble. See src/runtime/liquid-metal.js.
+
+```astro
+<section class="hero" style="position: relative; background: #0b0c0e">
+  <LiquidMetal src="/logo.svg" />
+  <h1>…</h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `text` | `string` | A word to make of metal. |
+| `font` | `string` | Its CSS font, without the size. Default: the page's, bold. |
+| `src` | `string` | An image (an SVG logo) to make of metal instead. |
+| `area` | `{ x: number; y: number; width: number; height: number }` | Where the logo sits, each 0–1 from the top left. Default the right half. |
+| `size` | `number` | How much of its area the logo fills: 1 fits it, less shrinks it about the area's middle. Default 1. |
+| `tint` | `MetalName \| (string & {})` | The metal: a name, or a CSS hex colour (its colour face on). Default `chrome`. |
+| `colors` | `string[]` | The studio's colours, reflected in the metal: the sky, the horizon, the floor. Default a neutral studio. |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`: it tints the studio. |
+| `bevel` | `number` | How wide its rounded edges are. Default 1. |
+| `viscosity` | `number` | How thick the metal is: more settles sooner, with smaller ripples. Default 1. |
+| `tension` | `number` | How hard it pulls back into shape: more reforms sooner, with a quicker wobble. Default 1. |
+| `ripple` | `number` | How hard the pointer pushes into it. Default 1. |
+| `interactive` | `boolean` | Whether it reacts to the pointer at all. Default true. |
+| `shadow` | `number` | The soft shadow under it; 0 for none. Default 1. |
+| `background` | `string` | A ground behind the metal (any CSS background). Default none: transparent. |
+| `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
 | `class` | `string` | Classes for the element. |
 
 ## `<Magnetic>`
@@ -606,6 +666,33 @@ PulseMark: a small animated mark for a logo, a loading state or a "live" badge, 
 | `label` | `string` | Its accessible name; without one it is decorative. |
 | `class` | `string` | Classes for the element. |
 
+## `<RadiantGlass>`
+
+RadiantGlass: a cluster of frosted glass tiles on a dark ground, lit from inside by big soft lights drifting behind them, which shift with the pointer. Each tile has a thin two-tone rim and a soft halo. See src/runtime/radiant-glass.js.
+
+```astro
+<section class="hero" style="position: relative">
+  <RadiantGlass side="left" />
+  <h1 style="text-align: right">…</h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `colors` | `string[]` | The lights' colours, the last the hot colour where they gather. Default amber, blue, white. |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`. Its colours light the glass; its glint is the hot colour. |
+| `background` | `string` | The ground. Default `#060818`. |
+| `layout` | `'cross' \| 'diagonal' \| 'single'` | The tiles: four in a plus, three on a slant, or one large. Default `cross`. |
+| `shape` | `'diamond' \| 'square' \| 'circle'` | Each tile's shape: a rounded square on its corner, square on, or round. Default `diamond`. |
+| `side` | `'left' \| 'right'` | Which side the cluster sits on, leaving the other for the copy. Default `left`. |
+| `size` | `number` | The cluster's size; 1 fills the height. Default 1. |
+| `frost` | `number` | How blurred the light through the glass is; 0 for clear. Default 1. |
+| `glow` | `number` | How strong the halo round each tile is; 0 for none. Default 1. |
+| `rim` | `number` | How bright the rim line is; 0 for none. Default 1. |
+| `speed` | `number` | How fast the lights drift. Default 1. |
+| `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
+| `class` | `string` | Classes for the element. |
+
 ## `<Reveal>`
 
 Reveal: content that rises, slides, zooms or un-blurs into place as it scrolls into view; with `words` and `text`, each word on its own, one after another. Visible without JavaScript (only once the script runs is it hidden to be revealed) and with reduced motion. See src/runtime/text-motion.js.
@@ -718,6 +805,30 @@ SignalLines: layered waveform lines drawn as light, with a drifting loudness: sh
 | `bend` | `number` | How far the lines part round the pointer and how much it lights them; 0 for not at all. Default 1. |
 | `quiet` | `{ x?: number; y?: number; radius?: number; depth?: number } \| null` | An area where the light dims (behind a headline): centre x/y (0–1, from the top left), radius (a share of the height) and depth (0 none, 1 dark). Default none. |
 | `fade` | `boolean` | Fade the left and right edges out. Default true. |
+| `class` | `string` | Classes for the element. |
+
+## `<SilkRibbon>`
+
+SilkRibbon: a wide ribbon of satin twisting across a light ground, soft folds gathering where it turns and a sheen along each one, with an out-of-focus glow of the same colours behind it. The folds undulate slowly and lean towards the pointer. See src/runtime/silk-ribbon.js.
+
+```astro
+<section class="hero" style="position: relative">
+  <SilkRibbon side="right" />
+  <h1>Soft to the touch.</h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `colors` | `string[]` | The satin's colours, shaded from the darkest to the lightest whatever their order. Default hot pink, coral, peach. |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`. |
+| `background` | `string` | The ground around the ribbon. Default `#f6f4f1`. |
+| `side` | `'right' \| 'left' \| 'center'` | Where the ribbon runs. Default `right`. |
+| `twist` | `number` | How tightly it turns along its length; 0 lies flat. Default 1. |
+| `folds` | `number` | How deep the folds along it are; 0 for flat satin. Default 1. |
+| `glow` | `number` | The soft out-of-focus glow behind it; 0 for none. Default 1. |
+| `speed` | `number` | How fast the folds move. Default 1. |
+| `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
 | `class` | `string` | Classes for the element. |
 
 ## `<SpotlightText>`

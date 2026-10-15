@@ -43,9 +43,14 @@ export { inkField, inkFieldSettings } from './runtime/ink-field.js';
 export { PALETTES, findPalette, pickColors } from './runtime/palettes.js';
 export { neonSwarm } from './runtime/neon-swarm.js';
 export { nebulaLogo } from './runtime/nebula-logo.js';
+export { liquidMetal } from './runtime/liquid-metal.js';
+export { haloRing } from './runtime/halo-ring.js';
+export { silkRibbon } from './runtime/silk-ribbon.js';
+export { radiantGlass } from './runtime/radiant-glass.js';
 export { createCanvas2D, grainPattern, grainOnto } from './runtime/canvas2d.js';
 export { paperShader, paperSettings, paperUniforms } from './runtime/paper.js';
 export { createStage } from './runtime/stage.js';
+export { createPingPong, floatFormats } from './runtime/ping-pong.js';
 export { createPoints, projectPoint, GLSL_PROJECT } from './runtime/points.js';
 export { createTrackers } from './runtime/trackers.js';
 export { drawShape, samplePoints, gridPoints, distanceField, blurField, fontAt } from './runtime/shape.js';
@@ -61,9 +66,9 @@ export { mount, readConfig, watchColors } from './runtime/mount.js';
 
 /**
  * Changes the colours of a WebGL effect (`<LightField>`, `<Ink>`,
- * `<AsciiRain>`, `<FlutedGlass>`, `<GlassGlyph>`, `<ParticleLogo>`,
- * `<PointCloud>`, `<VoxelLogo>`): a light eases to them in about a second,
- * the others take them from their next frame.
+ * `<AsciiRain>`, `<FlutedGlass>`, `<GlassGlyph>`, `<LiquidMetal>`,
+ * `<ParticleLogo>`, `<PointCloud>`, `<VoxelLogo>`, `<HaloRing>`, `<SilkRibbon>`, `<RadiantGlass>`): a light
+ * eases to them in about a second, the others take them from their next frame.
  *
  * @param {Element | null} el The effect's element (`[data-effect-light-field]` and so on).
  * @param {string[]} colors The new palette, as CSS hex, in the order the effect's `colors` takes.

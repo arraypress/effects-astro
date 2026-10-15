@@ -17,6 +17,8 @@ import WaveBars from '@arraypress/effects-astro/WaveBars.astro';
 import WorldRoutes from '@arraypress/effects-astro/WorldRoutes.astro';
 import GlowField from '@arraypress/effects-astro/GlowField.astro';
 import Grain from '@arraypress/effects-astro/Grain.astro';
+import HaloRing from '@arraypress/effects-astro/HaloRing.astro';
+import SilkRibbon from '@arraypress/effects-astro/SilkRibbon.astro';
 import ShaderBackground from '@arraypress/effects-astro/ShaderBackground.astro';
 import { SHADER_BACKGROUNDS } from '@arraypress/effects-astro/runtime/shader-background';
 import { ACCENTS, pitch } from '../gallery';
@@ -123,6 +125,22 @@ const shaders = Object.keys(SHADER_BACKGROUNDS) as (keyof typeof SHADER_BACKGROU
 		<h2 class="headline">Shot on film.<br /><em>Kept for good.</em></h2>
 		<p class="lede">Post us your rolls. We develop, scan and archive them, and your prints come back within the week.</p>
 		<div class="actions"><a class="btn" href="#">Send a roll</a></div>
+	</Hero>
+	<Hero id="silk-ribbon" name="SilkRibbon" code="<SilkRibbon />" theme="light" align="left">
+		<SilkRibbon slot="effect" />
+		<span class="eyebrow">Maison Calloway · eau de parfum</span>
+		<h2 class="headline">Worn like<br /><em>a second skin.</em></h2>
+		<p class="lede">Rosa, our new scent: pink pepper and peony over warm cashmere wood. It settles close and stays until evening.</p>
+		<div class="actions"><a class="btn" href="#">Shop Rosa · £96</a><a class="btn btn--ghost" href="#">Order a sample</a></div>
+		<PaletteChips slot="tools" />
+	</Hero>
+	<Hero id="halo-ring" name="HaloRing" code="<HaloRing />" style="--hero-ground: #0d0c10">
+		<HaloRing slot="effect" />
+		<span class="eyebrow">Kestrel · launching Friday, 09:00</span>
+		<h2 class="headline">Something new<br /><em>arrives Friday.</em></h2>
+		<p class="lede">A pocket recorder that hears a room the way you do. Leave your email and you will hear it first.</p>
+		<div class="actions"><a class="btn" href="#">Notify me</a></div>
+		<PaletteChips slot="tools" />
 	</Hero>
 	{
 		shaders.map((effect, i) => (

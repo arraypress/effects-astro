@@ -2,6 +2,8 @@
 /** The gallery's Surfaces page. */
 import Gallery from '../layouts/Gallery.astro';
 import Hero from '../components/Hero.astro';
+import PaletteChips from '../components/PaletteChips.astro';
+import RadiantGlass from '@arraypress/effects-astro/RadiantGlass.astro';
 import Glass from '@arraypress/effects-astro/Glass.astro';
 import BorderSweep from '@arraypress/effects-astro/BorderSweep.astro';
 import Tilt from '@arraypress/effects-astro/Tilt.astro';
@@ -13,6 +15,14 @@ import '@arraypress/effects-astro/motion.css';
 ---
 
 <Gallery page="Surfaces">
+	<Hero id="radiant-glass" name="RadiantGlass" code="<RadiantGlass />" align="right" style="--hero-ground: #060818">
+		<RadiantGlass slot="effect" />
+		<span class="eyebrow">Solace · smart lighting</span>
+		<h2 class="headline" style="max-width: 10ch; margin-left: auto">Every room, <em>lit by feel.</em></h2>
+		<p class="lede" style="max-width: 26rem">Lamps that learn how you live: bright for the work, low for the film, and amber for the slow end of the evening.</p>
+		<div class="actions"><a class="btn" href="#">Shop the starter kit</a><a class="btn btn--ghost" href="#">See it after dark</a></div>
+		<PaletteChips slot="tools" />
+	</Hero>
 	<Hero id="glass" name="Glass" code="<Glass>…</Glass>" style="--hero-ground: radial-gradient(70% 60% at 25% 30%, #0e7490, transparent 70%), radial-gradient(60% 60% at 80% 70%, #ea580c, transparent 70%), #0b0b10">
 		<div class="row">
 			{[['Solo', '£0', 'One calendar, unlimited bookings.'], ['Studio', '£12', 'Team calendars and deposits.'], ['Clinic', '£39', 'Rooms, staff and reminders.']].map(([plan, price, text]) => (

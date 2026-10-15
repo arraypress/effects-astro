@@ -46,6 +46,8 @@ Astro 6 or 7. The runtime underneath (`@arraypress/effects-astro`) works without
 | `<WaveBars>` | A glowing bar waveform over its reflection, retuning like a meter with peak caps that hold and fall, a playhead that lights the bars it plays, and the pointer scrubbing | WebGL |
 | `<DotSurface>` | A halftone sea: dots on a slowly rolling sheet in perspective, sized and lit by the light; the pointer raises a swell, a click sends a ring | WebGL |
 | `<ShaderBackground>` | Six shader backgrounds by name (`mesh-gradient`, `grain-gradient`, `silk`, `band-lens`, `grid`, `waves`), tinted from the page's `--color-accent` unless given `colors`; `static` for wallpaper | WebGL |
+| `<HaloRing>` | A ring of light around centred copy: a soft-cornered outline drifting between a hexagon and a rounded rectangle, colour travelling round it and burning white where it is hottest, glowing far outward; the pointer draws it close | WebGL |
+| `<SilkRibbon>` | A wide ribbon of satin twisting across a light ground, folds gathering where it turns and a sheen along each, over a soft glow; the folds undulate and lean to the pointer | WebGL |
 | `<WorldRoutes>` | A dotted world map with comets of light arcing between cities: a home hub, per-route colours and Oklab gradients, labels, regions, great-circle arcs, hover | Canvas |
 | `<GlowField>` | A still light (bloom, beam, horizon or wash) to lay over a background | CSS |
 | `<Grain>` | Film grain, to dither smooth gradients | CSS |
@@ -58,7 +60,8 @@ Astro 6 or 7. The runtime underneath (`@arraypress/effects-astro`) works without
 
 | Component | | Drawn with |
 |---|---|---|
-| `<GlassGlyph>` | The logo as clear glass, bending a coloured light at its edges | WebGL |
+| `<GlassGlyph>` | The logo as a thick bevelled slab of glass, swaying slowly in front of fixed beams of coloured light that bend through its rims | WebGL |
+| `<LiquidMetal>` | The logo as liquid chrome in a slowly turning studio: the pointer dents it and sends ripples across it, a stroke parts it, a click splashes it (a crater, a ring wave, droplets that crawl back), and it pulls itself back into shape; `tint` for gold, rose gold, copper or black chrome | WebGL |
 | `<ParticleLogo>` | The logo in thousands of twinkling particles that scatter round the pointer | WebGL |
 | `<NeonSwarm>` | The logo held by a swarm of neon particles that flows like a flock, trails light and scatters from the pointer | WebGL |
 | `<NebulaLogo>` | The logo filled with drifting nebula gas, a glowing rim, a halo past its edge and twinkling stars; the pointer stirs it | WebGL |
@@ -84,6 +87,7 @@ Astro 6 or 7. The runtime underneath (`@arraypress/effects-astro`) works without
 
 | Component | | Drawn with |
 |---|---|---|
+| `<RadiantGlass>` | A cluster of frosted glass tiles on a dark ground, glowing from inside with soft drifting light that shifts with the pointer; a two-tone rim and a halo on each | WebGL |
 | `<Glass>` | A liquid glass panel with a lit rim and a pointer sheen | CSS + JS |
 | `<BorderSweep>` | A light travelling round an outline | CSS |
 | `<Tilt>` | A card that leans towards the pointer, with a glare | CSS + JS |
@@ -125,7 +129,7 @@ Every effect that takes `colors` also takes `palette`, one of eighteen named set
 
 ## Changing colours
 
-The WebGL effects (`<LightField>`, `<InkField>`, `<Ink>`, `<AsciiRain>`, `<FlutedGlass>`, `<GlassGlyph>`, `<ParticleLogo>`, `<NeonSwarm>`, `<NebulaLogo>`, `<PointCloud>`, `<VoxelLogo>`, `<SignalLines>`, `<WaveBars>`, `<DotSurface>`) read a `data-colors` attribute; `setColors` writes it. A light or an ink field eases to the new palette in about a second; ink, rain and the rest take it from their next frame. Set before an effect starts, it is its colours from the first frame.
+The WebGL effects (`<LightField>`, `<InkField>`, `<Ink>`, `<AsciiRain>`, `<FlutedGlass>`, `<GlassGlyph>`, `<LiquidMetal>`, `<ParticleLogo>`, `<NeonSwarm>`, `<NebulaLogo>`, `<PointCloud>`, `<VoxelLogo>`, `<SignalLines>`, `<WaveBars>`, `<DotSurface>`, `<HaloRing>`, `<SilkRibbon>`, `<RadiantGlass>`) read a `data-colors` attribute; `setColors` writes it. A light or an ink field eases to the new palette in about a second; ink, rain and the rest take it from their next frame. Set before an effect starts, it is its colours from the first frame.
 
 ```js
 import { setColors } from '@arraypress/effects-astro';

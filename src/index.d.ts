@@ -54,12 +54,22 @@ export { neonSwarm } from './runtime/neon-swarm.js';
 export type { NeonSwarmConfig } from './runtime/neon-swarm.js';
 export { nebulaLogo } from './runtime/nebula-logo.js';
 export type { NebulaLogoConfig } from './runtime/nebula-logo.js';
+export { liquidMetal } from './runtime/liquid-metal.js';
+export type { LiquidMetalConfig, MetalName } from './runtime/liquid-metal.js';
+export { haloRing } from './runtime/halo-ring.js';
+export type { HaloRingConfig, HaloShape } from './runtime/halo-ring.js';
+export { silkRibbon } from './runtime/silk-ribbon.js';
+export type { SilkRibbonConfig } from './runtime/silk-ribbon.js';
+export { radiantGlass } from './runtime/radiant-glass.js';
+export type { RadiantGlassConfig } from './runtime/radiant-glass.js';
 export { createCanvas2D, grainPattern, grainOnto } from './runtime/canvas2d.js';
 export type { Canvas2D } from './runtime/canvas2d.js';
 export { paperShader, paperSettings, paperUniforms } from './runtime/paper.js';
 export type { PaperConfig, PaperShaderName } from './runtime/paper.js';
 export { createStage } from './runtime/stage.js';
 export type { Stage, StageOptions } from './runtime/stage.js';
+export { createPingPong, floatFormats } from './runtime/ping-pong.js';
+export type { PingPong, FloatFormat } from './runtime/ping-pong.js';
 export { createPoints, projectPoint, GLSL_PROJECT } from './runtime/points.js';
 export type { Points } from './runtime/points.js';
 export { createTrackers } from './runtime/trackers.js';
@@ -82,7 +92,8 @@ export { mount, readConfig, watchColors } from './runtime/mount.js';
 
 /**
  * Changes the colours of a WebGL effect (`<LightField>`, `<Ink>`, `<AsciiRain>`,
- * `<FlutedGlass>`, `<GlassGlyph>`, `<ParticleLogo>`, `<PointCloud>`, `<VoxelLogo>`),
+ * `<FlutedGlass>`, `<GlassGlyph>`, `<LiquidMetal>`, `<ParticleLogo>`, `<PointCloud>`,
+ * `<VoxelLogo>`, `<HaloRing>`, `<SilkRibbon>`, `<RadiantGlass>`),
  * in the order its `colors` takes. A light eases to them; the others take them next frame.
  */
 export function setColors(el: Element | null, colors: string[], glint?: string): void;

@@ -1,0 +1,38 @@
+---
+/**
+ * RadiantGlass: a cluster of frosted glass tiles on a dark ground, lit
+ * from inside by big soft lights drifting behind them, which shift with
+ * the pointer. Each tile has a thin two-tone rim and a soft halo. See
+ * src/runtime/radiant-glass.js.
+ *
+ * Opaque: it is the whole background of what it fills (its nearest
+ * positioned ancestor, or the viewport with `fixed`). Without WebGL the
+ * `background` colour shows. The cluster takes one side (`side`); put the
+ * copy on the other.
+ *
+ * @example
+ * <section class="hero" style="position: relative">
+ *   <RadiantGlass side="left" />
+ *   <h1 style="text-align: right">…</h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { RadiantGlassConfig } from '../runtime/radiant-glass.js';
+
+interface Props extends RadiantGlassConfig {
+	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
+	fixed?: boolean;
+	class?: string;
+}
+
+const { fixed = false, class: className, ...config } = Astro.props;
+---
+
+<EffectCanvas name="radiant-glass" config={config} fixed={fixed} class={className} behind background={config.background ?? '#060818'} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { radiantGlass } from '../runtime/radiant-glass.js';
+
+	mount('[data-effect-radiant-glass]', radiantGlass);
+</script>

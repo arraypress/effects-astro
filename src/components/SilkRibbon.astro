@@ -1,0 +1,37 @@
+---
+/**
+ * SilkRibbon: a wide ribbon of satin twisting across a light ground, soft
+ * folds gathering where it turns and a sheen along each one, with an
+ * out-of-focus glow of the same colours behind it. The folds undulate
+ * slowly and lean towards the pointer. See src/runtime/silk-ribbon.js.
+ *
+ * Opaque: it is the whole background of what it fills (its nearest
+ * positioned ancestor, or the viewport with `fixed`). Without WebGL the
+ * `background` colour shows.
+ *
+ * @example
+ * <section class="hero" style="position: relative">
+ *   <SilkRibbon side="right" />
+ *   <h1>Soft to the touch.</h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { SilkRibbonConfig } from '../runtime/silk-ribbon.js';
+
+interface Props extends SilkRibbonConfig {
+	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
+	fixed?: boolean;
+	class?: string;
+}
+
+const { fixed = false, class: className, ...config } = Astro.props;
+---
+
+<EffectCanvas name="silk-ribbon" config={config} fixed={fixed} class={className} behind background={config.background ?? '#f6f4f1'} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { silkRibbon } from '../runtime/silk-ribbon.js';
+
+	mount('[data-effect-silk-ribbon]', silkRibbon);
+</script>

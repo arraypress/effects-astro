@@ -134,6 +134,10 @@ body {
 	justify-self: start;
 	text-align: left;
 }
+.align-right .hero__copy {
+	justify-self: end;
+	text-align: right;
+}
 .align-bottom .hero__copy {
 	align-self: end;
 	justify-self: start;
@@ -174,6 +178,9 @@ body {
 .align-bottom .lede {
 	margin-left: 0;
 }
+.align-right .lede {
+	margin-right: 0;
+}
 .actions {
 	display: flex;
 	flex-wrap: wrap;
@@ -184,6 +191,9 @@ body {
 .align-left .actions,
 .align-bottom .actions {
 	justify-content: flex-start;
+}
+.align-right .actions {
+	justify-content: flex-end;
 }
 .btn {
 	display: inline-flex;

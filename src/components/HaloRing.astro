@@ -1,0 +1,38 @@
+---
+/**
+ * HaloRing: a ring of light on a dark ground, a soft-cornered outline
+ * around the copy whose bright core line glows inward a little and far
+ * outward. Colour travels around it, and its hottest stretches burn to
+ * white; the pointer draws it close and lights it up. See
+ * src/runtime/halo-ring.js.
+ *
+ * Opaque: it is the whole background of what it fills (its nearest
+ * positioned ancestor, or the viewport with `fixed`). Without WebGL the
+ * `background` colour shows.
+ *
+ * @example
+ * <section class="hero" style="position: relative">
+ *   <HaloRing colors={['#ffb020', '#ff5a6e', '#2f7bff']} />
+ *   <h1>Something new arrives Friday.</h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { HaloRingConfig } from '../runtime/halo-ring.js';
+
+interface Props extends HaloRingConfig {
+	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
+	fixed?: boolean;
+	class?: string;
+}
+
+const { fixed = false, class: className, ...config } = Astro.props;
+---
+
+<EffectCanvas name="halo-ring" config={config} fixed={fixed} class={className} behind background={config.background ?? '#0d0c10'} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { haloRing } from '../runtime/halo-ring.js';
+
+	mount('[data-effect-halo-ring]', haloRing);
+</script>
