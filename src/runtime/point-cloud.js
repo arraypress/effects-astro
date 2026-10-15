@@ -22,6 +22,7 @@ import { parseColor } from './color.js';
 import { canHover, isMobileGpu } from './device.js';
 import { pointerIn } from './pointer.js';
 import { watchColors } from './mount.js';
+import { pickColors } from './palettes.js';
 
 /**
  * @typedef {object} PointCloudConfig
@@ -31,6 +32,7 @@ import { watchColors } from './mount.js';
  * @property {{ x: number, y: number, width: number, height: number }} [area]
  *   Where the word sits, each 0–1 from the top left (default: across the middle).
  * @property {string[]} [colors] The word's dots, then the clouds' low and high colours (default white, deep blue, sky blue).
+ * @property {string} [palette] A shared palette by name (PALETTES; any case), when there are no `colors`.
  * @property {string} [background='#020205'] The ground.
  * @property {number} [columns=110] Dots across the word's grid.
  * @property {number} [dot=0.72] A word dot's size, as a share of the grid's spacing.
@@ -138,7 +140,7 @@ function sheetData(sheets, columns, rows) {
  * @returns {() => void} Stops it.
  */
 export function pointCloud(el, config) {
-	let colors = config.colors?.length ? config.colors : COLORS;
+	let colors = pickColors(config, COLORS, (p) => ['#ffffff', p.colors[0], p.colors[1]]);
 	const start = performance.now();
 	const turn = { y: 0, x: 0 };
 	/** @type {import('./points.js').Points | null} */

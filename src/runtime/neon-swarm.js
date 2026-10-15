@@ -27,6 +27,7 @@ import { parseColor } from './color.js';
 import { canHover, isMobileGpu } from './device.js';
 import { pointerIn } from './pointer.js';
 import { watchColors } from './mount.js';
+import { pickColors } from './palettes.js';
 
 /**
  * @typedef {object} NeonSwarmConfig
@@ -36,6 +37,7 @@ import { watchColors } from './mount.js';
  * @property {{ x: number, y: number, width: number, height: number }} [area]
  *   Where the shape sits, each 0–1 from the top left (default: the right half).
  * @property {string[]} [colors] The palette across the swarm, three colours (default neon cyan, lime, magenta).
+ * @property {string} [palette] A shared palette by name (PALETTES; any case), when there are no `colors`.
  * @property {string} [background='#030406'] The ground.
  * @property {number} [count=6000] How many particles (half on phones).
  * @property {number} [size=2.4] A particle's glowing core, CSS px.
@@ -139,7 +141,7 @@ const EDGE = 0.3;
  * @returns {() => void} Stops it.
  */
 export function neonSwarm(el, config) {
-	let palette = paletteUniform(config.colors?.length ? config.colors : COLORS);
+	let palette = paletteUniform(pickColors(config, COLORS));
 	const area = config.area ?? AREA;
 	const start = performance.now();
 	const count = Math.round((config.count ?? 6000) * (isMobileGpu() ? 0.5 : 1));

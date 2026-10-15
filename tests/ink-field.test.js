@@ -1,36 +1,12 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
-import { INK_PALETTES, inkPalette, inkFieldSettings, inkFallback } from '../src/runtime/ink-field.js';
+import { inkFieldSettings, inkFallback } from '../src/runtime/ink-field.js';
+import { PALETTES } from '../src/runtime/palettes.js';
 import { DISPLAY } from '../src/runtime/ink-field/shaders.js';
 import { colorPools } from '../src/runtime/pools.js';
 import { parseColor } from '../src/runtime/color.js';
 import { GLSL_NOISE } from '../src/runtime/glsl.js';
 
-const NAMES = ['Lumetri', 'Forest', 'Cadmium', 'Peacock', 'Vermillion', 'Barbie', 'Uranium', 'Azure', 'Ruby', 'Ultramarine', 'Saffron', 'Crimson'];
-
-test('there are twelve palettes, in order, each three hex colours and a glint', () => {
-	assert.deepEqual(Object.keys(INK_PALETTES), NAMES);
-	for (const [name, palette] of Object.entries(INK_PALETTES)) {
-		assert.equal(palette.colors.length, 3, name);
-		[...palette.colors, palette.glint].forEach((c) => assert.doesNotThrow(() => parseColor(c), `${name}: ${c}`));
-	}
-});
-
-test('the palette names in the types are the palettes', () => {
-	const types = readFileSync(new URL('../src/runtime/ink-field.d.ts', import.meta.url), 'utf8');
-	const union = types.slice(types.indexOf('export type InkPaletteName'), types.indexOf(';', types.indexOf('export type InkPaletteName')));
-	assert.deepEqual([...union.matchAll(/'([A-Za-z]+)'/g)].map((m) => m[1]), NAMES);
-});
-
-test('inkPalette finds a palette in any case, and nothing for an unknown name', () => {
-	assert.equal(inkPalette('Peacock'), INK_PALETTES.Peacock);
-	assert.equal(inkPalette('peacock'), INK_PALETTES.Peacock);
-	assert.equal(inkPalette('ULTRAMARINE'), INK_PALETTES.Ultramarine);
-	assert.equal(inkPalette('Teal'), undefined);
-	assert.equal(inkPalette(undefined), undefined);
-	assert.equal(inkPalette(''), undefined);
-});
 
 test('inkFieldSettings fills every default from Lumetri', () => {
 	assert.deepEqual(inkFieldSettings(), {
@@ -45,18 +21,18 @@ test('inkFieldSettings fills every default from Lumetri', () => {
 });
 
 test('inkFieldSettings takes a named palette, and Lumetri for an unknown one', () => {
-	assert.deepEqual(inkFieldSettings({ palette: 'Saffron' }).colors, INK_PALETTES.Saffron.colors);
-	assert.equal(inkFieldSettings({ palette: 'saffron' }).glint, INK_PALETTES.Saffron.glint);
-	assert.deepEqual(inkFieldSettings({ palette: 'Nope' }).colors, INK_PALETTES.Lumetri.colors);
+	assert.deepEqual(inkFieldSettings({ palette: 'Saffron' }).colors, PALETTES.Saffron.colors);
+	assert.equal(inkFieldSettings({ palette: 'saffron' }).glint, PALETTES.Saffron.glint);
+	assert.deepEqual(inkFieldSettings({ palette: 'Nope' }).colors, PALETTES.Lumetri.colors);
 });
 
 test('colours given override the palette, looped to three; the glint stays the palette’s unless given', () => {
 	const own = inkFieldSettings({ palette: 'Ruby', colors: ['#111111', '#222222', '#333333'] });
 	assert.deepEqual(own.colors, ['#111111', '#222222', '#333333']);
-	assert.equal(own.glint, INK_PALETTES.Ruby.glint);
+	assert.equal(own.glint, PALETTES.Ruby.glint);
 	assert.deepEqual(inkFieldSettings({ colors: ['#abcdef'] }).colors, ['#abcdef', '#abcdef', '#abcdef']);
 	assert.deepEqual(inkFieldSettings({ colors: ['#aaaaaa', '#bbbbbb'] }).colors, ['#aaaaaa', '#bbbbbb', '#aaaaaa']);
-	assert.deepEqual(inkFieldSettings({ colors: [] }).colors, INK_PALETTES.Lumetri.colors);
+	assert.deepEqual(inkFieldSettings({ colors: [] }).colors, PALETTES.Lumetri.colors);
 	assert.equal(inkFieldSettings({ glint: '#ffffff' }).glint, '#ffffff');
 });
 
@@ -67,8 +43,7 @@ test('inkFieldSettings reads the rest, and leaves the palettes alone', () => {
 	assert.equal(s.still, true);
 	assert.equal(s.scale, 1);
 	s.colors[0] = '#000000';
-	assert.equal(INK_PALETTES.Lumetri.colors[0], '#2532ef');
-	assert.ok(Object.isFrozen(INK_PALETTES));
+	assert.equal(PALETTES.Lumetri.colors[0], '#2532ef');
 });
 
 test('the fallback is the colours as pools of light on the water', () => {

@@ -30,19 +30,14 @@ import { parseColor } from './color.js';
 import { canHover } from './device.js';
 import { watchColors } from './mount.js';
 import { pointerIn, pressAt } from './pointer.js';
+import { PALETTES, findPalette } from './palettes.js';
 import { colorPools } from './pools.js';
 import { createInkSim } from './ink-field/sim.js';
 import { DISPLAY } from './ink-field/shaders.js';
 
 /**
- * @typedef {object} InkPalette
- * @property {[string, string, string]} colors The three colours the ink loops through, as CSS hex.
- * @property {string} glint A highlight colour, kept for `setColors` (the ink look does not use it).
- */
-
-/**
  * @typedef {object} InkFieldConfig
- * @property {string} [palette='Lumetri'] One of the named palettes (INK_PALETTES; any case).
+ * @property {string} [palette='Lumetri'] One of the shared palettes (PALETTES in palettes.js; any case).
  * @property {string[]} [colors] Three colours as CSS hex, in place of the palette's.
  * @property {string} [glint] A glint colour, in place of the palette's (unused by the ink look).
  * @property {boolean} [interactive=true] The pointer stirs the ink and the lamp follows it (devices that hover).
@@ -52,26 +47,6 @@ import { DISPLAY } from './ink-field/shaders.js';
  * @property {number} [scale=0.5] Share of the pixel ratio drawn at.
  */
 
-/**
- * The palettes by name: three colours each, chosen bright enough to stay
- * colour, not mud, where the ink thickens and deepens them.
- *
- * @type {Readonly<Record<string, InkPalette>>}
- */
-export const INK_PALETTES = Object.freeze({
-	Lumetri: { colors: ['#2532ef', '#0957ff', '#f69d03'], glint: '#FFFDCF' },
-	Forest: { colors: ['#2c824a', '#4e3a3a', '#31625a'], glint: '#5d8d61' },
-	Cadmium: { colors: ['#f15025', '#c9783a', '#303030'], glint: '#FF6B35' },
-	Peacock: { colors: ['#18d2e3', '#092eff', '#03f6b9'], glint: '#5f7eee' },
-	Vermillion: { colors: ['#e31818', '#931168', '#bd5d0e'], glint: '#ff0000' },
-	Barbie: { colors: ['#ff0bce', '#1bfefe', '#2d026e'], glint: '#ff00ff' },
-	Uranium: { colors: ['#aaff0b', '#4d7a60', '#1b1b1b'], glint: '#04ff00' },
-	Azure: { colors: ['#066aff', '#0095ff', '#0062ff'], glint: '#0080ff' },
-	Ruby: { colors: ['#ff0000', '#870000', '#3b475e'], glint: '#ff0000' },
-	Ultramarine: { colors: ['#0044ff', '#561616', '#005fc4'], glint: '#0037ff' },
-	Saffron: { colors: ['#ffb700', '#521212', '#ffcb53'], glint: '#ff8c00' },
-	Crimson: { colors: ['#ff0000', '#173a71', '#4f0000'], glint: '#ff0000' },
-});
 
 /** The palette when none is named, or the name is not one. */
 const DEFAULT_PALETTE = 'Lumetri';
@@ -92,17 +67,6 @@ const LAMP_EASE = 0.035;
 /** The colours' easing time constant, seconds: about a second to new colours. */
 const COLOR_EASE = 0.35;
 
-/**
- * A palette by name, in any case.
- *
- * @param {string | undefined} name The name.
- * @returns {InkPalette | undefined} The palette, or undefined when there is none by that name.
- */
-export function inkPalette(name) {
-	if (!name) return undefined;
-	const key = Object.keys(INK_PALETTES).find((k) => k.toLowerCase() === String(name).toLowerCase());
-	return key ? INK_PALETTES[key] : undefined;
-}
 
 /**
  * Three colours from a list, looped where it has fewer.
@@ -123,7 +87,7 @@ function three(colors) {
  *   Three colours and a glint, the lamp's rest (0–1 from the top left), and the rest.
  */
 export function inkFieldSettings(config = {}) {
-	const palette = inkPalette(config.palette) ?? INK_PALETTES[DEFAULT_PALETTE];
+	const palette = findPalette(config.palette) ?? PALETTES[DEFAULT_PALETTE];
 	return {
 		colors: config.colors?.length ? three(config.colors) : [...palette.colors],
 		glint: config.glint ?? palette.glint,
@@ -165,8 +129,8 @@ function channels(colors, glint) {
  * @returns {() => void} Stops it.
  */
 export function inkField(el, config) {
-	if (config.palette && !inkPalette(config.palette)) {
-		console.warn('[effects-astro]', `No ink palette "${config.palette}"; using ${DEFAULT_PALETTE}`);
+	if (config.palette && !findPalette(config.palette)) {
+		console.warn('[effects-astro]', `No palette "${config.palette}"; using ${DEFAULT_PALETTE}`);
 	}
 	const settings = inkFieldSettings(config);
 	let glint = settings.glint;

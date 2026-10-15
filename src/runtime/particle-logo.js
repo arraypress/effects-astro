@@ -22,6 +22,7 @@ import { parseColor } from './color.js';
 import { canHover, isMobileGpu } from './device.js';
 import { pointerIn } from './pointer.js';
 import { watchColors } from './mount.js';
+import { pickColors } from './palettes.js';
 
 /**
  * @typedef {object} ParticleLogoConfig
@@ -31,6 +32,7 @@ import { watchColors } from './mount.js';
  * @property {{ x: number, y: number, width: number, height: number }} [area]
  *   Where the shape sits, each 0–1 from the top left (default: the middle).
  * @property {string[]} [colors] The dots' two colours, then the two blooms' (default white and ice blue, deep teal and midnight blue).
+ * @property {string} [palette] A shared palette by name (PALETTES; any case), when there are no `colors`. White dots, then its three colours.
  * @property {string} [background='#030305'] The ground.
  * @property {number} [count=16000] How many particles (half on phones).
  * @property {number} [size=2.2] A particle's size, CSS px.
@@ -112,7 +114,7 @@ const COLORS = ['#ffffff', '#a5c8ff', '#0f4c5c', '#0b1f3a'];
  * @returns {() => void} Stops it.
  */
 export function particleLogo(el, config) {
-	let colors = config.colors?.length ? config.colors : COLORS;
+	let colors = pickColors(config, COLORS, (p) => ['#ffffff', ...p.colors]);
 	const start = performance.now();
 	const ptr = { x: 0.5, y: 0.5 };
 	const tilt = { x: 0, y: 0 };

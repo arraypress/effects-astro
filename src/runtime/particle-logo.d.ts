@@ -1,3 +1,5 @@
+import type { PaletteName } from './palettes.js';
+
 export interface ParticleLogoConfig {
 	/** A word (or a character, an emoji) to draw in particles. */
 	text?: string;
@@ -9,6 +11,8 @@ export interface ParticleLogoConfig {
 	area?: { x: number; y: number; width: number; height: number };
 	/** The dots' two colours, then the two blooms'. Default white, ice blue, deep teal, midnight blue. */
 	colors?: string[];
+	/** A shared palette by name (`PALETTES`, any case), when there are no `colors`. */
+	palette?: PaletteName | (string & {});
 	/** The ground. Default `#030305`. */
 	background?: string;
 	/** How many particles (half on phones). Default 16000. */

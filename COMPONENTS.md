@@ -17,7 +17,9 @@ AsciiRain: data rain on a rippling surface, drawn in text characters, with red a
 
 | Prop | Type | |
 |---|---|---|
-| `colors` | `string[]` | Three CSS hex colours the dimmer glyphs take; the brightest go white. Default white. |
+| `colors` | `string[]` | Three CSS hex colours the glyphs take, the brightest nearly white. Default a cool cyan and green. |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`. |
+| `glitch` | `number` | How often rows jump sideways for a moment, their colours splitting wider; 0 for never. Default 1. |
 | `glyphs` | `string` | A character set (`data`: hollow and solid bars; `bars`, `ascii`, `blocks`, `binary`, `boxes`) or the characters, darkest first. Default `data`. |
 | `cell` | `number` | A character cell's height in CSS px. Default 14. |
 | `aspect` | `number` | A cell's width over its height. Default 1 for `data`, 0.6 for type. |
@@ -57,6 +59,7 @@ Backdrop: six animated shader backgrounds for a hero or section, tinted from `--
 |---|---|---|
 | `effect` (required) | `BackdropName` | Which backdrop. |
 | `colors` | `string[]` | Up to four colours (hex or `rgb()`); those missing come from `--color-accent` where it sits: the accent, the accent towards `--color-bg`, its hue +36°, its hue −32° lifted. Only mesh-gradient, grain-gradient and silk use the fourth. Default all four from the accent. |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`. |
 | `speed` | `number` | How fast it moves, 0–4. Default 1. |
 | `intensity` | `number` | How strong it is (brightness and contrast, not opacity), 0–2. Default 1. |
 | `static` | `boolean` | One frame, never the loop: for a backdrop that is wallpaper. Default false. |
@@ -125,6 +128,31 @@ DotGrid: a sea of dots you can drop stones into. A slow current moves through a 
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
 | `class` | `string` | Classes for the element. |
 
+## `<DotSurface>`
+
+DotSurface: a halftone sea. A grid of round dots lies on a slowly rolling sheet seen in perspective, each dot sized and lit by how the light catches the sheet: lit crests swell into large bright dots, troughs shrink to pinpoints. The pointer raises a soft swell; a click sends a ring across. See src/runtime/dot-surface.js.
+
+```astro
+<DotSurface color="#ff8a1f" quiet={{ x: 0.3, y: 0.3, radius: 0.5 }} />
+```
+
+| Prop | Type | |
+|---|---|---|
+| `color` | `string` | The dots' colour. Default `#ff8a1f`. |
+| `colors` | `string[]` | A gradient instead (up to five), blended in Oklab, from near to far or left to right (see `gradient`). |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors` or `color`. |
+| `gradient` | `'depth' \| 'width'` | Which way `colors` runs: near to far, or left to right. Default `depth`. |
+| `pitch` | `number` | Space between dots, CSS px, at the middle of the sheet (nearer is wider, further closer). Default 10. |
+| `dot` | `number` | The largest dot, CSS px, at the middle of the sheet. Default 6. |
+| `amplitude` | `number` | How tall the swells are: 1 a gentle roll, 2 a heavy sea, 0 flat. Default 1. |
+| `speed` | `number` | How fast the sheet rolls; 0 holds it still. Default 1. |
+| `tilt` | `number` | The camera's angle above the sheet, degrees (10 grazing, 70 nearly overhead). Default 42. |
+| `light` | `[number, number, number]` | Where the light comes from: x right, y up, z into the distance. Default `[-0.5, 0.6, -0.6]`. |
+| `interactive` | `boolean` | Whether the pointer raises a swell and a click sends a ring. Default true. |
+| `quiet` | `{ x?: number; y?: number; radius?: number; depth?: number } \| null` | An area kept dim behind copy: centre (0–1 from the top left), radius (a share of the height), depth (0–1). Default none; `{}` for the middle. |
+| `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
+| `class` | `string` | Classes for the element. |
+
 ## `<FitText>`
 
 FitText: one line of text sized to exactly span its parent's content width, whatever the text and the window. See src/runtime/fit-text.js. Give it a CSS font-size as the fallback without script.
@@ -152,6 +180,7 @@ FlutedGlass: a pane of slanted fluted glass over soft blooms of colour, the main
 | Prop | Type | |
 |---|---|---|
 | `colors` | `string[]` | The blooms' colours, the one that follows the pointer first. Default indigo, violet, pink. |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`. |
 | `background` | `string` | The ground behind the glass. Default `#f4f4f5`. |
 | `angle` | `number` | The flutes' slant, degrees from vertical. Default -35. |
 | `frequency` | `number` | Flutes across the longer side. Default 9. |
@@ -198,6 +227,7 @@ GlassGlyph: a character or a logo as a thick slab of moulded glass over a dark g
 | `src` | `string` | An image (an SVG logo) to make of glass instead. |
 | `area` | `{ x: number; y: number; width: number; height: number }` | Where the shape sits, each 0–1 from the top left. Default the right half. |
 | `colors` | `string[]` | The light's colour, then the glass's tint. Default acid green, white. |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`. |
 | `background` | `string` | The ground. Default `#050505`. |
 | `refraction` | `number` | How hard the glass bends what is behind it at its edges. Default 1. |
 | `thickness` | `number` | How far in from the edge the bending reaches, a share of the height. Default 0.06. |
@@ -283,7 +313,8 @@ Ink: ink in water over whatever is behind it. The pointer stirs it and trails in
 
 | Prop | Type | |
 |---|---|---|
-| `colors` (required) | `string[]` | The ink's palette, as CSS hex, looped through as it is laid. |
+| `colors` | `string[]` | The ink's colours, as CSS hex, looped through as it is laid. Default the palette's, or Peacock's. |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`. |
 | `trail` | `number` | How much ink a stroke leaves, 0 for none (strokes still push). Default 0.35. |
 | `drops` | `boolean` | Whether a click or tap drops a bloom of ink. Default true. |
 | `force` | `number` | How hard the pointer pushes. Default 1. |
@@ -307,7 +338,7 @@ InkField: ink in water, lit by a lamp that follows the pointer. Slow emitters ke
 
 | Prop | Type | |
 |---|---|---|
-| `palette` | `InkPaletteName \| (string & {})` | One of the named palettes (`INK_PALETTES`, any case): Lumetri, Forest, Cadmium, Peacock, Vermillion, Barbie, Uranium, Azure, Ruby, Ultramarine, Saffron, Crimson. Default `'Lumetri'`. |
+| `palette` | `PaletteName \| (string & {})` | One of the shared palettes (`PALETTES`, any case). Default `'Lumetri'`. |
 | `colors` | `string[]` | Three colours as CSS hex, in place of the palette's (fewer are looped). Default the palette's. |
 | `glint` | `string` | A glint colour, in place of the palette's (unused by the ink look). Default the palette's. |
 | `interactive` | `boolean` | The pointer stirs the ink and the lamp follows it, on devices that hover. Default true. |
@@ -328,8 +359,9 @@ LightField: liquid light in three colours, bending around the pointer, with a re
 
 | Prop | Type | |
 |---|---|---|
-| `colors` (required) | `string[]` | The light's three colours, as CSS hex. |
-| `glint` | `string` | The caustic bands' colour. Default a warm white, `#fff3c4`. |
+| `colors` | `string[]` | The light's three colours, as CSS hex. Default the palette's, or Lumetri's. |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`. |
+| `glint` | `string` | The caustic bands' colour. Default the palette's glint, or a warm white, `#fff3c4`. |
 | `speed` | `number` | How fast the light moves. Default 1. |
 | `lens` | `number` | How strongly the pointer bends the light; 0 for not at all. Default 1. |
 | `prism` | `boolean` | Split the colours at the edges. Default true; always off on phones. |
@@ -398,11 +430,13 @@ NebulaLogo: a logo or a word filled with drifting nebula gas in the palette's co
 | `src` | `string` | An image (an SVG logo, a PNG) to fill instead. |
 | `area` | `{ x: number; y: number; width: number; height: number }` | Where the shape sits, each 0–1 from the top left. Default the right half. |
 | `colors` | `string[]` | The gas's palette, three colours; the first, darkened, is also the thin gas's. Default teal, amber, rose. |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`. |
 | `background` | `string` | The ground. Default `#05070a`. |
 | `speed` | `number` | How fast the gas drifts. Default 1. |
 | `glow` | `number` | The rim and the halo leaking past the edge; 0 for neither. Default 1. |
 | `stars` | `number` | How many stars twinkle inside; 0 for none. Default 1. |
 | `stir` | `number` | How much the pointer stirs and brightens the gas; 0 for not at all. Default 1. |
+| `scale` | `number` | Share of the pixel ratio the gas is drawn at: it is soft, so a little below full costs nothing visible and saves most of the work. Default 0.6. |
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
 | `class` | `string` | Classes for the element. |
 
@@ -424,6 +458,7 @@ NeonSwarm: a logo or a word held by a swarm of glowing particles that flows like
 | `src` | `string` | An image (an SVG logo, a PNG) to gather it into instead. |
 | `area` | `{ x: number; y: number; width: number; height: number }` | Where the shape sits, each 0–1 from the top left. Default the right half. |
 | `colors` | `string[]` | The palette across the swarm, three colours. Default neon cyan, lime, magenta. |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`. |
 | `background` | `string` | The ground. Default `#030406`. |
 | `count` | `number` | How many particles (half on phones). Default 6000. |
 | `size` | `number` | A particle's glowing core, CSS px. Default 2.4. |
@@ -520,6 +555,7 @@ ParticleLogo: a logo or a word in thousands of twinkling particles that scatter 
 | `src` | `string` | An image (an SVG logo, a PNG) to draw in particles instead. |
 | `area` | `{ x: number; y: number; width: number; height: number }` | Where the shape sits, each 0–1 from the top left. Default the middle. |
 | `colors` | `string[]` | The dots' two colours, then the two blooms'. Default white, ice blue, deep teal, midnight blue. |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`. |
 | `background` | `string` | The ground. Default `#030305`. |
 | `count` | `number` | How many particles (half on phones). Default 16000. |
 | `size` | `number` | A particle's size, CSS px. Default 2.2. |
@@ -568,6 +604,7 @@ PointCloud: a word drawn as a matrix of bright dots among rippling sheets of poi
 | `src` | `string` | An image (an SVG logo) to draw in dots instead. |
 | `area` | `{ x: number; y: number; width: number; height: number }` | Where the word sits, each 0–1 from the top left. Default across the middle. |
 | `colors` | `string[]` | The word's dots, then the clouds' low and high colours. Default white, deep blue, sky blue. |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`. |
 | `background` | `string` | The ground. Default `#020205`. |
 | `columns` | `number` | Dots across the word's grid. Default 110. |
 | `dot` | `number` | A word dot's size, a share of the grid's spacing. Default 0.72. |
@@ -656,7 +693,7 @@ ScrollReveal: scroll reveal for a whole site by class. Put it once in the layout
 
 ## `<SignalLines>`
 
-SignalLines: layered waveform lines with a drifting loudness, front lines glowing, and pulses of light running along them. A quiet audio motif for behind a hero's copy. See src/runtime/waves.js.
+SignalLines: layered waveform lines drawn as light, with a drifting loudness: sharp bright lines in front, soft out-of-focus ones behind, a shimmer where they cross, pulses of light running along them, and the pointer as a lens they part round. A quiet audio motif for behind a hero's copy. See src/runtime/waves.js.
 
 ```astro
 <section class="hero" style="position: relative">
@@ -667,15 +704,19 @@ SignalLines: layered waveform lines with a drifting loudness, front lines glowin
 
 | Prop | Type | |
 |---|---|---|
-| `color` | `string` | The lines' colour, when there are no `colors`. Default `#aeaeb8`. |
-| `colors` | `string[]` | Colours the lines run through from left to right, blended in Oklab. |
+| `color` | `string` | One colour for every line. Default: the `colors` gradient. |
+| `colors` | `string[]` | Colours the lines run through from left to right, blended in Oklab. Default sea-glass, ice and pale gold. |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors` or `color`. |
 | `pulse` | `string` | The pulses' colour. Default `#fafafa`. |
-| `lines` | `number` | How many lines. Default 7. |
+| `lines` | `number` | How many lines, 2–12. Default 7. |
 | `amplitude` | `number` | How tall the waves are. Default 1. |
 | `speed` | `number` | How fast they move. Default 1. |
 | `pulses` | `number` | How often pulses run; 0 for none. Default 1. |
 | `glow` | `number` | How much light the lines and pulses give off, 0–2. Default 1. |
-| `grain` | `number` | Grain in the glow, 0–1. Default 0.5. |
+| `grain` | `number` | Film grain in the light, 0–1. Default 0.5. |
+| `depth` | `number` | How far out of focus the back lines are, and how much their colours fringe; 0 for all sharp. Default 1. |
+| `bend` | `number` | How far the lines part round the pointer and how much it lights them; 0 for not at all. Default 1. |
+| `quiet` | `{ x?: number; y?: number; radius?: number; depth?: number } \| null` | An area where the light dims (behind a headline): centre x/y (0–1, from the top left), radius (a share of the height) and depth (0 none, 1 dark). Default none. |
 | `fade` | `boolean` | Fade the left and right edges out. Default true. |
 | `class` | `string` | Classes for the element. |
 
@@ -750,6 +791,7 @@ VoxelLogo: a logo or character built of cubes, rocking slowly in perspective and
 | `src` | `string` | An image (an SVG logo) to build instead. |
 | `area` | `{ x: number; y: number; width: number; height: number }` | Where the solid sits, each 0–1 from the top left. Default the right half. |
 | `colors` | `string[]` | The ink, then the paper. Default mint on near-black. |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`. |
 | `size` | `number` | How large the solid is in its area (1 just fits when face-on). Default 1.3. |
 | `cells` | `number` | Cubes across the shape. Default 28. |
 | `depth` | `number` | Cubes deep. Default 4. |
@@ -761,7 +803,7 @@ VoxelLogo: a logo or character built of cubes, rocking slowly in perspective and
 
 ## `<WaveBars>`
 
-WaveBars: a mirrored bar waveform whose bars ease to new heights every couple of seconds, as if being tuned, with a band of light drifting across. A quiet audio motif for behind a hero's copy. See src/runtime/waves.js.
+WaveBars: a glowing bar waveform over its reflection, retuning every couple of seconds like a meter (peak marks that hold and drop), with a playhead sweeping across that lights and kicks the bars it plays, and the pointer scrubbing. A quiet audio motif for behind a hero's copy. See src/runtime/waves.js.
 
 ```astro
 <section class="hero" style="position: relative">
@@ -772,33 +814,63 @@ WaveBars: a mirrored bar waveform whose bars ease to new heights every couple of
 
 | Prop | Type | |
 |---|---|---|
-| `color` | `string` | The bars' colour. Default `#aeaeb8`. |
+| `color` | `string` | One colour for every bar. Default: the `colors` gradient. |
+| `colors` | `string[]` | Colours the bars run through from left to right, blended in Oklab. Default teal, ice and apricot. |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors` or `color`. |
 | `step` | `number` | Space between bars, CSS px. Default 8. |
 | `bar` | `number` | A bar's width, CSS px. Default 3. |
 | `height` | `number` | The tallest bar, a share of the height either side of the middle. Default 0.34. |
 | `every` | `number` | Seconds between retunes. Default 2. |
-| `sweep` | `boolean` | The band of light drifting across. Default true. |
-| `grain` | `number` | Grain on the bars, 0–1. Default 0.4. |
+| `sweep` | `boolean` | The playhead sweeping across, lighting the bars it plays. Default true. |
+| `grain` | `number` | Film grain in the light, 0–1. Default 0.4. |
+| `peaks` | `boolean` | Peak marks over the bars that hold, then drop, as a meter's do. Default true. |
+| `glow` | `number` | How much light the bars and playhead give off, 0–2. Default 1. |
+| `scrub` | `number` | How much the bars under the pointer rise and light; 0 for not at all. Default 1. |
+| `quiet` | `{ x?: number; y?: number; radius?: number; depth?: number } \| null` | An area where the light dims (behind a headline): centre x/y (0–1, from the top left), radius (a share of the height) and depth (0 none, 1 dark). Default none. |
 | `fade` | `boolean` | Fade the left and right edges out. Default true. |
 | `class` | `string` | Classes for the element. |
 
 ## `<WorldRoutes>`
 
-WorldRoutes: a dotted world map with routes arcing between cities, a comet of light running along each and pinging the city it lands on. For "sell worldwide" and "customers in 40 countries" sections. Name cities (`london`, `tokyo`… see CITIES in src/runtime/world-routes.js) or give [latitude, longitude]. The map fits inside its box, centred.
+WorldRoutes: a dotted world map with routes arcing between cities, a comet of light running along each and pinging the city it lands on. For "sell worldwide" and "customers in 40 countries" sections, or with `home`, "shipped from our studio to everywhere". Name cities (`london`, `tokyo`… see CITIES in src/runtime/world-plan.js) or give [latitude, longitude] or `{ name, lat, lon }`. Routes take their own colour, label, speed, width and dash; `colors` gives each city a colour of a palette, and `gradient` blends each route between its two. The map shows the world or a `region` (`europe`, `routes`, a box), fitted to its box; hovering a city or a route picks it out and names it.
 
 ```astro
-<WorldRoutes color="#ff6b6b" routes={[['london', 'new-york'], ['london', 'tokyo']]} />
+<WorldRoutes home="london" routes={['new-york', 'tokyo', { to: 'sydney', color: '#f97316' }]} colors={['#e0f2fe', '#38bdf8', '#2dd4bf']} gradient labels />
 ```
 
 | Prop | Type | |
 |---|---|---|
-| `routes` | `[Place, Place][]` | The routes, each from a place to a place. Default ten routes round the world. |
+| `routes` | `RouteSpec[]` | The routes: `[from, to]`, a place alone (from `home`), or `{ from, to, color, label, speed, width, dashed }`. A place is a key of CITIES, [degrees north, degrees east], or `{ name, lat, lon }`. Default ten routes round the world, or, with a `home`, routes from it to ten cities round the world. |
+| `home` | `Place` | A hub: routes with no `from` start here, and it is marked out with a ring and a halo. Default none. |
 | `color` | `string` | The routes' colour. Default `#38bdf8`. |
-| `land` | `string` | The land dots' colour. Default `#ffffff`. |
+| `colors` | `string[]` | A palette in place of `color`: each city takes the next colour in the order they appear (a home city takes the first and keeps it), and each route the colour of the city it runs to. Default none. |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`. |
+| `gradient` | `boolean` | Blend each route from its origin's colour to its destination's, in Oklab (with `colors`). Default false. |
+| `land` | `string` | The land dots' colour, and the names'. Default `#ffffff`. |
 | `landOpacity` | `number` | The land dots' opacity. Default 0.18. |
 | `pitch` | `number` | Space between land dots, CSS px. Default 7. |
 | `dot` | `number` | A land dot's radius, CSS px. Default 1.4. |
+| `dotShape` | `'round' \| 'square'` | The land dots' shape: `round` or `square`. Default `round`. |
+| `graticule` | `boolean \| number` | Faint lines of latitude and longitude, in dots: true for every 30°, or the degrees between them. Default false. |
+| `region` | `RegionName \| 'routes' \| Bounds` | What the map shows: `world`, `europe`, `north-america`, `south-america`, `africa`, `middle-east`, `asia`, `oceania`, `routes` (fitted round the cities and the arcs between them), or [[south, west], [north, east]]. Default `world`. |
+| `fit` | `'contain' \| 'cover'` | `contain` shows all of the region; `cover` fills the box with it. Default `contain`. |
+| `drift` | `number` | Pan the map east this many degrees a second (negative for west), round and round the world. Default 0. |
 | `lap` | `number` | Seconds a comet takes along a route. Default 3.2. |
-| `lift` | `number` | How high the arcs bow, a share of their length. Default 0.3. |
+| `lift` | `number` | How high the arcs bow, a share of their length. Default 0.3, or 0.08 with a great-circle `curve`. |
+| `curve` | `'bow' \| 'great-circle'` | `bow`: arcs bow up between the cities. `great-circle`: they follow the shortest way over the globe, over the date line where that is shorter. Default `bow`. |
+| `arcOpacity` | `number` | The faint arcs' opacity. Default 0.14. |
+| `dashed` | `boolean` | Dash the faint arcs, the dashes running from origin to destination. Default false. |
+| `width` | `number` | The comets' width, CSS px; the faint arcs are a line half as wide. Default 2.2. |
+| `tail` | `number` | A comet's length, a share of its route. Default 0.28. |
+| `glow` | `number` | The glow round a comet's head, CSS px; 0 for none. Default 10. |
+| `comets` | `number` | Comets on each route at once. Default 1. |
+| `ping` | `number` | How wide the ring a landing comet opens grows, CSS px; 0 for none. Default 17. |
+| `markers` | `boolean` | Mark the cities with a dot. Default true. |
+| `markerSize` | `number` | A city dot's radius, CSS px. Default 2.2. |
+| `halo` | `boolean` | A soft halo breathing round every city (the home city always has one). Default false. |
+| `labels` | `boolean` | Name the cities, leaving out names that would overlap (hovering a city names it either way). Default false. |
+| `font` | `string` | The names' CSS font. Default `500 11px system-ui, sans-serif`. |
+| `interactive` | `boolean` | Hovering a city or a route (not through a link or button) brightens it and names it. Default true. |
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
+| `fade` | `boolean \| 'top' \| 'bottom' \| 'both'` | Fade the edges out, for a cropped map: true for the left and right, or 'top', 'bottom' or 'both'. Default false. |
 | `class` | `string` | Classes for the element. |

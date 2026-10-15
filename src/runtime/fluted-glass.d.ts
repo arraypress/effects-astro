@@ -1,6 +1,10 @@
+import type { PaletteName } from './palettes.js';
+
 export interface FlutedGlassConfig {
 	/** The blooms' colours, the one that follows the pointer first. Default indigo, violet, pink. */
 	colors?: string[];
+	/** A shared palette by name (`PALETTES`, any case), when there are no `colors`. */
+	palette?: PaletteName | (string & {});
 	/** The ground behind the glass. Default `#f4f4f5`. */
 	background?: string;
 	/** The flutes' slant, degrees from vertical. Default -35. */

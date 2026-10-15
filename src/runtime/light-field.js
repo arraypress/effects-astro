@@ -28,13 +28,15 @@ import { parseColor } from './color.js';
 import { GLSL_NOISE, GLSL_PALETTE, GLSL_QUIET, paletteUniform, quietUniform } from './glsl.js';
 import { canHover, isMobileGpu } from './device.js';
 import { watchColors } from './mount.js';
+import { PALETTES, findPalette, pickColors } from './palettes.js';
 import { pointerIn } from './pointer.js';
 import { createFluid, stir } from './fluid.js';
 
 /**
  * @typedef {object} LightFieldConfig
- * @property {string[]} colors The light's three colours, as CSS hex.
- * @property {string} [glint] The caustic bands' colour (default: white-gold).
+ * @property {string[]} [colors] The light's three colours, as CSS hex (default the palette's, or Lumetri's).
+ * @property {string} [palette] A shared palette by name (PALETTES; any case), when there are no `colors`.
+ * @property {string} [glint] The caustic bands' colour (default the palette's, or white-gold).
  * @property {number} [speed=1] How fast the light moves.
  * @property {number} [lens=1] How strongly the pointer bends the light; 0 for not at all.
  * @property {boolean} [prism=true] Split the colours at the edges (always off on phones).
@@ -168,8 +170,9 @@ function channels(colors, glint) {
  */
 export function lightField(el, config) {
 	const settings = config.fluid === false ? null : config.fluid === true || config.fluid == null ? {} : config.fluid;
-	let glint = config.glint ?? GLINT;
-	const colours = channels(config.colors, glint);
+	const colors = pickColors(config, [...PALETTES.Lumetri.colors]);
+	let glint = config.glint ?? findPalette(config.palette)?.glint ?? GLINT;
+	const colours = channels(colors, glint);
 	/** @type {Float32Array} */
 	let target = colours.slice();
 	const mouse = { x: 0, y: 0, set: false };
@@ -204,7 +207,7 @@ export function lightField(el, config) {
 			}
 			stirrer = fluid
 				? stir(fluid, el, {
-						colors: config.colors.map(parseColor),
+						colors: colors.map(parseColor),
 						trail: settings?.trail,
 						drops: settings?.drops,
 						force: settings?.force,

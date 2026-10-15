@@ -1,7 +1,11 @@
+import type { PaletteName } from './palettes.js';
+
 export interface LightFieldConfig {
-	/** The light's three colours, as CSS hex. */
-	colors: string[];
-	/** The caustic bands' colour. Default a warm white, `#fff3c4`. */
+	/** The light's three colours, as CSS hex. Default the palette's, or Lumetri's. */
+	colors?: string[];
+	/** A shared palette by name (`PALETTES`, any case), when there are no `colors`. */
+	palette?: PaletteName | (string & {});
+	/** The caustic bands' colour. Default the palette's glint, or a warm white, `#fff3c4`. */
 	glint?: string;
 	/** How fast the light moves. Default 1. */
 	speed?: number;

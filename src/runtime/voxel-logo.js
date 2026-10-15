@@ -24,6 +24,7 @@ import { parseColor } from './color.js';
 import { canHover } from './device.js';
 import { pointerIn } from './pointer.js';
 import { watchColors } from './mount.js';
+import { pickColors } from './palettes.js';
 
 /**
  * @typedef {object} VoxelLogoConfig
@@ -33,6 +34,7 @@ import { watchColors } from './mount.js';
  * @property {{ x: number, y: number, width: number, height: number }} [area]
  *   Where the solid sits, each 0–1 from the top left (default: the right half).
  * @property {string[]} [colors] The ink, then the paper (default mint on near-black).
+ * @property {string} [palette] A shared palette by name (PALETTES; any case), when there are no `colors`. Its first colour is the ink.
  * @property {number} [size=1.3] How large the solid is in its area (1 just fits when face-on).
  * @property {number} [cells=28] Cubes across the shape.
  * @property {number} [depth=4] Cubes deep.
@@ -143,7 +145,7 @@ const COLORS = ['#a7f3d0', '#08090a'];
  * @returns {() => void} Stops it.
  */
 export function voxelLogo(el, config) {
-	let colors = config.colors?.length ? config.colors : COLORS;
+	let colors = pickColors(config, COLORS, (p) => [p.colors[0], COLORS[1]]);
 	const area = config.area ?? { x: 0.42, y: 0.04, width: 0.56, height: 0.92 };
 	const start = performance.now();
 	const turn = { x: 0, y: 0 };

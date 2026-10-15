@@ -42,10 +42,11 @@ Astro 6 or 7. The runtime underneath (`@arraypress/effects-astro`) works without
 | `<AsciiRain>` | Streams of data in text characters, rows sliding at their own pace, a cool cyan-green cast, a lens fringe and the odd glitch (or, with `pattern="waves"`, streaks on a rippling 3D surface) | WebGL |
 | `<FlutedGlass>` | Slanted fluted glass bending soft blooms of colour, one following the pointer | WebGL |
 | `<DotGrid>` | A sea of dots with a drifting current; a click sends a ripple across | Canvas |
-| `<SignalLines>` | Layered waveform lines with pulses of light running along them | Canvas |
-| `<WaveBars>` | A mirrored bar waveform retuning itself, a band of light drifting across | Canvas |
+| `<SignalLines>` | Waveform lines drawn as light: sharp in front, out of focus and lens-fringed behind, a shimmer where they cross, pulses of light running along them, and the pointer a lens they part round | WebGL |
+| `<WaveBars>` | A glowing bar waveform over its reflection, retuning like a meter with peak caps that hold and fall, a playhead that lights the bars it plays, and the pointer scrubbing | WebGL |
+| `<DotSurface>` | A halftone sea: dots on a slowly rolling sheet in perspective, sized and lit by the light; the pointer raises a swell, a click sends a ring | WebGL |
 | `<Backdrop>` | Six shader backgrounds by name (`mesh-gradient`, `grain-gradient`, `silk`, `band-lens`, `grid`, `waves`), tinted from the page's `--color-accent` unless given `colors`; `static` for wallpaper | WebGL |
-| `<WorldRoutes>` | A dotted world map with comets of light arcing between cities | Canvas |
+| `<WorldRoutes>` | A dotted world map with comets of light arcing between cities: a home hub, per-route colours and Oklab gradients, labels, regions, great-circle arcs, hover | Canvas |
 | `<GlowField>` | A still light (bloom, beam, horizon or wash) to lay over a background | CSS |
 | `<Grain>` | Film grain, to dither smooth gradients | CSS |
 
@@ -110,9 +111,21 @@ The logo effects take `text` (any word, character or emoji, in the font you name
 <GlassGlyph text="7" font="900 Anton, sans-serif" />
 ```
 
+## Palettes
+
+Every effect that takes `colors` also takes `palette`, one of eighteen named sets: Lumetri, Forest, Cadmium, Peacock, Vermillion, Barbie, Uranium, Azure, Ruby, Ultramarine, Saffron, Crimson, Ember, Lagoon, Citrus, Glacier, Rosewater, Mono (the first twelve are Trirat's, from the LumiThemes ink). An effect's own `colors` win; a palette fills in when there are none, shaped to what the effect takes:
+
+```astro
+<LightField palette="Lagoon" />
+<NeonSwarm src="/logo.svg" palette="Citrus" />
+<WorldRoutes home="london" palette="Ember" />
+```
+
+`PALETTES` (from `@arraypress/effects-astro`) is the list, for a site's own palette switcher.
+
 ## Changing colours
 
-The WebGL effects (`<LightField>`, `<InkField>`, `<Ink>`, `<AsciiRain>`, `<FlutedGlass>`, `<GlassGlyph>`, `<ParticleLogo>`, `<NeonSwarm>`, `<NebulaLogo>`, `<PointCloud>`, `<VoxelLogo>`) read a `data-colors` attribute; `setColors` writes it. A light or an ink field eases to the new palette in about a second; ink, rain and the rest take it from their next frame. Set before an effect starts, it is its colours from the first frame.
+The WebGL effects (`<LightField>`, `<InkField>`, `<Ink>`, `<AsciiRain>`, `<FlutedGlass>`, `<GlassGlyph>`, `<ParticleLogo>`, `<NeonSwarm>`, `<NebulaLogo>`, `<PointCloud>`, `<VoxelLogo>`, `<SignalLines>`, `<WaveBars>`, `<DotSurface>`) read a `data-colors` attribute; `setColors` writes it. A light or an ink field eases to the new palette in about a second; ink, rain and the rest take it from their next frame. Set before an effect starts, it is its colours from the first frame.
 
 ```js
 import { setColors } from '@arraypress/effects-astro';

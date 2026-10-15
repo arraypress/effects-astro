@@ -26,6 +26,7 @@ import { parseColor } from './color.js';
 import { canHover } from './device.js';
 import { pointerIn, trail } from './pointer.js';
 import { watchColors } from './mount.js';
+import { pickColors } from './palettes.js';
 
 /**
  * @typedef {object} NebulaLogoConfig
@@ -35,11 +36,13 @@ import { watchColors } from './mount.js';
  * @property {{ x: number, y: number, width: number, height: number }} [area]
  *   Where the shape sits, each 0–1 from the top left (default: the right half).
  * @property {string[]} [colors] The gas's palette, three colours; the first, darkened, is also the thin gas's (default teal, amber, rose).
+ * @property {string} [palette] A shared palette by name (PALETTES; any case), when there are no `colors`.
  * @property {string} [background='#05070a'] The ground.
  * @property {number} [speed=1] How fast the gas drifts.
  * @property {number} [glow=1] The rim and the halo leaking past the edge; 0 for neither.
  * @property {number} [stars=1] How many stars twinkle inside; 0 for none.
  * @property {number} [stir=1] How much the pointer stirs and brightens the gas; 0 for not at all.
+ * @property {number} [scale=0.6] Share of the pixel ratio the gas is drawn at: it is soft, so a little below full costs nothing visible and saves most of the work.
  */
 
 const FRAG = `
@@ -173,7 +176,7 @@ const WAKE_SCALE = 0.25;
  * @returns {() => void} Stops it.
  */
 export function nebulaLogo(el, config) {
-	let palette = paletteUniform(config.colors?.length ? config.colors : COLORS);
+	let palette = paletteUniform(pickColors(config, COLORS));
 	const start = performance.now();
 	const stir = config.stir ?? 1;
 	const ptr = { x: 0.5, y: 0.5 };
@@ -189,6 +192,7 @@ export function nebulaLogo(el, config) {
 	const { stage, stop } = createStage(el, {
 		fragment: FRAG,
 		alpha: false,
+		scale: config.scale ?? 0.6,
 		setup({ gl, uniform }) {
 			strokes = createPoints(gl, STROKE, SPLAT);
 			wake = createFeedback(gl, { scale: WAKE_SCALE, precise: true });

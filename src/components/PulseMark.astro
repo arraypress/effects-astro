@@ -46,58 +46,70 @@ const style = [
 	.join('; ');
 ---
 
-<svg
+<span
 	class:list={['effect-pulse-mark', `is-${variant}`, { 'has-glow': glow }, className]}
 	style={style}
-	viewBox="0 0 120 120"
 	role={label ? 'img' : undefined}
 	aria-label={label}
 	aria-hidden={label ? undefined : 'true'}
 >
 	{
-		variant === 'matrix' &&
-			rhythms.map((rhythm, i) => (
-				<rect
-					class={`led r${rhythm}`}
-					x={(i % cells) * pitch + pitch * 0.1}
-					y={Math.floor(i / cells) * pitch + pitch * 0.1}
-					width={pitch * 0.8}
-					height={pitch * 0.8}
-					rx={pitch * 0.12}
-				/>
-			))
+		variant === 'matrix' && (
+			<svg class="layer" viewBox="0 0 120 120">
+				{rhythms.map((rhythm, i) => (
+					<rect
+						class={`led r${rhythm}`}
+						x={(i % cells) * pitch + pitch * 0.1}
+						y={Math.floor(i / cells) * pitch + pitch * 0.1}
+						width={pitch * 0.8}
+						height={pitch * 0.8}
+						rx={pitch * 0.12}
+					/>
+				))}
+			</svg>
+		)
 	}
 	{
 		variant === 'rings' && (
-			<g fill="none" stroke-width="4">
-				<circle class="ring outer" cx="60" cy="60" r="38" stroke-dasharray="45 14.69" />
-				<circle class="ring inner" cx="60" cy="60" r="25" stroke-dasharray="40 12.36" />
-				<circle class="core" cx="60" cy="60" r="5" />
-			</g>
+			<>
+				<svg class="layer outer" viewBox="0 0 120 120"><circle cx="60" cy="60" r="38" fill="none" stroke-width="4" stroke-dasharray="45 14.69" /></svg>
+				<svg class="layer inner" viewBox="0 0 120 120"><circle cx="60" cy="60" r="25" fill="none" stroke-width="4" stroke-dasharray="40 12.36" /></svg>
+				<svg class="layer core" viewBox="0 0 120 120"><circle cx="60" cy="60" r="5" stroke="none" /></svg>
+			</>
 		)
 	}
 	{
-		variant === 'sonar' && (
-			<g fill="none">
-				<circle class="wave w0" cx="60" cy="60" r="8" stroke-width="3" />
-				<circle class="wave w1" cx="60" cy="60" r="20" stroke-width="2.5" />
-				<circle class="wave w2" cx="60" cy="60" r="34" stroke-width="2" />
-				<circle class="wave w3" cx="60" cy="60" r="50" stroke-width="1.5" />
-			</g>
-		)
+		variant === 'sonar' &&
+			[
+				[8, 3],
+				[20, 2.5],
+				[34, 2],
+				[50, 1.5],
+			].map(([r, width], i) => (
+				<svg class={`layer wave w${i}`} viewBox="0 0 120 120"><circle cx="60" cy="60" r={r} fill="none" stroke-width={width} /></svg>
+			))
 	}
-</svg>
+</span>
 
 <style>
+	/* Each moving part is a layer of its own, an SVG turned or scaled as a
+	   whole: the browser does that on the GPU. Moving shapes inside one
+	   SVG would mean laying the page out again every frame. */
 	.effect-pulse-mark {
 		--k: var(--mark-speed, 1);
+		display: inline-grid;
 		width: var(--mark-size);
 		height: var(--mark-size);
 		color: var(--mark-color, currentColor);
 		fill: currentColor;
 		stroke: currentColor;
-		overflow: visible;
 		vertical-align: middle;
+	}
+	.layer {
+		grid-area: 1 / 1;
+		width: 100%;
+		height: 100%;
+		overflow: visible;
 	}
 	.has-glow {
 		filter: drop-shadow(0 0 calc(var(--mark-size) * 0.06) currentColor);
@@ -114,10 +126,6 @@ const style = [
 	.r4 { --d: 1.8s; animation-delay: -0.7s; }
 	.r5 { --d: 2.2s; animation-delay: -1.5s; }
 
-	.ring,
-	.wave {
-		transform-origin: 60px 60px;
-	}
 	.outer {
 		animation: effect-mark-turn calc(var(--k) * 20s) linear infinite;
 	}
@@ -125,7 +133,6 @@ const style = [
 		animation: effect-mark-turn calc(var(--k) * 15s) linear infinite reverse;
 	}
 	.core {
-		stroke: none;
 		animation: effect-mark-beat calc(var(--k) * 2s) ease-in-out infinite;
 	}
 
@@ -166,7 +173,8 @@ const style = [
 
 	@media (prefers-reduced-motion: reduce) {
 		.led,
-		.ring,
+		.outer,
+		.inner,
 		.core,
 		.wave {
 			animation: none;

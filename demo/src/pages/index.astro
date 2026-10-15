@@ -2,19 +2,21 @@
 /** The gallery's Backgrounds page. */
 import Gallery from '../layouts/Gallery.astro';
 import Hero from '../components/Hero.astro';
+import PaletteChips from '../components/PaletteChips.astro';
 import LightField from '@arraypress/effects-astro/LightField.astro';
 import Ink from '@arraypress/effects-astro/Ink.astro';
 import InkField from '@arraypress/effects-astro/InkField.astro';
-import { INK_PALETTES } from '@arraypress/effects-astro/runtime/ink-field';
 import AsciiRain from '@arraypress/effects-astro/AsciiRain.astro';
 import FlutedGlass from '@arraypress/effects-astro/FlutedGlass.astro';
 import DotGrid from '@arraypress/effects-astro/DotGrid.astro';
+import DotSurface from '@arraypress/effects-astro/DotSurface.astro';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
 import SignalLines from '@arraypress/effects-astro/SignalLines.astro';
 import WaveBars from '@arraypress/effects-astro/WaveBars.astro';
 import WorldRoutes from '@arraypress/effects-astro/WorldRoutes.astro';
 import GlowField from '@arraypress/effects-astro/GlowField.astro';
 import Grain from '@arraypress/effects-astro/Grain.astro';
-import { line } from '../gallery';
 ---
 
 <Gallery page="Backgrounds">
@@ -23,9 +25,7 @@ import { line } from '../gallery';
 		<span class="eyebrow">effects-astro · every effect, as a hero · scroll</span>
 		<h1 class="headline">Pages that<br /><em>feel alive.</em></h1>
 		<p class="lede">Ink in water, lit by a lamp that follows the pointer. Click to drop more; pick a palette below and the ink on screen takes it.</p>
-		<div slot="tools" class="chips">
-			{Object.keys(INK_PALETTES).map((name) => <button type="button" class:list={['chip', { 'is-on': name === 'Barbie' }]} data-palette={name}>{name}</button>)}
-		</div>
+		<PaletteChips slot="tools" current="Barbie" />
 	</Hero>
 
 
@@ -35,6 +35,7 @@ import { line } from '../gallery';
 		<h2 class="headline">Fall asleep<br /><em>in colour.</em></h2>
 		<p class="lede">Slow soundscapes that drift with you, from the first yawn to deep sleep. Stir the light; click to drop in more.</p>
 		<div class="actions"><a class="btn" href="#">Start a free week</a><a class="btn btn--ghost" href="#">Listen</a></div>
+		<PaletteChips slot="tools" />
 	</Hero>
 	<Hero id="ink" name="Ink" code={`<Ink colors={['#2216f7', '#55bdff', '#a702ff']} />`} style="--hero-ground: #07070c">
 		<Ink slot="effect" colors={['#2216f7', '#55bdff', '#a702ff']} />
@@ -42,6 +43,7 @@ import { line } from '../gallery';
 		<h2 class="headline">Every stroke<br /><em>counts.</em></h2>
 		<p class="lede">Six weeks of brush lettering, from your first line to a finished alphabet. Drag through the water to stir the ink.</p>
 		<div class="actions"><a class="btn" href="#">Enrol for May</a><a class="btn btn--ghost" href="#">Watch a lesson</a></div>
+		<PaletteChips slot="tools" />
 	</Hero>
 	<Hero id="ascii-rain" name="AsciiRain" code={`<AsciiRain quiet={{ x: 0.05, y: 0.25, radius: 0.7, depth: 0.95 }} />`} align="left" style="--hero-ground: #000">
 		<AsciiRain slot="effect" quiet={{ x: 0.05, y: 0.25, radius: 0.7, depth: 0.95 }} />
@@ -49,11 +51,13 @@ import { line } from '../gallery';
 		<h2 class="headline">Every event,<br />accounted for.</h2>
 		<p class="lede">Pipe in clicks, orders and errors from every service, then ask questions in plain English. Answers in seconds, not sprints.</p>
 		<div class="actions"><a class="btn" href="#">Start free</a><a class="btn btn--ghost" href="#">See a live dashboard</a></div>
+		<PaletteChips slot="tools" />
 	</Hero>
 	<Hero id="fluted-glass" name="FlutedGlass" code="<FlutedGlass />" theme="light" align="bottom">
 		<FlutedGlass slot="effect" />
 		<span class="eyebrow">Atelier Nord · interiors</span>
 		<h2 class="headline">Rooms shaped<br />by <em>daylight.</em></h2>
+		<PaletteChips slot="tools" />
 	</Hero>
 	<Hero id="dot-grid" name="DotGrid" code="<DotGrid />">
 		<DotGrid slot="effect" />
@@ -62,26 +66,45 @@ import { line } from '../gallery';
 		<p class="lede">A quiet timer with gentle bells and nothing else on the screen. Tap the water anywhere to begin.</p>
 		<div class="actions"><a class="btn" href="#">Begin a session</a></div>
 	</Hero>
-	<Hero id="signal-lines" name="SignalLines" code="<SignalLines />">
-		<SignalLines slot="effect" />
+	<Hero id="dot-surface" name="DotSurface" code={`<DotSurface color="#ff8a1f" quiet={{ x: 0.28, y: 0.5, radius: 0.7, depth: 0.85 }} />`} align="left" style="--hero-ground: #0b0b0b">
+		<DotSurface slot="effect" color="#ff8a1f" quiet={{ x: 0.28, y: 0.5, radius: 0.7, depth: 0.85 }} />
+		<span class="eyebrow" style="font-family: 'IBM Plex Mono', ui-monospace, monospace">Halyard · platform engineer · Lisbon or remote</span>
+		<h2 class="headline" style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-weight: 500; font-size: clamp(34px, 4.6vw, 64px); line-height: 1.12; letter-spacing: -0.02em">Ship on Friday.<br /><span style="color: #ff8a1f">Sleep on Saturday.</span></h2>
+		<p class="lede" style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 16px">We build the release pipeline that rolls itself back before anyone's phone rings. Come help us make deploys boring.</p>
+		<div class="actions"><a class="btn" href="#">See the role</a><a class="btn btn--ghost" href="#">Read our stack</a></div>
+		<PaletteChips slot="tools" />
+	</Hero>
+	<Hero id="signal-lines" name="SignalLines" code={`<SignalLines quiet={{ radius: 0.6, depth: 0.5 }} />`}>
+		<SignalLines slot="effect" quiet={{ radius: 0.6, depth: 0.5 }} />
 		<span class="eyebrow">Northwave Records</span>
 		<h2 class="headline">New music,<br />every Friday.</h2>
 		<p class="lede">Stream the week's releases or buy them lossless, straight from the label that pressed them.</p>
 		<div class="actions"><a class="btn" href="#">Listen now</a><a class="btn btn--ghost" href="#">Browse releases</a></div>
+		<PaletteChips slot="tools" />
 	</Hero>
-	<Hero id="wave-bars" name="WaveBars" code="<WaveBars />">
-		<WaveBars slot="effect" />
+	<Hero id="wave-bars" name="WaveBars" code={`<WaveBars colors={['#ff8a5c', '#ffd6a0', '#8fd3ff']} quiet={{ radius: 0.6, depth: 0.4 }} />`}>
+		<WaveBars slot="effect" colors={['#ff8a5c', '#ffd6a0', '#8fd3ff']} quiet={{ radius: 0.6, depth: 0.4 }} />
 		<span class="eyebrow">Hard Mode · a podcast</span>
 		<h2 class="headline">Founders,<br /><em>unfiltered.</em></h2>
 		<p class="lede">Forty minutes a week with people building companies the slow way. New episode every Tuesday.</p>
 		<div class="actions"><a class="btn" href="#">Play episode 42</a><a class="btn btn--ghost" href="#">Subscribe</a></div>
+		<PaletteChips slot="tools" />
 	</Hero>
-	<Hero id="world-routes" name="WorldRoutes" code={`<WorldRoutes />`} align="bottom">
-		<WorldRoutes slot="effect" />
+	<Hero id="world-routes" name="WorldRoutes" code={`<WorldRoutes home="edinburgh" routes={['new-york', 'toronto', 'lagos', 'cape-town', 'dubai', 'mumbai', 'singapore', 'hong-kong', 'tokyo', 'sydney']} colors={['#f8fafc', '#38bdf8', '#2dd4bf', '#a3e635', '#fbbf24', '#fb923c', '#fb7185']} gradient curve="great-circle" labels halo />`} align="bottom">
+		<WorldRoutes slot="effect" home="edinburgh" routes={['new-york', 'toronto', 'lagos', 'cape-town', 'dubai', 'mumbai', 'singapore', 'hong-kong', 'tokyo', 'sydney']} colors={['#f8fafc', '#38bdf8', '#2dd4bf', '#a3e635', '#fbbf24', '#fb923c', '#fb7185']} gradient curve="great-circle" labels halo />
 		<span class="eyebrow">Parcelpath · shipping</span>
 		<h2 class="headline">Anywhere by Monday.</h2>
 		<p class="lede">Labels, duties and tracking for 180 countries, priced before your customer reaches checkout.</p>
 		<div class="actions"><a class="btn" href="#">Get shipping rates</a></div>
+		<PaletteChips slot="tools" />
+	</Hero>
+	<Hero id="world-routes-europe" name="WorldRoutes" code={`<WorldRoutes region={[[34, -48], [66, 34]]} fit="cover" home="amsterdam" routes={['dublin', 'london', 'paris', 'madrid', 'milan', 'munich', 'copenhagen', 'stockholm', 'warsaw']} colors={['#fbbf24', '#2dd4bf']} gradient dotShape="square" graticule={10} dashed comets={2} labels />`} align="left">
+		<WorldRoutes slot="effect" region={[[34, -48], [66, 34]]} fit="cover" home="amsterdam" routes={['dublin', 'london', 'paris', 'madrid', 'milan', 'munich', 'copenhagen', 'stockholm', 'warsaw']} colors={['#fbbf24', '#2dd4bf']} gradient dotShape="square" graticule={10} dashed comets={2} labels />
+		<span class="eyebrow">Tessel · fulfilment</span>
+		<h2 class="headline">Next day,<br /><em>nine countries.</em></h2>
+		<p class="lede">Stock held in Amsterdam, packed by four and at the door by noon tomorrow, from Dublin to Warsaw.</p>
+		<div class="actions"><a class="btn" href="#">See delivery times</a></div>
+		<PaletteChips slot="tools" />
 	</Hero>
 	<Hero id="glow-field" name="GlowField" code={`<GlowField variant="beam" color="#f0abfc" />`}>
 		<GlowField slot="effect" variant="beam" color="#f0abfc" />

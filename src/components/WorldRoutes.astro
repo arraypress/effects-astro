@@ -2,15 +2,20 @@
 /**
  * WorldRoutes: a dotted world map with routes arcing between cities, a
  * comet of light running along each and pinging the city it lands on.
- * For "sell worldwide" and "customers in 40 countries" sections. Name
- * cities (`london`, `tokyo`… see CITIES in src/runtime/world-routes.js)
- * or give [latitude, longitude]. The map fits inside its box, centred.
+ * For "sell worldwide" and "customers in 40 countries" sections, or with
+ * `home`, "shipped from our studio to everywhere". Name cities (`london`,
+ * `tokyo`… see CITIES in src/runtime/world-plan.js) or give [latitude,
+ * longitude] or `{ name, lat, lon }`. Routes take their own colour,
+ * label, speed, width and dash; `colors` gives each city a colour of a
+ * palette, and `gradient` blends each route between its two. The map
+ * shows the world or a `region` (`europe`, `routes`, a box), fitted to
+ * its box; hovering a city or a route picks it out and names it.
  *
  * Transparent: it lays over the section's background. Fills its nearest
  * positioned ancestor, or the viewport behind the page with `fixed`.
  *
  * @example
- * <WorldRoutes color="#ff6b6b" routes={[['london', 'new-york'], ['london', 'tokyo']]} />
+ * <WorldRoutes home="london" routes={['new-york', 'tokyo', { to: 'sydney', color: '#f97316' }]} colors={['#e0f2fe', '#38bdf8', '#2dd4bf']} gradient labels />
  */
 import EffectCanvas from './EffectCanvas.astro';
 import type { WorldRoutesConfig } from '../runtime/world-routes.js';
@@ -18,13 +23,15 @@ import type { WorldRoutesConfig } from '../runtime/world-routes.js';
 interface Props extends WorldRoutesConfig {
 	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
 	fixed?: boolean;
+	/** Fade the edges out, for a cropped map: true for the left and right, or 'top', 'bottom' or 'both'. Default false. */
+	fade?: boolean | 'top' | 'bottom' | 'both';
 	class?: string;
 }
 
-const { fixed = false, class: className, ...config } = Astro.props;
+const { fixed = false, fade = false, class: className, ...config } = Astro.props;
 ---
 
-<EffectCanvas name="world-routes" config={config} fixed={fixed} class={className} behind />
+<EffectCanvas name="world-routes" config={config} fixed={fixed} fade={fade} class={className} behind />
 
 <script>
 	import { mount } from '../runtime/mount.js';

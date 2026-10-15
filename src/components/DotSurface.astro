@@ -1,0 +1,35 @@
+---
+/**
+ * DotSurface: a halftone sea. A grid of round dots lies on a slowly
+ * rolling sheet seen in perspective, each dot sized and lit by how the
+ * light catches the sheet: lit crests swell into large bright dots,
+ * troughs shrink to pinpoints. The pointer raises a soft swell; a click
+ * sends a ring across. See src/runtime/dot-surface.js.
+ *
+ * Transparent: it lays over the section's background. Fills its nearest
+ * positioned ancestor, or the viewport behind the page with `fixed` (give
+ * `body` a transparent background so it shows).
+ *
+ * @example
+ * <DotSurface color="#ff8a1f" quiet={{ x: 0.3, y: 0.3, radius: 0.5 }} />
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { DotSurfaceConfig } from '../runtime/dot-surface.js';
+
+interface Props extends DotSurfaceConfig {
+	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
+	fixed?: boolean;
+	class?: string;
+}
+
+const { fixed = false, class: className, ...config } = Astro.props;
+---
+
+<EffectCanvas name="dot-surface" config={config} fixed={fixed} class={className} behind />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { dotSurface } from '../runtime/dot-surface.js';
+
+	mount('[data-effect-dot-surface]', dotSurface);
+</script>

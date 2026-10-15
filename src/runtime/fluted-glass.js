@@ -24,10 +24,12 @@ import { canHover } from './device.js';
 import { pointerIn } from './pointer.js';
 import { watchColors } from './mount.js';
 import { GLSL_NOISE } from './glsl.js';
+import { pickColors } from './palettes.js';
 
 /**
  * @typedef {object} FlutedGlassConfig
  * @property {string[]} [colors] The blooms' colours: the one that follows the pointer first (default indigo, violet, pink).
+ * @property {string} [palette] A shared palette by name (PALETTES; any case), when there are no `colors`.
  * @property {string} [background='#f4f4f5'] The ground behind the glass.
  * @property {number} [angle=-35] The flutes' slant, in degrees from vertical.
  * @property {number} [frequency=9] Flutes across the longer side.
@@ -97,8 +99,8 @@ void main() {
 }
 `;
 
-/** The default blooms: indigo, violet, pink. */
-const COLORS = ['#4f46e5', '#a78bfa', '#f0abfc'];
+/** The default blooms: blue, cyan, amber. */
+const COLORS = ['#2563eb', '#06b6d4', '#f59e0b'];
 
 /**
  * Starts fluted glass on an element: an opaque canvas inside it, filling it.
@@ -108,7 +110,7 @@ const COLORS = ['#4f46e5', '#a78bfa', '#f0abfc'];
  * @returns {() => void} Stops it.
  */
 export function flutedGlass(el, config) {
-	let colors = config.colors?.length ? config.colors : COLORS;
+	let colors = pickColors(config, COLORS);
 	const start = performance.now();
 	const ptr = { x: 0.62, y: 0.55 };
 

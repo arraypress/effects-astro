@@ -24,6 +24,7 @@ import { parseColor } from './color.js';
 import { canHover } from './device.js';
 import { pointerIn } from './pointer.js';
 import { watchColors } from './mount.js';
+import { pickColors } from './palettes.js';
 
 /**
  * @typedef {object} GlassGlyphConfig
@@ -33,6 +34,7 @@ import { watchColors } from './mount.js';
  * @property {{ x: number, y: number, width: number, height: number }} [area]
  *   Where the shape sits, each 0–1 from the top left (default: the right half).
  * @property {string[]} [colors] The light's colour, then the glass's tint (default acid green, white).
+ * @property {string} [palette] A shared palette by name (PALETTES; any case), when there are no `colors`. Its first colour lights the glass; its glint is the highlight.
  * @property {string} [background='#050505'] The ground.
  * @property {number} [refraction=1] How hard the glass bends what is behind it at its edges.
  * @property {number} [thickness=0.06] How far in from the edge the bending reaches, a share of the height.
@@ -159,7 +161,7 @@ const COLORS = ['#c6ff00', '#ffffff'];
  * @returns {() => void} Stops it.
  */
 export function glassGlyph(el, config) {
-	let colors = config.colors?.length ? config.colors : COLORS;
+	let colors = pickColors(config, COLORS, (p) => [p.colors[0], p.glint]);
 	const start = performance.now();
 	const light = { x: 0.7, y: 0.6 };
 	/** Bumped on each resize, so a slow shape drawn for an old size is dropped. */

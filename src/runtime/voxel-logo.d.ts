@@ -1,3 +1,5 @@
+import type { PaletteName } from './palettes.js';
+
 export interface VoxelLogoConfig {
 	/** A character or word to build in cubes. */
 	text?: string;
@@ -9,6 +11,8 @@ export interface VoxelLogoConfig {
 	area?: { x: number; y: number; width: number; height: number };
 	/** The ink, then the paper. Default mint on near-black. */
 	colors?: string[];
+	/** A shared palette by name (`PALETTES`, any case), when there are no `colors`. */
+	palette?: PaletteName | (string & {});
 	/** How large the solid is in its area (1 just fits when face-on). Default 1.3. */
 	size?: number;
 	/** Cubes across the shape. Default 28. */

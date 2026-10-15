@@ -19,7 +19,7 @@
  * From the ArrayPress holding page, as refined for FilterSpark.
  */
 
-import { parseColor } from './color.js';
+import { parseColor, toHex } from './color.js';
 import { createCanvas2D } from './canvas2d.js';
 import { pressAt } from './pointer.js';
 
@@ -41,32 +41,33 @@ import { pressAt } from './pointer.js';
 /** Most ripples alive at once: someone will hold the button and mash it. */
 const MAX_RIPPLES = 14;
 
+/** 256 lattice values, 0–1, for the noise: a table lookup rather than a sine a corner. */
+const LATTICE = new Float32Array(256).map((_, i) => {
+	const n = Math.sin(i * 127.1 + 311.7) * 43758.5453123;
+	return n - Math.floor(n);
+});
+
 /**
- * Value noise, 0–1.
+ * Value noise, 0–1: the lattice's values at the four corners around a
+ * point, eased between.
  *
  * @param {number} x Across.
  * @param {number} y Down.
  * @returns {number} The noise there.
  */
 function noise(x, y) {
-	/**
-	 * A hash of a lattice point, 0–1.
-	 *
-	 * @param {number} a Across.
-	 * @param {number} b Down.
-	 * @returns {number} Its hash.
-	 */
-	const hash = (a, b) => {
-		const n = Math.sin(a * 127.1 + b * 311.7) * 43758.5453123;
-		return n - Math.floor(n);
-	};
 	const xi = Math.floor(x);
 	const yi = Math.floor(y);
 	const xf = x - xi;
 	const yf = y - yi;
 	const u = xf * xf * (3 - 2 * xf);
 	const v = yf * yf * (3 - 2 * yf);
-	return (hash(xi, yi) * (1 - u) + hash(xi + 1, yi) * u) * (1 - v) + (hash(xi, yi + 1) * (1 - u) + hash(xi + 1, yi + 1) * u) * v;
+	// A corner's value: its two indices mixed into one byte.
+	const a = LATTICE[(xi * 73 + yi * 151) & 255];
+	const b = LATTICE[((xi + 1) * 73 + yi * 151) & 255];
+	const c = LATTICE[(xi * 73 + (yi + 1) * 151) & 255];
+	const d = LATTICE[((xi + 1) * 73 + (yi + 1) * 151) & 255];
+	return (a * (1 - u) + b * u) * (1 - v) + (c * (1 - u) + d * u) * v;
 }
 
 /**
@@ -84,7 +85,8 @@ export function dotGrid(el, config) {
 	const LIFE = config.life ?? 2.6;
 	const PUSH = config.push ?? 9;
 	const RADIUS = config.radius ?? 210;
-	const [cr, cg, cb] = parseColor(config.color ?? '#ffffff');
+	// One colour for every dot, set once a frame: each dot only changes its alpha.
+	const ink = toHex(parseColor(config.color ?? '#ffffff'));
 
 	/** @type {{ x: number, y: number, t0: number, amp: number }[]} */
 	const ripples = [];
@@ -154,6 +156,7 @@ export function dotGrid(el, config) {
 		if (ripples.length && now - ripples[0].t0 > LIFE) ripples.shift();
 
 		ctx.clearRect(0, 0, w, h);
+		ctx.fillStyle = ink;
 		for (let iy = 0; iy < rows; iy++) {
 			for (let ix = 0; ix < cols; ix++) {
 				const px = ix * PITCH;
@@ -188,12 +191,15 @@ export function dotGrid(el, config) {
 				}
 				const flow = Math.pow(Math.max(f, 0), 2.2);
 				const lift = Math.min(1, flow * 0.7 + wave * 0.9 + near);
+				// Brighter and more opaque as it lifts: on the dark grounds this is
+				// for, a dimmer dot and a fainter one look alike, so both go into alpha.
 				const v = (150 + 105 * lift) / 255;
-				const alpha = 0.045 + flow * 0.16 + Math.min(0.62, wave * 0.62) + near * 0.5;
+				const alpha = (0.045 + flow * 0.16 + Math.min(0.62, wave * 0.62) + near * 0.5) * v;
+				if (alpha < 0.01) continue;
 				const size = DOT + Math.min(1.9, wave * 1.9) + flow * 0.5 + near;
 				const x = px + wob + sx * PUSH;
 				const y = py + wob * 0.7 + sy * PUSH;
-				ctx.fillStyle = `rgba(${Math.round(cr * 255 * v)},${Math.round(cg * 255 * v)},${Math.round(cb * 255 * v)},${alpha})`;
+				ctx.globalAlpha = Math.min(1, alpha);
 				if (config.round) {
 					ctx.beginPath();
 					ctx.arc(x, y, size / 2, 0, Math.PI * 2);
@@ -203,6 +209,7 @@ export function dotGrid(el, config) {
 				}
 			}
 		}
+		ctx.globalAlpha = 1;
 	};
 
 	/** @param {PointerEvent} e The move. */

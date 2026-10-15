@@ -1,3 +1,5 @@
+import type { PaletteName } from './palettes.js';
+
 export interface GlassGlyphConfig {
 	/** The character or word to make of glass. */
 	text?: string;
@@ -9,6 +11,8 @@ export interface GlassGlyphConfig {
 	area?: { x: number; y: number; width: number; height: number };
 	/** The light's colour, then the glass's tint. Default acid green, white. */
 	colors?: string[];
+	/** A shared palette by name (`PALETTES`, any case), when there are no `colors`. */
+	palette?: PaletteName | (string & {});
 	/** The ground. Default `#050505`. */
 	background?: string;
 	/** How hard the glass bends what is behind it at its edges. Default 1. */

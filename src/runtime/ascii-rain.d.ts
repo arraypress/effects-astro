@@ -1,6 +1,10 @@
+import type { PaletteName } from './palettes.js';
+
 export interface AsciiRainConfig {
 	/** Three CSS hex colours the glyphs take, the brightest nearly white. Default a cool cyan and green. */
 	colors?: string[];
+	/** A shared palette by name (`PALETTES`, any case), when there are no `colors`. */
+	palette?: PaletteName | (string & {});
 	/** How often rows jump sideways for a moment, their colours splitting wider; 0 for never. Default 1. */
 	glitch?: number;
 	/** A character set (`data`: hollow and solid bars; `bars`, `ascii`, `blocks`, `binary`, `boxes`) or the characters, darkest first. Default `data`. */

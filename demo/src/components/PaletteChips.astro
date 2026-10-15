@@ -1,0 +1,18 @@
+---
+/**
+ * The shared palettes as chips in a hero's tag: picking one sets the
+ * hero's effect to it (src/scripts/gallery.js).
+ */
+import { PALETTES } from '@arraypress/effects-astro/runtime/palettes';
+
+interface Props {
+	/** The palette shown as chosen, if any. */
+	current?: string;
+}
+
+const { current } = Astro.props;
+---
+
+<div class="chips">
+	{Object.keys(PALETTES).map((name) => <button type="button" class:list={['chip', { 'is-on': name === current }]} data-palette={name}>{name}</button>)}
+</div>

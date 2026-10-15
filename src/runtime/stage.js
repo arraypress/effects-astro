@@ -17,6 +17,12 @@ import { getContext, createProgram, bindTriangle } from './gl.js';
 import { pixelRatio, prefersReducedMotion } from './device.js';
 import { animate } from './loop.js';
 
+/** Frames between looks at the frame rate, the smoothed frame time counted slow (about 45 fps), each step down, and the lowest share of the pixel ratio a step may reach. */
+const ADAPT_WINDOW = 60;
+const ADAPT_SLOW = 1 / 45;
+const ADAPT_STEP = 0.8;
+const ADAPT_FLOOR = 0.5;
+
 /** The vertex shader for a full-screen pass that works in `gl_FragCoord`. */
 const CLIP = `
 attribute vec2 p;
@@ -40,6 +46,7 @@ void main() { gl_Position = vec4(p, 0.0, 1.0); }
  * @property {string} [vertex] A vertex shader of its own (its position attribute at location 0); the default passes the triangle through.
  * @property {boolean} [alpha=true] A transparent canvas (premultiplied), or an opaque one.
  * @property {number} [scale=1] Share of the pixel ratio to draw at.
+ * @property {boolean} [adaptive=true] Lower the resolution while frames run slow (a weak GPU), down to half; a step that does not help is taken back and adjusting stops.
  * @property {boolean} [webgl1=true] Accept WebGL 1 where there is no WebGL 2.
  * @property {boolean} [still=false] Draw one frame (again after each resize and
  *   redraw) and never join the loop, as with prefers-reduced-motion: for an
@@ -61,7 +68,7 @@ void main() { gl_Position = vec4(p, 0.0, 1.0); }
  *   WebGL, when the canvas is removed), and a function that stops it.
  */
 export function createStage(el, options) {
-	const { fragment, alpha = true, scale = 1, webgl1 = true } = options;
+	const { fragment, alpha = true, scale = 1, webgl1 = true, adaptive = true } = options;
 	const canvas = el.querySelector('canvas');
 	const gl = canvas && getContext(canvas, { alpha, premultipliedAlpha: true }, webgl1);
 	const compiled = gl && createProgram(gl, options.vertex ?? CLIP, fragment);
@@ -71,6 +78,41 @@ export function createStage(el, options) {
 		return { stage: null, stop: () => {} };
 	}
 	const triangle = bindTriangle(gl);
+	/**
+	 * How the frame rate is going: the share of the pixel ratio drawn at
+	 * now, the smoothed frame time, frames since the last look, the frame
+	 * time before the last step down (0 when there was none), and whether
+	 * it has stopped adjusting.
+	 */
+	const quality = { share: 1, ema: 0, frames: 0, before: 0, settled: false };
+
+	/**
+	 * Lowers the resolution while frames run slow, a step at a time. A step
+	 * that buys nothing means the slowness is not this canvas's (a 30 Hz
+	 * screen, a busy page): it is taken back, and adjusting stops.
+	 *
+	 * @param {number} dt Seconds since the last frame.
+	 */
+	const adapt = (dt) => {
+		quality.ema = quality.ema ? quality.ema * 0.9 + dt * 0.1 : dt;
+		if (quality.settled || ++quality.frames < ADAPT_WINDOW) return;
+		quality.frames = 0;
+		if (quality.before) {
+			const helped = quality.ema < quality.before * 0.9;
+			quality.before = 0;
+			if (!helped) {
+				quality.share = Math.min(1, quality.share / ADAPT_STEP);
+				quality.settled = true;
+				size();
+				return;
+			}
+		}
+		if (quality.ema > ADAPT_SLOW && quality.share > ADAPT_FLOOR) {
+			quality.before = quality.ema;
+			quality.share = Math.max(ADAPT_FLOOR, quality.share * ADAPT_STEP);
+			size();
+		}
+	};
 
 	/**
 	 * Draws one frame.
@@ -92,6 +134,7 @@ export function createStage(el, options) {
 		}
 		gl.drawArrays(gl.TRIANGLES, 0, 3);
 		options.after?.(stage, now, dt);
+		if (adaptive && dt > 0) adapt(dt);
 	};
 
 	/** @type {Stage} */
@@ -115,9 +158,9 @@ export function createStage(el, options) {
 	}
 	gl.useProgram(compiled.program);
 
-	/** Sizes the canvas to the element, at the capped pixel ratio. */
+	/** Sizes the canvas to the element, at the capped pixel ratio (lowered while frames run slow). */
 	const size = () => {
-		stage.ratio = pixelRatio(scale);
+		stage.ratio = pixelRatio(scale) * quality.share;
 		canvas.width = Math.max(1, Math.round(el.clientWidth * stage.ratio));
 		canvas.height = Math.max(1, Math.round(el.clientHeight * stage.ratio));
 		gl.useProgram(compiled.program);

@@ -39,6 +39,7 @@ import { MESH_GRADIENT } from './backdrops/mesh-gradient.js';
 import { GRAIN_GRADIENT } from './backdrops/grain-gradient.js';
 import { BAND_LENS } from './backdrops/band-lens.js';
 import { SILK } from './backdrops/silk.js';
+import { pickColors } from './palettes.js';
 
 /** @typedef {import('./color.js').Rgb} Rgb */
 
@@ -50,6 +51,7 @@ import { SILK } from './backdrops/silk.js';
  * @typedef {object} BackdropConfig
  * @property {BackdropName} effect Which backdrop.
  * @property {string[]} [colors] Up to four colours (hex or `rgb()`); those missing or unreadable come from `--color-accent`.
+ * @property {string} [palette] A shared palette by name (PALETTES; any case), when there are no `colors`. Its three colours and its glint as the fourth.
  * @property {number} [speed=1] How fast it moves, 0–4.
  * @property {number} [intensity=1] How strong it is (brightness and contrast, not opacity), 0–2.
  * @property {boolean} [static=false] One frame, never the loop: for a backdrop that is wallpaper.
@@ -230,7 +232,7 @@ export function backdrop(el, config) {
 	}
 	const { speed, intensity, frame } = backdropSettings(config);
 	const reduced = prefersReducedMotion();
-	let palette = livePalette(el, config.colors);
+	let palette = livePalette(el, pickColors(config, [], (p) => [...p.colors, p.glint]));
 	const start = performance.now();
 	const mouse = { x: 0.5, y: 0.5 };
 

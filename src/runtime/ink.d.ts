@@ -1,6 +1,10 @@
+import type { PaletteName } from './palettes.js';
+
 export interface InkConfig {
-	/** The ink's palette, as CSS hex, looped through as it is laid. */
-	colors: string[];
+	/** The ink's colours, as CSS hex, looped through as it is laid. Default the palette's, or Peacock's. */
+	colors?: string[];
+	/** A shared palette by name (`PALETTES`, any case), when there are no `colors`. */
+	palette?: PaletteName | (string & {});
 	/** How much ink a stroke leaves, 0 for none (strokes still push). Default 0.35. */
 	trail?: number;
 	/** Whether a click or tap drops a bloom of ink. Default true. */

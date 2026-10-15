@@ -18,10 +18,12 @@ import { parseColor } from './color.js';
 import { prefersReducedMotion } from './device.js';
 import { watchColors } from './mount.js';
 import { createFluid, stir } from './fluid.js';
+import { PALETTES, pickColors } from './palettes.js';
 
 /**
  * @typedef {object} InkConfig
- * @property {string[]} colors The ink's palette, as CSS hex, looped through as it is laid.
+ * @property {string[]} [colors] The ink's colours, as CSS hex, looped through as it is laid (default the palette's, or Peacock's).
+ * @property {string} [palette] A shared palette by name (PALETTES; any case), when there are no `colors`.
  * @property {number} [trail=0.35] How much ink a stroke leaves, 0 for none (strokes still push).
  * @property {boolean} [drops=true] Whether a click or tap drops a bloom of ink.
  * @property {number} [force=1] How hard the pointer pushes.
@@ -78,7 +80,7 @@ export function ink(el, config) {
 			gl.uniform1i(uniform('uDye'), 3);
 			gl.uniform1f(uniform('uOpacity'), config.opacity ?? 1);
 			const s = stir(fluid, el, {
-				colors: config.colors.map(parseColor),
+				colors: pickColors(config, [...PALETTES.Peacock.colors]).map(parseColor),
 				trail: config.trail ?? 0.35,
 				drops: config.drops,
 				force: config.force,

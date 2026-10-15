@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@arraypress/effects-astro": "file:..",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
     "astro": "^7.3.8"
   }
 }

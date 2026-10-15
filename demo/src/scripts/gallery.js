@@ -7,7 +7,7 @@
  */
 
 import { setColors } from '@arraypress/effects-astro';
-import { INK_PALETTES } from '@arraypress/effects-astro/runtime/ink-field';
+import { PALETTES } from '@arraypress/effects-astro/runtime/palettes';
 
 const heroes = /** @type {HTMLElement[]} */ ([...document.querySelectorAll('[data-hero]')]);
 
@@ -68,6 +68,24 @@ const choose = (hero, chip, key, value) => {
 	tag.textContent = tag.dataset.copy;
 };
 
+/**
+ * Marks a hero's palette chip as the one on, and rewrites its tag for the
+ * palette: its own colours (and glint) out, `palette="…"` in.
+ *
+ * @param {HTMLElement} hero The hero.
+ * @param {HTMLElement} chip The chip chosen.
+ * @param {string} name The palette's name.
+ */
+const paletteTag = (hero, chip, name) => {
+	hero.querySelectorAll('[data-palette]').forEach((c) => c.classList.toggle('is-on', c === chip));
+	const tag = /** @type {HTMLElement | null} */ (hero.querySelector('[data-copy]'));
+	if (!tag) return;
+	let code = (tag.dataset.copy ?? '').replace(/ colors=\{\[[^\]]*\]\}/, '').replace(/ glint="[^"]*"/, '');
+	code = /palette="[^"]*"/.test(code) ? code.replace(/palette="[^"]*"/, `palette="${name}"`) : code.replace(/^(<\w+)/, `$1 palette="${name}"`);
+	tag.dataset.copy = code;
+	tag.textContent = code;
+};
+
 // Live from half a screen before it arrives to half a screen after it leaves.
 const near = new IntersectionObserver(
 	(entries) => entries.forEach((entry) => (entry.isIntersecting ? show(/** @type {HTMLElement} */ (entry.target)) : hide(/** @type {HTMLElement} */ (entry.target)))),
@@ -120,16 +138,23 @@ document.addEventListener('click', (e) => {
 		return;
 	}
 
-	// An InkField palette: the ink on screen eases to it (setColors), and the
-	// next stamp starts in it.
+	// A palette: the effect takes it in place of its own colours. Ink on
+	// screen eases to it (setColors); anything else is stamped again in it.
 	const swatch = /** @type {HTMLButtonElement | null} */ (target.closest('[data-palette]'));
 	if (swatch) {
 		const hero = /** @type {HTMLElement} */ (swatch.closest('[data-hero]'));
-		const name = /** @type {keyof typeof INK_PALETTES} */ (swatch.dataset.palette ?? '');
-		const palette = INK_PALETTES[name];
+		const name = /** @type {keyof typeof PALETTES} */ (swatch.dataset.palette ?? '');
+		const palette = PALETTES[name];
 		if (!palette || !configure(hero, 'palette', name)) return;
-		setColors(hero.querySelector('[data-live] [data-effect-ink-field]'), palette.colors, palette.glint);
-		choose(hero, swatch, 'palette', name);
+		configure(hero, 'colors', undefined);
+		configure(hero, 'glint', undefined);
+		const ink = hero.querySelector('[data-live] [data-effect-ink-field]');
+		if (ink) setColors(ink, palette.colors, palette.glint);
+		else {
+			hide(hero);
+			show(hero);
+		}
+		paletteTag(hero, swatch, name);
 		return;
 	}
 

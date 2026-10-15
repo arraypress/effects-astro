@@ -32,10 +32,12 @@ import { GLSL_GLYPHS, createGlyphs } from './glyphs.js';
 import { canHover } from './device.js';
 import { pointerIn, pressAt } from './pointer.js';
 import { watchColors } from './mount.js';
+import { pickColors } from './palettes.js';
 
 /**
  * @typedef {object} AsciiRainConfig
  * @property {string[]} [colors] Three CSS hex colours the glyphs take, the brightest nearly white. Default a cool cyan and green.
+ * @property {string} [palette] A shared palette by name (PALETTES; any case), when there are no `colors`.
  * @property {number} [glitch=1] How often rows jump sideways for a moment, their colours splitting wider; 0 for never.
  * @property {string} [glyphs='data'] A character set (`data`: hollow and solid bars; `bars`, `ascii`,
  *   `blocks`, `binary`, `boxes`) or the characters themselves, darkest first.
@@ -271,7 +273,7 @@ export function asciiRain(el, config) {
 	const glyphs = config.glyphs ?? 'data';
 	// Shapes sit in square cells; type in the usual tall ones.
 	const aspect = config.aspect ?? (glyphs === 'data' ? 1 : 0.6);
-	let palette = paletteUniform(config.colors ?? COOL);
+	let palette = paletteUniform(pickColors(config, COOL));
 	const start = performance.now();
 	const ptr = { x: 0, y: 0 };
 	let active = 0;

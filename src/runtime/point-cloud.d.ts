@@ -1,3 +1,5 @@
+import type { PaletteName } from './palettes.js';
+
 export interface PointCloudConfig {
 	/** The word drawn in dots. */
 	text?: string;
@@ -9,6 +11,8 @@ export interface PointCloudConfig {
 	area?: { x: number; y: number; width: number; height: number };
 	/** The word's dots, then the clouds' low and high colours. Default white, deep blue, sky blue. */
 	colors?: string[];
+	/** A shared palette by name (`PALETTES`, any case), when there are no `colors`. */
+	palette?: PaletteName | (string & {});
 	/** The ground. Default `#020205`. */
 	background?: string;
 	/** Dots across the word's grid. Default 110. */

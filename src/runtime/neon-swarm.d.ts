@@ -1,3 +1,5 @@
+import type { PaletteName } from './palettes.js';
+
 export interface NeonSwarmConfig {
 	/** A word (or a character) to gather the swarm into. */
 	text?: string;
@@ -9,6 +11,8 @@ export interface NeonSwarmConfig {
 	area?: { x: number; y: number; width: number; height: number };
 	/** The palette across the swarm, three colours. Default neon cyan, lime, magenta. */
 	colors?: string[];
+	/** A shared palette by name (`PALETTES`, any case), when there are no `colors`. */
+	palette?: PaletteName | (string & {});
 	/** The ground. Default `#030406`. */
 	background?: string;
 	/** How many particles (half on phones). Default 6000. */

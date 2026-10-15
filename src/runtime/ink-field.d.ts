@@ -1,29 +1,8 @@
-/** The palettes' names. */
-export type InkPaletteName =
-	| 'Lumetri'
-	| 'Forest'
-	| 'Cadmium'
-	| 'Peacock'
-	| 'Vermillion'
-	| 'Barbie'
-	| 'Uranium'
-	| 'Azure'
-	| 'Ruby'
-	| 'Ultramarine'
-	| 'Saffron'
-	| 'Crimson';
-
-/** A palette: three colours the ink loops through, and a glint. */
-export interface InkPalette {
-	/** The three colours, as CSS hex. */
-	colors: [string, string, string];
-	/** A highlight colour, kept for `setColors` (the ink look does not use it). */
-	glint: string;
-}
+import type { PaletteName } from './palettes.js';
 
 export interface InkFieldConfig {
-	/** One of the named palettes (`INK_PALETTES`, any case): Lumetri, Forest, Cadmium, Peacock, Vermillion, Barbie, Uranium, Azure, Ruby, Ultramarine, Saffron, Crimson. Default `'Lumetri'`. */
-	palette?: InkPaletteName | (string & {});
+	/** One of the shared palettes (`PALETTES`, any case). Default `'Lumetri'`. */
+	palette?: PaletteName | (string & {});
 	/** Three colours as CSS hex, in place of the palette's (fewer are looped). Default the palette's. */
 	colors?: string[];
 	/** A glint colour, in place of the palette's (unused by the ink look). Default the palette's. */
@@ -39,12 +18,6 @@ export interface InkFieldConfig {
 	/** Share of the pixel ratio drawn at. Default 0.5. */
 	scale?: number;
 }
-
-/** Trirat's twelve palettes, by name. */
-export const INK_PALETTES: Readonly<Record<InkPaletteName, InkPalette>>;
-
-/** A palette by name, in any case; undefined when there is none by that name. */
-export function inkPalette(name: string | undefined): InkPalette | undefined;
 
 /** The settings an ink field runs with: three colours (the palette's, or those given over it), a glint, the lamp's rest (0–1 from the top left) and the rest, defaults filled in. */
 export function inkFieldSettings(config?: InkFieldConfig): {

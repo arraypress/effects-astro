@@ -23,6 +23,8 @@ export interface StageOptions {
 	alpha?: boolean;
 	/** Share of the pixel ratio to draw at. Default 1. */
 	scale?: number;
+	/** Lower the resolution while frames run slow (a weak GPU), down to half; a step that does not help is taken back and adjusting stops. Default true. */
+	adaptive?: boolean;
 	/** Accept WebGL 1 without WebGL 2. Default true. */
 	webgl1?: boolean;
 	/** One frame (redrawn after resizes and redraws), never the loop, as with reduced motion. Default false. */

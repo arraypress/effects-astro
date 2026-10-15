@@ -1,3 +1,4 @@
+import type { PaletteName } from './palettes.js';
 import type { Rgb } from './color.js';
 
 /** The six backdrops. */
@@ -8,6 +9,8 @@ export interface BackdropConfig {
 	effect: BackdropName;
 	/** Up to four colours (hex or `rgb()`); those missing come from `--color-accent` where it sits: the accent, the accent towards `--color-bg`, its hue +36°, its hue −32° lifted. Only mesh-gradient, grain-gradient and silk use the fourth. Default all four from the accent. */
 	colors?: string[];
+	/** A shared palette by name (`PALETTES`, any case), when there are no `colors`. */
+	palette?: PaletteName | (string & {});
 	/** How fast it moves, 0–4. Default 1. */
 	speed?: number;
 	/** How strong it is (brightness and contrast, not opacity), 0–2. Default 1. */

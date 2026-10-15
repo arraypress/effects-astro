@@ -1,3 +1,5 @@
+import type { PaletteName } from './palettes.js';
+
 export interface NebulaLogoConfig {
 	/** A word (or a character) to fill with gas. */
 	text?: string;
@@ -9,6 +11,8 @@ export interface NebulaLogoConfig {
 	area?: { x: number; y: number; width: number; height: number };
 	/** The gas's palette, three colours; the first, darkened, is also the thin gas's. Default teal, amber, rose. */
 	colors?: string[];
+	/** A shared palette by name (`PALETTES`, any case), when there are no `colors`. */
+	palette?: PaletteName | (string & {});
 	/** The ground. Default `#05070a`. */
 	background?: string;
 	/** How fast the gas drifts. Default 1. */
@@ -19,6 +23,8 @@ export interface NebulaLogoConfig {
 	stars?: number;
 	/** How much the pointer stirs and brightens the gas; 0 for not at all. Default 1. */
 	stir?: number;
+	/** Share of the pixel ratio the gas is drawn at: it is soft, so a little below full costs nothing visible and saves most of the work. Default 0.6. */
+	scale?: number;
 }
 
 /** Starts a nebula logo in `el`'s canvas. Returns a function that stops it. */

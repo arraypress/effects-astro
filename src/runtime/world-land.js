@@ -41,6 +41,38 @@ export const LAND = {
 let cells = null;
 
 /**
+ * The grid decoded, once: 1 for land, 0 for sea, row by row from 84°N.
+ *
+ * @returns {Uint8Array} The cells.
+ */
+function grid() {
+	if (!cells) {
+		const decoded = new Uint8Array(LAND.cols * LAND.rows);
+		let at = 0;
+		LAND.runs.split(',').forEach((run, i) => {
+			const length = parseInt(run, 36);
+			if (i % 2) decoded.fill(1, at, at + length);
+			at += length;
+		});
+		cells = decoded;
+	}
+	return cells;
+}
+
+/**
+ * One cell, with longitude wrapping round the world and anything off the
+ * grid's top or bottom counted as sea.
+ *
+ * @param {number} row The row, from 84°N.
+ * @param {number} col The column, from 180°W (any whole number).
+ * @returns {number} 1 for land, 0 for sea.
+ */
+function cell(row, col) {
+	if (row < 0 || row >= LAND.rows) return 0;
+	return grid()[row * LAND.cols + (((col % LAND.cols) + LAND.cols) % LAND.cols)];
+}
+
+/**
  * Whether a point is on land.
  *
  * @param {number} lat Latitude, degrees north.
@@ -48,16 +80,26 @@ let cells = null;
  * @returns {boolean} True on land.
  */
 export function isLand(lat, lon) {
-	if (!cells) {
-		cells = new Uint8Array(LAND.cols * LAND.rows);
-		let at = 0;
-		LAND.runs.split(',').forEach((run, i) => {
-			const length = parseInt(run, 36);
-			if (i % 2) cells?.fill(1, at, at + length);
-			at += length;
-		});
-	}
-	const row = Math.floor((LAND.top - lat) / LAND.step);
-	const col = Math.floor((((lon + 180) % 360) + 360) % 360 / LAND.step);
-	return row >= 0 && row < LAND.rows && cells[row * LAND.cols + col] === 1;
+	return cell(Math.floor((LAND.top - lat) / LAND.step), Math.floor((lon + 180) / LAND.step)) === 1;
+}
+
+/**
+ * How much of the land is at a point, blended between the four nearest
+ * cell centres. Above one half is land: a map zoomed in far enough that a
+ * cell spans several dots gets rounded coasts rather than 1.5° steps.
+ *
+ * @param {number} lat Latitude, degrees north.
+ * @param {number} lon Longitude, degrees east.
+ * @returns {number} 0 (open sea) to 1 (inland).
+ */
+export function landAt(lat, lon) {
+	const y = (LAND.top - lat) / LAND.step - 0.5;
+	const x = (lon + 180) / LAND.step - 0.5;
+	const row = Math.floor(y);
+	const col = Math.floor(x);
+	const fy = y - row;
+	const fx = x - col;
+	const top = cell(row, col) * (1 - fx) + cell(row, col + 1) * fx;
+	const bottom = cell(row + 1, col) * (1 - fx) + cell(row + 1, col + 1) * fx;
+	return top * (1 - fy) + bottom * fy;
 }
