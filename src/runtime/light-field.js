@@ -170,6 +170,7 @@ export function lightField(el, config) {
 	const settings = config.fluid === false ? null : config.fluid === true || config.fluid == null ? {} : config.fluid;
 	let glint = config.glint ?? GLINT;
 	const colours = channels(config.colors, glint);
+	/** @type {Float32Array} */
 	let target = colours.slice();
 	const mouse = { x: 0, y: 0, set: false };
 	let press = 0;

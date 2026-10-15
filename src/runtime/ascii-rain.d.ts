@@ -1,6 +1,8 @@
 export interface AsciiRainConfig {
-	/** Three CSS hex colours the dimmer glyphs take; the brightest go white. Default white. */
+	/** Three CSS hex colours the glyphs take, the brightest nearly white. Default a cool cyan and green. */
 	colors?: string[];
+	/** How often rows jump sideways for a moment, their colours splitting wider; 0 for never. Default 1. */
+	glitch?: number;
 	/** A character set (`data`: hollow and solid bars; `bars`, `ascii`, `blocks`, `binary`, `boxes`) or the characters, darkest first. Default `data`. */
 	glyphs?: string;
 	/** A character cell's height in CSS px. Default 14. */
@@ -17,7 +19,9 @@ export interface AsciiRainConfig {
 	density?: number;
 	/** A lane's streak width, a share of the lane (0–1). Default 0.9. */
 	width?: number;
-	/** How fast the streaks run. Default 1. */
+	/** A still cloud of data, or streaks running on a rippling surface. Default `cloud`. */
+	pattern?: 'cloud' | 'waves';
+	/** How fast it moves: the rows stream, or the streaks run; 0 for one still frame. Default 1. */
 	speed?: number;
 	/** How much each lane's speed differs, 0–1. Default 0.6. */
 	variance?: number;
@@ -33,7 +37,7 @@ export interface AsciiRainConfig {
 	lighting?: number;
 	/** How far blue bleeds left and red right of each glyph, CSS px; 0 for none. Default 3. */
 	aberration?: number;
-	/** Whether the pointer ripples the surface and a click drops a ring. Default true. */
+	/** With `waves`, whether the pointer ripples the surface and a click drops a ring. Default true. */
 	interactive?: boolean;
 	/** An area kept clear: centre (0–1 from the top left), radius (share of the height), depth (0–1). */
 	quiet?: { x?: number; y?: number; radius?: number; depth?: number } | null;

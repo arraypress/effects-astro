@@ -1,0 +1,38 @@
+---
+/**
+ * NebulaLogo: a logo or a word filled with drifting nebula gas in the
+ * palette's colours, brightest towards its edges, with a glowing rim, a
+ * soft halo of gas leaking past the edge and faint stars twinkling inside.
+ * The pointer brightens the gas near it and stirs it as it moves.
+ * See src/runtime/nebula-logo.js.
+ *
+ * Opaque: it is the whole background of what it fills (its nearest
+ * positioned ancestor, or the viewport with `fixed`). Without WebGL the
+ * `background` colour shows.
+ *
+ * @example
+ * <section class="hero" style="position: relative">
+ *   <NebulaLogo src="/logo.svg" />
+ *   <h1>…</h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { NebulaLogoConfig } from '../runtime/nebula-logo.js';
+
+interface Props extends NebulaLogoConfig {
+	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
+	fixed?: boolean;
+	class?: string;
+}
+
+const { fixed = false, class: className, ...config } = Astro.props;
+---
+
+<EffectCanvas name="nebula-logo" config={config} fixed={fixed} class={className} behind background={config.background ?? '#05070a'} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { nebulaLogo } from '../runtime/nebula-logo.js';
+
+	mount('[data-effect-nebula-logo]', nebulaLogo);
+</script>

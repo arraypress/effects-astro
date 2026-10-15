@@ -14,6 +14,7 @@
  */
 import type { HTMLTag } from 'astro/types';
 import type { PixelGlitchConfig } from '../runtime/pixel-glitch.js';
+import { withStyle } from './style.js';
 
 interface Props extends PixelGlitchConfig {
 	/** The element to render. Default `span`. */
@@ -24,7 +25,7 @@ interface Props extends PixelGlitchConfig {
 	[attribute: string]: unknown;
 }
 
-const { as: Tag = 'span', fit = false, cell, reach, decay, block, shift, stroke, class: className, ...attributes } = Astro.props;
+const { as: Tag = 'span', fit = false, cell, reach, decay, block, shift, stroke, class: className, style: given, ...attributes } = Astro.props;
 ---
 
 <Tag
@@ -32,7 +33,7 @@ const { as: Tag = 'span', fit = false, cell, reach, decay, block, shift, stroke,
 	data-effect-pixel-glitch
 	data-effect-config={JSON.stringify({ cell, reach, decay, block, shift, stroke })}
 	data-fit-text={fit ? '' : undefined}
-	style={stroke ? `--glitch-stroke: ${stroke}px` : undefined}
+	style={withStyle(stroke ? `--glitch-stroke: ${stroke}px` : undefined, given)}
 	{...attributes}
 >
 	<slot />

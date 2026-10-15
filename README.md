@@ -38,7 +38,8 @@ Astro 6 or 7. The runtime underneath (`@arraypress/effects-astro`) works without
 |---|---|---|
 | `<LightField>` | Liquid light in three colours with caustic glints and a pointer lens, over a real fluid that the pointer stirs and a click drops ink into | WebGL |
 | `<Ink>` | The fluid on its own: ink in water over whatever is behind | WebGL 2 |
-| `<AsciiRain>` | Streaks of data on a rippling 3D surface, drawn in text characters with a colour split | WebGL |
+| `<InkField>` | Ink in water, lit by a lamp that follows the pointer: slow emitters keep it moving, the pointer stirs it, twelve named palettes (`palette="Peacock"`) that a palette switcher recolours live | WebGL |
+| `<AsciiRain>` | Streams of data in text characters, rows sliding at their own pace, a cool cyan-green cast, a lens fringe and the odd glitch (or, with `pattern="waves"`, streaks on a rippling 3D surface) | WebGL |
 | `<FlutedGlass>` | Slanted fluted glass bending soft blooms of colour, one following the pointer | WebGL |
 | `<DotGrid>` | A sea of dots with a drifting current; a click sends a ripple across | Canvas |
 | `<SignalLines>` | Layered waveform lines with pulses of light running along them | Canvas |
@@ -58,6 +59,8 @@ Astro 6 or 7. The runtime underneath (`@arraypress/effects-astro`) works without
 |---|---|---|
 | `<GlassGlyph>` | The logo as clear glass, bending a coloured light at its edges | WebGL |
 | `<ParticleLogo>` | The logo in thousands of twinkling particles that scatter round the pointer | WebGL |
+| `<NeonSwarm>` | The logo held by a swarm of neon particles that flows like a flock, trails light and scatters from the pointer | WebGL |
+| `<NebulaLogo>` | The logo filled with drifting nebula gas, a glowing rim, a halo past its edge and twinkling stars; the pointer stirs it | WebGL |
 | `<PointCloud>` | A word as a dot matrix among drifting point clouds, optional tracker boxes | WebGL |
 | `<VoxelLogo>` | The logo built of cubes, rocking in 3D, dithered to two inks, optional markers | WebGL |
 
@@ -109,7 +112,7 @@ The logo effects take `text` (any word, character or emoji, in the font you name
 
 ## Changing colours
 
-The WebGL effects (`<LightField>`, `<Ink>`, `<AsciiRain>`, `<FlutedGlass>`, `<GlassGlyph>`, `<ParticleLogo>`, `<PointCloud>`, `<VoxelLogo>`) read a `data-colors` attribute; `setColors` writes it. A light eases to the new palette in about a second; ink, rain and the rest take it from their next frame. Set before an effect starts, it is its colours from the first frame.
+The WebGL effects (`<LightField>`, `<InkField>`, `<Ink>`, `<AsciiRain>`, `<FlutedGlass>`, `<GlassGlyph>`, `<ParticleLogo>`, `<NeonSwarm>`, `<NebulaLogo>`, `<PointCloud>`, `<VoxelLogo>`) read a `data-colors` attribute; `setColors` writes it. A light or an ink field eases to the new palette in about a second; ink, rain and the rest take it from their next frame. Set before an effect starts, it is its colours from the first frame.
 
 ```js
 import { setColors } from '@arraypress/effects-astro';
@@ -154,6 +157,7 @@ cd demo && npm install && npm run dev   # http://127.0.0.1:4400
 - `<FlutedGlass>`'s flute geometry and `<GlassGlyph>`'s lens model are adapted from the FlutedGlass and Glass components of [Shaders](https://github.com/shader-effects-inc/shaders) (MIT, © 2026 Shader Effects Inc.).
 - `<Backdrop>` is the shader set from the earlier `@arraypress/effect-canvas-astro` package; `silk` follows Inigo Quilez's domain-warping technique.
 - `<PaperShader>` runs [Paper Shaders](https://github.com/paper-design/shaders) (Apache-2.0, © 2026 Paper), vendored unchanged in `src/vendor/paper/` with their presets. Powered by Paper Shaders: https://shaders.paper.design
+- `<InkField>` is adapted from Trirat's ink shader for LumiThemes (its sim, display shader, emitters, lamp and twelve palettes), on Jos Stam's Stable Fluids in the shape of Pavel Dobryakov's WebGL-Fluid-Simulation (MIT, © 2017 Pavel Dobryakov).
 - `<WorldRoutes>`'s land is sampled from [Natural Earth](https://www.naturalearthdata.com)'s 1:110m land (public domain).
 - Oklab is Björn Ottosson's.
 

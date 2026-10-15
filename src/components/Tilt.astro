@@ -11,6 +11,7 @@
  * <Tilt as="a" href="/release" class="card" max={6} glare>…</Tilt>
  */
 import type { HTMLTag } from 'astro/types';
+import { withStyle } from './style.js';
 
 interface Props {
 	/** The element to render. Default `div`. */
@@ -29,14 +30,14 @@ interface Props {
 	[attribute: string]: unknown;
 }
 
-const { as: Tag = 'div', max, perspective = 900, glare = false, lift = 0, within, class: className, ...attributes } = Astro.props;
+const { as: Tag = 'div', max, perspective = 900, glare = false, lift = 0, within, class: className, style: given, ...attributes } = Astro.props;
 ---
 
 <Tag
 	class:list={['effect-tilt', { 'has-glare': glare }, className]}
 	data-effect-tilt
 	data-effect-config={JSON.stringify({ max, within })}
-	style={`--tilt-perspective: ${perspective}px; --tilt-lift: ${lift}px`}
+	style={withStyle(`--tilt-perspective: ${perspective}px; --tilt-lift: ${lift}px`, given)}
 	{...attributes}
 >
 	<slot />

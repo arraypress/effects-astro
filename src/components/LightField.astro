@@ -13,6 +13,7 @@
  */
 import EffectCanvas from './EffectCanvas.astro';
 import type { LightFieldConfig } from '../runtime/light-field.js';
+import { colorPools } from '../runtime/pools.js';
 
 interface Props extends LightFieldConfig {
 	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
@@ -25,13 +26,7 @@ interface Props extends LightFieldConfig {
 const { fixed = false, background = '#08080a', class: className, ...config } = Astro.props;
 
 // The no-WebGL look: the palette as soft pools of light, still.
-const [a, b, c] = [0, 1, 2].map((i) => config.colors[i % config.colors.length]);
-const fallback = [
-	`radial-gradient(60% 50% at 20% 25%, ${a} 0%, transparent 70%)`,
-	`radial-gradient(55% 45% at 80% 30%, ${b} 0%, transparent 70%)`,
-	`radial-gradient(60% 50% at 70% 85%, ${c} 0%, transparent 70%)`,
-	background,
-].join(', ');
+const fallback = colorPools(config.colors, background);
 ---
 
 <EffectCanvas name="light-field" config={config} fixed={fixed} class={className} behind background={fallback} />

@@ -29,7 +29,7 @@ export function parseColor(hex) {
 	const h = String(hex).trim().replace(/^#/, '');
 	const full = h.length === 3 ? [...h].map((c) => c + c).join('') : h;
 	if (!/^[0-9a-f]{6}$/i.test(full)) throw new TypeError(`Not a hex colour: ${hex}`);
-	return [0, 2, 4].map((i) => parseInt(full.slice(i, i + 2), 16) / 255);
+	return /** @type {Rgb} */ ([0, 2, 4].map((i) => parseInt(full.slice(i, i + 2), 16) / 255));
 }
 
 /**
@@ -91,11 +91,13 @@ export function fromOklab([L, a, b]) {
 	const l = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3;
 	const m = (L - 0.1055613458 * a - 0.0638541728 * b) ** 3;
 	const s = (L - 0.0894841775 * a - 1.291485548 * b) ** 3;
-	return [
-		4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
-		-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
-		-0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
-	].map((c) => Math.min(1, toSrgb(c)));
+	return /** @type {Rgb} */ (
+		[
+			4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+			-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+			-0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
+		].map((c) => Math.min(1, toSrgb(c)))
+	);
 }
 
 /**
@@ -109,7 +111,7 @@ export function fromOklab([L, a, b]) {
 export function mixOklab(from, to, t) {
 	const a = toOklab(from);
 	const b = toOklab(to);
-	return fromOklab(a.map((v, i) => v + (b[i] - v) * t));
+	return fromOklab(/** @type {Rgb} */ (a.map((v, i) => v + (b[i] - v) * t)));
 }
 
 /**

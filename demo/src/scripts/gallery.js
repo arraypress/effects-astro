@@ -1,10 +1,13 @@
 /**
  * The gallery's behaviour: brings each hero's effect in as it nears the
  * screen and takes it out once it is well past, swaps a Paper hero's
- * preset, copies a tag's code, and keeps the bar's readout on the hero in
- * view. Effects start and stop themselves as they are added and removed
- * (mount() watches the page).
+ * preset, recolours an InkField hero's ink live, copies a tag's code, and
+ * keeps the bar's readout on the hero in view. Effects start and stop
+ * themselves as they are added and removed (mount() watches the page).
  */
+
+import { setColors } from '@arraypress/effects-astro';
+import { INK_PALETTES } from '@arraypress/effects-astro/runtime/ink-field';
 
 const heroes = /** @type {HTMLElement[]} */ ([...document.querySelectorAll('[data-hero]')]);
 
@@ -31,6 +34,40 @@ const hide = (hero) => {
 	hero.classList.remove('is-live');
 };
 
+/**
+ * Changes a setting of the effect a hero stamps in, so the next stamp starts
+ * with it.
+ *
+ * @param {HTMLElement} hero The hero.
+ * @param {string} key The setting.
+ * @param {string} value Its new value.
+ * @returns {boolean} False when the hero has no effect to change.
+ */
+const configure = (hero, key, value) => {
+	const template = /** @type {HTMLTemplateElement | null} */ (hero.querySelector('[data-live-template]'));
+	const effect = /** @type {HTMLElement | null | undefined} */ (template?.content.querySelector('[data-effect-config]'));
+	if (!effect) return false;
+	effect.dataset.effectConfig = JSON.stringify({ ...JSON.parse(effect.dataset.effectConfig ?? '{}'), [key]: value });
+	return true;
+};
+
+/**
+ * Marks a hero's chip as the one on, and rewrites its tag's `key="…"`, so
+ * the tag shows the line for what is on screen now.
+ *
+ * @param {HTMLElement} hero The hero.
+ * @param {HTMLElement} chip The chip chosen.
+ * @param {string} key The attribute in the tag's code.
+ * @param {string} value Its new value.
+ */
+const choose = (hero, chip, key, value) => {
+	hero.querySelectorAll('.chip').forEach((c) => c.classList.toggle('is-on', c === chip));
+	const tag = /** @type {HTMLElement | null} */ (hero.querySelector('[data-copy]'));
+	if (!tag) return;
+	tag.dataset.copy = (tag.dataset.copy ?? '').replace(new RegExp(`${key}="[^"]*"`), `${key}="${value}"`);
+	tag.textContent = tag.dataset.copy;
+};
+
 // Live from half a screen before it arrives to half a screen after it leaves.
 const near = new IntersectionObserver(
 	(entries) => entries.forEach((entry) => (entry.isIntersecting ? show(/** @type {HTMLElement} */ (entry.target)) : hide(/** @type {HTMLElement} */ (entry.target)))),
@@ -51,6 +88,23 @@ const middle = new IntersectionObserver(
 );
 heroes.forEach((hero) => middle.observe(hero));
 
+/**
+ * Plays a revealed element's arrival again: hidden at once (no transition),
+ * then shown, so it animates in as it did on scroll.
+ *
+ * @param {HTMLElement} el The element.
+ */
+const replay = (el) => {
+	if (!el.classList.contains('is-visible')) return;
+	el.style.transition = 'none';
+	el.classList.remove('is-visible');
+	void el.offsetWidth;
+	el.style.transition = '';
+	el.classList.add('is-visible');
+};
+// Hovering a ScrollReveal card in the demo plays its animation again.
+document.querySelectorAll('[data-replay]').forEach((el) => el.addEventListener('pointerenter', () => replay(/** @type {HTMLElement} */ (el))));
+
 document.addEventListener('click', (e) => {
 	const target = /** @type {HTMLElement} */ (e.target);
 
@@ -58,19 +112,24 @@ document.addEventListener('click', (e) => {
 	const chip = /** @type {HTMLButtonElement | null} */ (target.closest('[data-preset]'));
 	if (chip) {
 		const hero = /** @type {HTMLElement} */ (chip.closest('[data-hero]'));
-		const template = /** @type {HTMLTemplateElement} */ (hero.querySelector('[data-live-template]'));
-		const effect = /** @type {HTMLElement | null} */ (template.content.querySelector('[data-effect-config]'));
-		if (!effect) return;
-		effect.dataset.effectConfig = JSON.stringify({ ...JSON.parse(effect.dataset.effectConfig ?? '{}'), preset: chip.dataset.preset });
-		hero.querySelectorAll('[data-preset]').forEach((c) => c.classList.toggle('is-on', c === chip));
-		// The tag shows the line for what is on screen now.
-		const tag = /** @type {HTMLElement | null} */ (hero.querySelector('[data-copy]'));
-		if (tag) {
-			tag.dataset.copy = (tag.dataset.copy ?? '').replace(/preset="[^"]*"/, `preset="${chip.dataset.preset}"`);
-			tag.textContent = tag.dataset.copy;
-		}
+		const preset = chip.dataset.preset ?? '';
+		if (!configure(hero, 'preset', preset)) return;
+		choose(hero, chip, 'preset', preset);
 		hide(hero);
 		show(hero);
+		return;
+	}
+
+	// An InkField palette: the ink on screen eases to it (setColors), and the
+	// next stamp starts in it.
+	const swatch = /** @type {HTMLButtonElement | null} */ (target.closest('[data-palette]'));
+	if (swatch) {
+		const hero = /** @type {HTMLElement} */ (swatch.closest('[data-hero]'));
+		const name = /** @type {keyof typeof INK_PALETTES} */ (swatch.dataset.palette ?? '');
+		const palette = INK_PALETTES[name];
+		if (!palette || !configure(hero, 'palette', name)) return;
+		setColors(hero.querySelector('[data-live] [data-effect-ink-field]'), palette.colors, palette.glint);
+		choose(hero, swatch, 'palette', name);
 		return;
 	}
 

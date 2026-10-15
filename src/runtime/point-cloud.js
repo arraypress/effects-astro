@@ -144,6 +144,7 @@ export function pointCloud(el, config) {
 	/** @type {import('./points.js').Points | null} */
 	let points = null;
 	/** The word's dots (x, y pairs, 0–1, y up), for the trackers to lock onto. */
+	/** @type {Float32Array} */
 	let dots = new Float32Array(0);
 	let generation = 0;
 	const sheets = sheetData(config.sheets ?? 9, isMobileGpu() ? 100 : 170, isMobileGpu() ? 40 : 70);

@@ -1,0 +1,38 @@
+---
+/**
+ * NeonSwarm: a logo or a word held by a swarm of glowing particles that
+ * flows like a flock round its shape, shimmering and breathing, with short
+ * neon trails in the palette's colours. The pointer scatters them and they
+ * stream back; on arrival they gather from a loose cloud.
+ * See src/runtime/neon-swarm.js.
+ *
+ * Opaque: it is the whole background of what it fills (its nearest
+ * positioned ancestor, or the viewport with `fixed`). Without WebGL the
+ * `background` colour shows.
+ *
+ * @example
+ * <section class="hero" style="position: relative">
+ *   <NeonSwarm src="/logo.svg" />
+ *   <h1>…</h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { NeonSwarmConfig } from '../runtime/neon-swarm.js';
+
+interface Props extends NeonSwarmConfig {
+	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
+	fixed?: boolean;
+	class?: string;
+}
+
+const { fixed = false, class: className, ...config } = Astro.props;
+---
+
+<EffectCanvas name="neon-swarm" config={config} fixed={fixed} class={className} behind background={config.background ?? '#030406'} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { neonSwarm } from '../runtime/neon-swarm.js';
+
+	mount('[data-effect-neon-swarm]', neonSwarm);
+</script>

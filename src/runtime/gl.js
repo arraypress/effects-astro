@@ -22,7 +22,7 @@ const TRIANGLE = new Float32Array([-1, -1, 3, -1, -1, 3]);
  */
 export function getContext(canvas, attributes = {}, webgl1 = true) {
 	const options = { antialias: false, powerPreference: 'low-power', ...attributes };
-	return canvas.getContext('webgl2', options) ?? (webgl1 ? canvas.getContext('webgl', options) : null);
+	return /** @type {WebGL2RenderingContext | WebGLRenderingContext | null} */ (canvas.getContext('webgl2', options) ?? (webgl1 ? canvas.getContext('webgl', options) : null));
 }
 
 /**
@@ -37,7 +37,12 @@ export function getContext(canvas, attributes = {}, webgl1 = true) {
 export function createProgram(gl, vertex, fragment) {
 	const program = gl.createProgram();
 	if (!program) return null;
-	for (const [type, source] of [[gl.VERTEX_SHADER, vertex], [gl.FRAGMENT_SHADER, fragment]]) {
+	/** @type {[number, string][]} */
+	const stages = [
+		[gl.VERTEX_SHADER, vertex],
+		[gl.FRAGMENT_SHADER, fragment],
+	];
+	for (const [type, source] of stages) {
 		const shader = gl.createShader(type);
 		if (!shader) return null;
 		gl.shaderSource(shader, source);

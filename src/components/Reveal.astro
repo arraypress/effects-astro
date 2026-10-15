@@ -15,6 +15,7 @@
  */
 import type { HTMLTag } from 'astro/types';
 import type { RevealConfig } from '../runtime/text-motion.js';
+import { withStyle } from './style.js';
 
 interface Props extends RevealConfig {
 	/** The element to render. Default `div`. */
@@ -40,6 +41,7 @@ const {
 	duration = 0.7,
 	distance = 24,
 	class: className,
+	style: given,
 	...attributes
 } = Astro.props;
 const split = words && text ? text.split(/(\s+)/) : null;
@@ -50,7 +52,7 @@ let index = 0;
 	class:list={['effect-reveal', `from-${from}`, { 'by-word': !!split }, className]}
 	data-effect-reveal
 	data-effect-config={JSON.stringify({ once })}
-	style={`--reveal-duration: ${duration}s; --reveal-distance: ${distance}px; --reveal-delay: ${delay}s; --reveal-stagger: ${stagger}s`}
+	style={withStyle(`--reveal-duration: ${duration}s; --reveal-distance: ${distance}px; --reveal-delay: ${delay}s; --reveal-stagger: ${stagger}s`, given)}
 	aria-label={split ? text : undefined}
 	{...attributes}
 >

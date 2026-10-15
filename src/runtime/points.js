@@ -70,7 +70,8 @@ void main() {
  *   Draws the points: once, or with `aberration` > 0 three times, red,
  *   green and blue that many canvas pixels apart. `draw` sets the
  *   uniforms (the program is bound) before each pass.
- * @property {(data: Float32Array) => void} upload Replaces the particle data (four floats a particle).
+ * @property {(data: Float32Array) => void} upload Replaces the particle data (four floats a particle);
+ *   data the same size as before is written in place, so it can change every frame.
  * @property {() => number} count How many particles there are.
  * @property {() => void} bind Binds the buffer to attribute 0.
  */
@@ -82,10 +83,12 @@ void main() {
  * @param {string} vertex The effect's vertex shader: reads `attribute vec4 p`,
  *   writes `gl_Position`, `gl_PointSize`, `vColour` and `vAlpha`, and adds
  *   `uniform vec2 uShift` to its clip position.
+ * @param {string} [fragment] A sprite of its own instead of the soft round dot
+ *   (reading `vColour` and `vAlpha`; what it writes is added up).
  * @returns {Points | null} The renderer, or null with the reason in the console.
  */
-export function createPoints(gl, vertex) {
-	const program = createProgram(gl, vertex, DOT);
+export function createPoints(gl, vertex, fragment = DOT) {
+	const program = createProgram(gl, vertex, fragment);
 	if (!program) return null;
 	const buffer = gl.createBuffer();
 	let count = 0;
@@ -101,7 +104,8 @@ export function createPoints(gl, vertex) {
 		program,
 		upload(data) {
 			gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-			gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+			if (count && data.length === count * 4) gl.bufferSubData(gl.ARRAY_BUFFER, 0, data);
+			else gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
 			count = data.length / 4;
 		},
 		count: () => count,

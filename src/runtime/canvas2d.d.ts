@@ -19,5 +19,5 @@ export function createCanvas2D(
 /** A repeating grey-noise tile. */
 export function grainPattern(ctx: CanvasRenderingContext2D): CanvasPattern | null;
 
-/** Lays grain over what has been drawn, and only there. */
-export function grainOnto(c: Canvas2D, pattern: CanvasPattern | null, amount: number): void;
+/** Lays grain over what has been drawn, and only there; with `shimmer`, shifted each call so it moves like film. */
+export function grainOnto(c: Canvas2D, pattern: CanvasPattern | null, amount: number, shimmer?: boolean): void;

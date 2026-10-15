@@ -1,7 +1,8 @@
 ---
 /**
- * SpotlightText: one line of text as a hollow outline that a soft light
- * under the pointer fills in. See src/runtime/spotlight.js.
+ * SpotlightText: one line of text as a faint outline that a light under
+ * the pointer fills in, falling off as light does: bright for a short
+ * way, then a long soft tail. See src/runtime/spotlight.js.
  *
  * Two fills:
  *   - `dodge` (default, for light text on a dark or colourful background):
@@ -9,7 +10,9 @@
  *     through glass. Blends with what is behind, so no ancestor between
  *     the text and the background may form a stacking context (no
  *     z-index, opacity, transform, filter or isolation on the way).
- *   - `solid`: the lit letters fill with the text colour.
+ *   - `solid`: the lit letters fill with the light itself, a hot white core
+ *     fading through the text colour, and the outline catches it a little
+ *     further out (for a plain dark or light background).
  *
  * With `fit`, the text is sized to span its parent's width (a footer
  * wordmark). Any other attribute is passed to the element.
@@ -19,6 +22,7 @@
  */
 import type { HTMLTag } from 'astro/types';
 import type { SpotlightConfig } from '../runtime/spotlight.js';
+import { withStyle } from './style.js';
 
 interface Props extends SpotlightConfig {
 	/** The element to render. Default `span`. */
@@ -33,7 +37,7 @@ interface Props extends SpotlightConfig {
 	[attribute: string]: unknown;
 }
 
-const { as: Tag = 'span', radius, reach, stroke = '1.5px', fill = 'dodge', fit = false, class: className, ...attributes } = Astro.props;
+const { as: Tag = 'span', radius, reach, stroke = '1.5px', fill = 'dodge', fit = false, class: className, style: given, ...attributes } = Astro.props;
 ---
 
 <Tag
@@ -42,7 +46,7 @@ const { as: Tag = 'span', radius, reach, stroke = '1.5px', fill = 'dodge', fit =
 	data-effect-config={JSON.stringify({ radius, reach })}
 	data-fill={fill}
 	data-fit-text={fit ? '' : undefined}
-	style={`--spot-stroke: ${stroke}`}
+	style={withStyle(`--spot-stroke: ${stroke}`, given)}
 	{...attributes}
 >
 	<slot />
@@ -60,43 +64,68 @@ const { as: Tag = 'span', radius, reach, stroke = '1.5px', fill = 'dodge', fit =
 <style>
 	.effect-spotlight {
 		position: relative;
-		/* The outline at rest. Fill hidden with the FILL colour, so `color`
-		   still sets the ink. */
+		/* At rest, a faint outline, so the word is there before the light
+		   finds it. The fill is hidden with the FILL colour, so `color` still
+		   sets the ink. */
 		-webkit-text-fill-color: transparent;
-		-webkit-text-stroke: var(--spot-stroke) currentColor;
+		-webkit-text-stroke: var(--spot-stroke) color-mix(in srgb, currentColor 32%, transparent);
 	}
-	/* The light: the text again, solid, masked to a soft circle under the
-	   pointer. Nothing shows until the script moves it. */
+	/* The light, falling off as light does: bright for a short way, then a
+	   long soft tail, never a hard edge. */
 	.effect-spotlight::before,
 	.effect-spotlight::after {
 		content: attr(data-text);
 		position: absolute;
 		inset: 0;
 		pointer-events: none;
-		-webkit-text-stroke: 0;
 		--spot: radial-gradient(
 			circle var(--spot-r, 0px) at var(--spot-x, 50%) var(--spot-y, 50%),
 			#000,
-			rgb(0 0 0 / 0.6) 35%,
+			rgb(0 0 0 / 0.82) 14%,
+			rgb(0 0 0 / 0.52) 32%,
+			rgb(0 0 0 / 0.26) 52%,
+			rgb(0 0 0 / 0.09) 74%,
 			transparent
 		);
 		-webkit-mask-image: var(--spot);
 		mask-image: var(--spot);
 	}
+	/* Solid: the letters lit, a hot white core fading through the ink. */
+	.effect-spotlight[data-fill='solid']::before {
+		-webkit-text-stroke: 0;
+		-webkit-text-fill-color: transparent;
+		background: radial-gradient(
+			circle var(--spot-r, 0px) at var(--spot-x, 50%) var(--spot-y, 50%),
+			#fff,
+			color-mix(in srgb, currentColor 92%, #fff) 18%,
+			currentColor 45%,
+			color-mix(in srgb, currentColor 55%, transparent) 75%,
+			transparent
+		);
+		-webkit-background-clip: text;
+		background-clip: text;
+	}
+	/* The rim: the outline catching the light a little further out than the fill. */
+	.effect-spotlight[data-fill='solid']::after {
+		-webkit-text-fill-color: transparent;
+		-webkit-text-stroke: var(--spot-stroke) currentColor;
+		--spot: radial-gradient(
+			circle calc(var(--spot-r, 0px) * 1.35) at var(--spot-x, 50%) var(--spot-y, 50%),
+			#000,
+			rgb(0 0 0 / 0.5) 40%,
+			transparent
+		);
+	}
 	/* Dodge: a dodge brightens the colour behind without washing it out, and
 	   a faint white over it keeps the letters readable where it is dark. */
 	.effect-spotlight[data-fill='dodge']::before {
+		-webkit-text-stroke: 0;
 		-webkit-text-fill-color: rgb(150 150 150);
 		mix-blend-mode: color-dodge;
 	}
 	.effect-spotlight[data-fill='dodge']::after {
+		-webkit-text-stroke: 0;
 		-webkit-text-fill-color: rgb(255 255 255 / 0.16);
 		mix-blend-mode: plus-lighter;
-	}
-	.effect-spotlight[data-fill='solid']::before {
-		-webkit-text-fill-color: currentColor;
-	}
-	.effect-spotlight[data-fill='solid']::after {
-		content: none;
 	}
 </style>

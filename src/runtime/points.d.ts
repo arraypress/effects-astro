@@ -11,11 +11,15 @@ export interface Points {
 	program: Program;
 	/** Draws once, or with `aberration` > 0 three times, red, green and blue that many canvas px apart; `draw` sets uniforms before each. */
 	passes(aberration: number, draw: () => void): void;
-	/** Replaces the particle data, four floats a particle (attribute `p`). */
+	/** Replaces the particle data, four floats a particle (attribute `p`); the same size as before is written in place. */
 	upload(data: Float32Array): void;
 	count(): number;
 	bind(): void;
 }
 
-/** Makes a point renderer from the effect's vertex shader; null (reason in the console) if it does not compile. */
-export function createPoints(gl: GL, vertex: string): Points | null;
+/**
+ * Makes a point renderer from the effect's vertex shader, and optionally a
+ * sprite of its own (reading `vColour`, `vAlpha`) in place of the soft round
+ * dot; null (reason in the console) if it does not compile.
+ */
+export function createPoints(gl: GL, vertex: string, fragment?: string): Points | null;

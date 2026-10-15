@@ -1,0 +1,41 @@
+---
+/**
+ * InkField: ink in water, lit by a lamp that follows the pointer. Slow
+ * emitters keep the ink moving across the whole field; moving the pointer
+ * pushes it aside and leaves a faint trail, and the lamp rests at the upper
+ * left when the pointer is away. The field dims in the middle, behind the
+ * copy. Twelve named palettes (Trirat's), or colours of your own. See
+ * src/runtime/ink-field.js.
+ *
+ * Fills its nearest positioned ancestor, or the viewport behind the page
+ * with `fixed` (give `body` a transparent background so it shows through).
+ * With prefers-reduced-motion it holds one settled frame; without a float
+ * render target the palette's colours stand in, still.
+ *
+ * A palette switcher recolours the ink already on screen with
+ * `setColors(el, INK_PALETTES[name].colors)`.
+ *
+ * @example
+ * <InkField fixed palette="Peacock" />
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { InkFieldConfig } from '../runtime/ink-field.js';
+import { inkFieldSettings, inkFallback } from '../runtime/ink-field.js';
+
+interface Props extends InkFieldConfig {
+	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
+	fixed?: boolean;
+	class?: string;
+}
+
+const { fixed = false, class: className, ...config } = Astro.props;
+---
+
+<EffectCanvas name="ink-field" config={config} fixed={fixed} class={className} behind background={inkFallback(inkFieldSettings(config).colors)} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { inkField } from '../runtime/ink-field.js';
+
+	mount('[data-effect-ink-field]', inkField);
+</script>

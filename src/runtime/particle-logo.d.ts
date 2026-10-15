@@ -7,7 +7,7 @@ export interface ParticleLogoConfig {
 	src?: string;
 	/** Where the shape sits, each 0–1 from the top left. Default the middle. */
 	area?: { x: number; y: number; width: number; height: number };
-	/** The dots' two colours, then the two blooms'. Default white, ice blue, violets. */
+	/** The dots' two colours, then the two blooms'. Default white, ice blue, deep teal, midnight blue. */
 	colors?: string[];
 	/** The ground. Default `#030305`. */
 	background?: string;

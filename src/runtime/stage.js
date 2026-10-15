@@ -67,6 +67,7 @@ export function createStage(el, options) {
 	const compiled = gl && createProgram(gl, options.vertex ?? CLIP, fragment);
 	if (!canvas || !gl || !compiled) {
 		canvas?.remove();
+		gl?.getExtension('WEBGL_lose_context')?.loseContext();
 		return { stage: null, stop: () => {} };
 	}
 	const triangle = bindTriangle(gl);
@@ -107,7 +108,9 @@ export function createStage(el, options) {
 	gl.useProgram(compiled.program);
 	const cleanup = options.setup?.(stage);
 	if (cleanup === false) {
+		// It cannot run here: the canvas goes, and its GPU context with it.
 		canvas.remove();
+		gl.getExtension('WEBGL_lose_context')?.loseContext();
 		return { stage: null, stop: () => {} };
 	}
 	gl.useProgram(compiled.program);

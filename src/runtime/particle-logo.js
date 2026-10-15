@@ -30,7 +30,7 @@ import { watchColors } from './mount.js';
  * @property {string} [src] An image (an SVG logo) to draw in particles instead.
  * @property {{ x: number, y: number, width: number, height: number }} [area]
  *   Where the shape sits, each 0–1 from the top left (default: the middle).
- * @property {string[]} [colors] The dots' two colours, then the two blooms' (default white and ice blue, violets).
+ * @property {string[]} [colors] The dots' two colours, then the two blooms' (default white and ice blue, deep teal and midnight blue).
  * @property {string} [background='#030305'] The ground.
  * @property {number} [count=16000] How many particles (half on phones).
  * @property {number} [size=2.2] A particle's size, CSS px.
@@ -101,8 +101,8 @@ void main() {
 }
 `;
 
-/** The defaults: white and ice-blue dots, two violet blooms. */
-const COLORS = ['#ffffff', '#a5c8ff', '#5b21b6', '#3b0764'];
+/** The defaults: white and ice-blue dots, a deep teal and a midnight-blue bloom. */
+const COLORS = ['#ffffff', '#a5c8ff', '#0f4c5c', '#0b1f3a'];
 
 /**
  * Starts a particle logo on an element: an opaque canvas inside it, filling it.

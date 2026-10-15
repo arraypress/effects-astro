@@ -29,6 +29,9 @@ export function drawShape(source: ShapeSource, width: number, height: number): P
 /** `count` points scattered evenly over a shape: x, y pairs, 0–1, y up. */
 export function samplePoints(mask: Mask, count: number, random?: () => number): Float32Array;
 
+/** `count` points scattered along a shape's edge (covered pixels beside uncovered ones): x, y pairs, 0–1, y up. */
+export function edgePoints(mask: Mask, count: number, random?: () => number): Float32Array;
+
 /** Points on a grid `columns` across, wherever a cell's centre is inside the shape: x, y pairs, 0–1, y up. */
 export function gridPoints(mask: Mask, columns: number): Float32Array;
 

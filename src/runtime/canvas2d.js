@@ -90,14 +90,16 @@ export function grainPattern(ctx) {
  * @param {Canvas2D} c The canvas.
  * @param {CanvasPattern | null} pattern From grainPattern.
  * @param {number} amount How strong, 0–1.
+ * @param {boolean} [shimmer=false] Shift the grain each call, so it moves like film rather than sitting still.
  */
-export function grainOnto(c, pattern, amount) {
+export function grainOnto(c, pattern, amount, shimmer = false) {
 	if (!pattern || amount <= 0) return;
 	const { ctx } = c;
 	ctx.save();
 	ctx.globalCompositeOperation = 'source-atop';
 	ctx.globalAlpha = amount;
 	ctx.fillStyle = pattern;
-	ctx.fillRect(0, 0, c.width, c.height);
+	if (shimmer) ctx.translate(Math.random() * 128, Math.random() * 128);
+	ctx.fillRect(-128, -128, c.width + 128, c.height + 128);
 	ctx.restore();
 }

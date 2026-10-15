@@ -12,10 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Backgrounds:
   - `<LightField>`: liquid light with caustics, a prism split and a pointer lens, over a real fluid.
   - `<Ink>`: the fluid alone, with diffusion.
-  - `<AsciiRain>`: streaks on a ray-marched wave surface, in text characters: solid bars fading out through hollow and faint ones, with a blue-to-red lens fringe. White unless given colours.
+  - `<InkField>`: ink in water lit by a lamp that follows the pointer, over a small stable-fluids sim, from Trirat's LumiThemes shader; his twelve palettes by name (`INK_PALETTES`) or `colors`, eased live through `setColors`; a settled still frame with reduced motion, the palette as soft pools without a float render target.
+  - `<AsciiRain>`: a still cloud of data in text characters by default (no loop runs while it is still), or streaks on a ray-marched wave surface with `pattern="waves"`: solid bars fading out through hollow and faint ones, with a blue-to-red lens fringe. White unless given colours.
   - `<FlutedGlass>`.
   - `<DotGrid>`: click ripples.
-  - `<SignalLines>`.
+  - `<SignalLines>`: glowing lines and pulses with film grain in the light, in one colour or several.
   - `<WaveBars>`.
   - `<Backdrop effect="…">`: the six strongest shader backgrounds of `@arraypress/effect-canvas-astro`, which it replaces (mesh-gradient, grain-gradient, silk, band-lens, grid, waves; its faint and plain ones are left to `<GlowField>` and `<Grain>`), tinted from `--color-accent` (the second colour mixed towards `--color-bg` in Oklab); `speed`, `intensity`, `static` + `frame`, `interactive`, `blend`, `fade` and `fixed`; a CSS gradient without WebGL.
   - `<WorldRoutes>`: a dotted world map (from Natural Earth) with comets between cities.
@@ -25,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Logos and shapes, each from text or an SVG or PNG (`src`):
   - `<GlassGlyph>`.
   - `<ParticleLogo>`.
+  - `<NeonSwarm>`: a few thousand neon particles on curl-noise springs hold the logo, shimmering and breathing, with fading trails and bloom; the pointer scatters them; they gather from a cloud on arrival.
+  - `<NebulaLogo>`: domain-warped nebula gas inside the logo, densest at its edges, with dust lanes, a glowing rim, a halo past the edge and twinkling stars; the pointer brightens the gas and leaves a wake that stirs it.
   - `<PointCloud>`: optional tracker boxes.
   - `<VoxelLogo>`: dithered, optional markers.
 - Text:

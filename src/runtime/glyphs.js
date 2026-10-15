@@ -14,11 +14,11 @@
  */
 export const GLYPH_SETS = {
 	/**
-	 * A data readout drawn as shapes, not type: empty, a faint solid bar, a
-	 * hollow bar, a solid bar, so a streak fades out through outlines at its
-	 * ends. Crisp, and the same on every system.
+	 * A data readout drawn as shapes, not type: empty, a low line, a hollow
+	 * bar, a solid bar, so a streak fades out through outlines and then
+	 * underscores at its ends. Crisp, and the same on every system.
 	 */
-	data: ' ▮▯▮',
+	data: ' _▯▮',
 	/** Classic ASCII art. */
 	ascii: ' .:-=+*#%@',
 	/** Vertical bars filling from the left, and a solid block: a data readout. */
@@ -60,10 +60,12 @@ export function createGlyphs(gl, glyphs, { cell = 48, aspect = 0.6, font = 'ui-m
 		// them touch), and a smaller hollow one in a fine line.
 		const line = Math.max(2, cell * 0.08);
 		chars.forEach((ch, i) => {
-			const [w, h] = ch === '▯' ? [width * 0.62, cell * 0.76] : [width * 0.6, cell * 0.94];
+			const [w, h] = ch === '▮' ? [width * 0.6, cell * 0.94] : [width * 0.62, cell * 0.76];
 			const x = (i + 0.5) * width - w / 2;
 			const y = (cell - h) / 2;
-			if (ch === '▯') {
+			if (ch === '_') {
+				ctx.fillRect(x, cell * 0.97 - line, w, line);
+			} else if (ch === '▯') {
 				ctx.fillRect(x, y, w, line);
 				ctx.fillRect(x, y + h - line, w, line);
 				ctx.fillRect(x, y, line, h);

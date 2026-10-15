@@ -12,22 +12,22 @@ import { ACCENTS } from '../gallery';
 ---
 
 <Gallery page="Text">
-	<Hero id="reveal" name="Reveal" code={`<Reveal as="h2" words text="Skip the build. Start selling." />`} size="short">
-		<Reveal as="h2" class="headline" words text="Skip the build. Start selling." />
-		<Reveal from="blur" delay={0.6}><p class="lede">Each word rises into place as it scrolls into view.</p></Reveal>
+	<Hero id="reveal" name="Reveal" code={`<Reveal as="h2" words text="Good work deserves a good page." />`} size="short">
+		<Reveal as="h2" class="headline" words text="Good work deserves a good page." />
+		<Reveal from="blur" delay={0.6}><p class="lede">Portfolios for illustrators, set up in an afternoon and yours for good.</p></Reveal>
 	</Hero>
 	<Hero id="typewriter" name="Typewriter" code={`<Typewriter phrases={['beats', 'sample packs', 'presets', 'courses']} caret="#c084fc" />`} size="short">
 		<h2 class="headline">Sell your<br /><Typewriter phrases={['beats', 'sample packs', 'presets', 'courses']} caret="#c084fc" /></h2>
 	</Hero>
-	<Hero id="scramble-text" name="ScrambleText" code={`<ScrambleText text="Inference at the edge" hover />`} size="short">
-		<h2 class="headline" style="font-family: ui-monospace, Menlo, monospace; font-size: clamp(36px, 5.6vw, 80px)"><ScrambleText text="Inference at the edge" hover /></h2>
-		<p class="lede">Hover it to scramble again.</p>
+	<Hero id="scramble-text" name="ScrambleText" code={`<ScrambleText text="Zero knowledge, by design." hover />`} size="short">
+		<h2 class="headline" style="font-family: ui-monospace, Menlo, monospace; font-size: clamp(36px, 5.6vw, 80px)"><ScrambleText text="Zero knowledge, by design." hover /></h2>
+		<p class="lede">Vaultline encrypts on your device, so not even we can read your files. Hover the headline to scramble it again.</p>
 	</Hero>
 	<Hero id="highlight-sweep" name="HighlightSweep" code={`<HighlightSweep color="#c084fc">beats</HighlightSweep>`} size="short">
 		<h2 class="headline">Sell <HighlightSweep color="#c084fc">beats</HighlightSweep>,<br />keep <HighlightSweep color="#34d399">every</HighlightSweep> penny.</h2>
 	</Hero>
 	<Hero id="marquee" name="Marquee" code={`<Marquee items={['Marcus Vane', 'Vivid Skye', 'Adrian Holt', 'Lunaire', 'Northwave', 'Kestrel']} separator="✦" />`} size="short">
-		<div style="width: 100vw; display: grid; gap: 2rem">
+		<div class="bleed" style="display: grid; gap: 2rem">
 			<div style="font-size: clamp(32px, 5vw, 64px); font-weight: 650; letter-spacing: -0.03em"><Marquee items={['Marcus Vane', 'Vivid Skye', 'Adrian Holt', 'Lunaire', 'Northwave', 'Kestrel']} separator="✦" /></div>
 			<Marquee items={['NEW BUNDLE', 'OUT NOW', 'LIMITED TIME', 'FREE UPDATES']} separator="///" direction="right" speed={25} />
 		</div>
@@ -35,7 +35,7 @@ import { ACCENTS } from '../gallery';
 	<Hero id="scroll-reveal" name="ScrollReveal" code={`<ScrollReveal />  ·  <div class="fade-in-up">…</div>`}>
 		<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 220px)); gap: 20px">
 			{['fade-in-up', 'zoom-in', 'flip-up', 'blur-in', 'slide-in-up', 'fade-in-left'].map((kind, i) => (
-				<div class={kind} style={`--reveal-delay: ${(i % 3) * 0.08}s; height: 180px; border-radius: 16px; background: linear-gradient(160deg, ${ACCENTS[i]}, #18181b); display: grid; place-items: center; font: 600 15px ui-monospace, monospace`}>.{kind}</div>
+				<div class={kind} data-replay style={`--reveal-delay: ${(i % 3) * 0.08}s; height: 180px; border-radius: 16px; background: linear-gradient(160deg, ${ACCENTS[i]}, #18181b); display: grid; place-items: center; font: 600 15px ui-monospace, monospace`}>.{kind}</div>
 			))}
 		</div>
 	</Hero>

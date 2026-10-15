@@ -11,12 +11,13 @@ Pick by what is asked for:
 | Asked for | Use |
 |---|---|
 | An animated, colourful background for a page or hero | `<LightField>` (liquid light), `<FlutedGlass>` (light, gallery-white or dark), `<AsciiRain>` (techy, dark), `<DotGrid>` (quiet, minimal), `<SignalLines>` / `<WaveBars>` (audio) |
+| Ink in water, a lit fluid background, or a hero whose colours a palette switcher changes | `<InkField palette="…">` (Lumetri, Forest, Cadmium, Peacock, Vermillion, Barbie, Uranium, Azure, Ruby, Ultramarine, Saffron, Crimson); `setColors(el, INK_PALETTES[name].colors, INK_PALETTES[name].glint)` recolours it live |
 | Something to play with: ink, smoke, liquid, "interactive" | `<Ink>` over a section, or `<LightField>` (it has the fluid under it), or `<DotGrid>` (click ripples) |
 | A gradient, noise, halftone or liquid-metal look by name | `<PaperShader shader="…" preset="…">`; the demo has a hero for every shader, its presets in the tag |
 | A themed hero background by name (mesh gradient, grainy gradient, silk, light bands, synthwave grid, neon waves), tinted from the site's accent | `<Backdrop effect="…">`; `static` when it sits behind body copy or is `fixed` |
 | A "we sell worldwide" section | `<WorldRoutes>` with the cities that matter to the shop |
 | A still light or texture over a background | `<GlowField>`, `<Grain>` |
-| The brand's logo as the hero's centrepiece | `<GlassGlyph>`, `<ParticleLogo>`, `<VoxelLogo>`, `<PointCloud>`, all with `src="/logo.svg"` or `text` |
+| The brand's logo as the hero's centrepiece | `<GlassGlyph>`, `<ParticleLogo>`, `<NeonSwarm>` (a flowing neon swarm), `<NebulaLogo>` (filled with nebula gas), `<VoxelLogo>`, `<PointCloud>`, all with `src="/logo.svg"` or `text` |
 | A footer wordmark | `<SpotlightText fit>`, `<PixelGlitchText fit>`, `<OutlineWordmark>` |
 | Sections that arrive on scroll, site-wide | `<ScrollReveal />` once in the layout, then reveal.css classes (`fade-in-up`…) on elements |
 | Text that arrives or moves | `<Reveal>`, `<ScrambleText>`, `<Typewriter>`, `<HighlightSweep>`, `<Marquee>` |

@@ -137,6 +137,42 @@ export function samplePoints(mask, count, random = Math.random) {
 }
 
 /**
+ * Scatters points along a shape's edge: each lands on a covered pixel with
+ * an uncovered one beside it, with a little jitter, for effects that trace
+ * the outline more brightly than the fill.
+ *
+ * @param {Mask} mask The shape.
+ * @param {number} count How many points.
+ * @param {() => number} [random=Math.random] The random source.
+ * @returns {Float32Array} x, y pairs, each 0–1 (y up); zeros when the shape has no edge.
+ */
+export function edgePoints(mask, count, random = Math.random) {
+	const { width, height, alpha } = mask;
+	/**
+	 * Is the pixel at (x, y) covered? Outside the mask counts as not.
+	 *
+	 * @param {number} x Across.
+	 * @param {number} y Down.
+	 * @returns {boolean} Whether the shape covers it.
+	 */
+	const covered = (x, y) => x >= 0 && y >= 0 && x < width && y < height && alpha[y * width + x] > 127;
+	const edge = [];
+	for (let y = 0; y < height; y++) {
+		for (let x = 0; x < width; x++) {
+			if (covered(x, y) && !(covered(x - 1, y) && covered(x + 1, y) && covered(x, y - 1) && covered(x, y + 1))) edge.push(y * width + x);
+		}
+	}
+	const points = new Float32Array(count * 2);
+	if (!edge.length) return points;
+	for (let k = 0; k < count; k++) {
+		const i = edge[Math.floor(random() * edge.length)];
+		points[k * 2] = ((i % width) + random()) / width;
+		points[k * 2 + 1] = 1 - (Math.floor(i / width) + random()) / height;
+	}
+	return points;
+}
+
+/**
  * Points on a grid over a shape: one wherever a grid cell's centre is
  * inside, for shapes drawn as a dot matrix.
  *

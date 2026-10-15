@@ -13,9 +13,9 @@ import '@arraypress/effects-astro/motion.css';
 ---
 
 <Gallery page="Surfaces">
-	<Hero id="glass" name="Glass" code="<Glass>…</Glass>" style="--hero-ground: radial-gradient(70% 60% at 25% 30%, #7c3aed, transparent 70%), radial-gradient(60% 60% at 80% 70%, #db2777, transparent 70%), #0b0b10">
+	<Hero id="glass" name="Glass" code="<Glass>…</Glass>" style="--hero-ground: radial-gradient(70% 60% at 25% 30%, #0e7490, transparent 70%), radial-gradient(60% 60% at 80% 70%, #ea580c, transparent 70%), #0b0b10">
 		<div class="row">
-			{[['Starter', '£0', 'One store, every feature.'], ['Studio', '£12', 'Licences, bundles, analytics.'], ['Label', '£39', 'Many artists, one dashboard.']].map(([plan, price, text]) => (
+			{[['Solo', '£0', 'One calendar, unlimited bookings.'], ['Studio', '£12', 'Team calendars and deposits.'], ['Clinic', '£39', 'Rooms, staff and reminders.']].map(([plan, price, text]) => (
 				<Glass style="width: 240px; padding: 28px; border-radius: 20px; text-align: left"><strong style="font-size: 20px">{plan}</strong><p style="color: #d4d4d8; font-size: 14px">{text}</p><b style="font-size: 40px; letter-spacing: -0.03em">{price}</b></Glass>
 			))}
 		</div>
@@ -35,17 +35,19 @@ import '@arraypress/effects-astro/motion.css';
 	</Hero>
 	<Hero id="parallax" name="Parallax" code={`<Parallax depth={60}>…</Parallax>`} size="short">
 		<div data-parallax-root style="position: absolute; inset: 0; z-index: -1">
-			<Parallax depth={-30} style="position: absolute; inset: 0; display: grid; place-items: center"><div style="width: 420px; height: 420px; border-radius: 50%; background: #312e81; translate: -220px -40px"></div></Parallax>
-			<Parallax depth={60} style="position: absolute; inset: 0; display: grid; place-items: center"><div style="width: 200px; height: 200px; border-radius: 50%; background: #7c3aed; translate: 240px 80px"></div></Parallax>
+			<Parallax depth={-30} style="position: absolute; inset: 0; display: grid; place-items: center"><div style="width: 420px; height: 420px; border-radius: 50%; background: #0f766e; translate: -220px -40px"></div></Parallax>
+			<Parallax depth={60} style="position: absolute; inset: 0; display: grid; place-items: center"><div style="width: 200px; height: 200px; border-radius: 50%; background: #f59e0b; translate: 240px 80px"></div></Parallax>
 			<Parallax depth={100} style="position: absolute; inset: 0; display: grid; place-items: center"><div style="width: 80px; height: 80px; border-radius: 50%; background: #f472b6; translate: 60px -170px"></div></Parallax>
 		</div>
-		<h2 class="headline">Depth, by pointer.</h2>
+		<span class="eyebrow">Wanderlight · weekend trips</span>
+		<h2 class="headline">Somewhere new,<br /><em>every weekend.</em></h2>
 	</Hero>
-	<Hero id="magnetic" name="Magnetic" code={`<Magnetic as="a" href="/start" class="btn">Start selling</Magnetic>`} size="short">
-		<h2 class="headline">Ready when you are.</h2>
+	<Hero id="magnetic" name="Magnetic" code={`<Magnetic as="a" href="/call" class="btn">Book a call</Magnetic>`} size="short">
+		<span class="eyebrow">Ledgerly · bookkeeping</span>
+		<h2 class="headline">Your books, done by Friday.</h2>
 		<div class="actions" style="margin-top: 40px">
-			<Magnetic as="a" href="#" class="btn" style="height: 58px; padding: 0 34px; font-size: 18px">Start selling</Magnetic>
-			<Magnetic as="a" href="#" class="btn btn--ghost" strength={0.45} style="height: 58px; padding: 0 34px; font-size: 18px">See the demo</Magnetic>
+			<Magnetic as="a" href="#" class="btn" style="height: 58px; padding: 0 34px; font-size: 18px">Book a call</Magnetic>
+			<Magnetic as="a" href="#" class="btn btn--ghost" strength={0.45} style="height: 58px; padding: 0 34px; font-size: 18px">See pricing</Magnetic>
 		</div>
 	</Hero>
 	<Hero id="cursor" name="Cursor" code={`<Cursor blend="difference" />`} size="short">
@@ -56,7 +58,7 @@ import '@arraypress/effects-astro/motion.css';
 	</Hero>
 	<Hero id="pulse-mark" name="PulseMark · motion.css" code={`<PulseMark variant="sonar" size={120} color="#00ff88" glow />  ·  <span class="fx-live"></span>`} size="short">
 		<div class="row" style="gap: 72px">
-			<PulseMark variant="matrix" size={120} color="#a855f7" glow />
+			<PulseMark variant="matrix" size={120} color="#f59e0b" glow />
 			<PulseMark variant="rings" size={120} />
 			<PulseMark variant="sonar" size={120} color="#00ff88" glow />
 			<span style="display: inline-flex; align-items: center; gap: 12px; font-size: 22px"><span class="fx-live"></span>Available for work</span>

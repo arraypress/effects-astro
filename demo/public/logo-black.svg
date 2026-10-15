@@ -1,16 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="276 209.9 472 604.2" role="img" aria-label="LumiThemes">
-	<!-- The bare monogram from logo.svg, cropped to the glyph: for the page,
-	     where the ground is already dark and a tile would only add an edge.
-	     White on transparent, so it vanishes on a light ground by design. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 270" role="img" aria-label="LumiThemes">
+	<!-- The LumiThemes mark (Trirat's), bare: two slanted strokes. Black on
+	     transparent, for the logo effects' src. -->
 	<g fill="#000000">
-		<rect x="276" y="209.9" width="141.6" height="604.2"/>
-		<rect x="276" y="672.5" width="472" height="141.6"/>
-	</g>
-	<clipPath id="sun"><circle cx="644.2" cy="445.9" r="103.8"/></clipPath>
-	<g clip-path="url(#sun)" fill="#000000">
-		<rect x="540.3" y="342.1" width="207.7" height="95.5"/>
-		<rect x="540.3" y="445.1" width="207.7" height="31.1"/>
-		<rect x="540.3" y="491.1" width="207.7" height="22.4"/>
-		<rect x="540.3" y="536" width="207.7" height="13.8"/>
+		<path d="M215.209 0H117.969L0 270H97.24L215.209 0Z" />
+		<path d="M331.067 114C337.917 114 344.683 114.356 351.35 115.05L282.361 269.999H140.963C158.541 181.063 236.973 114 331.067 114Z" />
 	</g>
 </svg>

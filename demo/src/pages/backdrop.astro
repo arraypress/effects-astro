@@ -4,7 +4,7 @@ import Gallery from '../layouts/Gallery.astro';
 import Hero from '../components/Hero.astro';
 import Backdrop from '@arraypress/effects-astro/Backdrop.astro';
 import { BACKDROPS } from '@arraypress/effects-astro/runtime/backdrop';
-import { ACCENTS, line } from '../gallery';
+import { ACCENTS, pitch } from '../gallery';
 const backdrops = Object.keys(BACKDROPS) as (keyof typeof BACKDROPS)[];
 ---
 
@@ -13,9 +13,10 @@ const backdrops = Object.keys(BACKDROPS) as (keyof typeof BACKDROPS)[];
 		backdrops.map((effect, i) => (
 			<Hero id={`backdrop-${effect}`} name={`Backdrop · ${effect}`} code={`<Backdrop effect="${effect}" interactive />`} style={`--color-accent: ${ACCENTS[i % ACCENTS.length]}`}>
 				<Backdrop slot="effect" effect={effect} interactive />
-				<h2 class="headline">{line(i)[0]}</h2>
-				<p class="lede">{line(i)[1]}</p>
-				<div class="actions"><a class="btn" href="#">Get started</a></div>
+				<span class="eyebrow">{pitch(i).brand}</span>
+				<h2 class="headline">{pitch(i).headline}</h2>
+				<p class="lede">{pitch(i).lede}</p>
+				<div class="actions"><a class="btn" href="#">{pitch(i).cta}</a></div>
 				<span slot="tools" class="chip is-note">--color-accent: {ACCENTS[i % ACCENTS.length]}</span>
 			</Hero>
 		))

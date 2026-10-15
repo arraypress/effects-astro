@@ -4,6 +4,8 @@ import Gallery from '../layouts/Gallery.astro';
 import Hero from '../components/Hero.astro';
 import LightField from '@arraypress/effects-astro/LightField.astro';
 import Ink from '@arraypress/effects-astro/Ink.astro';
+import InkField from '@arraypress/effects-astro/InkField.astro';
+import { INK_PALETTES } from '@arraypress/effects-astro/runtime/ink-field';
 import AsciiRain from '@arraypress/effects-astro/AsciiRain.astro';
 import FlutedGlass from '@arraypress/effects-astro/FlutedGlass.astro';
 import DotGrid from '@arraypress/effects-astro/DotGrid.astro';
@@ -16,63 +18,83 @@ import { line } from '../gallery';
 ---
 
 <Gallery page="Backgrounds">
-	<Hero id="top" name="effects-astro" code="npm i @arraypress/effects-astro">
-		<LightField slot="effect" colors={['#7c3aed', '#db2777', '#06b6d4']} glint="#fcd34d" quiet={{ y: 0.45, radius: 0.6, depth: 0.75 }} />
-		<span class="eyebrow">Every effect, as a hero · scroll</span>
+	<Hero id="top" name="InkField" code={`<InkField palette="Barbie" drops />`} style="--hero-ground: #08080a">
+		<InkField slot="effect" palette="Barbie" drops />
+		<span class="eyebrow">effects-astro · every effect, as a hero · scroll</span>
 		<h1 class="headline">Pages that<br /><em>feel alive.</em></h1>
-		<p class="lede">Backgrounds, logo effects, wordmarks and text motion for Astro. Each one below is a working hero; move the pointer, click, and copy the line in its tag.</p>
+		<p class="lede">Ink in water, lit by a lamp that follows the pointer. Click to drop more; pick a palette below and the ink on screen takes it.</p>
+		<div slot="tools" class="chips">
+			{Object.keys(INK_PALETTES).map((name) => <button type="button" class:list={['chip', { 'is-on': name === 'Barbie' }]} data-palette={name}>{name}</button>)}
+		</div>
 	</Hero>
 
 
 	<Hero id="light-field" name="LightField" code={`<LightField colors={['#e11d48', '#f97316', '#7c3aed']} glint="#fde68a" quiet={{ y: 0.42, radius: 0.6, depth: 0.7 }} />`}>
 		<LightField slot="effect" colors={['#e11d48', '#f97316', '#7c3aed']} glint="#fde68a" quiet={{ y: 0.42, radius: 0.6, depth: 0.7 }} />
-		<h2 class="headline">Skip the build.<br />Start selling.</h2>
-		<p class="lede">Liquid light over a real fluid. Stir it with the pointer; click to drop ink.</p>
-		<div class="actions"><a class="btn" href="#">Get started</a><a class="btn btn--ghost" href="#">See themes</a></div>
+		<span class="eyebrow">Halcyon · sleep sounds</span>
+		<h2 class="headline">Fall asleep<br /><em>in colour.</em></h2>
+		<p class="lede">Slow soundscapes that drift with you, from the first yawn to deep sleep. Stir the light; click to drop in more.</p>
+		<div class="actions"><a class="btn" href="#">Start a free week</a><a class="btn btn--ghost" href="#">Listen</a></div>
 	</Hero>
 	<Hero id="ink" name="Ink" code={`<Ink colors={['#2216f7', '#55bdff', '#a702ff']} />`} style="--hero-ground: #07070c">
 		<Ink slot="effect" colors={['#2216f7', '#55bdff', '#a702ff']} />
-		<h2 class="headline">Stir me.</h2>
-		<p class="lede">Ink in water, under the pointer. It sits over whatever is behind it.</p>
+		<span class="eyebrow">Brushwork · a lettering course</span>
+		<h2 class="headline">Every stroke<br /><em>counts.</em></h2>
+		<p class="lede">Six weeks of brush lettering, from your first line to a finished alphabet. Drag through the water to stir the ink.</p>
+		<div class="actions"><a class="btn" href="#">Enrol for May</a><a class="btn btn--ghost" href="#">Watch a lesson</a></div>
 	</Hero>
-	<Hero id="ascii-rain" name="AsciiRain" code={`<AsciiRain quiet={{ x: 0, y: 0, radius: 1.15, depth: 1 }} />`} align="left" style="--hero-ground: #000">
-		<AsciiRain slot="effect" quiet={{ x: 0, y: 0, radius: 1.15, depth: 1 }} />
-		<h2 class="headline">Stream everything.<br />Query anything.</h2>
-		<p class="lede">Data streaks on a rippling surface, drawn in text characters.</p>
-		<div class="actions"><a class="btn" href="#">Start streaming</a><a class="btn btn--ghost" href="#">Read the docs</a></div>
+	<Hero id="ascii-rain" name="AsciiRain" code={`<AsciiRain quiet={{ x: 0.05, y: 0.25, radius: 0.7, depth: 0.95 }} />`} align="left" style="--hero-ground: #000">
+		<AsciiRain slot="effect" quiet={{ x: 0.05, y: 0.25, radius: 0.7, depth: 0.95 }} />
+		<span class="eyebrow">Tallyline · event analytics</span>
+		<h2 class="headline">Every event,<br />accounted for.</h2>
+		<p class="lede">Pipe in clicks, orders and errors from every service, then ask questions in plain English. Answers in seconds, not sprints.</p>
+		<div class="actions"><a class="btn" href="#">Start free</a><a class="btn btn--ghost" href="#">See a live dashboard</a></div>
 	</Hero>
 	<Hero id="fluted-glass" name="FlutedGlass" code="<FlutedGlass />" theme="light" align="bottom">
 		<FlutedGlass slot="effect" />
-		<h2 class="headline">Brands seen through<br /><em>a different light.</em></h2>
+		<span class="eyebrow">Atelier Nord · interiors</span>
+		<h2 class="headline">Rooms shaped<br />by <em>daylight.</em></h2>
 	</Hero>
 	<Hero id="dot-grid" name="DotGrid" code="<DotGrid />">
 		<DotGrid slot="effect" />
-		<h2 class="headline">Drop a stone.</h2>
-		<p class="lede">A sea of dots with a drifting current. Click anywhere to send a ripple across.</p>
+		<span class="eyebrow">Stillpoint · meditation</span>
+		<h2 class="headline">One breath<br />at a time.</h2>
+		<p class="lede">A quiet timer with gentle bells and nothing else on the screen. Tap the water anywhere to begin.</p>
+		<div class="actions"><a class="btn" href="#">Begin a session</a></div>
 	</Hero>
 	<Hero id="signal-lines" name="SignalLines" code="<SignalLines />">
 		<SignalLines slot="effect" />
-		<h2 class="headline">Every sound,<br />on the page.</h2>
-		<p class="lede">Waveform lines with a drifting loudness, and pulses of light running along them.</p>
+		<span class="eyebrow">Northwave Records</span>
+		<h2 class="headline">New music,<br />every Friday.</h2>
+		<p class="lede">Stream the week's releases or buy them lossless, straight from the label that pressed them.</p>
+		<div class="actions"><a class="btn" href="#">Listen now</a><a class="btn btn--ghost" href="#">Browse releases</a></div>
 	</Hero>
 	<Hero id="wave-bars" name="WaveBars" code="<WaveBars />">
 		<WaveBars slot="effect" />
-		<h2 class="headline">Tuned for you.</h2>
-		<p class="lede">A bar waveform retuning itself every couple of seconds.</p>
+		<span class="eyebrow">Hard Mode · a podcast</span>
+		<h2 class="headline">Founders,<br /><em>unfiltered.</em></h2>
+		<p class="lede">Forty minutes a week with people building companies the slow way. New episode every Tuesday.</p>
+		<div class="actions"><a class="btn" href="#">Play episode 42</a><a class="btn btn--ghost" href="#">Subscribe</a></div>
 	</Hero>
 	<Hero id="world-routes" name="WorldRoutes" code={`<WorldRoutes />`} align="bottom">
 		<WorldRoutes slot="effect" />
-		<h2 class="headline">Sell worldwide.</h2>
-		<p class="lede">Customers in 40 countries, paid in their own currency.</p>
+		<span class="eyebrow">Parcelpath · shipping</span>
+		<h2 class="headline">Anywhere by Monday.</h2>
+		<p class="lede">Labels, duties and tracking for 180 countries, priced before your customer reaches checkout.</p>
+		<div class="actions"><a class="btn" href="#">Get shipping rates</a></div>
 	</Hero>
 	<Hero id="glow-field" name="GlowField" code={`<GlowField variant="beam" color="#f0abfc" />`}>
 		<GlowField slot="effect" variant="beam" color="#f0abfc" />
-		<h2 class="headline">Lit from above.</h2>
-		<p class="lede">A still light, no script at all: bloom, beam, horizon or wash.</p>
+		<span class="eyebrow">Opening night · 24 October</span>
+		<h2 class="headline">The stage<br />is <em>yours.</em></h2>
+		<p class="lede">An evening of new work from twelve young playwrights. Doors at seven, curtain at half past.</p>
+		<div class="actions"><a class="btn" href="#">Book seats</a><a class="btn btn--ghost" href="#">The programme</a></div>
 	</Hero>
 	<Hero id="grain" name="Grain" code={`<Grain opacity={0.35} />`} style="--hero-ground: radial-gradient(120% 90% at 30% 20%, #7c3aed, #1e1b4b 55%, #09090b)">
 		<Grain slot="effect" opacity={0.35} />
-		<h2 class="headline">Film grain.</h2>
-		<p class="lede">Over a smooth gradient, so it never bands.</p>
+		<span class="eyebrow">Fieldnotes · film lab</span>
+		<h2 class="headline">Shot on film.<br /><em>Kept for good.</em></h2>
+		<p class="lede">Post us your rolls. We develop, scan and archive them, and your prints come back within the week.</p>
+		<div class="actions"><a class="btn" href="#">Send a roll</a></div>
 	</Hero>
 </Gallery>

@@ -14,6 +14,7 @@
  */
 import type { HTMLTag } from 'astro/types';
 import '../styles/glass.css';
+import { withStyle } from './style.js';
 
 interface Props {
 	/** The element to render. Default `div`. */
@@ -30,7 +31,7 @@ interface Props {
 	[attribute: string]: unknown;
 }
 
-const { as: Tag = 'div', tint, amount, blur, lift, class: className, ...attributes } = Astro.props;
+const { as: Tag = 'div', tint, amount, blur, lift, class: className, style: given, ...attributes } = Astro.props;
 const style = [
 	tint && `--glass-tint: ${tint}`,
 	amount !== undefined && `--glass-tint-amount: ${amount}%`,
@@ -41,7 +42,7 @@ const style = [
 	.join('; ');
 ---
 
-<Tag class:list={['glass', className]} style={style || undefined} {...attributes}><slot /></Tag>
+<Tag class:list={['glass', className]} style={withStyle(style, given)} {...attributes}><slot /></Tag>
 
 <script>
 	import { glassSheen } from '../runtime/glass-sheen.js';

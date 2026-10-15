@@ -26,7 +26,8 @@ AsciiRain: data rain on a rippling surface, drawn in text characters, with red a
 | `trail` | `number` | A streak's length, a share of the gap between them (0–1). Default 0.3. |
 | `density` | `number` | How many lanes have a streak at any time, 0–1. Default 0.7. |
 | `width` | `number` | A lane's streak width, a share of the lane (0–1). Default 0.9. |
-| `speed` | `number` | How fast the streaks run. Default 1. |
+| `pattern` | `'cloud' \| 'waves'` | A still cloud of data, or streaks running on a rippling surface. Default `cloud`. |
+| `speed` | `number` | How fast it moves: the rows stream, or the streaks run; 0 for one still frame. Default 1. |
 | `variance` | `number` | How much each lane's speed differs, 0–1. Default 0.6. |
 | `ripple` | `number` | How tall the surface's waves are; 0 for flat. Default 1. |
 | `waves` | `number` | How close together the waves are. Default 1. |
@@ -34,7 +35,7 @@ AsciiRain: data rain on a rippling surface, drawn in text characters, with red a
 | `zoom` | `number` | How much of the surface fills the frame (larger is closer). Default 1. |
 | `lighting` | `number` | How strongly the waves are lit and shaded; 0 for flat. Default 1. |
 | `aberration` | `number` | How far blue bleeds left and red right of each glyph, CSS px; 0 for none. Default 3. |
-| `interactive` | `boolean` | Whether the pointer ripples the surface and a click drops a ring. Default true. |
+| `interactive` | `boolean` | With `waves`, whether the pointer ripples the surface and a click drops a ring. Default true. |
 | `quiet` | `{ x?: number; y?: number; radius?: number; depth?: number } \| null` | An area kept clear: centre (0–1 from the top left), radius (share of the height), depth (0–1). |
 | `font` | `string` | The font the glyphs are drawn in. Default a monospace stack. |
 | `fixed` | `boolean` | Fill the viewport (position: fixed). Default false. |
@@ -296,6 +297,27 @@ Ink: ink in water over whatever is behind it. The pointer stirs it and trails in
 | `fixed` | `boolean` | Fill the viewport (position: fixed). Default false. |
 | `class` | `string` | Classes for the element. |
 
+## `<InkField>`
+
+InkField: ink in water, lit by a lamp that follows the pointer. Slow emitters keep the ink moving across the whole field; moving the pointer pushes it aside and leaves a faint trail, and the lamp rests at the upper left when the pointer is away. The field dims in the middle, behind the copy. Twelve named palettes (Trirat's), or colours of your own. See src/runtime/ink-field.js.
+
+```astro
+<InkField fixed palette="Peacock" />
+```
+
+| Prop | Type | |
+|---|---|---|
+| `palette` | `InkPaletteName \| (string & {})` | One of the named palettes (`INK_PALETTES`, any case): Lumetri, Forest, Cadmium, Peacock, Vermillion, Barbie, Uranium, Azure, Ruby, Ultramarine, Saffron, Crimson. Default `'Lumetri'`. |
+| `colors` | `string[]` | Three colours as CSS hex, in place of the palette's (fewer are looped). Default the palette's. |
+| `glint` | `string` | A glint colour, in place of the palette's (unused by the ink look). Default the palette's. |
+| `interactive` | `boolean` | The pointer stirs the ink and the lamp follows it, on devices that hover. Default true. |
+| `drops` | `boolean` | A press drops ink that blooms open (not on links, buttons or fields). Off by default: on a page-wide field, stray clicks would splash. Default false. |
+| `lamp` | `{ x?: number; y?: number }` | Where the lamp rests when the pointer is away, 0–1 from the top left. Default `{ x: 0.14, y: 0.14 }`. |
+| `still` | `boolean` | Hold one frame of settled ink and never animate, as with reduced motion: for a field behind body copy. Default false. |
+| `scale` | `number` | Share of the pixel ratio drawn at. Default 0.5. |
+| `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
+| `class` | `string` | Classes for the element. |
+
 ## `<LightField>`
 
 LightField: liquid light in three colours, bending around the pointer, with a real fluid under it that the pointer stirs and a click drops ink into. See src/runtime/light-field.js for how it is drawn.
@@ -356,6 +378,59 @@ Marquee: an endless strip that scrolls sideways, for "as featured in" logos, art
 | `fade` | `number` | How wide the faded edges are, % of the strip. Default 8. |
 | `labels` | `{ pause: string; resume: string }` | The pause button's labels, for other languages. Default English. |
 | `label` | `string` | What the strip is, for screen readers. Default the items joined. |
+| `class` | `string` | Classes for the element. |
+
+## `<NebulaLogo>`
+
+NebulaLogo: a logo or a word filled with drifting nebula gas in the palette's colours, brightest towards its edges, with a glowing rim, a soft halo of gas leaking past the edge and faint stars twinkling inside. The pointer brightens the gas near it and stirs it as it moves. See src/runtime/nebula-logo.js.
+
+```astro
+<section class="hero" style="position: relative">
+  <NebulaLogo src="/logo.svg" />
+  <h1>…</h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `text` | `string` | A word (or a character) to fill with gas. |
+| `font` | `string` | Its CSS font, without the size. Default: the page's, bold. |
+| `src` | `string` | An image (an SVG logo, a PNG) to fill instead. |
+| `area` | `{ x: number; y: number; width: number; height: number }` | Where the shape sits, each 0–1 from the top left. Default the right half. |
+| `colors` | `string[]` | The gas's palette, three colours; the first, darkened, is also the thin gas's. Default teal, amber, rose. |
+| `background` | `string` | The ground. Default `#05070a`. |
+| `speed` | `number` | How fast the gas drifts. Default 1. |
+| `glow` | `number` | The rim and the halo leaking past the edge; 0 for neither. Default 1. |
+| `stars` | `number` | How many stars twinkle inside; 0 for none. Default 1. |
+| `stir` | `number` | How much the pointer stirs and brightens the gas; 0 for not at all. Default 1. |
+| `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
+| `class` | `string` | Classes for the element. |
+
+## `<NeonSwarm>`
+
+NeonSwarm: a logo or a word held by a swarm of glowing particles that flows like a flock round its shape, shimmering and breathing, with short neon trails in the palette's colours. The pointer scatters them and they stream back; on arrival they gather from a loose cloud. See src/runtime/neon-swarm.js.
+
+```astro
+<section class="hero" style="position: relative">
+  <NeonSwarm src="/logo.svg" />
+  <h1>…</h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `text` | `string` | A word (or a character) to gather the swarm into. |
+| `font` | `string` | Its CSS font, without the size. Default: the page's, bold. |
+| `src` | `string` | An image (an SVG logo, a PNG) to gather it into instead. |
+| `area` | `{ x: number; y: number; width: number; height: number }` | Where the shape sits, each 0–1 from the top left. Default the right half. |
+| `colors` | `string[]` | The palette across the swarm, three colours. Default neon cyan, lime, magenta. |
+| `background` | `string` | The ground. Default `#030406`. |
+| `count` | `number` | How many particles (half on phones). Default 6000. |
+| `size` | `number` | A particle's glowing core, CSS px. Default 2.4. |
+| `trail` | `number` | How long the trails are, 0 (none) to 0.95. Default 0.82. |
+| `flow` | `number` | How far the swarm drifts and breathes round the shape; 0 holds it still. Default 1. |
+| `scatter` | `number` | How hard the pointer scatters them; 0 for not at all. Default 1. |
+| `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
 | `class` | `string` | Classes for the element. |
 
 ## `<OutlineWordmark>`
@@ -444,7 +519,7 @@ ParticleLogo: a logo or a word in thousands of twinkling particles that scatter 
 | `font` | `string` | Its CSS font, without the size. Default: the page's, bold. |
 | `src` | `string` | An image (an SVG logo, a PNG) to draw in particles instead. |
 | `area` | `{ x: number; y: number; width: number; height: number }` | Where the shape sits, each 0–1 from the top left. Default the middle. |
-| `colors` | `string[]` | The dots' two colours, then the two blooms'. Default white, ice blue, violets. |
+| `colors` | `string[]` | The dots' two colours, then the two blooms'. Default white, ice blue, deep teal, midnight blue. |
 | `background` | `string` | The ground. Default `#030305`. |
 | `count` | `number` | How many particles (half on phones). Default 16000. |
 | `size` | `number` | A particle's size, CSS px. Default 2.2. |
@@ -592,19 +667,21 @@ SignalLines: layered waveform lines with a drifting loudness, front lines glowin
 
 | Prop | Type | |
 |---|---|---|
-| `color` | `string` | The lines' colour. Default `#aeaeb8`. |
+| `color` | `string` | The lines' colour, when there are no `colors`. Default `#aeaeb8`. |
+| `colors` | `string[]` | Colours the lines run through from left to right, blended in Oklab. |
 | `pulse` | `string` | The pulses' colour. Default `#fafafa`. |
 | `lines` | `number` | How many lines. Default 7. |
 | `amplitude` | `number` | How tall the waves are. Default 1. |
 | `speed` | `number` | How fast they move. Default 1. |
 | `pulses` | `number` | How often pulses run; 0 for none. Default 1. |
-| `grain` | `number` | Grain on the strokes, 0–1. Default 0.5. |
+| `glow` | `number` | How much light the lines and pulses give off, 0–2. Default 1. |
+| `grain` | `number` | Grain in the glow, 0–1. Default 0.5. |
 | `fade` | `boolean` | Fade the left and right edges out. Default true. |
 | `class` | `string` | Classes for the element. |
 
 ## `<SpotlightText>`
 
-SpotlightText: one line of text as a hollow outline that a soft light under the pointer fills in. See src/runtime/spotlight.js.
+SpotlightText: one line of text as a faint outline that a light under the pointer fills in, falling off as light does: bright for a short way, then a long soft tail. See src/runtime/spotlight.js.
 
 ```astro
 <SpotlightText as="div" class="wordmark" aria-hidden="true">LumiThemes</SpotlightText>

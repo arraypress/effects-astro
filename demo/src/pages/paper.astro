@@ -4,7 +4,7 @@ import Gallery from '../layouts/Gallery.astro';
 import Hero from '../components/Hero.astro';
 import PaperShader from '@arraypress/effects-astro/PaperShader.astro';
 import { PRESETS } from '../../../src/vendor/paper/presets.js';
-import { line, title, PICTURES, LOGOS } from '../gallery';
+import { pitch, title, PICTURES, LOGOS } from '../gallery';
 const papers = Object.keys(PRESETS) as (keyof typeof PRESETS)[];
 ---
 
@@ -19,8 +19,10 @@ const papers = Object.keys(PRESETS) as (keyof typeof PRESETS)[];
 					image={LOGOS.includes(shader) ? '/logo.svg' : undefined}
 					gradient={PICTURES.includes(shader) ? ['#4f46e5', '#ec4899', '#f59e0b'] : undefined}
 				/>
-				<h2 class="headline">{line(i + 3)[0]}</h2>
-				<p class="lede">{line(i + 3)[1]}</p>
+				<span class="eyebrow">{pitch(i + 5).brand}</span>
+				<h2 class="headline">{pitch(i + 5).headline}</h2>
+				<p class="lede">{pitch(i + 5).lede}</p>
+				<div class="actions"><a class="btn" href="#">{pitch(i + 5).cta}</a></div>
 				<div slot="tools" class="chips">
 					{PRESETS[shader].map((p, n) => <button type="button" class:list={['chip', { 'is-on': n === 0 }]} data-preset={p.name}>{p.name}</button>)}
 				</div>

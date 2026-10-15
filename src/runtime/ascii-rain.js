@@ -1,7 +1,13 @@
 /**
  * @module @arraypress/effects-astro/ascii-rain
  *
- * Data rain on a rippling surface, drawn in text characters: streaks of
+ * A data readout drawn in text characters, in one of two patterns:
+ *
+ *   - `cloud` (the default): streams of data, short dashes and blocks of
+ *     glyphs gathered into a loose cloud with dark space around it, each
+ *     row sliding sideways at its own pace, glyphs flickering as they
+ *     pass. `speed={0}` holds one frame, and then no loop runs at all.
+ *   - `waves`: data rain on a rippling surface. Streaks of
  * light run along lanes on a surface seen in perspective (each lane at its
  * own pace, bright at the head and fading behind), the surface rolls in
  * slow waves that bend the lanes and are lit along their slopes, and the
@@ -13,8 +19,8 @@
  * Each cell's ray is marched onto the wave surface (16 steps, refined), so
  * the waves occlude and foreshorten as a real surface would.
  *
- * The pointer sends ripples through the surface; a click drops a ring
- * that runs outward. A quiet area can keep the rain off the copy.
+ * In `waves`, the pointer sends ripples through the surface and a click
+ * drops a ring that runs outward. A quiet area keeps either off the copy.
  *
  * Clear where there is no rain, so it lays over any background. Without
  * WebGL nothing is drawn; with prefers-reduced-motion it is one still frame.
@@ -29,7 +35,8 @@ import { watchColors } from './mount.js';
 
 /**
  * @typedef {object} AsciiRainConfig
- * @property {string[]} [colors] Three CSS hex colours the dimmer glyphs take; the brightest go white. Default white.
+ * @property {string[]} [colors] Three CSS hex colours the glyphs take, the brightest nearly white. Default a cool cyan and green.
+ * @property {number} [glitch=1] How often rows jump sideways for a moment, their colours splitting wider; 0 for never.
  * @property {string} [glyphs='data'] A character set (`data`: hollow and solid bars; `bars`, `ascii`,
  *   `blocks`, `binary`, `boxes`) or the characters themselves, darkest first.
  * @property {number} [cell=14] A character cell's height in CSS px.
@@ -39,7 +46,8 @@ import { watchColors } from './mount.js';
  * @property {number} [trail=0.3] A streak's length, as a share of the gap between them (0–1).
  * @property {number} [density=0.7] How many lanes have a streak at any time, 0–1.
  * @property {number} [width=0.9] A lane's streak width, as a share of the lane (0–1).
- * @property {number} [speed=1] How fast the streaks run.
+ * @property {'cloud' | 'waves'} [pattern='cloud'] A still cloud of data, or streaks running on a rippling surface.
+ * @property {number} [speed=1] How fast it moves: the rows stream, or the streaks run; 0 for one still frame.
  * @property {number} [variance=0.6] How much each lane's speed differs (0 all alike, 1 very different).
  * @property {number} [ripple=1] How tall the surface's waves are; 0 for flat.
  * @property {number} [waves=1] How close together the waves are.
@@ -47,7 +55,7 @@ import { watchColors } from './mount.js';
  * @property {number} [zoom=1] How much of the surface fills the frame (larger is closer).
  * @property {number} [lighting=1] How strongly the waves are lit and shaded; 0 for flat.
  * @property {number} [aberration=3] How far blue bleeds left and red right of each glyph, in CSS px; 0 for none.
- * @property {boolean} [interactive=true] Whether the pointer ripples the surface and a click drops a ring.
+ * @property {boolean} [interactive=true] With `waves`, whether the pointer ripples the surface and a click drops a ring.
  * @property {{ x?: number, y?: number, radius?: number, depth?: number } | null} [quiet=null]
  *   An area kept clear: centre (0–1 from the top left), radius (share of the height), depth (0–1).
  * @property {string} [font] The font the glyphs are drawn in (a monospace stack by default).
@@ -73,6 +81,8 @@ uniform float uTilt;
 uniform float uZoom;
 uniform float uLighting;
 uniform float uAberration;
+uniform float uPattern;
+uniform float uGlitch;
 ${GLSL_NOISE}
 ${GLSL_PALETTE}
 ${GLSL_QUIET}
@@ -171,13 +181,29 @@ float rain(vec2 px) {
 	return clamp(streaks(hit.xz) * lit * fog, 0.0, 1.0);
 }
 
-// A cell's brightness: the rain where its centre's ray lands, flickering
+// The cloud: data gathered where a slow, large noise is high, and within
+// that, noise squashed along the rows so it reads as short dashes and
+// blocks rather than texture. Each row streams sideways at its own pace;
+// the cloud itself drifts far more slowly.
+float cloud(vec2 px) {
+	vec2 uv = px / uRes.y;
+	float pace = 0.6 + 0.8 * hash(vec2(floor(px.y / uCell.y), 3.7));
+	float gather = smoothstep(0.32, 0.6, fbm(uv * 1.0 + vec2(3.1 - uTime * 0.02, 7.7)));
+	float dashes = smoothstep(0.5, 0.78, fbm(vec2((uv.x - uTime * 0.35 * pace) * 3.2, uv.y * 20.0)));
+	// Gaps: some cells stay dark however bright the cloud is there.
+	float gap = step(0.08, hash(floor(px / uCell) + 17.0));
+	// Faint cells only where a run is ending, not scattered over the dark.
+	return smoothstep(0.12, 0.85, clamp(gather * dashes * gap * 2.4, 0.0, 1.0));
+}
+
+// A cell's brightness: the pattern where its centre is, flickering
 // a little as a readout refreshes. The quiet area lowers it before a glyph
 // is chosen, so the rain thins out there rather than turning grey.
 float level(vec2 cell) {
 	vec2 centre = (cell + 0.5) * uCell;
 	float open = mix(1.0 - uQuiet.w, 1.0, quietOpen((centre - 0.5 * uRes) / uRes.y));
-	return rain(centre) * (0.9 + 0.2 * hash(cell + floor(uTime * 12.0))) * open * open;
+	float b = uPattern > 0.5 ? rain(centre) : cloud(centre);
+	return b * (0.9 + 0.2 * hash(cell + floor(uTime * 12.0))) * open * open;
 }
 
 // How much light the glyph under a pixel gives, given the brightness of
@@ -190,7 +216,13 @@ float ink(vec2 px, float column, vec3 lv) {
 }
 
 void main() {
-	vec2 px = gl_FragCoord.xy;
+	// Glitches: now and then a row jumps a few cells sideways for a moment,
+	// its colours split wider while it does.
+	float row = floor(gl_FragCoord.y / uCell.y);
+	float tick = floor(uTime * 6.0);
+	float jolt = step(1.0 - 0.02 * uGlitch, hash(vec2(row, tick)));
+	float cells = floor((hash(vec2(row + 7.0, tick)) - 0.5) * 8.0);
+	vec2 px = gl_FragCoord.xy + vec2(cells * uCell.x * jolt, 0.0);
 	vec2 cell = floor(px / uCell);
 	vec3 lv = vec3(level(cell - vec2(1.0, 0.0)), level(cell), level(cell + vec2(1.0, 0.0)));
 	if (max(lv.x, max(lv.y, lv.z)) < 0.01) {
@@ -200,7 +232,7 @@ void main() {
 	// Each channel softened a little; red moved right and blue left, so a
 	// bar shades blue, cyan, white, yellow, red across, and an outline's
 	// inside fills purple.
-	vec2 shift = vec2(uAberration, 0.0);
+	vec2 shift = vec2(uAberration * (1.0 + 2.0 * jolt), 0.0);
 	float r = 0.0;
 	float g = 0.0;
 	float bl = 0.0;
@@ -214,15 +246,15 @@ void main() {
 		sum += w;
 	}
 	vec2 centre = (cell + 0.5) * uCell;
-	// Dim cells take the palette; the brightest go white.
-	vec3 tint = mix(pal(hash(cell.yy) * 0.4 + centre.x / uRes.x * 0.4 + uTime * 0.02), vec3(1.0), smoothstep(0.3, 0.9, lv.y) * 0.85);
+	// Dim cells take the palette; the brightest go nearly white, keeping a cast of it.
+	vec3 tint = mix(pal(hash(cell.yy) * 0.4 + centre.x / uRes.x * 0.4 + uTime * 0.02), vec3(1.0), smoothstep(0.3, 0.9, lv.y) * 0.7);
 	vec3 col = tint * vec3(r, g, bl) / sum;
 	gl_FragColor = vec4(col, clamp(max(col.r, max(col.g, col.b)), 0.0, 1.0));
 }
 `;
 
-/** The default palette: a monochrome readout, coloured only by its fringes. */
-const WHITE = ['#ffffff', '#ffffff', '#ffffff'];
+/** The default palette: a cool readout, cyan and green, near white where it is brightest. */
+const COOL = ['#7ef9e3', '#9df3b0', '#a5e8ff'];
 
 /**
  * Starts ASCII rain on an element: a transparent canvas inside it, filling it.
@@ -232,11 +264,14 @@ const WHITE = ['#ffffff', '#ffffff', '#ffffff'];
  * @returns {() => void} Stops it.
  */
 export function asciiRain(el, config) {
+	const waves = config.pattern === 'waves';
 	const speed = config.speed ?? 1;
+	// A still cloud needs no loop at all: one frame, drawn again only on a resize.
+	const moving = waves || speed > 0;
 	const glyphs = config.glyphs ?? 'data';
 	// Shapes sit in square cells; type in the usual tall ones.
 	const aspect = config.aspect ?? (glyphs === 'data' ? 1 : 0.6);
-	let palette = paletteUniform(config.colors ?? WHITE);
+	let palette = paletteUniform(config.colors ?? COOL);
 	const start = performance.now();
 	const ptr = { x: 0, y: 0 };
 	let active = 0;
@@ -252,7 +287,10 @@ export function asciiRain(el, config) {
 
 	const { stage, stop } = createStage(el, {
 		fragment: FRAG,
+		still: !moving,
 		setup({ gl, uniform, still }) {
+			gl.uniform1f(uniform('uPattern'), waves ? 1 : 0);
+			gl.uniform1f(uniform('uGlitch'), Math.max(0, config.glitch ?? 1));
 			const { count } = createGlyphs(gl, glyphs, { unit: 0, font: config.font, aspect });
 			gl.uniform1i(uniform('uGlyphs'), 0);
 			gl.uniform1f(uniform('uGlyphCount'), count);
@@ -268,7 +306,7 @@ export function asciiRain(el, config) {
 			gl.uniform1f(uniform('uTilt'), (Math.min(80, Math.max(0, config.tilt ?? 58)) * Math.PI) / 180);
 			gl.uniform1f(uniform('uZoom'), config.zoom ?? 1);
 			gl.uniform1f(uniform('uLighting'), config.lighting ?? 1);
-			if (config.interactive === false || still) return;
+			if (!waves || config.interactive === false || still) return;
 			/**
 			 * Drops a ring where the element is pressed.
 			 *
@@ -289,7 +327,7 @@ export function asciiRain(el, config) {
 		},
 		uniforms({ gl, uniform, canvas, still }, now) {
 			// The ripples follow the pointer while it is over the element.
-			const p = config.interactive !== false && !still && canHover() ? pointerIn(el) : null;
+			const p = waves && config.interactive !== false && !still && canHover() ? pointerIn(el) : null;
 			if (p?.inside) {
 				ptr.x += (p.x * canvas.width - ptr.x) * 0.15;
 				ptr.y += (p.y * canvas.height - ptr.y) * 0.15;
