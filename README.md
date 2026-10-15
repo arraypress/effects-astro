@@ -1,6 +1,6 @@
 # @arraypress/effects-astro
 
-Effects for Astro sites, as components: shader backgrounds, a real fluid, logos made of glass, particles or cubes, text that glitches, scrambles or types itself, glass panels and marquees: what makes a page look alive. Small UI pieces (countdowns, sliders, drop zones, tooltips) live in [`@arraypress/ui-astro`](https://github.com/arraypress/ui-astro); counters and drag-to-scroll in [`@arraypress/behaviors-astro`](https://github.com/arraypress/behaviors-astro). Plain WebGL, Canvas and CSS with no dependencies, and with the fallbacks a theme needs built in.
+Effects for Astro sites, as components: shader backgrounds, a real fluid, logos made of glass, particles or cubes, text that glitches, scrambles or types itself, glass panels and marquees: what makes a page look alive. Small UI pieces (countdowns, sliders, drop zones, tooltips) live in [`@arraypress/ui-astro`](https://github.com/LumiThemes/ui-astro); counters and drag-to-scroll in [`@arraypress/behaviors-astro`](https://github.com/arraypress/behaviors-astro). Plain WebGL, Canvas and CSS with no dependencies, and with the fallbacks a theme needs built in.
 
 ```astro
 ---
