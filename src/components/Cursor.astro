@@ -1,0 +1,97 @@
+---
+/**
+ * Cursor: a custom cursor for the whole page: a dot at the pointer and a
+ * ring that trails it. Over links, buttons and anything with
+ * `data-cursor` the ring swells, showing that element's `data-cursor`
+ * text as a label (`<a data-cursor="View">`). The system cursor stays; it
+ * is not hidden. Only with a mouse or trackpad; no trail with reduced
+ * motion. Place it once, in the layout. See src/runtime/cursor.js.
+ *
+ * @example
+ * <Cursor color="#ffffff" />
+ */
+import type { CursorConfig } from '../runtime/cursor.js';
+
+interface Props extends CursorConfig {
+	/** The dot's and ring's colour. Default white. */
+	color?: string;
+	/** The ring's size at rest, px. Default 32. */
+	size?: number;
+	/** Blend with the page: `difference` inverts what is under it, readable on any ground. Default `difference`. */
+	blend?: string;
+}
+
+const { color = '#ffffff', size = 32, blend = 'difference', ...config } = Astro.props;
+---
+
+<div
+	class="effect-cursor"
+	data-effect-cursor
+	data-effect-config={JSON.stringify(config)}
+	style={`--cursor-color: ${color}; --cursor-size: ${size}px; mix-blend-mode: ${blend}`}
+	aria-hidden="true"
+>
+	<span class="dot"></span>
+	<span class="ring"><span class="label"></span></span>
+</div>
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { cursor } from '../runtime/cursor.js';
+
+	mount('[data-effect-cursor]', cursor);
+</script>
+
+<style>
+	.effect-cursor {
+		position: fixed;
+		inset: 0;
+		z-index: 9999;
+		pointer-events: none;
+		opacity: 0;
+		transition: opacity 0.3s ease;
+	}
+	.effect-cursor:global(.is-active) {
+		opacity: 1;
+	}
+	.dot,
+	.ring {
+		position: absolute;
+		top: 0;
+		left: 0;
+		border-radius: 999px;
+	}
+	.dot {
+		width: 6px;
+		height: 6px;
+		margin: -3px 0 0 -3px;
+		background: var(--cursor-color);
+	}
+	.ring {
+		display: grid;
+		place-items: center;
+		width: var(--cursor-size);
+		height: var(--cursor-size);
+		margin: calc(var(--cursor-size) / -2) 0 0 calc(var(--cursor-size) / -2);
+		border: 1.5px solid var(--cursor-color);
+		transition:
+			width 0.25s ease,
+			height 0.25s ease,
+			margin 0.25s ease,
+			background-color 0.25s ease;
+	}
+	.effect-cursor:global(.is-over) .ring {
+		--cursor-size: 64px;
+		background: color-mix(in srgb, var(--cursor-color) 12%, transparent);
+	}
+	.effect-cursor:global(.is-down) .ring {
+		--cursor-size: 24px;
+	}
+	.label {
+		font: 600 10px/1 ui-sans-serif, system-ui, sans-serif;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--cursor-color);
+		white-space: nowrap;
+	}
+</style>

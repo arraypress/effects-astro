@@ -1,0 +1,37 @@
+---
+/**
+ * ParticleLogo: a logo or a word in thousands of twinkling particles that
+ * scatter and swirl round the pointer and tilt towards it, each dot
+ * fringed red and blue, over two slow blooms of colour.
+ * See src/runtime/particle-logo.js.
+ *
+ * Opaque: it is the whole background of what it fills (its nearest
+ * positioned ancestor, or the viewport with `fixed`). Without WebGL the
+ * `background` colour shows.
+ *
+ * @example
+ * <section class="hero" style="position: relative">
+ *   <ParticleLogo src="/logo.svg" />
+ *   <h1>Rewind <em>wild.</em></h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { ParticleLogoConfig } from '../runtime/particle-logo.js';
+
+interface Props extends ParticleLogoConfig {
+	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
+	fixed?: boolean;
+	class?: string;
+}
+
+const { fixed = false, class: className, ...config } = Astro.props;
+---
+
+<EffectCanvas name="particle-logo" config={config} fixed={fixed} class={className} behind background={config.background ?? '#030305'} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { particleLogo } from '../runtime/particle-logo.js';
+
+	mount('[data-effect-particle-logo]', particleLogo);
+</script>

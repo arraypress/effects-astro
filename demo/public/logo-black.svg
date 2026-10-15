@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="276 209.9 472 604.2" role="img" aria-label="LumiThemes">
+	<!-- The bare monogram from logo.svg, cropped to the glyph: for the page,
+	     where the ground is already dark and a tile would only add an edge.
+	     White on transparent, so it vanishes on a light ground by design. -->
+	<g fill="#000000">
+		<rect x="276" y="209.9" width="141.6" height="604.2"/>
+		<rect x="276" y="672.5" width="472" height="141.6"/>
+	</g>
+	<clipPath id="sun"><circle cx="644.2" cy="445.9" r="103.8"/></clipPath>
+	<g clip-path="url(#sun)" fill="#000000">
+		<rect x="540.3" y="342.1" width="207.7" height="95.5"/>
+		<rect x="540.3" y="445.1" width="207.7" height="31.1"/>
+		<rect x="540.3" y="491.1" width="207.7" height="22.4"/>
+		<rect x="540.3" y="536" width="207.7" height="13.8"/>
+	</g>
+</svg>

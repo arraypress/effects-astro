@@ -1,0 +1,74 @@
+---
+/**
+ * HighlightSweep: a marker-pen underline that sweeps in under a word,
+ * once, after the page has drawn. For the one phrase a headline turns on.
+ * CSS only; with reduced motion the underline is simply there.
+ *
+ * From the WaveGrid (SampleGrid) hero.
+ *
+ * @example
+ * <h1>Sell <HighlightSweep color="#c084fc">beats</HighlightSweep> online.</h1>
+ */
+
+interface Props {
+	/** The underline's colour. Default the text colour. */
+	color?: string;
+	/** How thick, em. Default 0.18. */
+	thickness?: number;
+	/** How strong, 0–1. Default 0.45. */
+	opacity?: number;
+	/** Seconds before it starts. Default 0.4. */
+	delay?: number;
+	/** Seconds the sweep takes. Default 1.6. */
+	duration?: number;
+	class?: string;
+}
+
+const { color = 'currentColor', thickness = 0.18, opacity = 0.45, delay = 0.4, duration = 1.6, class: className } = Astro.props;
+---
+
+<span
+	class:list={['effect-highlight', className]}
+	style={`--hl-color: ${color}; --hl-thickness: ${thickness}em; --hl-opacity: ${opacity}; --hl-delay: ${delay}s; --hl-duration: ${duration}s`}
+	><slot /></span
+>
+
+<style>
+	.effect-highlight {
+		position: relative;
+		display: inline-block;
+		/* Its own layer, so the underline (z-index -1) sits behind the word, not the page. */
+		isolation: isolate;
+	}
+	.effect-highlight::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		bottom: 0.08em;
+		width: 100%;
+		height: var(--hl-thickness);
+		border-radius: 2px;
+		background: linear-gradient(
+			90deg,
+			color-mix(in srgb, var(--hl-color) 30%, transparent),
+			var(--hl-color) 50%,
+			color-mix(in srgb, var(--hl-color) 30%, transparent)
+		);
+		opacity: var(--hl-opacity);
+		transform-origin: left;
+		transform: scaleX(0);
+		animation: effect-highlight-sweep var(--hl-duration) cubic-bezier(0.65, 0, 0.35, 1) var(--hl-delay) forwards;
+		z-index: -1;
+	}
+	@keyframes effect-highlight-sweep {
+		to {
+			transform: scaleX(1);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.effect-highlight::after {
+			animation: none;
+			transform: none;
+		}
+	}
+</style>

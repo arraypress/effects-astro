@@ -1,0 +1,218 @@
+/* ─────────────────────────────────────────────────────────────────────
+ * @arraypress/effects-astro/motion.css
+ *
+ * Small motions for the moments a shop has: classes to put on your own
+ * elements. Each stops or settles with prefers-reduced-motion.
+ *
+ *   .fx-pulse-ring     a ring pulsing out from a round button while
+ *                      something plays (`--fx-color`).
+ *   .fx-heartbeat      a double pump when `.is-active` is added (a
+ *                      wishlist heart being filled).
+ *   .fx-bump           a quick swell when `.is-bumped` is added (a cart
+ *                      count going up); `bump(el)` from the package
+ *                      replays it.
+ *   .fx-shimmer        a loading shimmer for placeholders.
+ *   .fx-pulse, .fx-wiggle, .fx-shake
+ *                      attention, now and then: a glow ring, a small
+ *                      wiggle, a shake (a link to look at first).
+ *   .fx-settle         children grow up into place with an overshoot,
+ *                      one after another (bars of a logo, a chart).
+ *   .fx-live           a status dot breathing a glow: available, online,
+ *                      live (`--fx-color`, default green).
+ *
+ * From the WaveGrid, SellGrid and LinkGrid themes, and David Sherlock's site.
+ * ───────────────────────────────────────────────────────────────────── */
+
+.fx-pulse-ring {
+	position: relative;
+}
+.fx-pulse-ring::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: 50%;
+	border: 2px solid var(--fx-color, currentColor);
+	pointer-events: none;
+	animation: fx-pulse-ring 1.6s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+}
+@keyframes fx-pulse-ring {
+	from {
+		transform: scale(1);
+		opacity: 0.7;
+	}
+	to {
+		transform: scale(1.7);
+		opacity: 0;
+	}
+}
+
+.fx-heartbeat.is-active {
+	transform-origin: center;
+	animation: fx-heartbeat 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes fx-heartbeat {
+	18% {
+		transform: scale(1.35);
+	}
+	34% {
+		transform: scale(0.92);
+	}
+	50% {
+		transform: scale(1.18);
+	}
+	68% {
+		transform: scale(0.98);
+	}
+}
+
+.fx-bump.is-bumped {
+	animation: fx-bump 0.35s ease-out;
+}
+@keyframes fx-bump {
+	40% {
+		transform: scale(1.3);
+	}
+}
+
+.fx-shimmer {
+	background: linear-gradient(
+		90deg,
+		color-mix(in srgb, currentColor 6%, transparent) 25%,
+		color-mix(in srgb, currentColor 14%, transparent) 50%,
+		color-mix(in srgb, currentColor 6%, transparent) 75%
+	);
+	background-size: 200% 100%;
+	animation: fx-shimmer 1.4s ease-in-out infinite;
+}
+@keyframes fx-shimmer {
+	from {
+		background-position: 200% 0;
+	}
+	to {
+		background-position: -200% 0;
+	}
+}
+
+.fx-pulse {
+	animation: fx-pulse 2s ease-in-out infinite;
+}
+@keyframes fx-pulse {
+	0%,
+	100% {
+		box-shadow: 0 0 0 0 color-mix(in srgb, var(--fx-color, currentColor) 55%, transparent);
+	}
+	50% {
+		box-shadow: 0 0 0 8px transparent;
+	}
+}
+.fx-wiggle {
+	animation: fx-wiggle 2.6s ease-in-out infinite;
+}
+@keyframes fx-wiggle {
+	0%,
+	92%,
+	100% {
+		transform: rotate(0);
+	}
+	94% {
+		transform: rotate(-1.2deg);
+	}
+	96% {
+		transform: rotate(1.2deg);
+	}
+	98% {
+		transform: rotate(-0.6deg);
+	}
+}
+.fx-shake {
+	animation: fx-shake 3s ease-in-out infinite;
+}
+@keyframes fx-shake {
+	0%,
+	90%,
+	100% {
+		transform: translateX(0);
+	}
+	92% {
+		transform: translateX(-4px);
+	}
+	94% {
+		transform: translateX(4px);
+	}
+	96% {
+		transform: translateX(-3px);
+	}
+	98% {
+		transform: translateX(2px);
+	}
+}
+
+.fx-settle > * {
+	transform-origin: bottom;
+	animation: fx-settle 0.62s cubic-bezier(0.2, 0.85, 0.25, 1) both;
+}
+.fx-settle > :nth-child(2) {
+	animation-delay: 55ms;
+}
+.fx-settle > :nth-child(3) {
+	animation-delay: 110ms;
+}
+.fx-settle > :nth-child(4) {
+	animation-delay: 165ms;
+}
+.fx-settle > :nth-child(5) {
+	animation-delay: 220ms;
+}
+.fx-settle > :nth-child(n + 6) {
+	animation-delay: 275ms;
+}
+@keyframes fx-settle {
+	0% {
+		transform: scaleY(0.18);
+		opacity: 0.55;
+	}
+	58% {
+		transform: scaleY(1.14);
+	}
+	100% {
+		transform: scaleY(1);
+		opacity: 1;
+	}
+}
+
+.fx-live {
+	display: inline-block;
+	flex-shrink: 0;
+	width: 0.6em;
+	height: 0.6em;
+	border-radius: 50%;
+	background: var(--fx-color, #10b981);
+	vertical-align: middle;
+	animation: fx-live 2s ease-in-out infinite;
+}
+@keyframes fx-live {
+	0%,
+	100% {
+		box-shadow: 0 0 0 0 color-mix(in srgb, var(--fx-color, #10b981) 50%, transparent);
+	}
+	50% {
+		box-shadow: 0 0 0 0.6em color-mix(in srgb, var(--fx-color, #10b981) 0%, transparent);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.fx-pulse-ring::after,
+	.fx-heartbeat.is-active,
+	.fx-bump.is-bumped,
+	.fx-shimmer,
+	.fx-pulse,
+	.fx-wiggle,
+	.fx-shake,
+	.fx-settle > *,
+	.fx-live {
+		animation: none;
+	}
+	.fx-live {
+		box-shadow: 0 0 0 0.2em color-mix(in srgb, var(--fx-color, #10b981) 25%, transparent);
+	}
+}

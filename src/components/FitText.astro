@@ -1,0 +1,35 @@
+---
+/**
+ * FitText: one line of text sized to exactly span its parent's content
+ * width, whatever the text and the window. See src/runtime/fit-text.js.
+ * Give it a CSS font-size as the fallback without script.
+ *
+ * @example
+ * <FitText as="div" class="wordmark">Northwave</FitText>
+ */
+import type { HTMLTag } from 'astro/types';
+
+interface Props {
+	/** The element to render. Default `div`. */
+	as?: HTMLTag;
+	class?: string;
+	[attribute: string]: unknown;
+}
+
+const { as: Tag = 'div', class: className, ...attributes } = Astro.props;
+---
+
+<Tag class:list={['effect-fit-text', className]} data-fit-text {...attributes}><slot /></Tag>
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { fitText } from '../runtime/fit-text.js';
+
+	mount('[data-fit-text]', fitText);
+</script>
+
+<style>
+	.effect-fit-text {
+		white-space: nowrap;
+	}
+</style>

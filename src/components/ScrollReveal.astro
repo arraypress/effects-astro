@@ -1,0 +1,38 @@
+---
+/**
+ * ScrollReveal: scroll reveal for a whole site by class. Put it once in
+ * the layout, then `class="fade-in-up"` (or any reveal.css class: fades,
+ * slides, zooms, flips, `blur-in`) on anything that should arrive as it
+ * scrolls into view. Survives view transitions; everything shows without
+ * JavaScript and with reduced motion. For one element, or word by word,
+ * use `<Reveal>`. See src/runtime/scroll-reveal.js.
+ *
+ * Replaces the reveal-astro package: the same classes and props.
+ *
+ * @example
+ * <ScrollReveal />
+ * <section class="fade-in-up">…</section>
+ * <div class="zoom-in" style="--reveal-delay: 0.1s">…</div>
+ */
+import '../styles/reveal.css';
+import type { ScrollRevealConfig } from '../runtime/scroll-reveal.js';
+
+interface Props extends ScrollRevealConfig {}
+
+const config = Astro.props;
+---
+
+<script is:inline type="application/json" data-effect-scroll-reveal set:html={JSON.stringify(config)} />
+
+<script>
+	import { scrollReveal } from '../runtime/scroll-reveal.js';
+
+	/** Starts (or restarts) the reveal with the settings the layout gave. */
+	const run = () => {
+		const settings = document.querySelector('[data-effect-scroll-reveal]');
+		scrollReveal(settings?.textContent ? JSON.parse(settings.textContent) : {});
+	};
+	document.addEventListener('astro:page-load', run);
+	if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, { once: true });
+	else run();
+</script>

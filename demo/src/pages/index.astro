@@ -1,0 +1,6 @@
+---
+/** The demo's index: a link to each effect's page. */
+const pages = ['light-field', 'ink', 'ascii-rain', 'glass-glyph', 'fluted-glass', 'particle-logo', 'point-cloud', 'voxel-logo', 'wordmarks', 'dot-grid', 'waves', 'light', 'ui', 'text', 'dropzone', 'world-routes', 'numbers', 'timeline', 'scroll-reveal', 'paper', 'backdrop'];
+---
+<html><head><meta charset="utf-8"><title>effects-astro demo</title></head>
+<body style="font-family: system-ui"><h1>@arraypress/effects-astro</h1><ul>{pages.map((p) => <li><a href={`/${p}`}>{p}</a></li>)}</ul></body></html>

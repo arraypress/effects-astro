@@ -1,0 +1,56 @@
+---
+/**
+ * ScrollProgress: a thin bar along the top of the window that fills as the
+ * page is read. Decoration (`aria-hidden`); the scroll position is not
+ * news. See src/runtime/scroll-chrome.js.
+ *
+ * @example
+ * <ScrollProgress color="#a78bfa" />
+ */
+
+interface Props {
+	/** The bar's colour. Default the text colour. */
+	color?: string;
+	/** Its thickness, CSS length. Default `3px`. */
+	height?: string;
+	/** Where it sits. Default `top`. */
+	position?: 'top' | 'bottom';
+	class?: string;
+}
+
+const { color = 'currentColor', height = '3px', position = 'top', class: className } = Astro.props;
+---
+
+<div
+	class:list={['effect-scroll-progress', `at-${position}`, className]}
+	style={`--bar-color: ${color}; --bar-height: ${height}`}
+	data-effect-scroll-progress
+	aria-hidden="true"
+>
+</div>
+
+<script>
+	import { scrollChrome } from '../runtime/scroll-chrome.js';
+
+	scrollChrome();
+</script>
+
+<style>
+	.effect-scroll-progress {
+		position: fixed;
+		left: 0;
+		right: 0;
+		z-index: 60;
+		height: var(--bar-height);
+		background: var(--bar-color);
+		transform-origin: left;
+		transform: scaleX(var(--progress, 0));
+		pointer-events: none;
+	}
+	.at-top {
+		top: 0;
+	}
+	.at-bottom {
+		bottom: 0;
+	}
+</style>

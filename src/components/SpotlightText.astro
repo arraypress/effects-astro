@@ -1,0 +1,102 @@
+---
+/**
+ * SpotlightText: one line of text as a hollow outline that a soft light
+ * under the pointer fills in. See src/runtime/spotlight.js.
+ *
+ * Two fills:
+ *   - `dodge` (default, for light text on a dark or colourful background):
+ *     the lit letters show what is behind them, brightened, as light
+ *     through glass. Blends with what is behind, so no ancestor between
+ *     the text and the background may form a stacking context (no
+ *     z-index, opacity, transform, filter or isolation on the way).
+ *   - `solid`: the lit letters fill with the text colour.
+ *
+ * With `fit`, the text is sized to span its parent's width (a footer
+ * wordmark). Any other attribute is passed to the element.
+ *
+ * @example
+ * <SpotlightText as="div" class="wordmark" aria-hidden="true">LumiThemes</SpotlightText>
+ */
+import type { HTMLTag } from 'astro/types';
+import type { SpotlightConfig } from '../runtime/spotlight.js';
+
+interface Props extends SpotlightConfig {
+	/** The element to render. Default `span`. */
+	as?: HTMLTag;
+	/** The outline's width. Default `1.5px`. */
+	stroke?: string;
+	/** How the lit letters fill. Default `dodge`. */
+	fill?: 'dodge' | 'solid';
+	/** Size the text to span its parent's width. Default false. */
+	fit?: boolean;
+	class?: string;
+	[attribute: string]: unknown;
+}
+
+const { as: Tag = 'span', radius, reach, stroke = '1.5px', fill = 'dodge', fit = false, class: className, ...attributes } = Astro.props;
+---
+
+<Tag
+	class:list={['effect-spotlight', className]}
+	data-effect-spotlight
+	data-effect-config={JSON.stringify({ radius, reach })}
+	data-fill={fill}
+	data-fit-text={fit ? '' : undefined}
+	style={`--spot-stroke: ${stroke}`}
+	{...attributes}
+>
+	<slot />
+</Tag>
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { spotlight } from '../runtime/spotlight.js';
+	import { fitText } from '../runtime/fit-text.js';
+
+	mount('[data-fit-text]', fitText);
+	mount('[data-effect-spotlight]', spotlight);
+</script>
+
+<style>
+	.effect-spotlight {
+		position: relative;
+		/* The outline at rest. Fill hidden with the FILL colour, so `color`
+		   still sets the ink. */
+		-webkit-text-fill-color: transparent;
+		-webkit-text-stroke: var(--spot-stroke) currentColor;
+	}
+	/* The light: the text again, solid, masked to a soft circle under the
+	   pointer. Nothing shows until the script moves it. */
+	.effect-spotlight::before,
+	.effect-spotlight::after {
+		content: attr(data-text);
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		-webkit-text-stroke: 0;
+		--spot: radial-gradient(
+			circle var(--spot-r, 0px) at var(--spot-x, 50%) var(--spot-y, 50%),
+			#000,
+			rgb(0 0 0 / 0.6) 35%,
+			transparent
+		);
+		-webkit-mask-image: var(--spot);
+		mask-image: var(--spot);
+	}
+	/* Dodge: a dodge brightens the colour behind without washing it out, and
+	   a faint white over it keeps the letters readable where it is dark. */
+	.effect-spotlight[data-fill='dodge']::before {
+		-webkit-text-fill-color: rgb(150 150 150);
+		mix-blend-mode: color-dodge;
+	}
+	.effect-spotlight[data-fill='dodge']::after {
+		-webkit-text-fill-color: rgb(255 255 255 / 0.16);
+		mix-blend-mode: plus-lighter;
+	}
+	.effect-spotlight[data-fill='solid']::before {
+		-webkit-text-fill-color: currentColor;
+	}
+	.effect-spotlight[data-fill='solid']::after {
+		content: none;
+	}
+</style>

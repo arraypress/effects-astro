@@ -1,0 +1,66 @@
+---
+/**
+ * Typewriter: types phrases one after another behind a blinking caret,
+ * deleting each before the next. "Sell beats / sample packs / presets."
+ * Screen readers get the phrases as a list once, not a stream of letters;
+ * with reduced motion the first phrase simply shows. See
+ * src/runtime/text-motion.js.
+ *
+ * @example
+ * <h1>Sell <Typewriter phrases={['beats', 'sample packs', 'presets']} /> online.</h1>
+ */
+import type { TypewriterConfig } from '../runtime/text-motion.js';
+
+interface Props extends TypewriterConfig {
+	/** The caret's colour. Default the text colour. */
+	caret?: string;
+	class?: string;
+}
+
+const { caret = 'currentColor', class: className, ...config } = Astro.props;
+---
+
+<span class:list={['effect-typewriter', className]} data-effect-typewriter data-effect-config={JSON.stringify(config)} style={`--caret: ${caret}`}>
+	<span class="sr-only">{config.phrases.join(', ')}</span>
+	<span class="typed" data-typed aria-hidden="true">{config.phrases[0]}</span><span class="caret" aria-hidden="true"></span>
+</span>
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { typewriter } from '../runtime/text-motion.js';
+
+	mount('[data-effect-typewriter]', typewriter);
+</script>
+
+<style>
+	.effect-typewriter {
+		white-space: nowrap;
+	}
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+	.caret {
+		display: inline-block;
+		width: 0.08em;
+		height: 1em;
+		margin-left: 0.06em;
+		vertical-align: -0.1em;
+		background: var(--caret);
+		animation: effect-caret 1s steps(1) infinite;
+	}
+	@keyframes effect-caret {
+		50% {
+			opacity: 0;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.caret {
+			animation: none;
+		}
+	}
+</style>

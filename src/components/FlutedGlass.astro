@@ -1,0 +1,36 @@
+---
+/**
+ * FlutedGlass: a pane of slanted fluted glass over soft blooms of colour,
+ * the main one following the pointer. Each rib bends what is behind it and
+ * fringes it with a thin rainbow. See src/runtime/fluted-glass.js.
+ *
+ * Opaque: it is the whole background of what it fills (its nearest
+ * positioned ancestor, or the viewport with `fixed`). Without WebGL the
+ * `background` colour shows.
+ *
+ * @example
+ * <section class="hero" style="position: relative">
+ *   <FlutedGlass colors={['#4f46e5', '#a78bfa', '#f0abfc']} />
+ *   <h1>Brands seen through <em>a different light.</em></h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { FlutedGlassConfig } from '../runtime/fluted-glass.js';
+
+interface Props extends FlutedGlassConfig {
+	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
+	fixed?: boolean;
+	class?: string;
+}
+
+const { fixed = false, class: className, ...config } = Astro.props;
+---
+
+<EffectCanvas name="fluted-glass" config={config} fixed={fixed} class={className} behind background={config.background ?? '#f4f4f5'} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { flutedGlass } from '../runtime/fluted-glass.js';
+
+	mount('[data-effect-fluted-glass]', flutedGlass);
+</script>

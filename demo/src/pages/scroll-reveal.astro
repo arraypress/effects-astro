@@ -1,0 +1,7 @@
+---
+import ScrollReveal from '@arraypress/effects-astro/ScrollReveal.astro';
+const kinds = ['fade-in', 'fade-in-up', 'fade-in-down', 'fade-in-left', 'fade-in-right', 'slide-in-up', 'slide-in-down', 'slide-in-left', 'slide-in-right', 'zoom-in', 'zoom-out', 'flip-up', 'flip-down', 'flip-left', 'flip-right', 'blur-in'];
+---
+<html><head><meta charset="utf-8"><title>scroll-reveal</title>
+<style>html{background:#0b0b0e}body{margin:0;color:#e5e5e5;font-family:system-ui}main{max-width:900px;margin:0 auto;padding:40px 24px 60vh;display:grid;grid-template-columns:repeat(2,1fr);gap:24px}.card{height:200px;border-radius:14px;background:linear-gradient(160deg,#7c3aed,#111);display:grid;place-items:center;font:600 18px ui-monospace,monospace}h1{grid-column:1/-1}</style></head>
+<body><ScrollReveal /><main><h1 class="fade-in-up">Scroll down</h1>{kinds.map((k, i) => <div class={`card ${k}`} style={`--reveal-delay:${(i % 2) * 0.08}s`}>.{k}</div>)}</main></body></html>

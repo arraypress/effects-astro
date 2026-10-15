@@ -1,0 +1,236 @@
+---
+/**
+ * Dropzone: a file drop target that looks alive. A light circles its
+ * edge, another runs along its top and a glow breathes inside; dragging
+ * files over lifts it, and a drop that nothing is accepted from shakes
+ * it. Set `data-busy` on it while the files are processed and a scanning
+ * line sweeps down over the `busy` slot. Clicking or pressing Enter opens
+ * the file picker; dropped files land in the same input and fire its
+ * `change`, so it works inside a form. See src/runtime/dropzone.js.
+ *
+ * From the Statement Buster site.
+ *
+ * @example
+ * <Dropzone name="statement" accept=".csv,.pdf" color="#f43f5e">
+ *   <strong>Drop your statement</strong> or click to choose
+ *   <span slot="busy">Scanning…</span>
+ * </Dropzone>
+ */
+import '../styles/border-sweep.css';
+
+interface Props {
+	/** The input's name, for forms. */
+	name?: string;
+	/** File types taken, as for an input's `accept` (`.csv,.pdf`, `image/*`). Default anything. */
+	accept?: string;
+	/** Take several files. Default false. */
+	multiple?: boolean;
+	/** The lights' colour. Default the text colour. */
+	color?: string;
+	/** Start busy (scanning). Default false. */
+	busy?: boolean;
+	/** Disable it. Default false. */
+	disabled?: boolean;
+	/** The input's accessible label, when the visible text is not enough. */
+	label?: string;
+	class?: string;
+	[attribute: string]: unknown;
+}
+
+const { name, accept, multiple = false, color, busy = false, disabled = false, label, class: className, ...attributes } = Astro.props;
+---
+
+<label
+	class:list={['effect-dropzone', 'sweep-ring', 'sweep-ring--always', className]}
+	style={color ? `--dropzone-color: ${color}` : undefined}
+	data-effect-dropzone
+	data-busy={busy ? '' : undefined}
+	{...attributes}
+>
+	<input type="file" name={name} accept={accept} multiple={multiple} disabled={disabled} aria-label={label} />
+	<span class="glow" aria-hidden="true"></span>
+	<span class="beam" aria-hidden="true"></span>
+	<span class="content"><slot /></span>
+	<span class="busy" aria-live="polite"><slot name="busy" /></span>
+</label>
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { dropzone } from '../runtime/dropzone.js';
+
+	mount('[data-effect-dropzone]', dropzone);
+</script>
+
+<style>
+	.effect-dropzone {
+		--sweep-color: var(--dropzone-color, currentColor);
+		--sweep-width: 1.5px;
+		--sweep-speed: 3s;
+		position: relative;
+		display: grid;
+		place-items: center;
+		min-height: 12rem;
+		padding: 3rem 2rem;
+		overflow: hidden;
+		border-radius: 20px;
+		background: color-mix(in srgb, var(--dropzone-color, currentColor) 4%, transparent);
+		text-align: center;
+		cursor: pointer;
+		transition:
+			translate 0.3s ease,
+			scale 0.3s ease,
+			background 0.3s ease;
+	}
+	/* The resting edge, under the travelling light. */
+	.effect-dropzone::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border: 1px solid color-mix(in srgb, var(--dropzone-color, currentColor) 16%, transparent);
+		border-radius: inherit;
+		pointer-events: none;
+	}
+	.effect-dropzone:hover {
+		translate: 0 -3px;
+		background: color-mix(in srgb, var(--dropzone-color, currentColor) 7%, transparent);
+	}
+	.effect-dropzone[data-state='over'] {
+		--sweep-speed: 1.2s;
+		scale: 1.01;
+		background: color-mix(in srgb, var(--dropzone-color, currentColor) 10%, transparent);
+	}
+	.effect-dropzone[data-state='rejected'] {
+		animation: effect-dropzone-reject 0.45s ease;
+	}
+	.effect-dropzone:has(input:disabled) {
+		opacity: 0.55;
+		cursor: not-allowed;
+		pointer-events: none;
+	}
+	.effect-dropzone:has(input:focus-visible) {
+		outline: 2px solid var(--dropzone-color, currentColor);
+		outline-offset: 3px;
+	}
+
+	/* Hidden, but still focusable and announced. */
+	input {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	.glow {
+		position: absolute;
+		inset: 0;
+		background: radial-gradient(ellipse at center, color-mix(in srgb, var(--dropzone-color, currentColor) 18%, transparent), transparent 70%);
+		opacity: 0;
+		animation: effect-dropzone-breathe 3s ease-in-out infinite;
+		pointer-events: none;
+	}
+	[data-state='over'] .glow {
+		opacity: 1;
+		animation: none;
+	}
+
+	/* At rest a short light runs to and fro along the top edge. */
+	.beam {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 50%;
+		height: 2px;
+		background: linear-gradient(90deg, transparent, var(--dropzone-color, currentColor), transparent);
+		box-shadow: 0 0 14px 2px color-mix(in srgb, var(--dropzone-color, currentColor) 45%, transparent);
+		animation: effect-dropzone-run 2.5s ease-in-out infinite;
+		pointer-events: none;
+	}
+	/* Busy, it becomes a scanning line passing down over the whole zone. */
+	[data-busy] .beam {
+		left: 6%;
+		width: 88%;
+		box-shadow:
+			0 0 14px 2px color-mix(in srgb, var(--dropzone-color, currentColor) 50%, transparent),
+			0 -2.5rem 3rem -1rem color-mix(in srgb, var(--dropzone-color, currentColor) 18%, transparent);
+		animation: effect-dropzone-scan 1.6s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+	}
+
+	.content,
+	.busy {
+		position: relative;
+		grid-area: 1 / 1;
+		transition:
+			opacity 0.3s ease,
+			translate 0.3s ease;
+	}
+	.busy {
+		opacity: 0;
+		translate: 0 0.5rem;
+		pointer-events: none;
+	}
+	[data-busy] .content {
+		opacity: 0;
+		translate: 0 -0.5rem;
+	}
+	[data-busy] .busy {
+		opacity: 1;
+		translate: 0 0;
+	}
+	[data-busy] {
+		cursor: progress;
+	}
+
+	@keyframes effect-dropzone-reject {
+		20%,
+		60% {
+			translate: -6px 0;
+		}
+		40%,
+		80% {
+			translate: 6px 0;
+		}
+	}
+	@keyframes effect-dropzone-breathe {
+		50% {
+			opacity: 0.7;
+		}
+	}
+	@keyframes effect-dropzone-run {
+		0%,
+		100% {
+			translate: -100% 0;
+		}
+		50% {
+			translate: 200% 0;
+		}
+	}
+	@keyframes effect-dropzone-scan {
+		from {
+			top: 0;
+		}
+		to {
+			top: calc(100% - 2px);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.effect-dropzone,
+		.content,
+		.busy {
+			transition: none;
+		}
+		.glow,
+		.beam {
+			animation: none;
+		}
+		.beam {
+			left: 0;
+			width: 100%;
+			opacity: 0.6;
+		}
+		.glow {
+			opacity: 0.5;
+		}
+	}
+</style>

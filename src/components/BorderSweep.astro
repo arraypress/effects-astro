@@ -1,0 +1,38 @@
+---
+/**
+ * BorderSweep: a light travelling round an element's outline, on hover
+ * and focus or (`always`) all the time. A wrapper for `class="sweep-ring"`
+ * from border-sweep.css; for elements you render yourself, import
+ * `@arraypress/effects-astro/border-sweep.css` and add the class.
+ *
+ * Suits outlined things: cards, ghost buttons, a featured pricing tier. A
+ * filled button has no outline for the light to travel.
+ *
+ * @example
+ * <BorderSweep as="a" href="/pricing" class="card" color="#a5b4fc" always>…</BorderSweep>
+ */
+import type { HTMLTag } from 'astro/types';
+import '../styles/border-sweep.css';
+
+interface Props {
+	/** The element to render. Default `div`. */
+	as?: HTMLTag;
+	/** The light's colour. Default the text colour. */
+	color?: string;
+	/** Seconds a lap takes. Default 2.6. */
+	speed?: number;
+	/** The ring's width, px. Default 1. */
+	width?: number;
+	/** Run all the time, not only on hover. Default false. */
+	always?: boolean;
+	class?: string;
+	[attribute: string]: unknown;
+}
+
+const { as: Tag = 'div', color, speed, width, always = false, class: className, ...attributes } = Astro.props;
+const style = [color && `--sweep-color: ${color}`, speed !== undefined && `--sweep-speed: ${speed}s`, width !== undefined && `--sweep-width: ${width}px`]
+	.filter(Boolean)
+	.join('; ');
+---
+
+<Tag class:list={['sweep-ring', { 'sweep-ring--always': always }, className]} style={style || undefined} {...attributes}><slot /></Tag>

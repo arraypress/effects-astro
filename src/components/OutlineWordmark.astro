@@ -1,0 +1,175 @@
+---
+/**
+ * OutlineWordmark: a name at enormous scale, drawn as one outline, cropped
+ * so it sinks out of the bottom of the page, with a bright beam travelling
+ * through the letters. A page's closing mark: it ends on the brand rather
+ * than trailing off after the last link column, and as an outline it reads
+ * as texture rather than a second logo.
+ *
+ * The outline comes from an SVG filter, not `-webkit-text-stroke`: text-stroke
+ * outlines every glyph separately, so tightly tracked letters show both
+ * outlines crossing. Filling the text, eroding a copy and subtracting it
+ * leaves the edge of the merged shape, one silhouette for the whole word
+ * (counters still outline). The beam is a second copy, masked to a moving
+ * band, since a gradient fill would not survive the filter.
+ *
+ * Sized in container units, so it spans its own box whatever the name's
+ * length. Decoration: hidden from assistive technology (the name should be
+ * real text elsewhere on the page). The beam stops for reduced motion;
+ * without SVG filters a faint solid fill shows.
+ *
+ * From the ArrayPress theme's footer.
+ *
+ * @example
+ * <OutlineWordmark text="ArrayPress" color="var(--accent)" />
+ */
+
+interface Props {
+	/** The name. */
+	text: string;
+	/** The colour of the outline and the beam. Default `currentColor`. */
+	color?: string;
+	/** Share of the glyph height left showing, 0–1. Default 0.68. */
+	crop?: number;
+	/** Type size, as a share of the box's width (18 is 18% of it). Default 18. */
+	size?: number;
+	/** The outline's width, px. Default 2. */
+	stroke?: number;
+	/** How strong the resting outline is, 0–1. Default 0.42. */
+	opacity?: number;
+	/** The travelling beam. Default true. */
+	beam?: boolean;
+	/** Seconds the beam takes to cross. Default 5.5. */
+	speed?: number;
+	/** Letter spacing, em. Default -0.02. */
+	tracking?: number;
+	/** CSS font-family. Default inherited. */
+	font?: string;
+	/** CSS font-weight. Default 700. */
+	weight?: number | string;
+	class?: string;
+}
+
+const {
+	text,
+	color = 'currentColor',
+	crop = 0.68,
+	size = 18,
+	stroke = 2,
+	opacity = 0.42,
+	beam = true,
+	speed = 5.5,
+	tracking = -0.02,
+	font = 'inherit',
+	weight = 700,
+	class: className,
+} = Astro.props;
+
+// One filter a wordmark, so two on a page do not share a stroke width.
+const id = `effect-outline-${Math.random().toString(36).slice(2, 9)}`;
+const vars = [
+	`--ow-color: ${color}`,
+	`--ow-crop: ${crop}`,
+	`--ow-size: ${size}cqw`,
+	`--ow-opacity: ${opacity}`,
+	`--ow-speed: ${speed}s`,
+	`--ow-tracking: ${tracking}em`,
+	`--ow-font: ${font}`,
+	`--ow-weight: ${weight}`,
+	`--ow-filter: url(#${id})`,
+].join('; ');
+---
+
+<div class:list={['effect-outline-wordmark', className]} aria-hidden="true" style={vars}>
+	<svg class="defs" aria-hidden="true" focusable="false">
+		<filter id={id} x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">
+			<feMorphology operator="erode" radius={stroke} result="inner" />
+			<feComposite in="SourceGraphic" in2="inner" operator="out" />
+		</filter>
+	</svg>
+	<div class="crop">
+		<span class="word">{text}</span>
+		{
+			beam && (
+				<span class="beam">
+					<span class="word">{text}</span>
+				</span>
+			)
+		}
+	</div>
+</div>
+
+<style>
+	.effect-outline-wordmark {
+		width: 100%;
+		pointer-events: none;
+		user-select: none;
+		/* `cqw` below resolves against this box; the crop lives on a child,
+		   since an element cannot use its own container units. */
+		container-type: inline-size;
+	}
+	.defs {
+		position: absolute;
+		width: 0;
+		height: 0;
+	}
+	.crop {
+		position: relative;
+		overflow: hidden;
+		line-height: 0.78;
+		max-height: calc(var(--ow-size) * var(--ow-crop));
+		/* Fading out rather than stopping on a hard cut, so the crop reads
+		   as the mark sinking out of the page, not a clipping bug. */
+		-webkit-mask-image: linear-gradient(to bottom, #000 42%, rgb(0 0 0 / 0.35) 78%, transparent 100%);
+		mask-image: linear-gradient(to bottom, #000 42%, rgb(0 0 0 / 0.35) 78%, transparent 100%);
+	}
+	.word {
+		display: block;
+		font-family: var(--ow-font);
+		font-size: var(--ow-size);
+		font-weight: var(--ow-weight);
+		letter-spacing: var(--ow-tracking);
+		text-align: center;
+		white-space: nowrap;
+		/* Without the filter this is what paints: faint, not a solid block. */
+		color: color-mix(in srgb, var(--ow-color) 10%, transparent);
+	}
+	@supports (filter: url(#x)) {
+		.word {
+			/* Fully opaque, faded with opacity after: the filter subtracts the
+			   eroded copy, and only an opaque source subtracts to nothing. */
+			color: var(--ow-color);
+			filter: var(--ow-filter);
+			opacity: var(--ow-opacity);
+		}
+	}
+	.beam {
+		position: absolute;
+		inset: 0;
+	}
+	.beam .word {
+		opacity: 1;
+		-webkit-mask-image: linear-gradient(100deg, transparent 42%, #000 48%, #000 52%, transparent 58%);
+		mask-image: linear-gradient(100deg, transparent 42%, #000 48%, #000 52%, transparent 58%);
+		-webkit-mask-size: 320% 100%;
+		mask-size: 320% 100%;
+		-webkit-mask-repeat: no-repeat;
+		mask-repeat: no-repeat;
+		animation: effect-outline-beam var(--ow-speed) linear infinite;
+	}
+	@keyframes effect-outline-beam {
+		from {
+			-webkit-mask-position: -110% 0;
+			mask-position: -110% 0;
+		}
+		to {
+			-webkit-mask-position: 210% 0;
+			mask-position: 210% 0;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.beam {
+			display: none;
+		}
+	}
+</style>

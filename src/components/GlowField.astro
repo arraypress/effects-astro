@@ -1,0 +1,111 @@
+---
+/**
+ * GlowField: a still light laid over a section's background, or over a
+ * shader: a hard light source above an organic wash, so a headline has
+ * something to sit in. Pure CSS gradients, so it costs nothing on the GPU
+ * and cannot fail to start.
+ *
+ * Variants:
+ *   - `bloom`: a soft ellipse of light high on the section. The safe default.
+ *   - `beam`: a spotlight cone from the top edge with a hot origin; wants a
+ *     short headline under it.
+ *   - `horizon`: a bright band along the top edge, like a light just out of
+ *     frame. Suits a grid or waves underneath.
+ *   - `wash`: a diagonal tint from one corner fading into the ground.
+ *
+ * On a dark ground the light adds (`screen`). On a light one a coloured
+ * light would read as a stain, so `tone="light"` multiplies instead, at
+ * about a fifth of the strength. Fills its nearest positioned ancestor;
+ * put it before the content, which needs to sit above it. Static: nothing
+ * animates.
+ *
+ * From the AgentGrid and LinkGrid themes.
+ *
+ * @example
+ * <section class="hero" style="position: relative">
+ *   <GlowField variant="beam" color="#a5b4fc" />
+ *   <h1>…</h1>
+ * </section>
+ */
+
+interface Props {
+	/** The shape of the light. Default `bloom`. */
+	variant?: 'bloom' | 'beam' | 'horizon' | 'wash';
+	/** The light's colour. Default white. */
+	color?: string;
+	/** A multiplier on its strength; 1 as designed. Default 1. */
+	intensity?: number;
+	/** The ground it is on: `dark` adds light, `light` shades. Default `dark`. */
+	tone?: 'dark' | 'light';
+	/** Where across the top the light comes from, 0–100 (%). Default 50. */
+	x?: number;
+	class?: string;
+}
+
+const { variant = 'bloom', color = '#ffffff', intensity = 1, tone = 'dark', x = 50, class: className } = Astro.props;
+// Light on a light ground is a fifth as strong: see the docblock.
+const scale = intensity * (tone === 'light' ? 0.2 : 1);
+---
+
+<div
+	class:list={['effect-glow-field', `is-${variant}`, `on-${tone}`, className]}
+	style={`--glow-color: ${color}; --glow-scale: ${scale}; --glow-x: ${x}%`}
+	aria-hidden="true"
+>
+</div>
+
+<style>
+	.effect-glow-field {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		--glow-core: calc(42% * var(--glow-scale));
+		--glow-halo: calc(16% * var(--glow-scale));
+		--glow-edge: calc(55% * var(--glow-scale));
+		/* Light adds to what is underneath rather than painting over it. */
+		mix-blend-mode: screen;
+	}
+	/* Screening a dark light over white does nothing: multiply is the dual. */
+	.effect-glow-field.on-light {
+		mix-blend-mode: multiply;
+	}
+
+	.is-bloom {
+		background:
+			radial-gradient(ellipse 58% 48% at var(--glow-x) 8%, color-mix(in srgb, var(--glow-color) var(--glow-core), transparent), transparent 72%),
+			radial-gradient(ellipse 90% 70% at var(--glow-x) 0%, color-mix(in srgb, var(--glow-color) var(--glow-halo), transparent), transparent 78%);
+	}
+
+	/* A cone from a conic gradient, a hot origin, and an ambient fill so the
+	   cone does not float in a void; faded out before it reaches the copy. */
+	.is-beam {
+		background:
+			radial-gradient(ellipse 26% 16% at var(--glow-x) -2%, color-mix(in srgb, var(--glow-color) var(--glow-edge), transparent), transparent 70%),
+			conic-gradient(
+				from 180deg at var(--glow-x) -8%,
+				transparent 0deg,
+				transparent 158deg,
+				color-mix(in srgb, var(--glow-color) var(--glow-core), transparent) 180deg,
+				transparent 202deg,
+				transparent 360deg
+			),
+			radial-gradient(ellipse 80% 60% at var(--glow-x) 0%, color-mix(in srgb, var(--glow-color) var(--glow-halo), transparent), transparent 76%);
+		-webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 34%, transparent 82%);
+		mask-image: linear-gradient(to bottom, #000 0%, #000 34%, transparent 82%);
+	}
+
+	.is-horizon {
+		background:
+			linear-gradient(to bottom, color-mix(in srgb, var(--glow-color) var(--glow-edge), transparent) 0%, transparent 14%),
+			radial-gradient(ellipse 70% 40% at var(--glow-x) 0%, color-mix(in srgb, var(--glow-color) var(--glow-core), transparent), transparent 70%);
+	}
+
+	.is-wash {
+		background: linear-gradient(
+			155deg,
+			color-mix(in srgb, var(--glow-color) var(--glow-core), transparent) 0%,
+			color-mix(in srgb, var(--glow-color) calc(var(--glow-halo) * 0.5), transparent) 52%,
+			transparent 100%
+		);
+	}
+</style>

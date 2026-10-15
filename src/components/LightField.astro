@@ -1,0 +1,44 @@
+---
+/**
+ * LightField: liquid light in three colours, bending around the pointer,
+ * with a real fluid under it that the pointer stirs and a click drops ink
+ * into. See src/runtime/light-field.js for how it is drawn.
+ *
+ * Fills its nearest positioned ancestor, or the viewport behind the page
+ * with `fixed` (give `body` a transparent background so it shows through).
+ * Without WebGL a still gradient in the same colours stands in.
+ *
+ * @example
+ * <LightField fixed colors={['#7c3aed', '#db2777', '#06b6d4']} quiet={{ y: 0.45 }} />
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { LightFieldConfig } from '../runtime/light-field.js';
+
+interface Props extends LightFieldConfig {
+	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
+	fixed?: boolean;
+	/** The colour under the light, and under the fallback gradient. Default `#08080a`. */
+	background?: string;
+	class?: string;
+}
+
+const { fixed = false, background = '#08080a', class: className, ...config } = Astro.props;
+
+// The no-WebGL look: the palette as soft pools of light, still.
+const [a, b, c] = [0, 1, 2].map((i) => config.colors[i % config.colors.length]);
+const fallback = [
+	`radial-gradient(60% 50% at 20% 25%, ${a} 0%, transparent 70%)`,
+	`radial-gradient(55% 45% at 80% 30%, ${b} 0%, transparent 70%)`,
+	`radial-gradient(60% 50% at 70% 85%, ${c} 0%, transparent 70%)`,
+	background,
+].join(', ');
+---
+
+<EffectCanvas name="light-field" config={config} fixed={fixed} class={className} behind background={fallback} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { lightField } from '../runtime/light-field.js';
+
+	mount('[data-effect-light-field]', lightField);
+</script>

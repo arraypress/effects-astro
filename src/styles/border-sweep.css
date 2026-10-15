@@ -1,0 +1,82 @@
+/* ─────────────────────────────────────────────────────────────────────
+ * @arraypress/effects-astro/border-sweep.css
+ *
+ * A light travelling round an element's outline: a conic gradient turned
+ * by an animated angle, masked to a 1px ring (the whole box XOR the
+ * content box, so only the border paints, never the label).
+ *
+ * `@property` is what makes it work: an unregistered custom property is an
+ * untyped string and would jump rather than turn. Registered as an
+ * `<angle>`, it animates.
+ *
+ * Use: add `sweep-ring` to an element's class list; it lights on hover and
+ * focus. `sweep-ring--always` keeps it running (a featured pricing tier),
+ * `sweep-ring--fast` for small things like buttons (a card-length cycle on
+ * a pill reads as a stall). Colour and speed from `--sweep-color` and
+ * `--sweep-speed`. With reduced motion the ring stays, still.
+ *
+ * From the ArrayPress theme.
+ * ───────────────────────────────────────────────────────────────────── */
+
+@property --sweep-angle {
+	syntax: '<angle>';
+	initial-value: 0deg;
+	inherits: false;
+}
+
+.sweep-ring {
+	position: relative;
+}
+
+.sweep-ring::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	padding: var(--sweep-width, 1px);
+	background: conic-gradient(
+		from var(--sweep-angle),
+		transparent 0%,
+		transparent 62%,
+		var(--sweep-color, currentColor) 78%,
+		color-mix(in srgb, var(--sweep-color, currentColor) 35%, transparent) 86%,
+		transparent 94%
+	);
+	-webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+	-webkit-mask-composite: xor;
+	mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+	mask-composite: exclude;
+	opacity: 0;
+	transition: opacity 220ms ease;
+	pointer-events: none;
+}
+
+.sweep-ring:hover::after,
+.sweep-ring:focus-visible::after,
+.sweep-ring:focus-within::after,
+.sweep-ring--always::after {
+	opacity: 1;
+	animation: effect-border-sweep var(--sweep-speed, 2.6s) linear infinite;
+}
+
+.sweep-ring--fast {
+	--sweep-speed: 1.8s;
+}
+
+@keyframes effect-border-sweep {
+	to {
+		--sweep-angle: 360deg;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sweep-ring:hover::after,
+	.sweep-ring:focus-visible::after,
+	.sweep-ring:focus-within::after,
+	.sweep-ring--always::after {
+		animation: none;
+		/* Keep the lit edge, drop the travel. */
+		background: none;
+		box-shadow: inset 0 0 0 1px var(--sweep-color, currentColor);
+	}
+}

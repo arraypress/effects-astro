@@ -1,0 +1,52 @@
+---
+/**
+ * ScrambleText: text that resolves out of random characters, left to
+ * right, when it scrolls into view, and again on hover if asked. For a
+ * label, a stat, a short headline. Screen readers and search get the real
+ * text; the scramble is drawn over it. See src/runtime/text-motion.js.
+ *
+ * @example
+ * <h2><ScrambleText text="Inference at the edge" hover /></h2>
+ */
+import type { HTMLTag } from 'astro/types';
+import type { ScrambleConfig } from '../runtime/text-motion.js';
+
+interface Props extends ScrambleConfig {
+	/** The text. */
+	text: string;
+	/** The element to render. Default `span`. */
+	as?: HTMLTag;
+	class?: string;
+}
+
+const { text, as: Tag = 'span', class: className, ...config } = Astro.props;
+---
+
+<Tag class:list={['effect-scramble', className]} data-effect-scramble data-text={text} data-effect-config={JSON.stringify(config)}>
+	<span class="real">{text}</span>
+	<span class="shown" data-scramble-shown aria-hidden="true">{text}</span>
+</Tag>
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { scramble } from '../runtime/text-motion.js';
+
+	mount('[data-effect-scramble]', scramble);
+</script>
+
+<style>
+	.effect-scramble {
+		position: relative;
+		display: inline-block;
+	}
+	/* The real text holds the space and is what assistive technology reads;
+	   transparent, not hidden, so it is still read. */
+	.real {
+		color: transparent;
+	}
+	.shown {
+		position: absolute;
+		inset: 0;
+		white-space: nowrap;
+	}
+</style>

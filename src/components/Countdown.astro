@@ -1,0 +1,141 @@
+---
+/**
+ * Countdown: days, hours, minutes and seconds to a date, as tiles, that
+ * swap to a message when the date passes. A drop, a sale's end, a launch.
+ * Rendered with the right numbers at build time and kept ticking in the
+ * browser (src/runtime/countdown.js). With reduced motion, the end date
+ * instead of a number that changes every second.
+ *
+ * Styled through custom properties: `--cd-tile` (tile background),
+ * `--cd-border`, `--cd-muted` (labels), `--cd-accent` (ended message).
+ *
+ * From the WaveGrid (SampleGrid) theme.
+ *
+ * @example
+ * <Countdown target="2026-12-07T18:00:00Z" label="Drop 07 goes live in" ended="Live now" />
+ */
+
+interface Props {
+	/** When it ends: an ISO date, or a Date. */
+	target: string | Date;
+	/** A line above the tiles. */
+	label?: string;
+	/** Leave the seconds out. Default false. */
+	hideSeconds?: boolean;
+	/** Shown once it has passed. Default `Ended`. */
+	ended?: string;
+	/** The units' labels, for other languages. Default English. */
+	units?: { days: string; hours: string; minutes: string; seconds: string };
+	/** The locale the still end date is written in. Default `en-GB`. */
+	locale?: string;
+	class?: string;
+}
+
+const {
+	target,
+	label,
+	hideSeconds = false,
+	ended = 'Ended',
+	units = { days: 'Days', hours: 'Hours', minutes: 'Min', seconds: 'Sec' },
+	locale = 'en-GB',
+	class: className,
+} = Astro.props;
+
+const end = new Date(target).getTime();
+const left = Math.max(0, end - Date.now());
+const pad = (n: number) => String(n).padStart(2, '0');
+const parts = [
+	{ key: 'days', label: units.days, value: Math.floor(left / 86_400_000) },
+	{ key: 'hours', label: units.hours, value: Math.floor((left % 86_400_000) / 3_600_000) },
+	{ key: 'minutes', label: units.minutes, value: Math.floor((left % 3_600_000) / 60_000) },
+	{ key: 'seconds', label: units.seconds, value: Math.floor((left % 60_000) / 1000) },
+].filter((p) => !(hideSeconds && p.key === 'seconds'));
+const over = left <= 0;
+const endsOn = new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(end);
+---
+
+<div class:list={['effect-countdown', className]} data-effect-countdown data-target={end}>
+	{label && <div class="label">{label}</div>}
+	<div class="units" aria-live="off" hidden={over}>
+		{
+			parts.map((p) => (
+				<div class="unit">
+					<span class="value" data-cd={p.key}>
+						{pad(p.value)}
+					</span>
+					<span class="tag">{p.label}</span>
+				</div>
+			))
+		}
+	</div>
+	{!over && <time class="still" datetime={new Date(end).toISOString()}>{endsOn}</time>}
+	<div class="ended" hidden={!over}>{ended}</div>
+</div>
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { countdown } from '../runtime/countdown.js';
+
+	mount('[data-effect-countdown]', countdown);
+</script>
+
+<style>
+	.effect-countdown {
+		display: inline-flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.5rem;
+	}
+	.label {
+		font-size: 0.72rem;
+		font-weight: 600;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--cd-muted, color-mix(in srgb, currentColor 60%, transparent));
+	}
+	.units {
+		display: inline-flex;
+		gap: 0.75rem;
+	}
+	.units[hidden] {
+		display: none;
+	}
+	.unit {
+		display: inline-flex;
+		flex-direction: column;
+		align-items: center;
+		min-width: 3.5rem;
+		padding: 0.5rem 0.75rem;
+		border: 1px solid var(--cd-border, color-mix(in srgb, currentColor 18%, transparent));
+		border-radius: 0.5rem;
+		background: var(--cd-tile, color-mix(in srgb, currentColor 6%, transparent));
+	}
+	.value {
+		font-size: 1.5rem;
+		font-weight: 700;
+		line-height: 1;
+		font-variant-numeric: tabular-nums;
+	}
+	.tag {
+		margin-top: 0.3rem;
+		font-size: 0.6rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--cd-muted, color-mix(in srgb, currentColor 60%, transparent));
+	}
+	.still {
+		display: none;
+	}
+	.ended {
+		font-weight: 600;
+		color: var(--cd-accent, currentColor);
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.units:not([hidden]) {
+			display: none;
+		}
+		.still:not([hidden]) {
+			display: block;
+		}
+	}
+</style>

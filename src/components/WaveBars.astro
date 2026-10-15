@@ -1,0 +1,36 @@
+---
+/**
+ * WaveBars: a mirrored bar waveform whose bars ease to new heights every couple of seconds, as if being tuned, with a band of light drifting across. A quiet audio motif for behind a hero's copy.
+ * See src/runtime/waves.js.
+ *
+ * Transparent, with its left and right edges faded out (`fade`). Fills its
+ * nearest positioned ancestor. Still with reduced motion.
+ *
+ * From the waveform-player site.
+ *
+ * @example
+ * <section class="hero" style="position: relative">
+ *   <WaveBars />
+ *   <h1>…</h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { WaveBarsConfig } from '../runtime/waves.js';
+
+interface Props extends WaveBarsConfig {
+	/** Fade the left and right edges out. Default true. */
+	fade?: boolean;
+	class?: string;
+}
+
+const { fade = true, class: className, ...config } = Astro.props;
+---
+
+<EffectCanvas name="wave-bars" config={config} class={className} fade={fade} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { waveBars } from '../runtime/waves.js';
+
+	mount('[data-effect-wave-bars]', waveBars);
+</script>

@@ -1,0 +1,181 @@
+---
+/**
+ * PulseMark: a small animated mark for a logo, a loading state or a
+ * "live" badge, drawn in SVG and moved by CSS alone (no script).
+ *
+ * - `matrix`: a grid of LED blocks, each blinking on its own rhythm.
+ * - `rings`: two dashed rings turning against each other round a beating dot.
+ * - `sonar`: rings that swell out from a centre, each a beat behind the last.
+ *
+ * It takes the text colour unless given one, and holds still with reduced
+ * motion. From the Graphic Foundry, Loopcuts and Producer Space sites.
+ *
+ * @example
+ * <PulseMark variant="sonar" size={40} color="#00ff88" glow />
+ */
+
+interface Props {
+	/** The mark. Default `matrix`. */
+	variant?: 'matrix' | 'rings' | 'sonar';
+	/** Its width and height, px or any CSS length. Default `1em`. */
+	size?: number | string;
+	/** Its colour. Default the text colour. */
+	color?: string;
+	/** A soft glow round it. Default false. */
+	glow?: boolean;
+	/** Blocks along each side of the matrix. Default 6. */
+	cells?: number;
+	/** Speed, as a multiple. Default 1. */
+	speed?: number;
+	/** Its accessible name; without one it is decorative. */
+	label?: string;
+	class?: string;
+}
+
+const { variant = 'matrix', size = '1em', color, glow = false, cells = 6, speed = 1, label, class: className } = Astro.props;
+
+/** Each LED's rhythm, from a fixed shuffle so a page renders the same every time. */
+const rhythms = Array.from({ length: cells * cells }, (_, i) => ((i * 7 + Math.floor(i / cells) * 3) % 5) + 1);
+const pitch = 120 / cells;
+const style = [
+	`--mark-size: ${typeof size === 'number' ? `${size}px` : size}`,
+	color && `--mark-color: ${color}`,
+	speed !== 1 && `--mark-speed: ${1 / speed}`,
+]
+	.filter(Boolean)
+	.join('; ');
+---
+
+<svg
+	class:list={['effect-pulse-mark', `is-${variant}`, { 'has-glow': glow }, className]}
+	style={style}
+	viewBox="0 0 120 120"
+	role={label ? 'img' : undefined}
+	aria-label={label}
+	aria-hidden={label ? undefined : 'true'}
+>
+	{
+		variant === 'matrix' &&
+			rhythms.map((rhythm, i) => (
+				<rect
+					class={`led r${rhythm}`}
+					x={(i % cells) * pitch + pitch * 0.1}
+					y={Math.floor(i / cells) * pitch + pitch * 0.1}
+					width={pitch * 0.8}
+					height={pitch * 0.8}
+					rx={pitch * 0.12}
+				/>
+			))
+	}
+	{
+		variant === 'rings' && (
+			<g fill="none" stroke-width="4">
+				<circle class="ring outer" cx="60" cy="60" r="38" stroke-dasharray="45 14.69" />
+				<circle class="ring inner" cx="60" cy="60" r="25" stroke-dasharray="40 12.36" />
+				<circle class="core" cx="60" cy="60" r="5" />
+			</g>
+		)
+	}
+	{
+		variant === 'sonar' && (
+			<g fill="none">
+				<circle class="wave w0" cx="60" cy="60" r="8" stroke-width="3" />
+				<circle class="wave w1" cx="60" cy="60" r="20" stroke-width="2.5" />
+				<circle class="wave w2" cx="60" cy="60" r="34" stroke-width="2" />
+				<circle class="wave w3" cx="60" cy="60" r="50" stroke-width="1.5" />
+			</g>
+		)
+	}
+</svg>
+
+<style>
+	.effect-pulse-mark {
+		--k: var(--mark-speed, 1);
+		width: var(--mark-size);
+		height: var(--mark-size);
+		color: var(--mark-color, currentColor);
+		fill: currentColor;
+		stroke: currentColor;
+		overflow: visible;
+		vertical-align: middle;
+	}
+	.has-glow {
+		filter: drop-shadow(0 0 calc(var(--mark-size) * 0.06) currentColor);
+	}
+
+	.led {
+		stroke: none;
+		opacity: 0.2;
+		animation: effect-mark-blink calc(var(--k) * var(--d)) ease-in-out infinite;
+	}
+	.r1 { --d: 2s; }
+	.r2 { --d: 1.5s; animation-delay: -0.4s; }
+	.r3 { --d: 2.5s; animation-delay: -1.1s; }
+	.r4 { --d: 1.8s; animation-delay: -0.7s; }
+	.r5 { --d: 2.2s; animation-delay: -1.5s; }
+
+	.ring,
+	.wave {
+		transform-origin: 60px 60px;
+	}
+	.outer {
+		animation: effect-mark-turn calc(var(--k) * 20s) linear infinite;
+	}
+	.inner {
+		animation: effect-mark-turn calc(var(--k) * 15s) linear infinite reverse;
+	}
+	.core {
+		stroke: none;
+		animation: effect-mark-beat calc(var(--k) * 2s) ease-in-out infinite;
+	}
+
+	.wave {
+		animation: effect-mark-swell calc(var(--k) * 2s) ease-in-out infinite;
+	}
+	.w0 { --o: 1; --s: 1.05; }
+	.w1 { --o: 0.7; --s: 1.1; animation-delay: calc(var(--k) * 0.1s); }
+	.w2 { --o: 0.4; --s: 1.15; animation-delay: calc(var(--k) * 0.2s); }
+	.w3 { --o: 0.2; --s: 1.2; animation-delay: calc(var(--k) * 0.3s); }
+
+	@keyframes effect-mark-blink {
+		50% {
+			opacity: 1;
+		}
+	}
+	@keyframes effect-mark-turn {
+		to {
+			rotate: 360deg;
+		}
+	}
+	@keyframes effect-mark-beat {
+		50% {
+			opacity: 0.3;
+		}
+	}
+	@keyframes effect-mark-swell {
+		0%,
+		100% {
+			opacity: var(--o);
+			scale: 1;
+		}
+		50% {
+			opacity: calc(var(--o) + 0.2);
+			scale: var(--s);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.led,
+		.ring,
+		.core,
+		.wave {
+			animation: none;
+		}
+		.led:nth-child(3n) {
+			opacity: 0.9;
+		}
+		.wave {
+			opacity: var(--o);
+		}
+	}
+</style>

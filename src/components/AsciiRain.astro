@@ -1,0 +1,36 @@
+---
+/**
+ * AsciiRain: data rain on a rippling surface, drawn in text characters,
+ * with red and blue fringes at the glyph edges. The pointer ripples the
+ * surface and a click sends a ring out. See src/runtime/ascii-rain.js.
+ *
+ * Fills its nearest positioned ancestor, or the viewport with `fixed`.
+ * Clear where there is no rain, so it lays over any background (it reads
+ * best on near-black). Without WebGL nothing is drawn.
+ *
+ * @example
+ * <section class="hero" style="position: relative; background: #000">
+ *   <AsciiRain colors={['#6d28d9', '#2563eb', '#22d3ee']} quiet={{ x: 0.25, y: 0.4, radius: 0.6 }} />
+ *   <h1>…</h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { AsciiRainConfig } from '../runtime/ascii-rain.js';
+
+interface Props extends AsciiRainConfig {
+	/** Fill the viewport (position: fixed). Default false. */
+	fixed?: boolean;
+	class?: string;
+}
+
+const { fixed = false, class: className, ...config } = Astro.props;
+---
+
+<EffectCanvas name="ascii-rain" config={config} fixed={fixed} class={className} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { asciiRain } from '../runtime/ascii-rain.js';
+
+	mount('[data-effect-ascii-rain]', asciiRain);
+</script>

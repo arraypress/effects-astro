@@ -1,0 +1,113 @@
+---
+/**
+ * Reveal: content that rises, slides, zooms or un-blurs into place as it
+ * scrolls into view; with `words` and `text`, each word on its own, one
+ * after another. Visible without JavaScript (only once the script runs is
+ * it hidden to be revealed) and with reduced motion. See
+ * src/runtime/text-motion.js.
+ *
+ * For many elements by class across a site, use `<ScrollReveal />` and
+ * reveal.css instead.
+ *
+ * @example
+ * <Reveal from="up"><h2>Made for one kind of business</h2></Reveal>
+ * <Reveal as="h1" words text="Skip the build. Start selling." />
+ */
+import type { HTMLTag } from 'astro/types';
+import type { RevealConfig } from '../runtime/text-motion.js';
+
+interface Props extends RevealConfig {
+	/** The element to render. Default `div`. */
+	as?: HTMLTag;
+	/** With `words`: the text, split into words. */
+	text?: string;
+	/** Seconds the arrival takes. Default 0.7. */
+	duration?: number;
+	/** How far it travels, px. Default 24. */
+	distance?: number;
+	class?: string;
+	[attribute: string]: unknown;
+}
+
+const {
+	as: Tag = 'div',
+	text,
+	words = false,
+	from = 'up',
+	stagger = 0.06,
+	delay = 0,
+	once = true,
+	duration = 0.7,
+	distance = 24,
+	class: className,
+	...attributes
+} = Astro.props;
+const split = words && text ? text.split(/(\s+)/) : null;
+let index = 0;
+---
+
+<Tag
+	class:list={['effect-reveal', `from-${from}`, { 'by-word': !!split }, className]}
+	data-effect-reveal
+	data-effect-config={JSON.stringify({ once })}
+	style={`--reveal-duration: ${duration}s; --reveal-distance: ${distance}px; --reveal-delay: ${delay}s; --reveal-stagger: ${stagger}s`}
+	aria-label={split ? text : undefined}
+	{...attributes}
+>
+	{split ? split.map((part) => (/^\s+$/.test(part) ? part : <span class="word" aria-hidden="true" style={`--i: ${index++}`}>{part}</span>)) : <slot />}
+</Tag>
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { reveal } from '../runtime/text-motion.js';
+
+	mount('[data-effect-reveal]', reveal);
+</script>
+
+<style>
+	.effect-reveal {
+		--reveal-from: translateY(var(--reveal-distance));
+	}
+	.from-down {
+		--reveal-from: translateY(calc(var(--reveal-distance) * -1));
+	}
+	.from-left {
+		--reveal-from: translateX(calc(var(--reveal-distance) * -1));
+	}
+	.from-right {
+		--reveal-from: translateX(var(--reveal-distance));
+	}
+	.from-fade {
+		--reveal-from: none;
+	}
+	.from-zoom {
+		--reveal-from: scale(0.94);
+	}
+	.from-blur {
+		--reveal-from: none;
+	}
+	.word {
+		display: inline-block;
+	}
+	/* Hidden only once the script has marked it waiting: without JS it shows. */
+	.effect-reveal:global(.is-waiting):not(.by-word),
+	.effect-reveal:global(.is-waiting) .word {
+		opacity: 0;
+		transform: var(--reveal-from);
+		transition:
+			opacity var(--reveal-duration) ease,
+			transform var(--reveal-duration) cubic-bezier(0.2, 0.8, 0.2, 1),
+			filter var(--reveal-duration) ease;
+		transition-delay: calc(var(--reveal-delay) + var(--i, 0) * var(--reveal-stagger));
+	}
+	.from-blur:global(.is-waiting):not(.by-word),
+	.from-blur:global(.is-waiting) .word {
+		filter: blur(8px);
+	}
+	.effect-reveal:global(.is-revealed):not(.by-word),
+	.effect-reveal:global(.is-revealed) .word {
+		opacity: 1;
+		transform: none;
+		filter: none;
+	}
+</style>

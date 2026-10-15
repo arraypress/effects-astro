@@ -1,0 +1,49 @@
+---
+/**
+ * Parallax: a layer that drifts with the pointer over its region, by its
+ * depth; give layers different depths (negative ones move against the
+ * pointer) and they separate into depth. Decorative blobs behind a hero,
+ * a floating product shot. See src/runtime/tilt.js.
+ *
+ * The region is the nearest ancestor with `data-parallax-root` (or the
+ * parent). Off with prefers-reduced-motion and on touch screens.
+ *
+ * @example
+ * <section class="hero" data-parallax-root style="position: relative">
+ *   <Parallax depth={18} class="blob one" />
+ *   <Parallax depth={-12} class="blob two" />
+ * </section>
+ */
+import type { HTMLTag } from 'astro/types';
+
+interface Props {
+	/** The element to render. Default `div`. */
+	as?: HTMLTag;
+	/** How far it drifts at the region's edge, px; negative moves against the pointer. Default 18. */
+	depth?: number;
+	/** A selector for the region. Default the nearest `[data-parallax-root]`, or the parent. */
+	within?: string;
+	class?: string;
+	[attribute: string]: unknown;
+}
+
+const { as: Tag = 'div', depth, within, class: className, ...attributes } = Astro.props;
+---
+
+<Tag class:list={['effect-parallax', className]} data-effect-parallax data-effect-config={JSON.stringify({ depth, within })} {...attributes}>
+	<slot />
+</Tag>
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { parallax } from '../runtime/tilt.js';
+
+	mount('[data-effect-parallax]', parallax);
+</script>
+
+<style>
+	.effect-parallax {
+		translate: var(--parallax-x, 0px) var(--parallax-y, 0px);
+		transition: translate 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+	}
+</style>

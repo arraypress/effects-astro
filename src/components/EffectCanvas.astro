@@ -1,0 +1,152 @@
+---
+/**
+ * EffectCanvas: the element and canvas every canvas effect renders, so
+ * each effect's component is only its props and its `mount` script.
+ *
+ * Renders `<div data-effect-<name> data-effect-config="…"><canvas>`,
+ * filling its nearest positioned ancestor, or the viewport with `fixed`
+ * (behind the page, at z-index -1, when `behind` is set too). Hidden from
+ * assistive technology: effects are decoration. Also styles the tracker
+ * boxes some effects lay over themselves (src/runtime/trackers.js).
+ *
+ * @example
+ * <EffectCanvas name="ink" config={config} fixed={fixed} class={className} />
+ */
+
+interface Props {
+	/** The effect's name: the element gets `data-effect-<name>`. */
+	name: string;
+	/** The settings the runtime reads, as JSON in `data-effect-config`. */
+	config: Record<string, unknown>;
+	/** Fill the viewport (position: fixed). Default false. */
+	fixed?: boolean;
+	/** With `fixed`, sit behind the page (z-index -1). Default false. */
+	behind?: boolean;
+	/** CSS `background` for the element: what shows before the canvas draws, and without WebGL. */
+	background?: string;
+	/** Keep the canvas's pixels square when it is scaled up (for dithered effects). Default false. */
+	pixelated?: boolean;
+	/** Fade edges out, so it blends into the section: true for the left and right, or 'top', 'bottom' or 'both' (top and bottom). Default false. */
+	fade?: boolean | 'top' | 'bottom' | 'both';
+	/** Its opacity, 0–1. Default 1. */
+	opacity?: number;
+	/** CSS `mix-blend-mode` with what is behind it (`screen`, `plus-lighter`…). Default normal. */
+	blend?: string;
+	class?: string;
+}
+
+const { name, config, fixed = false, behind = false, background, pixelated = false, fade = false, opacity, blend, class: className } = Astro.props;
+const style = [
+	background && `background: ${background}`,
+	opacity !== undefined && opacity < 1 && `opacity: ${opacity}`,
+	blend && blend !== 'normal' && `mix-blend-mode: ${blend}`,
+]
+	.filter(Boolean)
+	.join('; ');
+---
+
+<div
+	class:list={['effect-canvas', { 'is-fixed': fixed, 'is-behind': fixed && behind, 'is-pixelated': pixelated, 'is-faded': fade === true }, typeof fade === 'string' && `is-faded-${fade}`, className]}
+	data-effect-config={JSON.stringify(config)}
+	style={style || undefined}
+	aria-hidden="true"
+	{...{ [`data-effect-${name}`]: '' }}
+>
+	<canvas></canvas>
+</div>
+
+<style>
+	.effect-canvas {
+		position: absolute;
+		inset: 0;
+		overflow: hidden;
+		pointer-events: none;
+	}
+	.effect-canvas.is-fixed {
+		position: fixed;
+	}
+	.effect-canvas.is-behind {
+		z-index: -1;
+	}
+	canvas {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+	.effect-canvas.is-faded {
+		-webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+		mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+	}
+	.effect-canvas.is-faded-bottom {
+		-webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+		mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+	}
+	.effect-canvas.is-faded-top {
+		-webkit-mask-image: linear-gradient(to top, #000 55%, transparent 100%);
+		mask-image: linear-gradient(to top, #000 55%, transparent 100%);
+	}
+	.effect-canvas.is-faded-both {
+		-webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+		mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+	}
+	/* Dithered effects draw at a low resolution on purpose: keep their pixels square. */
+	.effect-canvas.is-pixelated canvas {
+		image-rendering: pixelated;
+	}
+
+	/* Tracker boxes (src/runtime/trackers.js), added by the runtime, so styled
+	   through :global. Colour from --effect-tracker-color. */
+	.effect-canvas :global(.effect-trackers) {
+		position: absolute;
+		inset: 0;
+		--c: var(--effect-tracker-color, rgb(255 255 255 / 0.9));
+		--arm: 12px;
+		--line: 1.5px;
+	}
+	.effect-canvas :global(.effect-tracker) {
+		position: absolute;
+		top: 0;
+		left: 0;
+		opacity: 0;
+		transition: opacity 0.4s ease;
+	}
+	/* A box: four corner brackets over a faint fill. */
+	.effect-canvas :global(.effect-tracker.is-box) {
+		background:
+			linear-gradient(var(--c), var(--c)) top left / var(--arm) var(--line) no-repeat,
+			linear-gradient(var(--c), var(--c)) top left / var(--line) var(--arm) no-repeat,
+			linear-gradient(var(--c), var(--c)) top right / var(--arm) var(--line) no-repeat,
+			linear-gradient(var(--c), var(--c)) top right / var(--line) var(--arm) no-repeat,
+			linear-gradient(var(--c), var(--c)) bottom left / var(--arm) var(--line) no-repeat,
+			linear-gradient(var(--c), var(--c)) bottom left / var(--line) var(--arm) no-repeat,
+			linear-gradient(var(--c), var(--c)) bottom right / var(--arm) var(--line) no-repeat,
+			linear-gradient(var(--c), var(--c)) bottom right / var(--line) var(--arm) no-repeat,
+			rgb(0 0 0 / 0.25);
+	}
+	/* A marker: a small crosshair at the box's centre. */
+	.effect-canvas :global(.effect-tracker.is-marker) {
+		background:
+			linear-gradient(var(--c), var(--c)) center / var(--arm) var(--line) no-repeat,
+			linear-gradient(var(--c), var(--c)) center / var(--line) var(--arm) no-repeat;
+		outline: var(--line) solid color-mix(in srgb, var(--c) 45%, transparent);
+		outline-offset: -4px;
+	}
+	.effect-canvas :global(.effect-tracker span) {
+		position: absolute;
+		left: 4px;
+		bottom: 4px;
+		padding: 1px 4px;
+		font: 500 9px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace;
+		letter-spacing: 0.04em;
+		color: #000;
+		background: var(--c);
+		white-space: nowrap;
+	}
+	.effect-canvas :global(.effect-tracker.is-marker span) {
+		left: calc(100% + 4px);
+		bottom: auto;
+		top: 0;
+		color: var(--c);
+		background: none;
+	}
+</style>

@@ -1,0 +1,67 @@
+---
+/**
+ * Grain: a film-grain texture over a section (or the whole page with
+ * `fixed`). Big smooth gradients band on 8-bit screens; grain dithers them,
+ * so a shader reads as film rather than plastic. Blended with `overlay`,
+ * which keeps blacks black and textures the mid-tones, as film grain does,
+ * where plain alpha would lift the blacks into fog.
+ *
+ * SVG turbulence in a data URI: no request, any pixel ratio. Fills its
+ * nearest positioned ancestor; place it after the background and before
+ * the content. Static, but high-frequency noise can trouble some people,
+ * so it is reduced (not removed) with prefers-reduced-motion.
+ *
+ * From the SellGrid and ArrayPress themes.
+ *
+ * @example
+ * <section style="position: relative">
+ *   <LightField colors={…} />
+ *   <Grain opacity={0.2} />
+ *   <h1>…</h1>
+ * </section>
+ */
+
+interface Props {
+	/** How strong, 0–1 (stronger than the number suggests, with overlay). Default 0.22. */
+	opacity?: number;
+	/** How fine; higher is finer (0.75 is about 1px). Default 0.75. */
+	frequency?: number;
+	/** Cover the viewport (position: fixed). Default false. */
+	fixed?: boolean;
+	/** The blend with what is under it. Default `overlay`. */
+	blend?: string;
+	class?: string;
+}
+
+const { opacity = 0.22, frequency = 0.75, fixed = false, blend = 'overlay', class: className } = Astro.props;
+// numOctaves 4 gives a natural grain; 1 looks like regular dithering.
+const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="${frequency}" numOctaves="4" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect width="256" height="256" filter="url(#n)"/></svg>`;
+const uri = `data:image/svg+xml,${encodeURIComponent(svg)}`;
+---
+
+<div
+	class:list={['effect-grain', { 'is-fixed': fixed }, className]}
+	aria-hidden="true"
+	style={`--grain-opacity: ${opacity}; mix-blend-mode: ${blend}; background-image: url("${uri}")`}
+>
+</div>
+
+<style>
+	.effect-grain {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		pointer-events: none;
+		opacity: var(--grain-opacity);
+		background-repeat: repeat;
+		background-size: 256px 256px;
+	}
+	.effect-grain.is-fixed {
+		position: fixed;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.effect-grain {
+			opacity: min(var(--grain-opacity), 0.1);
+		}
+	}
+</style>

@@ -1,0 +1,9 @@
+---
+import WorldRoutes from '@arraypress/effects-astro/WorldRoutes.astro';
+---
+<html><head><meta charset="utf-8"><title>world-routes</title>
+<style>html{background:#0b0b0e}body{margin:0;color:#fff;font-family:system-ui}section{position:relative;height:70vh;display:grid;place-items:center;overflow:hidden}h1{position:relative;margin:0;font-size:44px;letter-spacing:-0.02em}.light{background:#f6f5f2;color:#111}</style></head>
+<body>
+<section><WorldRoutes /><h1>Sell worldwide</h1></section>
+<section class="light"><WorldRoutes color="#ff6b6b" land="#111111" landOpacity={0.14} routes={[['edinburgh', 'new-york'], ['edinburgh', 'tokyo'], ['edinburgh', 'sydney'], ['edinburgh', 'sao-paulo'], ['edinburgh', 'lagos'], ['edinburgh', 'mumbai']]} /></section>
+</body></html>

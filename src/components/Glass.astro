@@ -1,0 +1,50 @@
+---
+/**
+ * Glass: a liquid glass panel, with a rim that catches the light and a
+ * sheen that follows the pointer. A wrapper for `class="glass"` from
+ * glass.css that also starts the sheen; for elements you render yourself,
+ * import `@arraypress/effects-astro/glass.css` and add the class, then
+ * call `glassSheen()` once.
+ *
+ * Glass blurs what is behind it, so it needs something behind: a
+ * `<LightField>`, an image, a gradient.
+ *
+ * @example
+ * <Glass as="article" class="card" tint="#08080a">…</Glass>
+ */
+import type { HTMLTag } from 'astro/types';
+import '../styles/glass.css';
+
+interface Props {
+	/** The element to render. Default `div`. */
+	as?: HTMLTag;
+	/** The body's tint colour. Default near-black. */
+	tint?: string;
+	/** How much of the tint the body takes, 0–100 (%). Default 30. */
+	amount?: number;
+	/** How much it blurs what is behind, px. Default 20. */
+	blur?: number;
+	/** How far it rises on hover, px; 0 for none. Default 2. */
+	lift?: number;
+	class?: string;
+	[attribute: string]: unknown;
+}
+
+const { as: Tag = 'div', tint, amount, blur, lift, class: className, ...attributes } = Astro.props;
+const style = [
+	tint && `--glass-tint: ${tint}`,
+	amount !== undefined && `--glass-tint-amount: ${amount}%`,
+	blur !== undefined && `--glass-blur: ${blur}px`,
+	lift !== undefined && `--glass-lift: ${lift}px`,
+]
+	.filter(Boolean)
+	.join('; ');
+---
+
+<Tag class:list={['glass', className]} style={style || undefined} {...attributes}><slot /></Tag>
+
+<script>
+	import { glassSheen } from '../runtime/glass-sheen.js';
+
+	glassSheen();
+</script>

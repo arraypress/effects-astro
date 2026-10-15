@@ -1,0 +1,36 @@
+---
+/**
+ * SignalLines: layered waveform lines with a drifting loudness, front lines glowing, and pulses of light running along them. A quiet audio motif for behind a hero's copy.
+ * See src/runtime/waves.js.
+ *
+ * Transparent, with its left and right edges faded out (`fade`). Fills its
+ * nearest positioned ancestor. Still with reduced motion.
+ *
+ * From the waveform-player site.
+ *
+ * @example
+ * <section class="hero" style="position: relative">
+ *   <SignalLines />
+ *   <h1>…</h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { SignalLinesConfig } from '../runtime/waves.js';
+
+interface Props extends SignalLinesConfig {
+	/** Fade the left and right edges out. Default true. */
+	fade?: boolean;
+	class?: string;
+}
+
+const { fade = true, class: className, ...config } = Astro.props;
+---
+
+<EffectCanvas name="signal-lines" config={config} class={className} fade={fade} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { signalLines } from '../runtime/waves.js';
+
+	mount('[data-effect-signal-lines]', signalLines);
+</script>

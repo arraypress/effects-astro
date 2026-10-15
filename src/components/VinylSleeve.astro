@@ -1,0 +1,119 @@
+---
+/**
+ * VinylSleeve: a record in its sleeve. The cover is the sleeve; on hover
+ * or focus the disc slides out from behind it, its grooves catching a
+ * sheen and the cover as its centre label, and while `.is-playing` is on
+ * the element (set it from your player) the disc spins. For labels, beat
+ * stores and anything sold as a release. Pure CSS; the disc stops for
+ * reduced motion.
+ *
+ * Put the link, title and price beside it yourself; this is the artwork.
+ *
+ * From the WaveGrid (SampleGrid) theme.
+ *
+ * @example
+ * <VinylSleeve cover="/covers/drop-07.jpg" alt="Drop 07" />
+ */
+
+interface Props {
+	/** The cover image. */
+	cover: string;
+	/** Its alt text ('' when the title is next to it). */
+	alt?: string;
+	/** Start spinning, as if playing. Default false. */
+	playing?: boolean;
+	/** Seconds a turn takes. Default 1.8. */
+	speed?: number;
+	class?: string;
+}
+
+const { cover, alt = '', playing = false, speed = 1.8, class: className } = Astro.props;
+---
+
+<div class:list={['effect-vinyl', { 'is-playing': playing }, className]} style={`--vinyl-speed: ${speed}s`} tabindex="-1">
+	<div class="disc" aria-hidden="true"><img src={cover} alt="" loading="lazy" decoding="async" /></div>
+	<div class="sleeve"><img src={cover} alt={alt} loading="lazy" decoding="async" /></div>
+</div>
+
+<style>
+	.effect-vinyl {
+		position: relative;
+		aspect-ratio: 1 / 0.82;
+		outline: none;
+	}
+	.sleeve {
+		position: absolute;
+		inset: 0 18% 0 0;
+		z-index: 1;
+		overflow: hidden;
+		border-radius: 6px;
+		box-shadow:
+			6px 0 18px -6px rgb(0 0 0 / 0.7),
+			0 20px 40px -24px rgb(0 0 0 / 0.9);
+	}
+	.sleeve img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	/* Grooves, two bright rings, the run-out, and a conic sheen. */
+	.disc {
+		position: absolute;
+		top: 3%;
+		bottom: 3%;
+		left: 5%;
+		aspect-ratio: 1;
+		border-radius: 999px;
+		background:
+			radial-gradient(circle, transparent 0 16.5%, rgb(255 255 255 / 0.22) 17%, transparent 18%),
+			radial-gradient(circle, transparent 0 46%, rgb(255 255 255 / 0.1) 46.5%, transparent 47.5%),
+			repeating-radial-gradient(circle, #161618 0 1px, #232326 1.5px 2.5px);
+		box-shadow:
+			0 0 0 1px rgb(255 255 255 / 0.14),
+			inset 0 0 0 3px #0c0c0d,
+			0 18px 36px -14px rgb(0 0 0 / 0.9);
+		transform: translateX(7%);
+		transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+	}
+	.disc::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		background: conic-gradient(from 20deg, transparent 0 8%, rgb(255 255 255 / 0.16) 13%, transparent 20% 55%, rgb(255 255 255 / 0.1) 62%, transparent 70%);
+	}
+	.disc img {
+		position: absolute;
+		inset: 33%;
+		width: 34%;
+		height: 34%;
+		border-radius: 999px;
+		object-fit: cover;
+		box-shadow: 0 0 0 1px rgb(0 0 0 / 0.6);
+	}
+	.effect-vinyl:hover .disc,
+	.effect-vinyl:focus-within .disc,
+	.effect-vinyl:global(.is-playing) .disc {
+		transform: translateX(26%);
+	}
+	.effect-vinyl:global(.is-playing) .disc {
+		animation: effect-vinyl-spin var(--vinyl-speed) linear infinite;
+	}
+	@keyframes effect-vinyl-spin {
+		from {
+			transform: translateX(26%) rotate(0deg);
+		}
+		to {
+			transform: translateX(26%) rotate(360deg);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.disc {
+			transition: none;
+		}
+		.effect-vinyl:global(.is-playing) .disc {
+			animation: none;
+		}
+	}
+</style>

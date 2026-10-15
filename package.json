@@ -1,0 +1,62 @@
+{
+  "name": "@arraypress/effects-astro",
+  "version": "0.1.0",
+  "description": "GPU effects for Astro sites, as components: liquid light with a real fluid under it, ink in water, and outline text a spotlight fills. Plain WebGL, no dependencies, with the fallbacks a theme needs (reduced motion, no WebGL, touch screens, off-screen pausing).",
+  "type": "module",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.js",
+      "types": "./src/index.d.ts"
+    },
+    "./*.astro": "./src/components/*.astro",
+    "./*.css": "./src/styles/*.css",
+    "./runtime/*": {
+      "import": "./src/runtime/*.js",
+      "types": "./src/runtime/*.d.ts"
+    }
+  },
+  "files": [
+    "src",
+    "AGENTS.md",
+    "COMPONENTS.md"
+  ],
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "docs": "node scripts/components-doc.mjs"
+  },
+  "keywords": [
+    "astro",
+    "astro-component",
+    "webgl",
+    "shader",
+    "fluid-simulation",
+    "stable-fluids",
+    "oklab",
+    "hero",
+    "background",
+    "effects"
+  ],
+  "author": "ArrayPress Limited",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "peerDependencies": {
+    "astro": "^6 || ^7"
+  },
+  "peerDependenciesMeta": {
+    "astro": {
+      "optional": true
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arraypress/effects-astro.git"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}

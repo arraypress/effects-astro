@@ -1,0 +1,34 @@
+---
+import Glass from '@arraypress/effects-astro/Glass.astro';
+import BorderSweep from '@arraypress/effects-astro/BorderSweep.astro';
+import Tilt from '@arraypress/effects-astro/Tilt.astro';
+import Magnetic from '@arraypress/effects-astro/Magnetic.astro';
+import VinylSleeve from '@arraypress/effects-astro/VinylSleeve.astro';
+import Equalizer from '@arraypress/effects-astro/Equalizer.astro';
+import Skeleton from '@arraypress/effects-astro/Skeleton.astro';
+import Countdown from '@arraypress/effects-astro/Countdown.astro';
+import Parallax from '@arraypress/effects-astro/Parallax.astro';
+import LightField from '@arraypress/effects-astro/LightField.astro';
+import Cursor from '@arraypress/effects-astro/Cursor.astro';
+import ScrollProgress from '@arraypress/effects-astro/ScrollProgress.astro';
+import BackToTop from '@arraypress/effects-astro/BackToTop.astro';
+import '@arraypress/effects-astro/motion.css';
+const cover = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><defs><linearGradient id="g" x2="1" y2="1"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#06b6d4"/></linearGradient></defs><rect width="10" height="10" fill="url(#g)"/></svg>');
+---
+<html><head><meta charset="utf-8"><title>ui</title>
+<style>html{background:#08080a}body{margin:0;background:transparent;color:#fff;font-family:system-ui}main{max-width:1100px;margin:0 auto;padding:48px 24px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.cell{padding:22px;border-radius:14px}.plain{border:1px solid #2a2a33}p{color:#aaa;font-size:13px;margin:0 0 12px}.btn{padding:12px 20px;border-radius:999px;background:#fff;color:#000;font-weight:600;text-decoration:none}.ring{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#a78bfa;color:#000;--fx-color:#a78bfa}.blob{width:120px;height:120px;border-radius:50%;filter:blur(30px)}.tall{height:120vh}</style></head>
+<body><ScrollProgress color="#a78bfa" /><Cursor /><LightField fixed colors={['#7c3aed', '#db2777', '#06b6d4']} fluid={false} />
+<main data-parallax-root>
+<Glass class="cell"><p>Glass</p>Liquid glass panel with a pointer sheen.</Glass>
+<BorderSweep class="cell plain" color="#a78bfa"><p>BorderSweep (hover)</p>A light travels the outline.</BorderSweep>
+<BorderSweep class="cell plain" color="#22d3ee" always><p>BorderSweep always</p>Featured tier.</BorderSweep>
+<Tilt class="cell plain" glare max={10}><p>Tilt glare</p>Leans towards the pointer.</Tilt>
+<div class="cell plain"><p>Magnetic</p><Magnetic as="a" href="#" class="btn">Start selling</Magnetic></div>
+<div class="cell plain"><p>VinylSleeve (hover)</p><VinylSleeve cover={cover} /></div>
+<div class="cell plain"><p>Equalizer playing</p><span style="font-size:48px;color:#a3e635"><Equalizer playing /></span></div>
+<div class="cell plain"><p>Skeleton card</p><Skeleton variant="card" /></div>
+<div class="cell plain"><p>Countdown</p><Countdown target="2026-12-07T18:00:00Z" label="Drop 07 goes live in" /></div>
+<div class="cell plain"><p>motion.css</p><span class="ring fx-pulse-ring">▶</span> <span class="fx-wiggle" style="display:inline-block">wiggle</span> <span class="fx-shake" style="display:inline-block">shake</span></div>
+<div class="cell plain" style="position:relative;height:160px"><p>Parallax</p><Parallax depth={24}><div class="blob" style="background:#7c3aed"></div></Parallax></div>
+<div class="cell plain"><p>data-cursor</p><a href="#" data-cursor="View" class="btn">Hover me</a></div>
+</main><div class="tall"></div><BackToTop /></body></html>

@@ -1,0 +1,216 @@
+---
+/**
+ * Marquee: an endless strip that scrolls sideways, for "as featured in"
+ * logos, artist names, a ticker of offers. Pass `items` (text), or
+ * anything as the slot (logos, images, cards).
+ *
+ * The content is laid four times and the strip moves by one set, so the
+ * loop is seamless even when a set is narrower than the screen. The edges
+ * fade out rather than cutting, it can pause under the pointer, and a
+ * small pause button stops it for good (moving content needs one, WCAG
+ * 2.2.2). With reduced motion it is a still row, scrollable by hand.
+ * Screen readers get the content once.
+ *
+ * Merges the marquees of the WaveGrid, SellGrid, LinkGrid and LaunchGrid
+ * themes.
+ *
+ * @example
+ * <Marquee items={['Marcus Vane', 'Vivid Skye', 'Lunaire']} separator="✦" />
+ * <Marquee speed={30} direction="right"><img src="/press/wire.svg" alt="Wire" />…</Marquee>
+ */
+
+interface Props {
+	/** Text items; or pass content as the slot. */
+	items?: string[];
+	/** Seconds for one set to pass. Default 40. */
+	speed?: number;
+	/** `left` scrolls right to left. Default `left`. */
+	direction?: 'left' | 'right';
+	/** Shown between items (text items only). */
+	separator?: string;
+	/** Space between items, CSS length. Default `2.5rem`. */
+	gap?: string;
+	/** Pause while the pointer is over it. Default true. */
+	pauseOnHover?: boolean;
+	/** Show a pause button. Default true. */
+	pauseButton?: boolean;
+	/** How wide the faded edges are, % of the strip. Default 8. */
+	fade?: number;
+	/** The pause button's labels, for other languages. Default English. */
+	labels?: { pause: string; resume: string };
+	/** What the strip is, for screen readers. Default the items joined. */
+	label?: string;
+	class?: string;
+}
+
+const {
+	items,
+	speed = 40,
+	direction = 'left',
+	separator,
+	gap = '2.5rem',
+	pauseOnHover = true,
+	pauseButton = true,
+	fade = 8,
+	labels = { pause: 'Pause scrolling', resume: 'Resume scrolling' },
+	label,
+	class: className,
+} = Astro.props;
+
+// Slot content is rendered once and laid again for the copies.
+const slotted = items ? '' : await Astro.slots.render('default');
+const sets = [0, 1, 2, 3];
+---
+
+<div
+	class:list={['effect-marquee', `is-${direction}`, { 'pause-on-hover': pauseOnHover }, className]}
+	style={`--marquee-speed: ${speed}s; --marquee-gap: ${gap}; --marquee-fade: ${fade}%`}
+	role="region"
+	aria-label={label ?? items?.join(', ')}
+	data-effect-marquee
+>
+	{
+		pauseButton && (
+			<button
+				type="button"
+				class="toggle"
+				data-marquee-toggle
+				data-pause={labels.pause}
+				data-resume={labels.resume}
+				aria-pressed="false"
+				aria-label={labels.pause}
+			>
+				<svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+					<rect x="6" y="5" width="4" height="14" rx="1" />
+					<rect x="14" y="5" width="4" height="14" rx="1" />
+				</svg>
+				<svg class="icon-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+					<path d="M8 5v14l11-7z" />
+				</svg>
+			</button>
+		)
+	}
+	<div class="viewport">
+	<div class="track">
+		{
+			sets.map((set) => (
+				<div class="set" aria-hidden={set > 0 ? 'true' : undefined}>
+					{items
+						? items.map((item) => (
+								<>
+									<span class="item">{item}</span>
+									{/* After every item, the last too: it separates the sets. */}
+									{separator && (
+										<span class="sep" aria-hidden="true">
+											{separator}
+										</span>
+									)}
+								</>
+							))
+						: <Fragment set:html={slotted} />}
+				</div>
+			))
+		}
+	</div>
+	</div>
+</div>
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { marquee } from '../runtime/marquee.js';
+
+	mount('[data-effect-marquee]', marquee);
+</script>
+
+<style>
+	.effect-marquee {
+		position: relative;
+	}
+	/* The fade is on the strip, not the whole: the pause button stays clear of it. */
+	.viewport {
+		overflow: hidden;
+		-webkit-mask-image: linear-gradient(to right, transparent, #000 var(--marquee-fade), #000 calc(100% - var(--marquee-fade)), transparent);
+		mask-image: linear-gradient(to right, transparent, #000 var(--marquee-fade), #000 calc(100% - var(--marquee-fade)), transparent);
+	}
+	.track {
+		display: flex;
+		width: max-content;
+		animation: effect-marquee var(--marquee-speed) linear infinite;
+	}
+	.is-right .track {
+		animation-direction: reverse;
+	}
+	.set {
+		display: flex;
+		align-items: center;
+		gap: var(--marquee-gap);
+		padding-right: var(--marquee-gap);
+		flex-shrink: 0;
+		white-space: nowrap;
+	}
+	.item,
+	.sep {
+		flex-shrink: 0;
+	}
+	.sep {
+		opacity: 0.5;
+	}
+	.pause-on-hover:hover .track,
+	.effect-marquee:global(.is-paused) .track {
+		animation-play-state: paused;
+	}
+	@keyframes effect-marquee {
+		to {
+			transform: translateX(-25%);
+		}
+	}
+
+	/* The pause button: small, pinned to the corner, above the faded edge. */
+	.toggle {
+		position: absolute;
+		top: 50%;
+		right: 0.35rem;
+		z-index: 2;
+		translate: 0 -50%;
+		display: inline-grid;
+		place-items: center;
+		width: 1.75rem;
+		height: 1.75rem;
+		padding: 0;
+		border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+		border-radius: 999px;
+		background: color-mix(in srgb, Canvas 80%, transparent);
+		color: inherit;
+		cursor: pointer;
+		opacity: 0.7;
+		transition: opacity 0.15s;
+	}
+	.toggle:hover,
+	.toggle:focus-visible {
+		opacity: 1;
+	}
+	.toggle svg {
+		width: 0.85rem;
+		height: 0.85rem;
+	}
+	.icon-play,
+	.effect-marquee:global(.is-paused) .icon-pause {
+		display: none;
+	}
+	.effect-marquee:global(.is-paused) .icon-play {
+		display: block;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.viewport {
+			overflow-x: auto;
+		}
+		.track {
+			animation: none;
+		}
+		.set[aria-hidden='true'],
+		.toggle {
+			display: none;
+		}
+	}
+</style>

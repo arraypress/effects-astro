@@ -1,0 +1,34 @@
+---
+/**
+ * DotGrid: a sea of dots you can drop stones into. A slow current moves
+ * through a fixed grid of dots, a swell sits under the pointer, and a
+ * click sends a widening ripple across, lifting and pushing the dots.
+ * See src/runtime/dot-grid.js.
+ *
+ * Transparent: it lays over the section's background. Fills its nearest
+ * positioned ancestor, or the viewport behind the page with `fixed` (give
+ * `body` a transparent background so it shows).
+ *
+ * @example
+ * <DotGrid fixed color="#ffffff" pitch={26} />
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { DotGridConfig } from '../runtime/dot-grid.js';
+
+interface Props extends DotGridConfig {
+	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
+	fixed?: boolean;
+	class?: string;
+}
+
+const { fixed = false, class: className, ...config } = Astro.props;
+---
+
+<EffectCanvas name="dot-grid" config={config} fixed={fixed} class={className} behind />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { dotGrid } from '../runtime/dot-grid.js';
+
+	mount('[data-effect-dot-grid]', dotGrid);
+</script>

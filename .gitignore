@@ -1,0 +1,9 @@
+node_modules/
+.DS_Store
+*.tgz
+.idea/
+.vscode/
+coverage/
+dist/
+.astro/
+*.log

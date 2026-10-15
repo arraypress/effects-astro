@@ -1,0 +1,34 @@
+---
+/**
+ * WorldRoutes: a dotted world map with routes arcing between cities, a
+ * comet of light running along each and pinging the city it lands on.
+ * For "sell worldwide" and "customers in 40 countries" sections. Name
+ * cities (`london`, `tokyo`… see CITIES in src/runtime/world-routes.js)
+ * or give [latitude, longitude]. The map fits inside its box, centred.
+ *
+ * Transparent: it lays over the section's background. Fills its nearest
+ * positioned ancestor, or the viewport behind the page with `fixed`.
+ *
+ * @example
+ * <WorldRoutes color="#ff6b6b" routes={[['london', 'new-york'], ['london', 'tokyo']]} />
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { WorldRoutesConfig } from '../runtime/world-routes.js';
+
+interface Props extends WorldRoutesConfig {
+	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
+	fixed?: boolean;
+	class?: string;
+}
+
+const { fixed = false, class: className, ...config } = Astro.props;
+---
+
+<EffectCanvas name="world-routes" config={config} fixed={fixed} class={className} behind />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { worldRoutes } from '../runtime/world-routes.js';
+
+	mount('[data-effect-world-routes]', worldRoutes);
+</script>

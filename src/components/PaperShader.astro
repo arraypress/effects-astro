@@ -1,0 +1,55 @@
+---
+/**
+ * PaperShader: any of the thirty Paper Shaders (mesh and grain gradients,
+ * god rays, liquid metal, water, warp, dithering, halftones, metaballs,
+ * voronoi, smoke rings and more), with Paper's own presets, and no React.
+ * See src/runtime/paper.js; the shaders are vendored from Paper
+ * (Apache-2.0).
+ *
+ * Start from a `preset` and change any of Paper's settings with `params`.
+ * The shaders that bend or trace a picture (fluted glass, water, lens
+ * distortion, liquid metal, halftones, dithering, heatmap) take `image`, or
+ * `gradient` to make one from colours. Fills its nearest positioned
+ * ancestor, or the viewport with `fixed`. Needs WebGL 2; without it the
+ * `background` shows.
+ *
+ * Paper's shaders paint every pixel: as a backdrop under copy, lower
+ * `opacity` so the text keeps its contrast.
+ *
+ * @example
+ * <PaperShader shader="mesh-gradient" preset="beach" />
+ * <PaperShader shader="god-rays" colors={['#a78bfa', '#f0abfc']} params={{ density: 0.4 }} opacity={0.6} />
+ * <PaperShader shader="liquid-metal" image="/logo.svg" />
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { PaperConfig } from '../runtime/paper.js';
+
+interface Props extends PaperConfig {
+	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
+	fixed?: boolean;
+	/** The colour shown before it draws, and without WebGL 2. Default transparent. */
+	background?: string;
+	/** Its opacity, 0–1, for backdrops under copy. Default 1. */
+	opacity?: number;
+	class?: string;
+}
+
+const { fixed = false, background, opacity = 1, class: className, ...config } = Astro.props;
+---
+
+<EffectCanvas
+	name="paper"
+	config={config}
+	fixed={fixed}
+	behind
+	background={background}
+	opacity={opacity}
+	class={className}
+/>
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { paperShader } from '../runtime/paper.js';
+
+	mount('[data-effect-paper]', paperShader);
+</script>

@@ -1,0 +1,37 @@
+---
+/**
+ * Ink: ink in water over whatever is behind it. The pointer stirs it and
+ * trails ink in the palette's colours; a click drops a bloom that bursts
+ * open and curls into eddies, then fades. Clear where there is no ink.
+ * See src/runtime/ink.js.
+ *
+ * Fills its nearest positioned ancestor, or the viewport with `fixed`.
+ * Needs WebGL 2; without it, or with prefers-reduced-motion, nothing is
+ * drawn and what is behind shows as it is.
+ *
+ * @example
+ * <section class="hero" style="position: relative">
+ *   <Ink colors={['#2216f7', '#55bdff', '#a702ff']} />
+ *   <h1>…</h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { InkConfig } from '../runtime/ink.js';
+
+interface Props extends InkConfig {
+	/** Fill the viewport (position: fixed). Default false. */
+	fixed?: boolean;
+	class?: string;
+}
+
+const { fixed = false, class: className, ...config } = Astro.props;
+---
+
+<EffectCanvas name="ink" config={config} fixed={fixed} class={className} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { ink } from '../runtime/ink.js';
+
+	mount('[data-effect-ink]', ink);
+</script>

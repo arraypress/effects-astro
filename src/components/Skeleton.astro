@@ -1,0 +1,93 @@
+---
+/**
+ * Skeleton: a loading placeholder with a shimmer passing over it, the
+ * shape of what is coming (a card, a row, lines of text), so a page that
+ * fills in late does not jump. Still with reduced motion. Colours follow
+ * the text colour, so it suits light and dark grounds.
+ *
+ * From the WaveGrid (SampleGrid) theme.
+ *
+ * @example
+ * <Skeleton variant="card" />
+ * <Skeleton variant="text" lines={4} />
+ */
+import '../styles/motion.css';
+
+interface Props {
+	/** The shape. Default `text`. */
+	variant?: 'card' | 'row' | 'text';
+	/** Lines, for `text`. Default 3. */
+	lines?: number;
+	/** A label for screen readers. Default `Loading`. */
+	label?: string;
+	class?: string;
+}
+
+const { variant = 'text', lines = 3, label = 'Loading', class: className } = Astro.props;
+---
+
+<div class:list={['effect-skeleton', `is-${variant}`, className]} role="status" aria-label={label}>
+	{
+		variant === 'card' && (
+			<>
+				<div class="fx-shimmer media" />
+				<div class="body">
+					<div class="fx-shimmer line" style="width: 33%" />
+					<div class="fx-shimmer line big" style="width: 80%" />
+					<div class="fx-shimmer line big" style="width: 66%" />
+				</div>
+			</>
+		)
+	}
+	{
+		variant === 'row' && (
+			<>
+				<div class="fx-shimmer thumb" />
+				<div class="body">
+					<div class="fx-shimmer line" style="width: 25%" />
+					<div class="fx-shimmer line big" style="width: 66%" />
+					<div class="fx-shimmer line" style="width: 100%" />
+				</div>
+			</>
+		)
+	}
+	{variant === 'text' && Array.from({ length: lines }, (_, i) => <div class="fx-shimmer line" style={`width: ${i === lines - 1 ? 60 : 100}%`} />)}
+</div>
+
+<style>
+	.effect-skeleton {
+		display: flex;
+		flex-direction: column;
+		gap: 0.6rem;
+	}
+	.effect-skeleton.is-row {
+		flex-direction: row;
+		align-items: center;
+		gap: 1rem;
+	}
+	.effect-skeleton > div,
+	.body > div {
+		border-radius: 6px;
+	}
+	.media {
+		aspect-ratio: 1;
+		border-radius: 12px !important;
+	}
+	.thumb {
+		flex: none;
+		width: 5rem;
+		height: 5rem;
+	}
+	.body {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+	.line {
+		height: 0.75rem;
+	}
+	.line.big {
+		height: 1rem;
+	}
+</style>

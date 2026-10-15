@@ -1,0 +1,12 @@
+---
+import GlowField from '@arraypress/effects-astro/GlowField.astro';
+import Grain from '@arraypress/effects-astro/Grain.astro';
+---
+<html><head><meta charset="utf-8"><title>glow and grain</title>
+<style>html,body{margin:0;background:#0b0b10;color:#fff;font-family:system-ui}.grid{display:grid;grid-template-columns:repeat(2,1fr)}section{position:relative;height:46vh;display:grid;place-items:center;border:1px solid #1d1d24;overflow:hidden}h2{position:relative;z-index:2;margin:0;font-size:32px}</style></head>
+<body><div class="grid">
+<section><GlowField variant="bloom" color="#a5b4fc" /><h2>bloom</h2></section>
+<section><GlowField variant="beam" color="#f0abfc" /><h2>beam</h2></section>
+<section><GlowField variant="horizon" color="#67e8f9" /><Grain /><h2>horizon + grain</h2></section>
+<section><GlowField variant="wash" color="#fbbf24" /><h2>wash</h2></section>
+</div></body></html>

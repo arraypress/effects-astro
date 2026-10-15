@@ -1,0 +1,90 @@
+/* ─────────────────────────────────────────────────────────────────────
+ * @arraypress/effects-astro/glass.css
+ *
+ * Liquid glass panels: `class="glass"` on any element. A pane over what is
+ * behind it rather than a box on it, built up in layers:
+ *   - the body: a thin tint, the backdrop blurred, saturated and
+ *     brightened, as glass concentrates the colour it passes;
+ *   - the rim (::before): a hairline that catches the light hardest at the
+ *     top left and again, fainter, at the bottom right;
+ *   - the depth: inset highlights along the top and bottom edges and a
+ *     soft shadow beneath;
+ *   - the sheen (::after): a soft light under the pointer, placed by
+ *     glass-sheen.js (`<Glass>` includes it).
+ *
+ * Tuned with custom properties: `--glass-tint` (the body's colour, default
+ * near-black), `--glass-tint-amount` (30%), `--glass-blur` (20px),
+ * `--glass-lift` (hover rise, 2px; 0 for none).
+ *
+ * From the LumiThemes site.
+ * ───────────────────────────────────────────────────────────────────── */
+
+.glass {
+	position: relative;
+	isolation: isolate;
+	border: 1px solid transparent;
+	background:
+		linear-gradient(160deg, rgb(255 255 255 / 0.1), rgb(255 255 255 / 0.02) 45%, rgb(255 255 255 / 0.05)),
+		color-mix(in srgb, var(--glass-tint, #08080a) var(--glass-tint-amount, 30%), transparent);
+	-webkit-backdrop-filter: blur(var(--glass-blur, 20px)) saturate(190%) brightness(1.3);
+	backdrop-filter: blur(var(--glass-blur, 20px)) saturate(190%) brightness(1.3);
+	box-shadow:
+		inset 0 1px 0 rgb(255 255 255 / 0.22),
+		inset 0 -1px 0 rgb(255 255 255 / 0.05),
+		inset 0 0 28px rgb(255 255 255 / 0.03),
+		0 20px 40px -20px rgb(0 0 0 / 0.65);
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glass::before,
+.glass::after {
+	content: '';
+	position: absolute;
+	inset: -1px;
+	border-radius: inherit;
+	pointer-events: none;
+}
+
+/* The rim: a gradient on the border box with the padding box masked out. */
+.glass::before {
+	padding: 1px;
+	background: linear-gradient(135deg, rgb(255 255 255 / 0.55), rgb(255 255 255 / 0.12) 30%, rgb(255 255 255 / 0.04) 60%, rgb(255 255 255 / 0.28));
+	-webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+	-webkit-mask-composite: xor;
+	mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+	mask-composite: exclude;
+	transition: opacity 0.2s ease;
+	opacity: 0.8;
+}
+
+/* The sheen: where the pointer is, only while it is over the panel. */
+.glass::after {
+	z-index: -1;
+	background: radial-gradient(circle at var(--glass-x, 50%) var(--glass-y, 0%), rgb(255 255 255 / 0.14), transparent 55%);
+	opacity: 0;
+	transition: opacity 0.3s ease;
+}
+
+.glass:hover {
+	transform: translateY(calc(var(--glass-lift, 2px) * -1));
+	box-shadow:
+		inset 0 1px 0 rgb(255 255 255 / 0.32),
+		inset 0 -1px 0 rgb(255 255 255 / 0.08),
+		inset 0 0 28px rgb(255 255 255 / 0.05),
+		0 26px 48px -20px rgb(0 0 0 / 0.7);
+}
+.glass:hover::before,
+.glass:hover::after {
+	opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.glass,
+	.glass::before,
+	.glass::after {
+		transition: none;
+	}
+	.glass:hover {
+		transform: none;
+	}
+}

@@ -1,0 +1,69 @@
+---
+/**
+ * PixelGlitchText: one line of text that breaks into pixels under the
+ * pointer and knits back together behind it. With `stroke`, a hollow
+ * outline at rest that the pixels fill in. See src/runtime/pixel-glitch.js.
+ *
+ * With `fit`, the text is sized to span its parent's width (a footer
+ * wordmark). Any other attribute is passed to the element.
+ *
+ * @example
+ * <footer>
+ *   <PixelGlitchText as="div" class="wordmark" fit stroke={1.5} aria-hidden="true">Northwave</PixelGlitchText>
+ * </footer>
+ */
+import type { HTMLTag } from 'astro/types';
+import type { PixelGlitchConfig } from '../runtime/pixel-glitch.js';
+
+interface Props extends PixelGlitchConfig {
+	/** The element to render. Default `span`. */
+	as?: HTMLTag;
+	/** Size the text to span its parent's width. Default false. */
+	fit?: boolean;
+	class?: string;
+	[attribute: string]: unknown;
+}
+
+const { as: Tag = 'span', fit = false, cell, reach, decay, block, shift, stroke, class: className, ...attributes } = Astro.props;
+---
+
+<Tag
+	class:list={['effect-pixel-glitch', { 'is-outline': (stroke ?? 0) > 0 }, className]}
+	data-effect-pixel-glitch
+	data-effect-config={JSON.stringify({ cell, reach, decay, block, shift, stroke })}
+	data-fit-text={fit ? '' : undefined}
+	style={stroke ? `--glitch-stroke: ${stroke}px` : undefined}
+	{...attributes}
+>
+	<slot />
+</Tag>
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { pixelGlitch } from '../runtime/pixel-glitch.js';
+	import { fitText } from '../runtime/fit-text.js';
+
+	mount('[data-fit-text]', fitText);
+	mount('[data-effect-pixel-glitch]', pixelGlitch);
+</script>
+
+<style>
+	.effect-pixel-glitch {
+		position: relative;
+		white-space: nowrap;
+	}
+	/* The outline at rest, in CSS until the canvas has drawn and without JS. */
+	.effect-pixel-glitch.is-outline {
+		-webkit-text-fill-color: transparent;
+		-webkit-text-stroke: var(--glitch-stroke) currentColor;
+	}
+	/* Once the canvas draws the text, the element's own is only for layout. */
+	.effect-pixel-glitch:global(.is-ready) {
+		-webkit-text-fill-color: transparent;
+		-webkit-text-stroke: 0;
+	}
+	.effect-pixel-glitch :global(.effect-pixel-glitch-canvas) {
+		position: absolute;
+		pointer-events: none;
+	}
+</style>

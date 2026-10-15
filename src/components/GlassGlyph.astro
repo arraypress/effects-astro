@@ -1,0 +1,37 @@
+---
+/**
+ * GlassGlyph: a character or a logo as a thick slab of moulded glass over a
+ * dark ground lit by one coloured light, which follows the pointer. The
+ * glass bends the light through its rims and glints where it faces it.
+ * See src/runtime/glass-glyph.js.
+ *
+ * Opaque: it is the whole background of what it fills (its nearest
+ * positioned ancestor, or the viewport with `fixed`). Without WebGL the
+ * `background` colour shows.
+ *
+ * @example
+ * <section class="hero" style="position: relative">
+ *   <GlassGlyph text="7" font="900 Anton, sans-serif" colors={['#c6ff00', '#9fb08a']} />
+ *   <h1>…</h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { GlassGlyphConfig } from '../runtime/glass-glyph.js';
+
+interface Props extends GlassGlyphConfig {
+	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
+	fixed?: boolean;
+	class?: string;
+}
+
+const { fixed = false, class: className, ...config } = Astro.props;
+---
+
+<EffectCanvas name="glass-glyph" config={config} fixed={fixed} class={className} behind background={config.background ?? '#050505'} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { glassGlyph } from '../runtime/glass-glyph.js';
+
+	mount('[data-effect-glass-glyph]', glassGlyph);
+</script>

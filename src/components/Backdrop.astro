@@ -1,0 +1,57 @@
+---
+/**
+ * Backdrop: fifteen animated shader backgrounds for a hero or section,
+ * tinted from the page's `--color-accent` with no settings: aurora, mesh,
+ * waves, grid, particles, grain, liquid, mesh-gradient, grain-gradient,
+ * water-plane, gradient-plane, gradient-sphere, beams, band-lens and silk.
+ * See src/runtime/backdrop.js.
+ *
+ * Fills its nearest positioned ancestor (or the viewport with `fixed`)
+ * and fades out towards the bottom by default. Most are light over the
+ * page, clear where they are dark; `liquid` is an opaque surface whose
+ * ripples follow the pointer. Pass `static` for one frame when it is
+ * wallpaper behind body copy. Without WebGL, soft gradients in the same
+ * colours stand in.
+ *
+ * @example
+ * <section style="position: relative">
+ *   <Backdrop effect="aurora" speed={0.6} intensity={0.7} />
+ *   <h1>Your hero</h1>
+ * </section>
+ * <Backdrop effect="mesh-gradient" static frame={14} intensity={0.45} fade="none" fixed />
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { BackdropConfig } from '../runtime/backdrop.js';
+
+interface Props extends BackdropConfig {
+	/** Its opacity, 0–1, to fade it against the section without changing the shader. Default 1. */
+	opacity?: number;
+	/** CSS `mix-blend-mode` with what is behind it (`screen`, `lighten`, `plus-lighter`…), for layering over imagery. Default normal. */
+	blend?: string;
+	/** Fade it out towards an edge, so it melts into the page: 'bottom', 'top', 'both' (top and bottom) or 'none'. Default 'bottom'. */
+	fade?: 'none' | 'bottom' | 'top' | 'both';
+	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
+	fixed?: boolean;
+	class?: string;
+}
+
+const { opacity = 1, blend, fade = 'bottom', fixed = false, class: className, ...config } = Astro.props;
+---
+
+<EffectCanvas
+	name="backdrop"
+	config={config}
+	fixed={fixed}
+	behind
+	opacity={opacity}
+	blend={blend}
+	fade={fade === 'none' ? false : fade}
+	class={className}
+/>
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { backdrop } from '../runtime/backdrop.js';
+
+	mount('[data-effect-backdrop]', backdrop);
+</script>

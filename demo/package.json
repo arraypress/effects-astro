@@ -1,0 +1,13 @@
+{
+  "name": "effects-astro-demo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build"
+  },
+  "dependencies": {
+    "@arraypress/effects-astro": "file:..",
+    "astro": "^7.3.8"
+  }
+}

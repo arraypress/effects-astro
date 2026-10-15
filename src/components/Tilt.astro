@@ -1,0 +1,78 @@
+---
+/**
+ * Tilt: a card, an image or an object that leans towards the pointer in
+ * perspective while it is over it, with a soft glare that follows, and
+ * settles back when it leaves. See src/runtime/tilt.js.
+ *
+ * A few degrees reads as depth; more reads as motion sickness. Off with
+ * prefers-reduced-motion and on touch screens (it simply sits still).
+ *
+ * @example
+ * <Tilt as="a" href="/release" class="card" max={6} glare>…</Tilt>
+ */
+import type { HTMLTag } from 'astro/types';
+
+interface Props {
+	/** The element to render. Default `div`. */
+	as?: HTMLTag;
+	/** The most it leans, degrees. Default 8. */
+	max?: number;
+	/** The perspective's distance, px; smaller is more dramatic. Default 900. */
+	perspective?: number;
+	/** A light glare that follows the pointer. Default false. */
+	glare?: boolean;
+	/** How far it lifts towards the viewer while tilted, px. Default 0. */
+	lift?: number;
+	/** A selector for a larger region to follow the pointer over. Default the element. */
+	within?: string;
+	class?: string;
+	[attribute: string]: unknown;
+}
+
+const { as: Tag = 'div', max, perspective = 900, glare = false, lift = 0, within, class: className, ...attributes } = Astro.props;
+---
+
+<Tag
+	class:list={['effect-tilt', { 'has-glare': glare }, className]}
+	data-effect-tilt
+	data-effect-config={JSON.stringify({ max, within })}
+	style={`--tilt-perspective: ${perspective}px; --tilt-lift: ${lift}px`}
+	{...attributes}
+>
+	<slot />
+</Tag>
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { tilt } from '../runtime/tilt.js';
+
+	mount('[data-effect-tilt]', tilt);
+</script>
+
+<style>
+	.effect-tilt {
+		position: relative;
+		transform: perspective(var(--tilt-perspective)) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+		transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+		transform-style: preserve-3d;
+		will-change: transform;
+	}
+	/* While following the pointer it moves at once; only settling back eases. */
+	.effect-tilt:global(.is-tilting) {
+		transform: perspective(var(--tilt-perspective)) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) translateZ(var(--tilt-lift));
+		transition: transform 0.12s linear;
+	}
+	.effect-tilt.has-glare::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		pointer-events: none;
+		background: radial-gradient(circle at var(--glare-x, 50%) var(--glare-y, 50%), rgb(255 255 255 / 0.22), transparent 55%);
+		opacity: 0;
+		transition: opacity 0.3s ease;
+	}
+	.effect-tilt.has-glare:global(.is-tilting)::after {
+		opacity: 1;
+	}
+</style>
