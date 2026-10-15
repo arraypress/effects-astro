@@ -1,21 +1,19 @@
 ---
 /**
- * Backdrop: fifteen animated shader backgrounds for a hero or section,
- * tinted from the page's `--color-accent` with no settings: aurora, mesh,
- * waves, grid, particles, grain, liquid, mesh-gradient, grain-gradient,
- * water-plane, gradient-plane, gradient-sphere, beams, band-lens and silk.
- * See src/runtime/backdrop.js.
+ * Backdrop: six animated shader backgrounds for a hero or section,
+ * tinted from `--color-accent` with no settings (the page's, or a
+ * section's own): mesh-gradient, grain-gradient, silk, band-lens, grid
+ * and waves. See src/runtime/backdrop.js.
  *
  * Fills its nearest positioned ancestor (or the viewport with `fixed`)
- * and fades out towards the bottom by default. Most are light over the
- * page, clear where they are dark; `liquid` is an opaque surface whose
- * ripples follow the pointer. Pass `static` for one frame when it is
+ * and fades out towards the bottom by default. Each is light over the
+ * page, clear where it is dark. Pass `static` for one frame when it is
  * wallpaper behind body copy. Without WebGL, soft gradients in the same
  * colours stand in.
  *
  * @example
  * <section style="position: relative">
- *   <Backdrop effect="aurora" speed={0.6} intensity={0.7} />
+ *   <Backdrop effect="silk" speed={0.6} intensity={0.7} />
  *   <h1>Your hero</h1>
  * </section>
  * <Backdrop effect="mesh-gradient" static frame={14} intensity={0.45} fade="none" fixed />

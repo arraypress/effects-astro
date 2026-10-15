@@ -1,23 +1,21 @@
 /**
  * @module @arraypress/effects-astro/backdrop
  *
- * Fifteen animated backgrounds for a hero or a section, each one shader
- * tinted from the page's own accent colour: aurora, mesh, waves, grid,
- * particles, grain, liquid, mesh-gradient, grain-gradient, water-plane,
- * gradient-plane, gradient-sphere, beams, band-lens and silk. The shaders
- * are in ./backdrops, one a file.
+ * Six animated backgrounds for a hero or a section, each one shader
+ * tinted from the colour tokens it sits under: mesh-gradient, grain-gradient,
+ * silk, band-lens, grid and waves. The shaders are in ./backdrops, one a
+ * file.
  *
- * Colours: up to four. Those not given come from the page's live
- * `--color-accent`: the accent itself, the accent 55% of the way to
+ * Colours: up to four. Those not given come from the live `--color-accent`
+ * where the backdrop sits (a section can set its own): the accent itself, the accent 55% of the way to
  * `--color-bg` (a pale tint on a light page, a deep shade on a dark one),
  * the accent's hue turned +36°, and its hue turned −32° and lifted. They
  * are read when the effect starts, so a theme's accent tints every
  * backdrop with no settings, and again when `setColors` gives new ones.
  *
- * Most draw light whose alpha follows its brightness, so the page shows
- * through where they are dark. `liquid` is opaque, a surface for a button
- * or panel: the pointer moving over it sets off ripples, and a press a
- * bigger one. With `interactive`, the others lean towards the pointer.
+ * Each draws light whose alpha follows its brightness, so the page shows
+ * through where it is dark. With `interactive`, it leans towards the
+ * pointer.
  *
  * `static` draws one frame, at `frame` seconds, and never runs the loop:
  * for a backdrop that is wallpaper rather than a feature (a fixed,
@@ -25,35 +23,27 @@
  * With prefers-reduced-motion, one frame at 0. Without WebGL, soft
  * gradients in the same colours stand in.
  *
- * Ported from @arraypress/effect-canvas-astro, which this replaces.
+ * Ported from @arraypress/effect-canvas-astro, which this replaces; its
+ * fainter and plainer shaders were left behind (`<GlowField>` and `<Grain>`
+ * do the plain glows and grain in CSS).
  */
 
 import { createStage } from './stage.js';
 import { parseColor, mixOklab } from './color.js';
 import { canHover, prefersReducedMotion } from './device.js';
-import { pointerIn, pressAt, CLICK_IGNORE } from './pointer.js';
+import { pointerIn } from './pointer.js';
 import { watchColors } from './mount.js';
-import { AURORA } from './backdrops/aurora.js';
-import { MESH } from './backdrops/mesh.js';
 import { WAVES } from './backdrops/waves.js';
 import { GRID } from './backdrops/grid.js';
-import { PARTICLES } from './backdrops/particles.js';
-import { GRAIN } from './backdrops/grain.js';
-import { LIQUID } from './backdrops/liquid.js';
 import { MESH_GRADIENT } from './backdrops/mesh-gradient.js';
 import { GRAIN_GRADIENT } from './backdrops/grain-gradient.js';
-import { WATER_PLANE } from './backdrops/water-plane.js';
-import { GRADIENT_PLANE } from './backdrops/gradient-plane.js';
-import { GRADIENT_SPHERE } from './backdrops/gradient-sphere.js';
-import { BEAMS } from './backdrops/beams.js';
 import { BAND_LENS } from './backdrops/band-lens.js';
 import { SILK } from './backdrops/silk.js';
 
 /** @typedef {import('./color.js').Rgb} Rgb */
 
 /**
- * @typedef {'aurora' | 'mesh' | 'waves' | 'grid' | 'particles' | 'grain' | 'liquid' | 'mesh-gradient'
- *   | 'grain-gradient' | 'water-plane' | 'gradient-plane' | 'gradient-sphere' | 'beams' | 'band-lens' | 'silk'} BackdropName
+ * @typedef {'mesh-gradient' | 'grain-gradient' | 'silk' | 'band-lens' | 'grid' | 'waves'} BackdropName
  */
 
 /**
@@ -69,29 +59,18 @@ import { SILK } from './backdrops/silk.js';
 
 /** Every backdrop's fragment shader, by name. */
 export const BACKDROPS = {
-	aurora: AURORA,
-	mesh: MESH,
-	waves: WAVES,
-	grid: GRID,
-	particles: PARTICLES,
-	grain: GRAIN,
-	liquid: LIQUID,
 	'mesh-gradient': MESH_GRADIENT,
 	'grain-gradient': GRAIN_GRADIENT,
-	'water-plane': WATER_PLANE,
-	'gradient-plane': GRADIENT_PLANE,
-	'gradient-sphere': GRADIENT_SPHERE,
-	beams: BEAMS,
-	'band-lens': BAND_LENS,
 	silk: SILK,
+	'band-lens': BAND_LENS,
+	grid: GRID,
+	waves: WAVES,
 };
 
 /** The accent when the page sets none: a bright green. */
 const ACCENT = /** @type {Rgb} */ ([0, 0.89, 0.45]);
 /** The page background when the page sets none. */
 const PAGE = /** @type {Rgb} */ ([0, 0, 0]);
-/** Ripples `liquid` keeps at once (its `uRipples[8]`); the oldest is overwritten. */
-const RIPPLES = 8;
 /** How far the smoothed pointer closes on the real one each frame. */
 const EASE = 0.06;
 
@@ -220,14 +199,15 @@ export function fallbackBackground(palette) {
 }
 
 /**
- * The page's palette now: the accent and background tokens, under the
- * colours given.
+ * The palette now: the accent and background tokens as the element sees
+ * them (so a section can set its own), under the colours given.
  *
+ * @param {HTMLElement} el The backdrop's element.
  * @param {string[] | undefined} colors Colours given.
  * @returns {[Rgb, Rgb, Rgb, Rgb]} The four colours.
  */
-function livePalette(colors) {
-	const styles = getComputedStyle(document.documentElement);
+function livePalette(el, colors) {
+	const styles = getComputedStyle(el);
 	return backdropPalette({
 		accent: styles.getPropertyValue('--color-accent'),
 		background: styles.getPropertyValue('--color-bg'),
@@ -250,12 +230,9 @@ export function backdrop(el, config) {
 	}
 	const { speed, intensity, frame } = backdropSettings(config);
 	const reduced = prefersReducedMotion();
-	let palette = livePalette(config.colors);
+	let palette = livePalette(el, config.colors);
 	const start = performance.now();
 	const mouse = { x: 0.5, y: 0.5 };
-	const ripples = new Float32Array(RIPPLES * 4);
-	const wake = { x: -1, y: -1, at: 0, slot: 0 };
-	let seen = { x: -1, y: -1 };
 
 	/**
 	 * The shader's clock at a moment.
@@ -265,22 +242,6 @@ export function backdrop(el, config) {
 	 */
 	const clock = (now) => ((now - start) / 1000) * speed;
 
-	/**
-	 * Starts a ripple on `liquid`; a move only every 120ms or so far, so a
-	 * swipe reads as a wake, not noise.
-	 *
-	 * @param {number} x Where, 0 (left) to 1.
-	 * @param {number} y Where, 0 (bottom) to 1.
-	 * @param {number} strength How strong.
-	 * @param {number} now The time, ms.
-	 * @param {boolean} [force=false] Start it however close the last one was (a press).
-	 */
-	const ripple = (x, y, strength, now, force = false) => {
-		if (!force && Math.hypot(x - wake.x, y - wake.y) < 0.07 && now - wake.at < 120) return;
-		Object.assign(wake, { x, y, at: now });
-		ripples.set([x, y, clock(now), strength], wake.slot * 4);
-		wake.slot = (wake.slot + 1) % RIPPLES;
-	};
 
 	const { stage, stop } = createStage(el, {
 		fragment,
@@ -290,12 +251,6 @@ export function backdrop(el, config) {
 				const p = pointerIn(el);
 				mouse.x += ((p.inside ? p.x : 0.5) - mouse.x) * EASE;
 				mouse.y += ((p.inside ? p.y : 0.5) - mouse.y) * EASE;
-			}
-			if (!still && config.effect === 'liquid') {
-				const p = pointerIn(el);
-				if (p.inside && (p.x !== seen.x || p.y !== seen.y)) ripple(p.x, p.y, 0.55, now);
-				seen = p;
-				gl.uniform4fv(uniform('uRipples'), ripples);
 			}
 			gl.uniform1f(uniform('uTime'), reduced ? 0 : still ? frame : clock(now));
 			gl.uniform2f(uniform('uMouse'), still ? 0.5 : mouse.x, still ? 0.5 : mouse.y);
@@ -308,28 +263,13 @@ export function backdrop(el, config) {
 		return stop;
 	}
 
-	/**
-	 * A press on `liquid` sets off a strong ripple. Presses on links,
-	 * buttons and fields over it are theirs, unless the backdrop is inside
-	 * one (a button's own surface).
-	 *
-	 * @param {PointerEvent} e The press.
-	 */
-	const onPress = (e) => {
-		const at = pressAt(el, e, el.closest(CLICK_IGNORE) ? '[data-effect-ignore]' : CLICK_IGNORE);
-		if (at) ripple(at.x, at.y, 1.3, performance.now(), true);
-	};
-	const host = el.parentElement ?? el;
-	const presses = config.effect === 'liquid' && !stage.still;
-	if (presses) host.addEventListener('pointerdown', onPress, { passive: true });
 
 	const unwatch = watchColors(el, (next) => {
-		palette = livePalette(next.colors);
+		palette = livePalette(el, next.colors);
 		if (stage.still) stage.redraw();
 	});
 	return () => {
 		stop();
 		unwatch();
-		if (presses) host.removeEventListener('pointerdown', onPress);
 	};
 }

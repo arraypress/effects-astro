@@ -18,6 +18,11 @@
  * real text elsewhere on the page). The beam stops for reduced motion;
  * without SVG filters a faint solid fill shows.
  *
+ * With `spotlight` (on by default), a soft light under the pointer brings
+ * the outline up to full strength and fills the letters around it: the
+ * spotlight runtime (src/runtime/spotlight.js) moves the light, as it does
+ * for `<SpotlightText>`. Nothing on a touch screen.
+ *
  * From the ArrayPress theme's footer.
  *
  * @example
@@ -41,6 +46,10 @@ interface Props {
 	beam?: boolean;
 	/** Seconds the beam takes to cross. Default 5.5. */
 	speed?: number;
+	/** A light under the pointer that fills the letters. Default true. */
+	spotlight?: boolean;
+	/** The light's radius, a share of the type size. Default 0.6. */
+	radius?: number;
 	/** Letter spacing, em. Default -0.02. */
 	tracking?: number;
 	/** CSS font-family. Default inherited. */
@@ -59,6 +68,8 @@ const {
 	opacity = 0.42,
 	beam = true,
 	speed = 5.5,
+	spotlight = true,
+	radius = 0.6,
 	tracking = -0.02,
 	font = 'inherit',
 	weight = 700,
@@ -96,8 +107,23 @@ const vars = [
 				</span>
 			)
 		}
+		{
+			spotlight && (
+				<span class="spot" data-effect-outline-spot data-effect-config={JSON.stringify({ radius, reach: 0 })}>
+					<span class="word fill">{text}</span>
+					<span class="word">{text}</span>
+				</span>
+			)
+		}
 	</div>
 </div>
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { spotlight } from '../runtime/spotlight.js';
+
+	mount('[data-effect-outline-spot]', spotlight);
+</script>
 
 <style>
 	.effect-outline-wordmark {
@@ -156,6 +182,27 @@ const vars = [
 		-webkit-mask-repeat: no-repeat;
 		mask-repeat: no-repeat;
 		animation: effect-outline-beam var(--ow-speed) linear infinite;
+	}
+	/* The light: the type size lives here too, so the runtime sizes the
+	   light from it, and both copies below are masked to it. */
+	.spot {
+		position: absolute;
+		inset: 0;
+		font-size: var(--ow-size);
+	}
+	.spot .word {
+		position: absolute;
+		inset: 0;
+		opacity: 1;
+		-webkit-mask-image: radial-gradient(circle var(--spot-r, 0px) at var(--spot-x, 50%) var(--spot-y, 50%), #000 0%, rgb(0 0 0 / 0.6) 45%, transparent 100%);
+		mask-image: radial-gradient(circle var(--spot-r, 0px) at var(--spot-x, 50%) var(--spot-y, 50%), #000 0%, rgb(0 0 0 / 0.6) 45%, transparent 100%);
+	}
+	/* Inside the outline, a softer, tighter fill. */
+	.spot .fill {
+		filter: none;
+		color: var(--ow-color);
+		-webkit-mask-image: radial-gradient(circle calc(var(--spot-r, 0px) * 0.7) at var(--spot-x, 50%) var(--spot-y, 50%), #000 0%, rgb(0 0 0 / 0.55) 50%, transparent 100%);
+		mask-image: radial-gradient(circle calc(var(--spot-r, 0px) * 0.7) at var(--spot-x, 50%) var(--spot-y, 50%), #000 0%, rgb(0 0 0 / 0.55) 50%, transparent 100%);
 	}
 	@keyframes effect-outline-beam {
 		from {

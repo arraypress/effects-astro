@@ -17,7 +17,7 @@ export interface DotGridConfig {
 	push?: number;
 	/** The pointer's swell, CSS px; 0 for none. Default 210. */
 	radius?: number;
-	/** Drop one ripple from the middle soon after load. Default true. */
+	/** Drop one ripple from the middle soon after it first comes on screen. Default true. */
 	greet?: boolean;
 	/** Whether clicks drop ripples. Default true. */
 	ripples?: boolean;

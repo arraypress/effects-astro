@@ -42,11 +42,11 @@ AsciiRain: data rain on a rippling surface, drawn in text characters, with red a
 
 ## `<Backdrop>`
 
-Backdrop: fifteen animated shader backgrounds for a hero or section, tinted from the page's `--color-accent` with no settings: aurora, mesh, waves, grid, particles, grain, liquid, mesh-gradient, grain-gradient, water-plane, gradient-plane, gradient-sphere, beams, band-lens and silk. See src/runtime/backdrop.js.
+Backdrop: six animated shader backgrounds for a hero or section, tinted from `--color-accent` with no settings (the page's, or a section's own): mesh-gradient, grain-gradient, silk, band-lens, grid and waves. See src/runtime/backdrop.js.
 
 ```astro
 <section style="position: relative">
-  <Backdrop effect="aurora" speed={0.6} intensity={0.7} />
+  <Backdrop effect="silk" speed={0.6} intensity={0.7} />
   <h1>Your hero</h1>
 </section>
 <Backdrop effect="mesh-gradient" static frame={14} intensity={0.45} fade="none" fixed />
@@ -55,12 +55,12 @@ Backdrop: fifteen animated shader backgrounds for a hero or section, tinted from
 | Prop | Type | |
 |---|---|---|
 | `effect` (required) | `BackdropName` | Which backdrop. |
-| `colors` | `string[]` | Up to four colours (hex or `rgb()`); those missing come from `--color-accent`: the accent, the accent towards `--color-bg`, its hue +36°, its hue −32° lifted. Only mesh-gradient, grain-gradient and silk use the fourth. Default all four from the accent. |
+| `colors` | `string[]` | Up to four colours (hex or `rgb()`); those missing come from `--color-accent` where it sits: the accent, the accent towards `--color-bg`, its hue +36°, its hue −32° lifted. Only mesh-gradient, grain-gradient and silk use the fourth. Default all four from the accent. |
 | `speed` | `number` | How fast it moves, 0–4. Default 1. |
 | `intensity` | `number` | How strong it is (brightness and contrast, not opacity), 0–2. Default 1. |
 | `static` | `boolean` | One frame, never the loop: for a backdrop that is wallpaper. Default false. |
 | `frame` | `number` | With `static`, the moment drawn, in seconds. Default 12. |
-| `interactive` | `boolean` | Lean towards the pointer, on devices that hover. `liquid` ripples under the pointer either way. Default false. |
+| `interactive` | `boolean` | Lean towards the pointer, on devices that hover. Default false. |
 | `opacity` | `number` | Its opacity, 0–1, to fade it against the section without changing the shader. Default 1. |
 | `blend` | `string` | CSS `mix-blend-mode` with what is behind it (`screen`, `lighten`, `plus-lighter`…), for layering over imagery. Default normal. |
 | `fade` | `'none' \| 'bottom' \| 'top' \| 'both'` | Fade it out towards an edge, so it melts into the page: 'bottom', 'top', 'both' (top and bottom) or 'none'. Default 'bottom'. |
@@ -119,7 +119,7 @@ DotGrid: a sea of dots you can drop stones into. A slow current moves through a 
 | `life` | `number` | Seconds before a ripple is spent. Default 2.6. |
 | `push` | `number` | How far a ripple displaces dots, CSS px. Default 9. |
 | `radius` | `number` | The pointer's swell, CSS px; 0 for none. Default 210. |
-| `greet` | `boolean` | Drop one ripple from the middle soon after load. Default true. |
+| `greet` | `boolean` | Drop one ripple from the middle soon after it first comes on screen. Default true. |
 | `ripples` | `boolean` | Whether clicks drop ripples. Default true. |
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
 | `class` | `string` | Classes for the element. |
@@ -376,6 +376,8 @@ OutlineWordmark: a name at enormous scale, drawn as one outline, cropped so it s
 | `opacity` | `number` | How strong the resting outline is, 0–1. Default 0.42. |
 | `beam` | `boolean` | The travelling beam. Default true. |
 | `speed` | `number` | Seconds the beam takes to cross. Default 5.5. |
+| `spotlight` | `boolean` | A light under the pointer that fills the letters. Default true. |
+| `radius` | `number` | The light's radius, a share of the type size. Default 0.6. |
 | `tracking` | `number` | Letter spacing, em. Default -0.02. |
 | `font` | `string` | CSS font-family. Default inherited. |
 | `weight` | `number \| string` | CSS font-weight. Default 700. |

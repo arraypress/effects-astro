@@ -1,0 +1,28 @@
+---
+/** The gallery's Wordmarks page. */
+import Gallery from '../layouts/Gallery.astro';
+import Hero from '../components/Hero.astro';
+import SpotlightText from '@arraypress/effects-astro/SpotlightText.astro';
+import PixelGlitchText from '@arraypress/effects-astro/PixelGlitchText.astro';
+import OutlineWordmark from '@arraypress/effects-astro/OutlineWordmark.astro';
+import FitText from '@arraypress/effects-astro/FitText.astro';
+import { line } from '../gallery';
+---
+
+<Gallery page="Wordmarks">
+	<Hero id="spotlight-text" name="SpotlightText" code={`<SpotlightText as="div" fit>LumiThemes</SpotlightText>`} size="short" align="bottom">
+		<div style="width: 88vw"><SpotlightText as="div" fit style="font-weight: 800; letter-spacing: -0.05em; line-height: 0.9">LumiThemes</SpotlightText></div>
+	</Hero>
+	<Hero id="pixel-glitch-text" name="PixelGlitchText" code={`<PixelGlitchText as="div" fit>Northwave</PixelGlitchText>`} size="short" align="bottom">
+		<div style="width: 88vw"><PixelGlitchText as="div" fit style="font-weight: 800; letter-spacing: -0.05em; line-height: 0.85">Northwave</PixelGlitchText></div>
+	</Hero>
+	<Hero id="outline-wordmark" name="OutlineWordmark" code={`<OutlineWordmark text="ArrayPress" color="#a78bfa" />`} size="short" align="bottom" style="padding-bottom: 0">
+		<div style="width: 88vw">
+			<p class="lede" style="margin: 0 0 3rem">Made in Edinburgh. Move over the name.</p>
+			<OutlineWordmark text="ArrayPress" color="#a78bfa" />
+		</div>
+	</Hero>
+	<Hero id="fit-text" name="FitText" code={`<FitText as="div">Make it fit.</FitText>`} size="short" align="bottom">
+		<div style="width: 88vw"><FitText as="div" style="font-weight: 800; letter-spacing: -0.05em; line-height: 0.9">Make it fit.</FitText></div>
+	</Hero>
+</Gallery>

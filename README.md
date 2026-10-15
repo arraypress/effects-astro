@@ -43,7 +43,7 @@ Astro 6 or 7. The runtime underneath (`@arraypress/effects-astro`) works without
 | `<DotGrid>` | A sea of dots with a drifting current; a click sends a ripple across | Canvas |
 | `<SignalLines>` | Layered waveform lines with pulses of light running along them | Canvas |
 | `<WaveBars>` | A mirrored bar waveform retuning itself, a band of light drifting across | Canvas |
-| `<Backdrop>` | Fifteen shader backgrounds by name (`aurora`, `mesh`, `waves`, `grid`, `particles`, `grain`, `liquid`, `mesh-gradient`, `grain-gradient`, `water-plane`, `gradient-plane`, `gradient-sphere`, `beams`, `band-lens`, `silk`), tinted from the page's `--color-accent` unless given `colors`; `static` for wallpaper | WebGL |
+| `<Backdrop>` | Six shader backgrounds by name (`mesh-gradient`, `grain-gradient`, `silk`, `band-lens`, `grid`, `waves`), tinted from the page's `--color-accent` unless given `colors`; `static` for wallpaper | WebGL |
 | `<WorldRoutes>` | A dotted world map with comets of light arcing between cities | Canvas |
 | `<GlowField>` | A still light (bloom, beam, horizon or wash) to lay over a background | CSS |
 | `<Grain>` | Film grain, to dither smooth gradients | CSS |
@@ -67,7 +67,7 @@ Astro 6 or 7. The runtime underneath (`@arraypress/effects-astro`) works without
 |---|---|---|
 | `<SpotlightText>` | An outline a soft light under the pointer fills in | CSS + JS |
 | `<PixelGlitchText>` | Text that breaks into pixels under the pointer | Canvas |
-| `<OutlineWordmark>` | A huge outlined name sinking out of the page, a beam passing through | CSS + SVG |
+| `<OutlineWordmark>` | A huge outlined name sinking out of the page, a beam passing through and a light under the pointer filling the letters | CSS + SVG |
 | `<FitText>` | One line sized to span its parent exactly | JS |
 | `<ScrambleText>` | Text resolving out of random characters | JS |
 | `<Typewriter>` | Phrases typed one after another behind a caret | JS |
@@ -142,7 +142,7 @@ The package's main entry is the runtime the components are built on, for use wit
 
 ## Demo
 
-`demo/` is an Astro site: one long page with every effect as a working hero, each Backdrop and Paper shader on its own (a hero's effect runs only while it is near the screen):
+`demo/` is an Astro site: a page for each group (backgrounds, Backdrop, Paper, logos, wordmarks, text, surfaces), every effect on it a working hero, each Backdrop and Paper shader on its own (a hero's effect runs only while it is near the screen):
 
 ```bash
 cd demo && npm install && npm run dev   # http://127.0.0.1:4400

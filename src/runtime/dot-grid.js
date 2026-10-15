@@ -34,7 +34,7 @@ import { pressAt } from './pointer.js';
  * @property {number} [life=2.6] Seconds before a ripple is spent.
  * @property {number} [push=9] How far a ripple displaces dots, CSS px (keep under half the pitch).
  * @property {number} [radius=210] The pointer's swell, CSS px; 0 for none.
- * @property {boolean} [greet=true] Drop one ripple from the middle soon after load, so it is clear it can be touched.
+ * @property {boolean} [greet=true] Drop one ripple from the middle soon after it first comes on screen, so it is clear it can be touched.
  * @property {boolean} [ripples=true] Whether clicks drop ripples.
  */
 
@@ -97,6 +97,8 @@ export function dotGrid(el, config) {
 	let cols = 0;
 	let rows = 0;
 	let greeted = config.greet === false;
+	/** When the first frame was drawn, seconds: the greeting waits for the grid to be seen, not merely set up. */
+	let shown = -1;
 	const start = performance.now();
 	/** The pointer, where it is (t) and eased towards it (m), in CSS px over the element. */
 	const ptr = { tx: -9999, ty: -9999, mx: -9999, my: -9999 };
@@ -127,7 +129,8 @@ export function dotGrid(el, config) {
 		const t = now * 0.16;
 		ptr.mx += (ptr.tx - ptr.mx) * 0.06;
 		ptr.my += (ptr.ty - ptr.my) * 0.06;
-		if (moving && !greeted && now > 0.9) {
+		if (shown < 0) shown = now;
+		if (moving && !greeted && now - shown > 0.9) {
 			greeted = true;
 			drop(w * 0.5, h * 0.42, 0.85, now);
 		}

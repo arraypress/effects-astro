@@ -13,8 +13,6 @@ interface Props {
 	name: string;
 	/** The line that makes it. */
 	code: string;
-	/** The group it is listed under. */
-	group: string;
 	/** The ground the copy sits on. Default `dark`. */
 	theme?: 'dark' | 'light';
 	/** Full screen or a shorter band. Default `full`. */
@@ -27,7 +25,7 @@ interface Props {
 	style?: string;
 }
 
-const { id, name, code, group, theme = 'dark', size = 'full', align = 'center', scrim = false, style } = Astro.props;
+const { id, name, code, theme = 'dark', size = 'full', align = 'center', scrim = false, style } = Astro.props;
 ---
 
 <section
@@ -36,7 +34,6 @@ const { id, name, code, group, theme = 'dark', size = 'full', align = 'center', 
 	style={style}
 	data-hero
 	data-name={name}
-	data-group={group}
 >
 	<template data-live-template><slot name="effect" /></template>
 	<div class="hero__live" data-live></div>

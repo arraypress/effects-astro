@@ -1,0 +1,28 @@
+---
+/** The gallery's Logos page. */
+import Gallery from '../layouts/Gallery.astro';
+import Hero from '../components/Hero.astro';
+import GlassGlyph from '@arraypress/effects-astro/GlassGlyph.astro';
+import ParticleLogo from '@arraypress/effects-astro/ParticleLogo.astro';
+import PointCloud from '@arraypress/effects-astro/PointCloud.astro';
+import VoxelLogo from '@arraypress/effects-astro/VoxelLogo.astro';
+---
+
+<Gallery page="Logos">
+	<Hero id="glass-glyph" name="GlassGlyph" code={`<GlassGlyph src="/logo.svg" />`} align="left" style="--hero-ground: #050505">
+		<GlassGlyph slot="effect" src="/logo.svg" />
+		<h2 class="headline" style="font: 900 clamp(64px, 10vw, 150px)/0.9 Impact, 'Arial Narrow', sans-serif; text-transform: uppercase; letter-spacing: 0">Heavy<br />Rotation</h2>
+	</Hero>
+	<Hero id="particle-logo" name="ParticleLogo" code={`<ParticleLogo src="/logo.svg" />`}>
+		<ParticleLogo slot="effect" src="/logo.svg" />
+		<h2 class="headline">Rewind <em>wild.</em></h2>
+	</Hero>
+	<Hero id="point-cloud" name="PointCloud" code={`<PointCloud text="inference" font="700 ui-monospace, Menlo, monospace" />`} align="bottom">
+		<PointCloud slot="effect" text="inference" font="700 ui-monospace, Menlo, monospace" />
+		<p class="lede" style="margin: 0">Vision models on live video at the edge: detection, tracking and segmentation in milliseconds.</p>
+	</Hero>
+	<Hero id="voxel-logo" name="VoxelLogo" code={`<VoxelLogo src="/logo.svg" cells={30} />`} align="left">
+		<VoxelLogo slot="effect" src="/logo.svg" cells={30} />
+		<h2 class="headline" style="max-width: 9ch">Your next release starts here.</h2>
+	</Hero>
+</Gallery>

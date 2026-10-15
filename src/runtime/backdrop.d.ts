@@ -1,14 +1,12 @@
 import type { Rgb } from './color.js';
 
-/** The fifteen backdrops. */
-export type BackdropName =
-	| 'aurora' | 'mesh' | 'waves' | 'grid' | 'particles' | 'grain' | 'liquid' | 'mesh-gradient'
-	| 'grain-gradient' | 'water-plane' | 'gradient-plane' | 'gradient-sphere' | 'beams' | 'band-lens' | 'silk';
+/** The six backdrops. */
+export type BackdropName = 'mesh-gradient' | 'grain-gradient' | 'silk' | 'band-lens' | 'grid' | 'waves';
 
 export interface BackdropConfig {
 	/** Which backdrop. */
 	effect: BackdropName;
-	/** Up to four colours (hex or `rgb()`); those missing come from `--color-accent`: the accent, the accent towards `--color-bg`, its hue +36°, its hue −32° lifted. Only mesh-gradient, grain-gradient and silk use the fourth. Default all four from the accent. */
+	/** Up to four colours (hex or `rgb()`); those missing come from `--color-accent` where it sits: the accent, the accent towards `--color-bg`, its hue +36°, its hue −32° lifted. Only mesh-gradient, grain-gradient and silk use the fourth. Default all four from the accent. */
 	colors?: string[];
 	/** How fast it moves, 0–4. Default 1. */
 	speed?: number;
@@ -18,7 +16,7 @@ export interface BackdropConfig {
 	static?: boolean;
 	/** With `static`, the moment drawn, in seconds. Default 12. */
 	frame?: number;
-	/** Lean towards the pointer, on devices that hover. `liquid` ripples under the pointer either way. Default false. */
+	/** Lean towards the pointer, on devices that hover. Default false. */
 	interactive?: boolean;
 }
 

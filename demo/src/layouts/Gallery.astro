@@ -1,0 +1,38 @@
+---
+/**
+ * A gallery page: the bar across the top (the pages, and which hero is in
+ * view), the page's heroes, and a way on to the next page.
+ */
+import '../styles/gallery.css';
+import { PAGES } from '../gallery';
+
+interface Props {
+	/** This page's name, as PAGES lists it. */
+	page: string;
+}
+
+const { page } = Astro.props;
+const at = PAGES.findIndex((p) => p.name === page);
+const next = PAGES[(at + 1) % PAGES.length];
+---
+
+<html lang="en-GB">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{page} · effects-astro</title>
+	</head>
+	<body>
+		<nav class="bar" aria-label="Gallery">
+			<a class="bar__brand" href="/">effects-astro</a>
+			{PAGES.map((p) => <a href={p.href} aria-current={p.name === page ? 'page' : undefined}>{p.name}</a>)}
+			<span class="bar__readout" data-readout></span>
+		</nav>
+		<slot />
+		<a class="next" href={next.href}>
+			<span>Next</span>
+			<strong>{next.name} →</strong>
+		</a>
+		<script src="../scripts/gallery.js"></script>
+	</body>
+</html>

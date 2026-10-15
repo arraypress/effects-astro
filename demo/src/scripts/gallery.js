@@ -1,7 +1,7 @@
 /**
  * The gallery's behaviour: brings each hero's effect in as it nears the
  * screen and takes it out once it is well past, swaps a Paper hero's
- * preset, copies a tag's code, and keeps the rail's readout on the hero in
+ * preset, copies a tag's code, and keeps the bar's readout on the hero in
  * view. Effects start and stop themselves as they are added and removed
  * (mount() watches the page).
  */
@@ -40,14 +40,12 @@ heroes.forEach((hero) => near.observe(hero));
 
 // The readout: which hero is in the middle of the screen.
 const readout = document.querySelector('[data-readout]');
-const links = /** @type {HTMLAnchorElement[]} */ ([...document.querySelectorAll('[data-group-link]')]);
 const middle = new IntersectionObserver(
 	(entries) => {
 		const entry = entries.find((e) => e.isIntersecting);
 		if (!entry) return;
 		const hero = /** @type {HTMLElement} */ (entry.target);
 		if (readout) readout.textContent = `${heroes.indexOf(hero) + 1} / ${heroes.length} · ${hero.dataset.name}`;
-		links.forEach((link) => link.classList.toggle('is-current', link.dataset.groupLink === hero.dataset.group));
 	},
 	{ rootMargin: '-50% 0px -50% 0px' },
 );
@@ -65,6 +63,12 @@ document.addEventListener('click', (e) => {
 		if (!effect) return;
 		effect.dataset.effectConfig = JSON.stringify({ ...JSON.parse(effect.dataset.effectConfig ?? '{}'), preset: chip.dataset.preset });
 		hero.querySelectorAll('[data-preset]').forEach((c) => c.classList.toggle('is-on', c === chip));
+		// The tag shows the line for what is on screen now.
+		const tag = /** @type {HTMLElement | null} */ (hero.querySelector('[data-copy]'));
+		if (tag) {
+			tag.dataset.copy = (tag.dataset.copy ?? '').replace(/preset="[^"]*"/, `preset="${chip.dataset.preset}"`);
+			tag.textContent = tag.dataset.copy;
+		}
 		hide(hero);
 		show(hero);
 		return;

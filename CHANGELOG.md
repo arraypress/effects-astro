@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `<DotGrid>`: click ripples.
   - `<SignalLines>`.
   - `<WaveBars>`.
-  - `<Backdrop effect="…">`: the fifteen shader backgrounds of `@arraypress/effect-canvas-astro`, which it replaces, tinted from `--color-accent` (the second colour mixed towards `--color-bg` in Oklab); `speed`, `intensity`, `static` + `frame`, `interactive`, `blend`, `fade` and `fixed`; a CSS gradient without WebGL.
+  - `<Backdrop effect="…">`: the six strongest shader backgrounds of `@arraypress/effect-canvas-astro`, which it replaces (mesh-gradient, grain-gradient, silk, band-lens, grid, waves; its faint and plain ones are left to `<GlowField>` and `<Grain>`), tinted from `--color-accent` (the second colour mixed towards `--color-bg` in Oklab); `speed`, `intensity`, `static` + `frame`, `interactive`, `blend`, `fade` and `fixed`; a CSS gradient without WebGL.
   - `<WorldRoutes>`: a dotted world map (from Natural Earth) with comets between cities.
   - `<GlowField>`: bloom, beam, horizon and wash.
   - `<Grain>`.
@@ -30,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Text:
   - `<SpotlightText>`.
   - `<PixelGlitchText>`: optional outline.
-  - `<OutlineWordmark>`: the beam.
+  - `<OutlineWordmark>`: the beam, and a spotlight under the pointer.
   - `<FitText>`, and `fit` on the wordmark components.
   - `<ScrambleText>`.
   - `<Typewriter>`.
@@ -54,7 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Colour:** Oklab on the CPU and in GLSL.
   - **Device checks:** pixel-ratio cap, phones, reduced motion, hover.
 - COMPONENTS.md, generated from the components' types (`npm run docs`).
-- A demo (`demo/`): every effect as a working hero down one page, each Backdrop and Paper shader on its own, live only while near the screen.
+- A demo (`demo/`): a page for each group, every effect a working hero, each Backdrop and Paper shader on its own, live only while near the screen.
 - Effects added to or taken out of the page after it loads start and stop by themselves, and a WebGL effect taken out gives its GPU context back at once.
 
 Effects brought together from the WaveGrid (SampleGrid), SellGrid, ArrayPress, AgentGrid, LinkGrid and LaunchGrid themes, the LumiThemes, FilterSpark, waveform-player, SugarCart, Statement Buster, Pure Papers, Sample Foundry, Graphic Foundry, Loopcuts, Producer Space and David Sherlock sites, and new.

@@ -20,7 +20,7 @@ body {
 	-webkit-font-smoothing: antialiased;
 }
 
-/* The bar: the groups, and which hero is in view. */
+/* The bar: the pages, and which hero is in view. */
 .bar {
 	position: fixed;
 	inset: 12px 12px auto;
@@ -49,7 +49,7 @@ body {
 	text-decoration: none;
 	white-space: nowrap;
 }
-.bar a[data-group-link] {
+.bar a:not(.bar__brand) {
 	flex: none;
 	padding: 7px 12px;
 	border-radius: 999px;
@@ -59,8 +59,8 @@ body {
 		background 0.2s,
 		color 0.2s;
 }
-.bar a[data-group-link]:hover,
-.bar a.is-current {
+.bar a:not(.bar__brand):hover,
+.bar a[aria-current] {
 	background: rgb(255 255 255 / 0.1);
 	color: #fff;
 }
@@ -117,6 +117,10 @@ body {
 	justify-self: center;
 	max-width: 46rem;
 	text-align: center;
+}
+/* A row of cards needs the width, not a column of copy's. */
+.hero__copy:has(.row) {
+	max-width: none;
 }
 .align-left .hero__copy {
 	justify-self: start;
@@ -251,29 +255,39 @@ body {
 	color: #a1a1aa;
 	cursor: pointer;
 }
-.chip:hover,
+.chip.is-note {
+	cursor: default;
+}
+.chip:not(.is-note):hover,
 .chip.is-on {
 	border-color: rgb(255 255 255 / 0.35);
 	color: #fff;
 }
 
-/* Group openers. */
-.group {
-	padding: 140px 6vw 48px;
-	border-bottom: 1px solid var(--line);
+/* The way on, at the foot of a page. */
+.next {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+	padding: 18vh 6vw;
+	color: inherit;
+	text-decoration: none;
 }
-.group h2 {
-	margin: 0;
-	font-size: clamp(36px, 5vw, 64px);
+.next span {
+	color: var(--muted);
+	font: 13px ui-monospace, SFMono-Regular, Menlo, monospace;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+.next strong {
+	font-size: clamp(40px, 6vw, 80px);
 	font-weight: 650;
 	letter-spacing: -0.04em;
+	transition: translate 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.group p {
-	max-width: 40rem;
-	margin: 14px 0 0;
-	color: var(--muted);
-	font-size: 17px;
-	line-height: 1.6;
+.next:hover strong {
+	translate: 8px 0;
 }
 
 /* Smaller pieces, side by side. */

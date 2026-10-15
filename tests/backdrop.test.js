@@ -16,7 +16,7 @@ test('every backdrop name has a shader, a file and nothing else', () => {
 	const types = readFileSync(new URL('../src/runtime/backdrop.d.ts', import.meta.url), 'utf8');
 	const union = types.slice(types.indexOf('export type BackdropName'), types.indexOf(';', types.indexOf('export type BackdropName')));
 	const names = [...union.matchAll(/'([a-z-]+)'/g)].map((m) => m[1]);
-	assert.equal(names.length, 15);
+	assert.equal(names.length, 6);
 	assert.deepEqual(Object.keys(BACKDROPS).sort(), [...names].sort());
 	const files = readdirSync(new URL('../src/runtime/backdrops/', import.meta.url)).filter((f) => f !== 'common.js');
 	assert.deepEqual(files.map((f) => f.replace(/\.js$/, '')).sort(), [...names].sort());

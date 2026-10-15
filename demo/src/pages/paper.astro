@@ -1,0 +1,30 @@
+---
+/** The gallery's Paper page. */
+import Gallery from '../layouts/Gallery.astro';
+import Hero from '../components/Hero.astro';
+import PaperShader from '@arraypress/effects-astro/PaperShader.astro';
+import { PRESETS } from '../../../src/vendor/paper/presets.js';
+import { line, title, PICTURES, LOGOS } from '../gallery';
+const papers = Object.keys(PRESETS) as (keyof typeof PRESETS)[];
+---
+
+<Gallery page="Paper">
+	{
+		papers.map((shader, i) => (
+			<Hero id={`paper-${shader}`} name={`Paper · ${title(shader)}`} code={`<PaperShader shader="${shader}" preset="${PRESETS[shader][0].name}"${LOGOS.includes(shader) ? ' image="/logo.svg"' : ''}${PICTURES.includes(shader) ? " gradient={['#4f46e5', '#ec4899', '#f59e0b']}" : ''} />`} scrim>
+				<PaperShader
+					slot="effect"
+					shader={shader}
+					preset={PRESETS[shader][0].name}
+					image={LOGOS.includes(shader) ? '/logo.svg' : undefined}
+					gradient={PICTURES.includes(shader) ? ['#4f46e5', '#ec4899', '#f59e0b'] : undefined}
+				/>
+				<h2 class="headline">{line(i + 3)[0]}</h2>
+				<p class="lede">{line(i + 3)[1]}</p>
+				<div slot="tools" class="chips">
+					{PRESETS[shader].map((p, n) => <button type="button" class:list={['chip', { 'is-on': n === 0 }]} data-preset={p.name}>{p.name}</button>)}
+				</div>
+			</Hero>
+		))
+	}
+</Gallery>

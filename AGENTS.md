@@ -13,7 +13,7 @@ Pick by what is asked for:
 | An animated, colourful background for a page or hero | `<LightField>` (liquid light), `<FlutedGlass>` (light, gallery-white or dark), `<AsciiRain>` (techy, dark), `<DotGrid>` (quiet, minimal), `<SignalLines>` / `<WaveBars>` (audio) |
 | Something to play with: ink, smoke, liquid, "interactive" | `<Ink>` over a section, or `<LightField>` (it has the fluid under it), or `<DotGrid>` (click ripples) |
 | A gradient, noise, halftone or liquid-metal look by name | `<PaperShader shader="…" preset="…">`; the demo has a hero for every shader, its presets in the tag |
-| A themed hero background by name (aurora, mesh gradient, waves, synthwave grid, particles, grain, beams, silk…), tinted from the site's accent | `<Backdrop effect="…">`; `static` when it sits behind body copy or is `fixed` |
+| A themed hero background by name (mesh gradient, grainy gradient, silk, light bands, synthwave grid, neon waves), tinted from the site's accent | `<Backdrop effect="…">`; `static` when it sits behind body copy or is `fixed` |
 | A "we sell worldwide" section | `<WorldRoutes>` with the cities that matter to the shop |
 | A still light or texture over a background | `<GlowField>`, `<Grain>` |
 | The brand's logo as the hero's centrepiece | `<GlassGlyph>`, `<ParticleLogo>`, `<VoxelLogo>`, `<PointCloud>`, all with `src="/logo.svg"` or `text` |
@@ -40,7 +40,7 @@ Things that trip people up:
 
 ## Working on this package
 
-Plain ES modules in `src/` with hand-written `.d.ts` files beside them: components in `src/components/`, the runtime in `src/runtime/` (one concern a file), stylesheets in `src/styles/`. No build step and no dependencies. `demo/` is an Astro site (not published): one page with every effect as a working hero (`src/components/Hero.astro` stamps each effect in only while it is near the screen).
+Plain ES modules in `src/` with hand-written `.d.ts` files beside them: components in `src/components/`, the runtime in `src/runtime/` (one concern a file), stylesheets in `src/styles/`. No build step and no dependencies. `demo/` is an Astro site (not published): a page for each group, every effect on it a working hero (`src/components/Hero.astro` stamps each effect in only while it is near the screen).
 
 | | |
 |---|---|
@@ -52,7 +52,7 @@ The shaders and canvases cannot run under Node. After changing an effect, check 
 
 ### House rules
 
-- **A new effect** is a runtime module (`src/runtime/<name>.js` + `.d.ts`, exporting `name(el, config) => stop`), a component (`src/components/<Name>.astro`) and a `<Hero>` for it on the demo page (`demo/src/pages/index.astro`), behind real copy, with the line that makes it in its `code`. Canvas components render `<EffectCanvas name="<name>">` and call `mount('[data-effect-<name>]', fn)`.
+- **A new effect** is a runtime module (`src/runtime/<name>.js` + `.d.ts`, exporting `name(el, config) => stop`), a component (`src/components/<Name>.astro`) and a `<Hero>` for it on its group's demo page (`demo/src/pages/`), behind real copy, with the line that makes it in its `code`. Canvas components render `<EffectCanvas name="<name>">` and call `mount('[data-effect-<name>]', fn)`.
 - **Build on the shared parts:** `createStage` for a WebGL effect, `createCanvas2D` for a Canvas one, `animate` for any loop, `pointerIn` / `trail` / `pressAt` for the pointer, `watchColors` for `data-colors`, `drawShape` for logos and text shapes, `GLSL_*` for shader pieces. Each effect keeps the guarantees in the README.
 - **No repetition.** Anything two effects need goes in its own runtime module and is imported.
 - **JSDoc on every function**, nested ones included: a short description, `@param` for each parameter, `@returns`, `@throws` where it applies. Every prop has a doc comment with its default (COMPONENTS.md is built from them). Keep the `.d.ts` files in step. Plain, concise voice: what a thing does and why.
