@@ -1,16 +1,16 @@
 ---
 /**
  * The "All effects" overview: every hero in the gallery as a card, grouped
- * by page, over the hero on show. Its cards are also the tour's list
+ * by type, over the hero on show. Its cards are also the tour's list
  * (src/scripts/viewer.js reads them, in order); src/scripts/overview.js
  * opens and closes it and marks the hero on show.
  */
 import '../styles/overview.css';
-import type { Group } from '../tour/stops';
+import type { Tour } from '../tour/stops';
 
 interface Props {
-	/** Every page's heroes. */
-	groups: Group[];
+	/** Every group's heroes. */
+	groups: Tour[];
 }
 
 const { groups } = Astro.props;
@@ -36,7 +36,7 @@ const total = groups.reduce((sum, group) => sum + group.stops.length, 0);
 					<ol class="overview__grid">
 						{group.stops.map((stop) => (
 							<li>
-								<a class="card" href={stop.href} data-stop data-group={group.name} style={stop.accent && `--card-accent: ${stop.accent}`}>
+								<a class="card" href={stop.href} data-stop data-group={group.name} data-type={group.type} style={stop.accent && `--card-accent: ${stop.accent}`}>
 									<span class="card__n">{String(stop.n).padStart(2, '0')}</span>
 									<strong class="card__name">{stop.name}</strong>
 									{stop.blurb && <span class="card__blurb">{stop.blurb}</span>}

@@ -1,0 +1,37 @@
+---
+/**
+ * The gallery's old pages (`/logos#liquid-metal`), from when each group
+ * had its own: each sends its visitor on to the one page, keeping the
+ * hero's anchor, or filtered to its group without one.
+ */
+import { GROUPS } from '../tour/groups';
+import { PAPER_LOOKS } from '@arraypress/effects-astro/runtime/paper-looks';
+
+/**
+ * The old pages, and the group each became: every group but the
+ * backgrounds (which were at `/`), and Paper's, whose shaders are
+ * backgrounds now.
+ *
+ * @returns The pages.
+ */
+export function getStaticPaths() {
+	return [...GROUPS.filter(({ type }) => type !== 'backgrounds').map(({ type }) => ({ params: { group: type }, props: { type } })), { params: { group: 'paper' }, props: { type: 'backgrounds' } }];
+}
+
+const { type } = Astro.props;
+// The Paper shaders made backgrounds of their own: their old heroes' anchors, and their new ones.
+const moved = Object.fromEntries(Object.entries(PAPER_LOOKS).map(([name, look]) => [`paper-${look.shader}`, name]));
+---
+
+<html lang="en-GB">
+	<head>
+		<meta charset="utf-8" />
+		<title>effects-astro</title>
+		<link rel="canonical" href="/" />
+		<noscript><meta http-equiv="refresh" content={`0; url=/?type=${type}`} /></noscript>
+		<script is:inline define:vars={{ type, moved }}>
+			const id = moved[location.hash.slice(1)];
+			location.replace(location.hash ? `/${id ? `#${id}` : location.hash}` : `/?type=${type}`);
+		</script>
+	</head>
+</html>

@@ -7,10 +7,13 @@
  * call `glassSheen()` once.
  *
  * Glass blurs what is behind it, so it needs something behind: a
- * `<LightField>`, an image, a gradient.
+ * `<LightField>`, an image, a gradient. With `refract` it bends it too, as
+ * a thick lens does at its rim (Chromium; Safari and Firefox keep the
+ * frost); text behind stays live and links stay clickable.
  *
  * @example
  * <Glass as="article" class="card" tint="#08080a">…</Glass>
+ * <Glass refract dispersion={0.5} style="border-radius: 28px">…</Glass>
  */
 import type { HTMLTag } from 'astro/types';
 import '../styles/glass.css';
@@ -23,20 +26,33 @@ interface Props {
 	tint?: string;
 	/** How much of the tint the body takes, 0–100 (%). Default 30. */
 	amount?: number;
-	/** How much it blurs what is behind, px. Default 20. */
+	/** How much it blurs what is behind, px. Default 20, or 0.5 with `refract`. */
 	blur?: number;
 	/** How far it rises on hover, px; 0 for none. Default 2. */
 	lift?: number;
+	/** Bends what is behind like a thick lens at the rim, 0–2, or `true` for 1. Chromium only; elsewhere the frost stays. Default false. */
+	refract?: boolean | number;
+	/** With `refract`, how much the rim splits what it bends into colours, 0–1. Default 0.35. */
+	dispersion?: number;
+	/** With `refract`, how wide the bending rim is, px. Default 28. */
+	bezel?: number;
+	/** With `refract`, how bright the highlight along the rim is, 0–1. Default 0.7. */
+	specular?: number;
 	class?: string;
 	[attribute: string]: unknown;
 }
 
-const { as: Tag = 'div', tint, amount, blur, lift, class: className, style: given, ...attributes } = Astro.props;
+const { as: Tag = 'div', tint, amount, blur, lift, refract, dispersion, bezel, specular, class: className, style: given, ...attributes } = Astro.props;
 const style = [
 	tint && `--glass-tint: ${tint}`,
 	amount !== undefined && `--glass-tint-amount: ${amount}%`,
 	blur !== undefined && `--glass-blur: ${blur}px`,
 	lift !== undefined && `--glass-lift: ${lift}px`,
+	refract !== undefined && `--glass-refract: ${refract}`,
+	dispersion !== undefined && `--glass-dispersion: ${dispersion}`,
+	bezel !== undefined && `--glass-bezel: ${bezel}px`,
+	specular !== undefined && `--glass-specular: ${specular}`,
+	refract && blur !== undefined && `--glass-lens-blur: ${blur}px`,
 ]
 	.filter(Boolean)
 	.join('; ');
@@ -46,6 +62,8 @@ const style = [
 
 <script>
 	import { glassSheen } from '../runtime/glass-sheen.js';
+	import { glassLens } from '../runtime/liquid-glass.js';
 
 	glassSheen();
+	glassLens();
 </script>

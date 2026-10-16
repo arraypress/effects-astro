@@ -120,13 +120,16 @@ export function readComponent(file) {
 	return { name, file, text, summary, example, rows, source };
 }
 
+/** The components other components render, not used on their own. */
+const INTERNAL = new Set(['EffectCanvas.astro', 'PaperBackground.astro']);
+
 /**
- * Every component but the shared canvas, in name order.
+ * Every component but the internal ones, in name order.
  *
  * @returns {Component[]} The components.
  */
 export const readComponents = () =>
 	readdirSync(components)
-		.filter((f) => f.endsWith('.astro') && f !== 'EffectCanvas.astro')
+		.filter((f) => f.endsWith('.astro') && !INTERNAL.has(f))
 		.sort()
 		.map(readComponent);

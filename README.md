@@ -53,11 +53,12 @@ Astro 6 or 7. The runtime underneath (`@arraypress/effects-astro`) works without
 | `<RainOnGlass>` | Rain on a window over a photo: beads, drops running down in clearing trails, each a lens holding the scene upside down, soft bokeh behind fog; the pointer wipes a patch | WebGL |
 | `<Ocean>` | Photoreal open sea to the horizon: wind-driven waves, a glittering sun path, light through thin crests, whitecaps, high cloud and haze; `time` dawn, noon, sunset or a moonlit night; the camera drifts with the pointer | WebGL |
 | `<IsoCity>` | A tiny isometric low-poly city with traffic keeping its lanes and the brand's taxis; click a street and the nearest one drives round to pick you up; `night` lights the windows and headlights | WebGL |
+| `<ColorPanels>` | Translucent panels of colour swinging open out of the dark and sweeping past like turning pages: Paper's color-panels shader with plain props (`density`, `skewLeft`, `length`, `edges`, `blur`, `blend`…), its Opening preset by default (`preset` for the others) | WebGL 2 |
 | `<WorldRoutes>` | A dotted world map with comets of light arcing between cities: a home hub, per-route colours and Oklab gradients, labels, regions, great-circle arcs, hover | Canvas |
 | `<GlowField>` | A light to lay over a background: a bloom, a swaying stage spotlight, a horizon or a wash, breathing gently | CSS |
 | `<Grain>` | Flickering film grain, to dither smooth gradients and make a picture read as film | CSS |
 
-**Paper shaders**: `<PaperShader shader="mesh-gradient" preset="beach">`, any of the 30 shaders from [Paper](https://shaders.paper.design) with each of their 124 presets, run on the same loop and guarantees as the rest. Pass `params` to change any setting, `colors` for the palette, and `image` for the shaders that work on a picture (your logo in `liquid-metal`, `heatmap` or `gem-smoke`; a photo in `fluted-glass`, `halftone-dots`, `water` or `image-dithering`).
+**Paper shaders**: `<PaperShader shader="mesh-gradient" preset="beach">`, any of the 30 shaders from [Paper](https://shaders.paper.design) with each of their 124 presets, run on the same loop and guarantees as the rest. Pass `params` to change any setting, `colors` for the palette, and `image` for the shaders that work on a picture (your logo in `liquid-metal`, `heatmap` or `gem-smoke`; a photo in `fluted-glass`, `halftone-dots`, `water` or `image-dithering`). The looks worth keeping become backgrounds of their own, with plain props: `<ColorPanels>` so far.
 
 `color-panels`, `dithering`, `dot-grid`, `dot-orbit`, `fluted-glass`, `gem-smoke`, `god-rays`, `grain-gradient`, `halftone-cmyk`, `halftone-dots`, `heatmap`, `image-dithering`, `lens-distortion`, `liquid-metal`, `mesh-gradient`, `metaballs`, `neuro-noise`, `paper-texture`, `perlin-noise`, `pulsing-border`, `simplex-noise`, `smoke-ring`, `spiral`, `static-mesh-gradient`, `static-radial-gradient`, `swirl`, `voronoi`, `warp`, `water`, `waves`. The demo shows every preset.
 
@@ -97,7 +98,7 @@ Astro 6 or 7. The runtime underneath (`@arraypress/effects-astro`) works without
 | `<ProductStack>` | A store's product covers floating in a 3D fan, stack or carousel arc with depth of field and a glossy sheen; leans to the pointer, fans apart on hover, lifts the cover under it; real, focusable links | CSS + JS |
 | `<MosaicReveal>` | A slideshow whose pictures change through a GPU transition: tiles flipping in a diagonal wave, a pixel-sort melt, pixelation or a glowing dissolve | WebGL |
 | `<RadiantGlass>` | A cluster of frosted glass tiles on a dark ground, glowing from inside with soft drifting light that shifts with the pointer; a two-tone rim and a halo on each | WebGL |
-| `<Glass>` | A liquid glass panel with a lit rim and a pointer sheen | CSS + JS |
+| `<Glass>` | A liquid glass panel with a lit rim and a pointer sheen; `refract` bends the live page behind it like a thick lens, with colour at the rim (Chromium; elsewhere it stays frosted) | CSS + JS |
 | `<BorderSweep>` | A light travelling round an outline | CSS |
 | `<Tilt>` | A card that leans towards the pointer, with a glare | CSS + JS |
 | `<Parallax>` | Layers that drift with the pointer by depth | CSS + JS |
@@ -153,6 +154,7 @@ The package's main entry is the runtime the components are built on, for use wit
 | Export | |
 |---|---|
 | `paperShader(el, config)`, `paperSettings`, `paperUniforms` | Paper's shaders, and the settings and uniforms for a shader and preset |
+| `paperLook(el, config)`, `paperLookSettings`, `PAPER_LOOKS` | The Paper looks (`<ColorPanels>`…): a look's plain props as a Paper shader's settings, and the looks by name |
 | `createStage(el, options)` | A full-canvas WebGL effect: context, program, sizing, the loop, reduced motion, clean-up |
 | `createCanvas2D(el, options)`, `grainPattern`, `grainOnto` | The same for Canvas 2D effects, and grain laid onto strokes only |
 | `createFluid(gl, options)`, `stir(fluid, el, options)` | A Stable Fluids solve, and its pointer hookup |
@@ -171,7 +173,7 @@ The package's main entry is the runtime the components are built on, for use wit
 
 ## Demo
 
-`demo/` is an Astro site: a page for each group (backgrounds, Paper, logos, wordmarks, text, surfaces), every effect on it a working hero, each ShaderBackground and Paper shader on its own, shown one at a time with its own URL (`/logos#liquid-metal`), arrows and ← → keys to step through them all, and a Customise panel to set each one up and copy the line:
+`demo/` is an Astro site: one gallery of every effect as a working hero, each ShaderBackground and Paper shader on its own, shown one at a time with its own URL (`/#liquid-metal`), filters by type (backgrounds, logos, wordmarks, text, surfaces; `/?type=logos`), arrows and ← → keys to step through them, and a Customise panel to set each one up and copy the line:
 
 ```bash
 cd demo && npm install && npm run dev   # http://127.0.0.1:4400
@@ -182,10 +184,11 @@ cd demo && npm install && npm run dev   # http://127.0.0.1:4400
 - The fluid is Jos Stam's Stable Fluids, after Pavel Dobryakov's [WebGL-Fluid-Simulation](https://github.com/PavelDoGreat/WebGL-Fluid-Simulation) (MIT, © 2017 Pavel Dobryakov).
 - `<FlutedGlass>`'s flute geometry and `<GlassGlyph>`'s lens model are adapted from the FlutedGlass and Glass components of [Shaders](https://github.com/shader-effects-inc/shaders) (MIT, © 2026 Shader Effects Inc.).
 - `<ShaderBackground>` is the shader set from the earlier `@arraypress/effect-canvas-astro` package; `silk` follows Inigo Quilez's domain-warping technique; `grain-gradient` dithers along its colour ramp as Paper's grain gradient does, with Dave Hoskins' [Hash without Sine](https://www.shadertoy.com/view/4djSRW) (MIT, © 2014 David Hoskins).
-- `<PaperShader>` runs [Paper Shaders](https://github.com/paper-design/shaders) (Apache-2.0, © 2026 Paper), vendored unchanged in `src/vendor/paper/` with their presets. Powered by Paper Shaders: https://shaders.paper.design
+- `<PaperShader>` and the Paper looks (`<ColorPanels>`) run [Paper Shaders](https://github.com/paper-design/shaders) (Apache-2.0, © 2026 Paper), vendored unchanged in `src/vendor/paper/` with their presets. Powered by Paper Shaders: https://shaders.paper.design
 - `<InkField>` is adapted from Trirat's ink shader for LumiThemes (its sim, display shader, emitters, lamp and twelve palettes), on Jos Stam's Stable Fluids in the shape of Pavel Dobryakov's WebGL-Fluid-Simulation (MIT, © 2017 Pavel Dobryakov).
 - `<WorldRoutes>`'s land is sampled from [Natural Earth](https://www.naturalearthdata.com)'s 1:110m land (public domain).
 - `<Ocean>`'s and `<LiquidMetal>`'s tone curve is Krzysztof Narkowicz's ACES fit.
+- `<Glass refract>`'s lens (an SDF displacement map with a specular channel, fed to `feDisplacementMap` through `backdrop-filter`, and a three-pass RGB split) is adapted from Sam Asante's [liquid-glass](https://github.com/samasante/liquid-glass) (MIT, © 2026 Sam Asante).
 - Oklab is Björn Ottosson's.
 
 The full notices are in [LICENSE](LICENSE).

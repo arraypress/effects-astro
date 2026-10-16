@@ -1,4 +1,4 @@
-/* The "All effects" overview: dark glass over the hero on show, a card for every effect, grouped by page. */
+/* The "All effects" overview: dark glass over the hero on show, a card for every effect, grouped by type. */
 .overview {
 	--overview-line: rgb(255 255 255 / 0.08);
 	--overview-muted: #8b8b94;

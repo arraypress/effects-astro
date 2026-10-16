@@ -1,17 +1,7 @@
 /**
- * What the gallery's pages share: its pages, in order, and the copy and
- * colours the heroes without copy of their own borrow.
+ * What the gallery's heroes share: the copy and colours the heroes without
+ * copy of their own borrow, and the pictures some of them show.
  */
-
-/** The pages, in the order the bar lists them. */
-export const PAGES = [
-	{ name: 'Backgrounds', href: '/' },
-	{ name: 'Paper', href: '/paper' },
-	{ name: 'Logos', href: '/logos' },
-	{ name: 'Wordmarks', href: '/wordmarks' },
-	{ name: 'Text', href: '/text' },
-	{ name: 'Surfaces', href: '/surfaces' },
-];
 
 /** A made-up business for a hero with no copy of its own: who it is, what it says, and what it asks. */
 export interface Pitch {

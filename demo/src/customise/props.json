@@ -420,6 +420,230 @@
 			}
 		]
 	},
+	"ColorPanels": {
+		"selector": "[data-effect-paper-look]",
+		"props": [
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), when there are no `colors`.",
+				"live": "config"
+			},
+			{
+				"name": "quiet",
+				"kind": "point",
+				"fields": [
+					{
+						"name": "x",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "radius",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "depth",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "Dims it towards its `background` behind the copy: the centre (`x` across, `y` down, 0–1), the `radius` (of the height) and the `depth`, 0–1. Default none.",
+				"live": "config"
+			},
+			{
+				"name": "preset",
+				"kind": "enum",
+				"options": [
+					"Opening",
+					"Default",
+					"Glass",
+					"Gradient"
+				],
+				"doc": "Paper's preset to start from: `Opening` (cyan panels opening out of the dark, on plum), `Default` (seven colours fanning out over black), `Glass` (four colours with lit, blurred edges, on clear) or `Gradient` (panels shading from one colour to the next, on aqua). Default `'Opening'`.",
+				"default": "Opening",
+				"live": "config"
+			},
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "The panels' colours, up to seven, taken in turn. Default `['#00ffff']`.",
+				"default": [
+					"#00ffff"
+				],
+				"live": "config"
+			},
+			{
+				"name": "background",
+				"kind": "color",
+				"doc": "The colour behind the panels. Default `'#570044'`.",
+				"default": "#570044",
+				"live": "config"
+			},
+			{
+				"name": "density",
+				"kind": "number",
+				"min": 0.25,
+				"max": 7,
+				"step": 0.05,
+				"doc": "How closely the panels follow one another, 0.25–7. Default 2.21.",
+				"default": 2.21,
+				"live": "config"
+			},
+			{
+				"name": "skewLeft",
+				"kind": "number",
+				"min": -1,
+				"max": 1,
+				"step": 0.01,
+				"doc": "Skews each panel's left edge as it nears, -1–1. Default -1.",
+				"default": -1,
+				"live": "config"
+			},
+			{
+				"name": "skewRight",
+				"kind": "number",
+				"min": -1,
+				"max": 1,
+				"step": 0.01,
+				"doc": "Skews each panel's right edge as it nears, -1–1. Default -1.",
+				"default": -1,
+				"live": "config"
+			},
+			{
+				"name": "length",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How long the panels are, 0–3. Default 0.52.",
+				"default": 0.52,
+				"live": "config"
+			},
+			{
+				"name": "edges",
+				"kind": "boolean",
+				"doc": "Light along each panel's edges. Default false.",
+				"default": false,
+				"live": "config"
+			},
+			{
+				"name": "blur",
+				"kind": "number",
+				"min": 0,
+				"max": 0.5,
+				"step": 0.005,
+				"doc": "Softens the panels' sides, 0–0.5 (0 sharp). Default 0.",
+				"default": 0,
+				"live": "config"
+			},
+			{
+				"name": "fadeInner",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "Fades the panels where they meet, at the centre, 0–1. Default 0.",
+				"default": 0,
+				"live": "config"
+			},
+			{
+				"name": "fadeOuter",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "Fades the panels at their outer ends, nearest you, 0–1. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "blend",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "Shades each panel into the next colour, 0–1 (0 one colour each). Default 0.",
+				"default": 0,
+				"live": "config"
+			},
+			{
+				"name": "zoom",
+				"kind": "number",
+				"min": 0.1,
+				"max": 4,
+				"step": 0.02,
+				"doc": "How large the panels are drawn, 0.1–4. Default 2.32.",
+				"default": 2.32,
+				"live": "config"
+			},
+			{
+				"name": "rotation",
+				"kind": "number",
+				"min": 0,
+				"max": 360,
+				"step": 1,
+				"doc": "Turns the whole look, degrees, 0–360. Default 360.",
+				"default": 360,
+				"live": "config"
+			},
+			{
+				"name": "offset",
+				"kind": "vector",
+				"fields": [
+					{
+						"name": "x",
+						"min": -1,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": -1,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "Where the panels' centre sits, `[x, y]`, -1–1, right and down. Default `[-0.3, 0.6]`.",
+				"default": [
+					-0.3,
+					0.6
+				],
+				"live": "config"
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 0,
+				"max": 4,
+				"step": 0.02,
+				"doc": "How fast the panels turn, 0–4 (0 holds). Default 2.",
+				"default": 2,
+				"live": "config"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
 	"Cursor": {
 		"selector": null,
 		"props": [
@@ -909,7 +1133,7 @@
 				"min": 5,
 				"max": 60,
 				"step": 1,
-				"doc": "How much it blurs what is behind, px. Default 20.",
+				"doc": "How much it blurs what is behind, px. Default 20, or 0.5 with `refract`.",
 				"default": 20,
 				"live": {
 					"css": "--glass-blur",
@@ -927,6 +1151,55 @@
 				"live": {
 					"css": "--glass-lift",
 					"unit": "px"
+				}
+			},
+			{
+				"name": "refract",
+				"kind": "boolean",
+				"doc": "Bends what is behind like a thick lens at the rim, 0–2, or `true` for 1. Chromium only; elsewhere the frost stays. Default false.",
+				"default": false,
+				"live": {
+					"css": "--glass-refract",
+					"unit": ""
+				}
+			},
+			{
+				"name": "dispersion",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "With `refract`, how much the rim splits what it bends into colours, 0–1. Default 0.35.",
+				"default": 0.35,
+				"live": {
+					"css": "--glass-dispersion",
+					"unit": ""
+				}
+			},
+			{
+				"name": "bezel",
+				"kind": "number",
+				"min": 7,
+				"max": 84,
+				"step": 1,
+				"doc": "With `refract`, how wide the bending rim is, px. Default 28.",
+				"default": 28,
+				"live": {
+					"css": "--glass-bezel",
+					"unit": "px"
+				}
+			},
+			{
+				"name": "specular",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "With `refract`, how bright the highlight along the rim is, 0–1. Default 0.7.",
+				"default": 0.7,
+				"live": {
+					"css": "--glass-specular",
+					"unit": ""
 				}
 			},
 			{

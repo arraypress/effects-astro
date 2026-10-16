@@ -21,11 +21,6 @@ body {
 	font-family: Inter, ui-sans-serif, system-ui, sans-serif;
 	-webkit-font-smoothing: antialiased;
 }
-/* Another page arrives as a crossfade, as a hero on this one does. */
-@view-transition {
-	navigation: auto;
-}
-
 /* A hero: the screen, fading in over the one before (src/scripts/viewer.js reads how long it takes). */
 .hero {
 	position: fixed;

@@ -15,7 +15,7 @@
 
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { allDeclarations, readComponents, root } from './props.mjs';
+import { allDeclarations, readComponent, readComponents, root } from './props.mjs';
 import { literal } from '../demo/src/customise/literal.js';
 
 const out = join(root, 'demo/src/customise/props.json');
@@ -202,8 +202,9 @@ function routes(text, names) {
 
 /**
  * The selector for a component's element on the page: its
- * `data-effect-<name>` for a canvas effect, else the first class it gives
- * its element.
+ * `data-effect-<name>` for a canvas effect, that of the component it is
+ * built on (`<ColorPanels>` on `<PaperBackground>`), else the first class
+ * it gives its element.
  *
  * @param {string} text The component's file.
  * @returns {string | null} The selector, or null when there is none to read.
@@ -211,6 +212,8 @@ function routes(text, names) {
 function selector(text) {
 	const canvas = text.match(/<EffectCanvas[^>]*\bname="([\w-]+)"/)?.[1];
 	if (canvas) return `[data-effect-${canvas}]`;
+	const base = text.match(/^import (\w+) from '\.\/(\w+)\.astro';$/m);
+	if (base && new RegExp(`<${base[1]}\\b`).test(text)) return selector(readComponent(`${base[2]}.astro`).text);
 	const first = text.split(/^---$/m)[2]?.match(/class:list=\{\['([\w-]+)'/)?.[1];
 	return first ? `.${first}` : null;
 }

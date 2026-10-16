@@ -85,6 +85,39 @@ Caustics: sunlight through rippling water onto a pool floor, a bright, shifting 
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
 | `class` | `string` | Classes for the element. |
 
+## `<ColorPanels>`
+
+ColorPanels: translucent panels of colour that swing open out of the dark and sweep past, like pages turning towards you. Paper's color-panels shader (Apache-2.0, vendored), with its settings as plain props; each prop's default is the Opening preset's, and with another `preset` the props left out are that preset's.
+
+```astro
+<ColorPanels />
+<ColorPanels preset="Glass" background="#0b0b10" />
+<ColorPanels palette="Lagoon" density={3} edges quiet={{ radius: 0.5 }} />
+```
+
+| Prop | Type | |
+|---|---|---|
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`. |
+| `quiet` | `{ x?: number; y?: number; radius?: number; depth?: number }` | Dims it towards its `background` behind the copy: the centre (`x` across, `y` down, 0–1), the `radius` (of the height) and the `depth`, 0–1. Default none. |
+| `preset` | `'Opening' \| 'Default' \| 'Glass' \| 'Gradient'` | Paper's preset to start from: `Opening` (cyan panels opening out of the dark, on plum), `Default` (seven colours fanning out over black), `Glass` (four colours with lit, blurred edges, on clear) or `Gradient` (panels shading from one colour to the next, on aqua). Default `'Opening'`. |
+| `colors` | `string[]` | The panels' colours, up to seven, taken in turn. Default `['#00ffff']`. |
+| `background` | `string` | The colour behind the panels. Default `'#570044'`. |
+| `density` | `number` | How closely the panels follow one another, 0.25–7. Default 2.21. |
+| `skewLeft` | `number` | Skews each panel's left edge as it nears, -1–1. Default -1. |
+| `skewRight` | `number` | Skews each panel's right edge as it nears, -1–1. Default -1. |
+| `length` | `number` | How long the panels are, 0–3. Default 0.52. |
+| `edges` | `boolean` | Light along each panel's edges. Default false. |
+| `blur` | `number` | Softens the panels' sides, 0–0.5 (0 sharp). Default 0. |
+| `fadeInner` | `number` | Fades the panels where they meet, at the centre, 0–1. Default 0. |
+| `fadeOuter` | `number` | Fades the panels at their outer ends, nearest you, 0–1. Default 1. |
+| `blend` | `number` | Shades each panel into the next colour, 0–1 (0 one colour each). Default 0. |
+| `zoom` | `number` | How large the panels are drawn, 0.1–4. Default 2.32. |
+| `rotation` | `number` | Turns the whole look, degrees, 0–360. Default 360. |
+| `offset` | `[number, number]` | Where the panels' centre sits, `[x, y]`, -1–1, right and down. Default `[-0.3, 0.6]`. |
+| `speed` | `number` | How fast the panels turn, 0–4 (0 holds). Default 2. |
+| `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
+| `class` | `string` | Classes for the element. |
+
 ## `<Cursor>`
 
 Cursor: a custom cursor for the whole page: a dot at the pointer and a ring that trails it. Over links, buttons and anything with `data-cursor` the ring swells, showing that element's `data-cursor` text as a label (`<a data-cursor="View">`). The system cursor stays; it is not hidden. Only with a mouse or trackpad; no trail with reduced motion. Place it once, in the layout. See src/runtime/cursor.js.
@@ -195,6 +228,7 @@ Glass: a liquid glass panel, with a rim that catches the light and a sheen that 
 
 ```astro
 <Glass as="article" class="card" tint="#08080a">…</Glass>
+<Glass refract dispersion={0.5} style="border-radius: 28px">…</Glass>
 ```
 
 | Prop | Type | |
@@ -202,8 +236,12 @@ Glass: a liquid glass panel, with a rim that catches the light and a sheen that 
 | `as` | `HTMLTag` | The element to render. Default `div`. |
 | `tint` | `string` | The body's tint colour. Default near-black. |
 | `amount` | `number` | How much of the tint the body takes, 0–100 (%). Default 30. |
-| `blur` | `number` | How much it blurs what is behind, px. Default 20. |
+| `blur` | `number` | How much it blurs what is behind, px. Default 20, or 0.5 with `refract`. |
 | `lift` | `number` | How far it rises on hover, px; 0 for none. Default 2. |
+| `refract` | `boolean \| number` | Bends what is behind like a thick lens at the rim, 0–2, or `true` for 1. Chromium only; elsewhere the frost stays. Default false. |
+| `dispersion` | `number` | With `refract`, how much the rim splits what it bends into colours, 0–1. Default 0.35. |
+| `bezel` | `number` | With `refract`, how wide the bending rim is, px. Default 28. |
+| `specular` | `number` | With `refract`, how bright the highlight along the rim is, 0–1. Default 0.7. |
 | `class` | `string` | Classes for the element. |
 
 ## `<GlassGlyph>`

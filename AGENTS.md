@@ -13,6 +13,7 @@ Pick by what is asked for:
 | An animated, colourful background for a page or hero | `<LightField>` (liquid light), `<FlutedGlass>` (light, gallery-white or dark), `<AsciiRain>` (techy, dark), `<DotGrid>` (quiet, minimal), `<SignalLines>` / `<WaveBars>` (audio) |
 | Ink in water, a lit fluid background, or a hero whose colours a palette switcher changes | `<InkField palette="…">` (Lumetri, Forest, Cadmium, Peacock, Vermillion, Barbie, Uranium, Azure, Ruby, Ultramarine, Saffron, Crimson); `setColors(el, INK_PALETTES[name].colors, INK_PALETTES[name].glint)` recolours it live |
 | Something to play with: ink, smoke, liquid, "interactive" | `<Ink>` over a section, or `<LightField>` (it has the fluid under it), or `<DotGrid>` (click ripples) |
+| Panels of colour fanning out of the dark, a bold launch or fintech hero with depth | `<ColorPanels>` (Opening by default; `preset="Glass"`, `"Default"` or `"Gradient"`; `palette` or `colors`, `quiet` behind copy) |
 | A gradient, noise, halftone or liquid-metal look by name | `<PaperShader shader="…" preset="…">`; the demo has a hero for every shader, its presets in the tag |
 | A themed hero background by name (mesh gradient, grainy gradient, silk, light bands, synthwave grid, neon waves), tinted from the site's accent | `<ShaderBackground effect="…">`; `static` when it sits behind body copy or is `fixed` |
 | A launch, waitlist or coming-soon hero: light around centred copy | `<HaloRing>` |
@@ -36,6 +37,7 @@ Pick by what is asked for:
 | A hero photo that reacts like water: ripples, a pond, "touch the photo" | `<ImageRipple src="…" alt="…">` (`strength`, `size`, `viscosity`, `fringe`, `fit="contain"`) |
 | A digital-goods or shop hero showing the products: their covers as the centrepiece, copy beside them | `<ProductStack items={[{ src, href, alt }, …]}>` (`layout="fan"`, `"stack"` or `"arc"`), or the covers as `<a><img></a>` children |
 | A product gallery or portfolio hero that cycles pictures with a striking change | `<MosaicReveal images={[{ src, alt }, …]} transition="…">` (tiles, pixel-sort, pixelate, dissolve) |
+| Glass that really bends what is behind it (Apple-style liquid glass cards, pills, nav) | `<Glass refract>` (`dispersion`, `bezel`, `specular`); `class="glass"` + `--glass-refract: 1` + `glassLens()` |
 | Cards and buttons that respond | `<Glass>`, `<BorderSweep>`, `<Tilt>`, `<Magnetic>`, `<Parallax>`; `<Cursor>` once per site |
 | Small motions on a shop's own elements | `motion.css` (`.fx-heartbeat`, `.fx-bump`, `.fx-pulse-ring`, `.fx-live`) |
 | UI pieces: countdowns, sliders, drop zones, timelines, tooltips, skeletons, scroll progress, back to top, vinyl and equalizer | Not here: `@arraypress/ui-astro`. Counters and drag-to-scroll rails: `@arraypress/behaviors-astro`. |
@@ -47,6 +49,7 @@ Things that trip people up:
 - **Headlines over a busy background:** pass `quiet` (`<LightField>`, `<AsciiRain>`) so it dims behind them.
 - **Logos:** `src` takes any image URL; only where it is opaque counts. A `font` puts the weight first: `"900 Anton, sans-serif"`.
 - **Audio from another origin** needs CORS to be followed: `crossorigin="anonymous"` on the element (WaveformPlayer: `data-cross-origin="anonymous"`) and `Access-Control-Allow-Origin` on the server. Without it the effect keeps its own motion.
+- **`<Glass refract>` bends only in Chromium.** Safari and Firefox show the frosted glass instead; do not sniff browsers around it. It needs something detailed behind it (type, a photo) for the bending to show, and its bezel should be well under half the panel's shorter side.
 - **Clicks:** effects that react to clicks ignore links, buttons and form fields. Add `data-effect-ignore` to anything else whose clicks are its own.
 - **`<SpotlightText fill="dodge">`** blends with what is behind it: no stacking context may sit between them (no `z-index` on a positioned ancestor, no `opacity`, `transform`, `filter` or `isolation`). Use `fill="solid"` where that cannot be arranged.
 - **Styling a component's element** from the page needs `:global(.its-class)`, since the element belongs to the component.
@@ -57,7 +60,7 @@ Things that trip people up:
 
 ## Working on this package
 
-Plain ES modules in `src/` with hand-written `.d.ts` files beside them: components in `src/components/`, the runtime in `src/runtime/` (one concern a file), stylesheets in `src/styles/`. No build step and no dependencies. `demo/` is an Astro site (not published): a page for each group, every effect on it a working hero, shown one at a time (`src/scripts/viewer.js`; only the hero on show has its effect stamped in). Each hero's Customise panel is generated from the components' prop docs by `npm run docs`, so every prop needs a doc comment with its default and, for numbers, a range written "0–1".
+Plain ES modules in `src/` with hand-written `.d.ts` files beside them: components in `src/components/`, the runtime in `src/runtime/` (one concern a file), stylesheets in `src/styles/`. No build step and no dependencies. `demo/` is an Astro site (not published): one gallery page of every effect as a working hero, a file of heroes per group in `demo/src/heroes/` (listed in `demo/src/tour/groups.ts`), shown one at a time and filtered by type (`src/scripts/viewer.js`; only the hero on show has its effect stamped in). Each hero's Customise panel is generated from the components' prop docs by `npm run docs`, so every prop needs a doc comment with its default and, for numbers, a range written "0–1".
 
 | | |
 |---|---|
@@ -65,11 +68,13 @@ Plain ES modules in `src/` with hand-written `.d.ts` files beside them: componen
 | `npm run docs` | Regenerates COMPONENTS.md from the components' `Props` and the runtime `.d.ts` files. Run after changing any prop. |
 | `cd demo && npm run dev` | The demo on http://127.0.0.1:4400. |
 
+**A Paper look** (a Paper shader made a background of its own, like `<ColorPanels>`) is a row in `PAPER_LOOKS` (`src/runtime/paper-looks.js`, its name in `PaperLookName`: its shader, its preset, and which Paper setting each of its own props sets) and a component that declares its `Props` (each default the preset's, which `tests/paper-look.test.js` checks) and renders `<PaperBackground look="…" config={config}>`. `src/runtime/paper-look.js` maps the shared props (`background`, `zoom`, `rotation`, `offset`, `colors`/`palette`, `speed`, `quiet`) for every look, and its shader leaves the demo's Paper heroes.
+
 The shaders and canvases cannot run under Node. After changing an effect, check it in the demo: it draws, the console has no `[effects-astro]` warnings, and reduced motion, a touch screen and a WebGL-less browser each get their still state or fallback.
 
 ### House rules
 
-- **A new effect** is a runtime module (`src/runtime/<name>.js` + `.d.ts`, exporting `name(el, config) => stop`), a component (`src/components/<Name>.astro`) and a `<Hero>` for it on its group's demo page (`demo/src/pages/`), behind real copy, with the line that makes it in its `code`. Canvas components render `<EffectCanvas name="<name>">` and call `mount('[data-effect-<name>]', fn)`.
+- **A new effect** is a runtime module (`src/runtime/<name>.js` + `.d.ts`, exporting `name(el, config) => stop`), a component (`src/components/<Name>.astro`) and a `<Hero>` for it in its group's file (`demo/src/heroes/<group>.astro`), behind real copy, with the line that makes it in its `code`. Canvas components render `<EffectCanvas name="<name>">` and call `mount('[data-effect-<name>]', fn)`.
 - **Build on the shared parts:** `createStage` for a WebGL effect, `createCanvas2D` for a Canvas one, `animate` for any loop, `pointerIn` / `trail` / `pressAt` for the pointer, `watchColors` for `data-colors`, `drawShape` for logos and text shapes, `GLSL_*` for shader pieces. Each effect keeps the guarantees in the README.
 - **No repetition.** Anything two effects need goes in its own runtime module and is imported.
 - **JSDoc on every function**, nested ones included: a short description, `@param` for each parameter, `@returns`, `@throws` where it applies. Every prop has a doc comment with its default (COMPONENTS.md is built from them). Keep the `.d.ts` files in step. Plain, concise voice: what a thing does and why.

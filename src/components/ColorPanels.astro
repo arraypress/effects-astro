@@ -1,0 +1,62 @@
+---
+/**
+ * ColorPanels: translucent panels of colour that swing open out of the
+ * dark and sweep past, like pages turning towards you. Paper's
+ * color-panels shader (Apache-2.0, vendored), with its settings as plain
+ * props; each prop's default is the Opening preset's, and with another
+ * `preset` the props left out are that preset's.
+ *
+ * Opaque: it is the whole background of what it fills (its nearest
+ * positioned ancestor, or the viewport with `fixed`). Needs WebGL 2;
+ * without it the `background` shows.
+ *
+ * @example
+ * <ColorPanels />
+ * <ColorPanels preset="Glass" background="#0b0b10" />
+ * <ColorPanels palette="Lagoon" density={3} edges quiet={{ radius: 0.5 }} />
+ */
+import PaperBackground from './PaperBackground.astro';
+import type { PaperLookOptions } from '../runtime/paper-look.js';
+
+interface Props extends PaperLookOptions {
+	/** Paper's preset to start from: `Opening` (cyan panels opening out of the dark, on plum), `Default` (seven colours fanning out over black), `Glass` (four colours with lit, blurred edges, on clear) or `Gradient` (panels shading from one colour to the next, on aqua). Default `'Opening'`. */
+	preset?: 'Opening' | 'Default' | 'Glass' | 'Gradient';
+	/** The panels' colours, up to seven, taken in turn. Default `['#00ffff']`. */
+	colors?: string[];
+	/** The colour behind the panels. Default `'#570044'`. */
+	background?: string;
+	/** How closely the panels follow one another, 0.25–7. Default 2.21. */
+	density?: number;
+	/** Skews each panel's left edge as it nears, -1–1. Default -1. */
+	skewLeft?: number;
+	/** Skews each panel's right edge as it nears, -1–1. Default -1. */
+	skewRight?: number;
+	/** How long the panels are, 0–3. Default 0.52. */
+	length?: number;
+	/** Light along each panel's edges. Default false. */
+	edges?: boolean;
+	/** Softens the panels' sides, 0–0.5 (0 sharp). Default 0. */
+	blur?: number;
+	/** Fades the panels where they meet, at the centre, 0–1. Default 0. */
+	fadeInner?: number;
+	/** Fades the panels at their outer ends, nearest you, 0–1. Default 1. */
+	fadeOuter?: number;
+	/** Shades each panel into the next colour, 0–1 (0 one colour each). Default 0. */
+	blend?: number;
+	/** How large the panels are drawn, 0.1–4. Default 2.32. */
+	zoom?: number;
+	/** Turns the whole look, degrees, 0–360. Default 360. */
+	rotation?: number;
+	/** Where the panels' centre sits, `[x, y]`, -1–1, right and down. Default `[-0.3, 0.6]`. */
+	offset?: [number, number];
+	/** How fast the panels turn, 0–4 (0 holds). Default 2. */
+	speed?: number;
+	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
+	fixed?: boolean;
+	class?: string;
+}
+
+const { fixed = false, class: className, ...config } = Astro.props;
+---
+
+<PaperBackground look="color-panels" config={config} fixed={fixed} class={className} />

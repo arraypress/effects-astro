@@ -1,11 +1,12 @@
 /**
- * The heroes' own controls: a Paper hero's presets, a tag's code onto the
+ * The heroes' own controls: a hero's preset chips, a tag's code onto the
  * clipboard, the cursor demo's switch, and a ScrollReveal card's replay.
  * Which hero is on show is src/scripts/viewer.js; the customise panel is
  * src/scripts/panel.js.
  */
 
 import { change, stateOf } from '../customise/state.js';
+import { propOf } from '../customise/colours.js';
 
 /**
  * Plays a revealed element's arrival again: hidden at once (no transition),
@@ -27,7 +28,7 @@ document.querySelectorAll('[data-replay]').forEach((el) => el.addEventListener('
 document.addEventListener('click', (e) => {
 	const target = /** @type {HTMLElement} */ (e.target);
 
-	// A Paper preset: the effect starts again with it, and the tag says so.
+	// A preset: the effect starts again with it, and the tag says so.
 	const chip = /** @type {HTMLButtonElement | null} */ (target.closest('[data-preset]'));
 	if (chip) {
 		const hero = /** @type {HTMLElement} */ (chip.closest('[data-hero]'));
@@ -57,9 +58,10 @@ document.addEventListener('click', (e) => {
 	}
 });
 
-// A Paper hero's preset chips follow its preset, however it changed (a chip, the panel's Reset).
+// A hero's preset chips follow its preset, however it changed (a chip, the panel's Reset); none named is its default.
 document.addEventListener('customise:line', (e) => {
 	const hero = /** @type {HTMLElement} */ (e.target);
-	const preset = stateOf(hero)?.values.preset;
+	const state = stateOf(hero);
+	const preset = state && (state.values.preset ?? propOf(state.component, 'preset')?.default);
 	hero.querySelectorAll('[data-preset]').forEach((c) => c.classList.toggle('is-on', /** @type {HTMLElement} */ (c).dataset.preset === preset));
 });

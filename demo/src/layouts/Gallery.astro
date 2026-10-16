@@ -1,8 +1,8 @@
 ---
 /**
- * A gallery page: the bar across the top (the pages, the arrows through
- * every hero in the gallery, and the "All effects" overview), the page's
- * heroes, one on show at a time, and the customise panel.
+ * The gallery's page: the bar across the top (filters by type, the arrows
+ * through the heroes in the filter, and the "All effects" overview), every
+ * group's heroes, one on show at a time, and the customise panel.
  */
 import '@fontsource/ibm-plex-mono/400.css';
 import '@fontsource/ibm-plex-mono/500.css';
@@ -10,39 +10,33 @@ import '../styles/gallery.css';
 import '../styles/bar.css';
 import Panel from '../components/Panel.astro';
 import Overview from '../components/Overview.astro';
-import { PAGES } from '../gallery';
+import { GROUPS } from '../tour/groups';
 import { collect } from '../tour/stops';
 
-interface Props {
-	/** This page's name, as PAGES lists it. */
-	page: string;
-}
-
-const { page } = Astro.props;
-// Collecting the tour renders every page; those renders need no tour of their own.
-const groups = (Astro.locals as { collecting?: boolean }).collecting ? [] : await collect();
-const total = groups.reduce((sum, group) => sum + group.stops.length, 0);
-const href = PAGES.find((p) => p.name === page)?.href;
+const tours = await collect();
+const total = tours.reduce((sum, tour) => sum + tour.stops.length, 0);
 ---
 
 <html lang="en-GB">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>{page} · effects-astro</title>
+		<title>effects-astro</title>
+		<link rel="icon" href="data:," />
 	</head>
 	<body>
 		<nav class="bar" aria-label="Gallery">
 			<a class="bar__brand" href="/">effects-astro</a>
-			<div class="bar__pages">
-				{PAGES.map((p) => <a href={p.href} aria-current={p.name === page ? 'page' : undefined}>{p.name}</a>)}
+			<div class="bar__filters" aria-label="Show">
+				<a href="/" data-filter="">All</a>
+				{GROUPS.map((group) => <a href={`/?type=${group.type}`} data-filter={group.type}>{group.name}</a>)}
 			</div>
 			<div class="bar__step">
-				<a class="bar__arrow" href={href} aria-label="Previous effect" data-step="-1">
+				<a class="bar__arrow" href="/" aria-label="Previous effect" data-step="-1">
 					<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M10 3.5L5.5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
 				</a>
-				<span class="bar__count" aria-live="polite"><b data-count>1</b> / {total}<span class="bar__group"> · {page}</span></span>
-				<a class="bar__arrow" href={href} aria-label="Next effect" data-step="1">
+				<span class="bar__count" aria-live="polite"><b data-count>1</b> / <span data-total>{total}</span><span class="bar__group"> · <span data-count-group>{GROUPS[0].name}</span></span></span>
+				<a class="bar__arrow" href="/" aria-label="Next effect" data-step="1">
 					<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M6 3.5L10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
 				</a>
 			</div>
@@ -53,7 +47,7 @@ const href = PAGES.find((p) => p.name === page)?.href;
 		</nav>
 		<slot />
 		<Panel />
-		<Overview groups={groups} />
+		<Overview groups={tours} />
 		<script>
 			import '../scripts/gallery.js';
 			import '../scripts/bar.js';

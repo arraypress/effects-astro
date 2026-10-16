@@ -1,4 +1,4 @@
-/* The bar: the pages, the arrows through every hero with the count between them, and the overview's button. */
+/* The bar: the filters by type, the arrows through the heroes in the filter with the count between them, and the overview's button. */
 .bar {
 	--bar-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 	position: fixed;
@@ -19,7 +19,6 @@
 	-webkit-backdrop-filter: blur(16px) saturate(1.4);
 	color: #e4e4e7;
 	font-size: 13px;
-	view-transition-name: bar;
 }
 .bar__brand {
 	flex: none;
@@ -30,14 +29,14 @@
 	text-decoration: none;
 	white-space: nowrap;
 }
-.bar__pages {
+.bar__filters {
 	display: flex;
 	gap: 2px;
 	min-width: 0;
 	overflow-x: auto;
 	scrollbar-width: none;
 }
-.bar__pages a {
+.bar__filters a {
 	flex: none;
 	padding: 7px 12px;
 	border-radius: 999px;
@@ -47,8 +46,8 @@
 		background 0.2s,
 		color 0.2s;
 }
-.bar__pages a:hover,
-.bar__pages a[aria-current] {
+.bar__filters a:hover,
+.bar__filters a[aria-current] {
 	background: rgb(255 255 255 / 0.1);
 	color: #fff;
 }
@@ -101,9 +100,9 @@
 	color: #f4f4f5;
 	font-weight: 500;
 }
-/* The page's name beside the count, where the pages themselves are not shown. */
+/* The hero's group, beside the count. */
 .bar__group {
-	display: none;
+	color: #a1a1aa;
 }
 .bar__all {
 	display: inline-flex;
@@ -114,22 +113,35 @@
 	white-space: nowrap;
 }
 
-@media (max-width: 760px) {
+/* Narrow screens: the filters drop to a second row that scrolls across. */
+@media (max-width: 980px) {
 	.bar {
 		inset-inline: 10px;
+		flex-wrap: wrap;
 		width: auto;
 		justify-content: space-between;
+		border-radius: 22px;
 	}
-	.bar__pages {
-		display: none;
-	}
-	.bar__group {
-		display: inline;
+	.bar__filters {
+		order: 1;
+		flex-basis: 100%;
+		margin: 2px -6px -6px;
+		padding: 4px 6px 6px;
+		border-top: 1px solid rgb(255 255 255 / 0.08);
 	}
 	.bar__step {
 		margin-left: auto;
 		padding-left: 0;
 		border-left: 0;
+	}
+}
+/* Phones: the count and the overview's icon fill the top row (the All filter leads home, as the name does). */
+@media (max-width: 560px) {
+	.bar__brand {
+		display: none;
+	}
+	.bar__step {
+		margin-left: 0;
 	}
 	.bar__all span {
 		display: none;

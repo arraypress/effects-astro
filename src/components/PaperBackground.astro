@@ -1,0 +1,40 @@
+---
+/**
+ * PaperBackground: what every Paper look's component renders (internal;
+ * `<ColorPanels>` and the rest are the components to use). The look's
+ * props reach the page as they are, and src/runtime/paper-look.js turns
+ * them into Paper's settings there, so a look's component is only its
+ * documented props. Fills its nearest positioned ancestor, or the
+ * viewport with `fixed`; without WebGL 2 its background colour shows.
+ *
+ * @example
+ * <PaperBackground look="color-panels" config={config} fixed={fixed} class={className} />
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import { paperSettings } from '../runtime/paper.js';
+import { paperLookSettings } from '../runtime/paper-look.js';
+import type { PaperLookName } from '../runtime/paper-looks.js';
+
+interface Props {
+	/** The look. */
+	look: PaperLookName;
+	/** Its props, as its component was given them. */
+	config: Record<string, unknown>;
+	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
+	fixed?: boolean;
+	class?: string;
+}
+
+const { look, config, fixed = false, class: className } = Astro.props;
+const settings = { look, ...config };
+const back = paperSettings(paperLookSettings(settings)).colorBack;
+---
+
+<EffectCanvas name="paper-look" config={settings} fixed={fixed} behind background={typeof back === 'string' ? back : undefined} class={className} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { paperLook } from '../runtime/paper-look.js';
+
+	mount('[data-effect-paper-look]', paperLook);
+</script>

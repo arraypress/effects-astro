@@ -1,31 +1,42 @@
 /**
  * The gallery's viewer: one hero on show at a time, and a tour through
- * every hero on every page. The tour's stops are the overview's cards, in
- * order (src/components/Overview.astro); a stop on this page is shown in
- * place, under its own `#anchor` in the address bar, and one on another
- * page is a page load. The hero shown fades in over the one before, whose
- * effect is then taken out (src/scripts/stamp.js), so only one is live.
- * Each change is announced as `gallery:hero` on the document, with the hero
- * and its stop.
+ * them, every hero or one type's (the filter, `?type=logos` in the
+ * address). The tour's stops are the overview's cards, in order, each with
+ * its type (src/components/Overview.astro); a hero is shown under its own
+ * `#anchor` in the address bar. The hero shown fades in over the one
+ * before, whose effect is then taken out (src/scripts/stamp.js), so only
+ * one is live. Each change, of hero or filter, is announced as
+ * `gallery:hero` on the document.
  */
 
 import { hide, show } from './stamp.js';
 
 /**
- * @typedef {{ hero: HTMLElement, stop: HTMLAnchorElement | undefined, index: number }} Shown
+ * @typedef {object} Shown
+ * @property {HTMLElement} hero The hero on show.
+ * @property {HTMLAnchorElement | undefined} stop Its card.
+ * @property {number} index Its place in the filter, from 0.
+ * @property {number} total How many heroes the filter holds.
+ * @property {string} filter The type shown, or empty for every one.
  */
 
 const heroes = /** @type {HTMLElement[]} */ ([...document.querySelectorAll('[data-hero]')]);
 
 /** Every stop in the gallery, in order. */
-export const stops = /** @type {HTMLAnchorElement[]} */ ([...document.querySelectorAll('[data-stop]')]);
+const stops = /** @type {HTMLAnchorElement[]} */ ([...document.querySelectorAll('[data-stop]')]);
+
+/** The types there are, from the stops. */
+const types = new Set(stops.map((stop) => stop.dataset.type));
 
 /** The hero on show, and those fading out under it with their timers. */
 let current = /** @type {HTMLElement | null} */ (null);
 const leaving = /** @type {Map<HTMLElement, ReturnType<typeof setTimeout>>} */ (new Map());
 
+/** The type shown, or empty for every one. */
+let filter = '';
+
 /**
- * A path without a trailing slash, so `/paper/` and `/paper` match.
+ * A path without a trailing slash, so `/a/` and `/a` match.
  *
  * @param {string} path The path.
  * @returns {string} It, trimmed.
@@ -33,31 +44,60 @@ const leaving = /** @type {Map<HTMLElement, ReturnType<typeof setTimeout>>} */ (
 const trim = (path) => path.replace(/(.)\/$/, '$1');
 
 /**
- * The hero a link leads to on this page, if it leads to one here.
+ * The hero a link leads to, if it leads to one on this page.
  *
  * @param {HTMLAnchorElement} link The link.
  * @returns {HTMLElement | undefined} The hero.
  */
-export function heroAt(link) {
+function heroAt(link) {
 	if (link.origin !== location.origin || trim(link.pathname) !== trim(location.pathname)) return undefined;
 	const id = decodeURIComponent(link.hash.slice(1));
 	return heroes.find((hero) => hero.id === id);
 }
 
 /**
- * Where the hero on show is in the tour.
+ * A hero's card.
  *
- * @returns {number} Its index; -1 before one is shown.
+ * @param {HTMLElement | null} hero The hero.
+ * @returns {HTMLAnchorElement | undefined} Its card.
  */
-const at = () => stops.findIndex((stop) => current && heroAt(stop) === current);
+const stopOf = (hero) => stops.find((stop) => hero && heroAt(stop) === hero);
 
 /**
- * The stop some way from the hero on show, round from the last to the first.
+ * The stops in the filter, in order.
+ *
+ * @returns {HTMLAnchorElement[]} The stops.
+ */
+const shown = () => (filter ? stops.filter((stop) => stop.dataset.type === filter) : stops);
+
+/**
+ * Whether a hero is in the filter.
+ *
+ * @param {HTMLElement} hero The hero.
+ * @returns {boolean} True when it is.
+ */
+const inFilter = (hero) => !filter || stopOf(hero)?.dataset.type === filter;
+
+/**
+ * The address of a hero, under the filter.
+ *
+ * @param {HTMLElement} hero The hero.
+ * @returns {string} The address (`/?type=logos#liquid-metal`).
+ */
+export const addressOf = (hero) => `${location.pathname}${filter ? `?type=${filter}` : ''}#${hero.id}`;
+
+/**
+ * The stop some way from the hero on show in the filter, round from the
+ * last to the first.
  *
  * @param {number} by How far: 1 for the next, -1 for the one before.
  * @returns {HTMLAnchorElement | undefined} The stop.
  */
-export const neighbour = (by) => stops[(((at() + by) % stops.length) + stops.length) % stops.length];
+export function neighbour(by) {
+	const list = shown();
+	const at = list.findIndex((stop) => current && heroAt(stop) === current);
+	return list[(((at + by) % list.length) + list.length) % list.length];
+}
 
 /**
  * Takes a faded-out hero away: its effect out and the section hidden.
@@ -75,64 +115,96 @@ function settle(hero) {
 /**
  * Shows a hero over the one before, which fades out under it and goes once
  * the new one is in (at once, when motion is reduced). Any older hero still
- * fading goes now, so no more than two are ever live.
+ * fading goes now, so no more than two are ever live. Then tells the page,
+ * also when only the filter changed.
  *
  * @param {HTMLElement} hero The hero.
  */
 function present(hero) {
-	if (hero === current) return;
-	const before = current;
-	clearTimeout(leaving.get(hero));
-	leaving.delete(hero);
-	[...leaving.keys()].forEach(settle);
-	hero.classList.remove('is-leaving');
-	hero.hidden = false;
-	show(hero);
-	current = hero;
-	if (before) {
-		before.classList.add('is-leaving');
-		const fade = parseFloat(getComputedStyle(hero).animationDuration) * 1000 || 0;
-		leaving.set(before, setTimeout(() => settle(before), fade));
+	if (hero !== current) {
+		const before = current;
+		clearTimeout(leaving.get(hero));
+		leaving.delete(hero);
+		[...leaving.keys()].forEach(settle);
+		hero.classList.remove('is-leaving');
+		hero.hidden = false;
+		show(hero);
+		current = hero;
+		if (before) {
+			before.classList.add('is-leaving');
+			const fade = parseFloat(getComputedStyle(hero).animationDuration) * 1000 || 0;
+			leaving.set(before, setTimeout(() => settle(before), fade));
+		}
+		document.title = `${hero.dataset.name} · effects-astro`;
 	}
-	const index = at();
-	document.title = `${hero.dataset.name} · effects-astro`;
-	document.dispatchEvent(new CustomEvent('gallery:hero', { detail: /** @type {Shown} */ ({ hero, stop: stops[index], index }) }));
+	const list = shown();
+	const stop = stopOf(hero);
+	const detail = /** @type {Shown} */ ({ hero, stop, index: stop ? list.indexOf(stop) : -1, total: list.length, filter });
+	document.dispatchEvent(new CustomEvent('gallery:hero', { detail }));
 }
 
 /**
- * Goes to a stop: shown in place, in the history, when it is on this page;
- * otherwise its page loads.
+ * Shows a hero and puts it in the history, under the filter; a hero
+ * outside the filter clears it.
  *
- * @param {HTMLAnchorElement | undefined} stop The stop.
+ * @param {HTMLElement} hero The hero.
  */
-export function visit(stop) {
-	if (!stop) return;
-	const hero = heroAt(stop);
-	if (!hero) return location.assign(stop.href);
-	if (hero !== current) history.pushState(null, '', `#${hero.id}`);
+function go(hero) {
+	if (!inFilter(hero)) filter = '';
+	const address = addressOf(hero);
+	if (address !== `${location.pathname}${location.search}${location.hash}`) history.pushState(null, '', address);
 	present(hero);
 }
 
 /**
- * Goes to the next stop, or the one before.
+ * Goes to the hero a stop or link leads to.
+ *
+ * @param {HTMLAnchorElement | undefined} stop The stop.
+ */
+function visit(stop) {
+	const hero = stop && heroAt(stop);
+	if (hero) go(hero);
+}
+
+/**
+ * Goes to the next stop in the filter, or the one before.
  *
  * @param {number} by 1 for the next, -1 for the one before.
  */
 export const step = (by) => visit(neighbour(by));
 
 /**
- * Shows the hero the address names, or the page's first.
+ * Shows one type, or every one: the hero on show stays if it is in it,
+ * else the type's first comes in.
+ *
+ * @param {string} type The type, or empty for every one.
+ */
+function only(type) {
+	filter = types.has(type) ? type : '';
+	const first = shown()[0];
+	const hero = current && inFilter(current) ? current : first && heroAt(first);
+	if (hero) go(hero);
+}
+
+/**
+ * Shows what the address names: its filter (`?type=`), and its hero, or
+ * the filter's first. A hero outside the filter clears it.
  */
 function fromAddress() {
+	const type = new URLSearchParams(location.search).get('type') ?? '';
+	filter = types.has(type) ? type : '';
 	const id = decodeURIComponent(location.hash.slice(1));
-	const hero = heroes.find((h) => h.id === id) ?? heroes[0];
+	const named = heroes.find((h) => h.id === id);
+	if (named && !inFilter(named)) filter = '';
+	const first = shown()[0];
+	const hero = named ?? (first && heroAt(first)) ?? heroes[0];
 	if (hero) present(hero);
 }
 
 /**
  * Starts the viewer: the hero the address names on show, the browser's
- * back and forward followed, and links to a hero on this page shown in
- * place rather than loaded. Call it once the modules that listen for
+ * back and forward followed, the bar's filters, and links to a hero shown
+ * in place rather than loaded. Call it once the modules that listen for
  * `gallery:hero` are in, so they hear the first.
  */
 export function start() {
@@ -144,6 +216,10 @@ export function start() {
 		if (!link) return;
 		// The copy's placeholder links (`href="#"`) go nowhere, rather than back to the first hero.
 		if (link.getAttribute('href') === '#') return e.preventDefault();
+		if (link.dataset.filter !== undefined) {
+			e.preventDefault();
+			return only(link.dataset.filter);
+		}
 		if (!heroAt(link)) return;
 		e.preventDefault();
 		visit(link);

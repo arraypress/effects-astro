@@ -1,0 +1,19 @@
+---
+/**
+ * A hero's preset chips, for its tag: one button per preset, the one in
+ * use lit. A press restarts the effect with it (src/scripts/gallery.js).
+ */
+
+interface Props {
+	/** The presets' names, in order. */
+	names: string[];
+	/** The one in use. Default the first. */
+	on?: string;
+}
+
+const { names, on = names[0] } = Astro.props;
+---
+
+<div class="chips">
+	{names.map((name) => <button type="button" class:list={['chip', { 'is-on': name === on }]} data-preset={name}>{name}</button>)}
+</div>

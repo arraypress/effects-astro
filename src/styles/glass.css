@@ -16,6 +16,14 @@
  * near-black), `--glass-tint-amount` (30%), `--glass-blur` (20px),
  * `--glass-lift` (hover rise, 2px; 0 for none).
  *
+ * Refraction, opt-in: `--glass-refract` above 0 (up to 2) bends what is
+ * behind as a thick lens does at its rim, where liquid-glass.js can draw
+ * it (Chromium; `glassLens()` starts it, `<Glass refract>` includes it).
+ * Also `--glass-dispersion` (0–1, default 0.35), `--glass-bezel` (the
+ * rim's width, 28px), `--glass-specular` (0–1, 0.7) and
+ * `--glass-lens-blur` (a light frost on the lens, 0.5px). Elsewhere the
+ * panel stays frosted as above.
+ *
  * From the LumiThemes site.
  * ───────────────────────────────────────────────────────────────────── */
 
@@ -43,6 +51,12 @@
 	inset: -1px;
 	border-radius: inherit;
 	pointer-events: none;
+}
+
+/* The lens: liquid-glass.js sets `--glass-lens` to the panel's filter and
+ * `data-glass-lens` only where the browser draws it. */
+.glass[data-glass-lens] {
+	backdrop-filter: blur(var(--glass-lens-blur, 0.5px)) var(--glass-lens) saturate(150%) brightness(1.08);
 }
 
 /* The rim: a gradient on the border box with the padding box masked out. */
