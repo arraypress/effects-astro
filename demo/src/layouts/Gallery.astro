@@ -15,18 +15,38 @@ import { collect } from '../tour/stops';
 
 const tours = await collect();
 const total = tours.reduce((sum, tour) => sum + tour.stops.length, 0);
+const title = 'Effects — LumiThemes';
+const description = `${total} live heroes from @arraypress/effects-astro: liquid light, ink, water, glass, logos and type for Astro sites. Step through them, customise each one and copy the line that makes it.`;
+const origin = Astro.site?.href.replace(/\/$/, '') ?? '';
 ---
 
 <html lang="en-GB">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>effects-astro</title>
-		<link rel="icon" href="data:," />
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={`${origin}/`} />
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="LumiThemes" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={`${origin}/`} />
+		<meta property="og:image" content={`${origin}/og.png`} />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta name="twitter:card" content="summary_large_image" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 	</head>
 	<body>
 		<nav class="bar" aria-label="Gallery">
-			<a class="bar__brand" href="/">effects-astro</a>
+			<a class="bar__brand" href="https://lumithemes.com" title="LumiThemes">
+				<svg viewBox="0 0 352 270" width="18" height="14" aria-hidden="true" focusable="false">
+					<path d="M215.209 0H117.969L0 270H97.24L215.209 0Z" />
+					<path d="M331.067 114C337.917 114 344.683 114.356 351.35 115.05L282.361 269.999H140.963C158.541 181.063 236.973 114 331.067 114Z" />
+				</svg>
+				LumiThemes
+			</a>
 			<div class="bar__filters" aria-label="Show">
 				<a href="/" data-filter="">All</a>
 				{GROUPS.map((group) => <a href={`/?type=${group.type}`} data-filter={group.type}>{group.name}</a>)}

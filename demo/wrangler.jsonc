@@ -1,0 +1,18 @@
+{
+  // The effects gallery, served as static assets with no Worker script, so
+  // requests cost nothing: effects.lumithemes.com. Build from this folder
+  // (`demo/`): `npm run build`, then `npx wrangler deploy`.
+  //
+  // wrangler deploys BY NAME: if this drifts from the dashboard, the next
+  // deploy creates a second Worker instead of updating this one.
+  "name": "lumithemes-effects",
+  "compatibility_date": "2026-06-01",
+  // Off until the custom domain serves, so there is no second public origin
+  // for search engines to index.
+  "workers_dev": false,
+  "preview_urls": false,
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application"
+  }
+}
