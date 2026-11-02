@@ -5,7 +5,13 @@ All notable changes to `@arraypress/effects-astro` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.0] — Unreleased
+## [0.1.1] — 2026-11-02
+
+### Fixed
+
+- `<PaperShader>`s that trace a picture (`gem-smoke`, `liquid-metal`, `heatmap`) now hand the prepared picture to the shader as a `data:` URL instead of a `blob:` one, so they draw under a Content Security Policy that allows `data:` images but not `blob:` (they showed only their background before). No object URL is left unrevoked.
+
+## [0.1.0] — 2026-10-16
 
 ### Added
 

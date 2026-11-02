@@ -135,6 +135,22 @@ async function silhouette(src) {
 }
 
 /**
+ * Reads a Blob as a data: URL.
+ *
+ * @param {Blob} blob The blob (a prepared picture).
+ * @returns {Promise<string>} Its contents as a data: URL.
+ * @throws {DOMException} When the blob cannot be read.
+ */
+function dataUrl(blob) {
+	return new Promise((resolve, reject) => {
+		const reader = new FileReader();
+		reader.onload = () => resolve(String(reader.result));
+		reader.onerror = () => reject(reader.error);
+		reader.readAsDataURL(blob);
+	});
+}
+
+/**
  * A picture made from colours: a linear gradient, square.
  *
  * @param {string[]} colors The colours.
@@ -203,7 +219,9 @@ async function start(el, config) {
 			if (SILHOUETTE.has(config.shader)) src = await silhouette(src);
 			const result = await module[prepare](src);
 			// The helpers name their result differently: `pngBlob` (liquid metal, gem smoke) or `blob` (heatmap).
-			src = URL.createObjectURL(result.pngBlob ?? result.blob);
+			// Read as a data: URL, not a blob: one, so it loads under a CSP that allows data: images
+			// but not blob: (a common default), and there is no object URL left to revoke.
+			src = await dataUrl(result.pngBlob ?? result.blob);
 		}
 		if (src) pictures.u_image = await loadImage(src);
 		else if (config.gradient?.length) pictures.u_image = await gradientImage(config.gradient, config.gradientAngle ?? 135);
