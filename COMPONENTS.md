@@ -414,6 +414,7 @@ Ink: ink in water over whatever is behind it. The pointer stirs it and trails in
 | `radius` | `number` | The size of a stroke's splats and of a drop, 1 as standard. |
 | `momentum` | `number` | How fast the motion dies away, per second (lower flows on longer). Default 0.25. |
 | `opacity` | `number` | The ink's strongest cover, 0–1. Default 1. |
+| `idle` | `number` | Seconds between drops of ink on their own, so it moves before anyone touches it; 0 for none. They wait while it's off screen or the tab is hidden. Default 0. |
 | `ignore` | `string` | Clicks on these are theirs, not the ink's. Default: links, buttons, form fields and `[data-effect-ignore]`. |
 | `fixed` | `boolean` | Fill the viewport (position: fixed). Default false. |
 | `class` | `string` | Classes for the element. |

@@ -33,6 +33,7 @@ import { PALETTES, pickColors } from './palettes.js';
  * @property {number} [radius=1] The size of a stroke's splats and of a drop, 1 as standard.
  * @property {number} [momentum=0.25] How fast the motion dies away, per second (lower flows on longer).
  * @property {number} [opacity=1] The ink's strongest cover, 0–1.
+ * @property {number} [idle=0] Seconds between drops of ink on their own, so it moves before anyone touches it; 0 for none. They wait while the ink is off screen or the tab is hidden.
  * @property {string} [ignore] Clicks on these are theirs, not the ink's (default: links, buttons, form fields, `[data-effect-ignore]`).
  */
 
@@ -68,6 +69,9 @@ export function ink(el, config) {
 	let fluid = null;
 	/** @type {ReturnType<typeof stir> | null} */
 	let stirrer = null;
+	const idle = Math.max(0, config.idle ?? 0);
+	// the first drop comes soon after it starts, then one every `idle` seconds of running
+	let untilDrop = Math.min(idle, 0.4);
 
 	const { stage, stop } = createStage(el, {
 		fragment: SHOW,
@@ -95,6 +99,11 @@ export function ink(el, config) {
 		},
 		update(_stage, _now, dt) {
 			stirrer?.update(dt);
+			// counted in frames run, so it waits while the loop is paused (off screen, tab hidden)
+			if (idle > 0 && dt > 0 && (untilDrop -= dt) <= 0) {
+				untilDrop = idle;
+				stirrer?.bloom(0.15 + Math.random() * 0.7, 0.15 + Math.random() * 0.7);
+			}
 			if (dt > 0) fluid?.step(dt);
 			fluid?.bind(3, 4);
 		},

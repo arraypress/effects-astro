@@ -50,6 +50,8 @@ export interface StirOptions {
  */
 export function stir(fluid: Fluid, el: HTMLElement, options: StirOptions): {
 	update(dt: number): void;
+	/** Drops ink at a point in the fluid's 0–1 space, as a click would. */
+	bloom(x: number, y: number): void;
 	setColors(colors: Rgb[]): void;
 	destroy(): void;
 };

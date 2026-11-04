@@ -23,6 +23,8 @@ export interface InkConfig {
 	momentum?: number;
 	/** The ink's strongest cover, 0–1. Default 1. */
 	opacity?: number;
+	/** Seconds between drops of ink on their own, so it moves before anyone touches it; 0 for none. They wait while it's off screen or the tab is hidden. Default 0. */
+	idle?: number;
 	/** Clicks on these are theirs, not the ink's. Default: links, buttons, form fields and `[data-effect-ignore]`. */
 	ignore?: string;
 }

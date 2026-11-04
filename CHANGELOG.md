@@ -5,6 +5,12 @@ All notable changes to `@arraypress/effects-astro` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] — 2026-11-04
+
+### Added
+
+- `<Ink idle={4}>`: drops ink on its own every so many seconds, so it moves before anyone touches it. Counted in frames run, so it waits while the ink is off screen or the tab is hidden. `stir()` now returns `bloom(x, y)` too, to drop ink from code.
+
 ## [0.1.1] — 2026-11-02
 
 ### Fixed

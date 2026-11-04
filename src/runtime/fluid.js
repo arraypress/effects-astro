@@ -423,9 +423,11 @@ const INK_PER_STEP = 0.3;
  * @param {Fluid} fluid The fluid.
  * @param {HTMLElement} el The element it covers.
  * @param {StirOptions} options How it is stirred.
- * @returns {{ update: (dt: number) => void, setColors: (colors: Rgb[]) => void, destroy: () => void }}
+ * @returns {{ update: (dt: number) => void, bloom: (x: number, y: number) => void, setColors: (colors: Rgb[]) => void, destroy: () => void }}
  *   `update(dt)` lays the strokes since the last frame (call it before
- *   `fluid.step`); `setColors` changes the ink's palette; `destroy` stops listening.
+ *   `fluid.step`); `bloom(x, y)` drops ink at a point in the fluid's 0–1
+ *   space, as a click would; `setColors` changes the ink's palette;
+ *   `destroy` stops listening.
  */
 export function stir(fluid, el, options) {
 	const {
@@ -455,12 +457,10 @@ export function stir(fluid, el, options) {
 	 * A drop of ink: a bloom of colour, and a ring of pushes outward with a
 	 * turn to them, so it bursts open and curls.
 	 *
-	 * @param {PointerEvent} e The press.
+	 * @param {number} x Across, 0–1 in the fluid's space.
+	 * @param {number} y Up, 0–1 in the fluid's space.
 	 */
-	const drop = (e) => {
-		const at = pressAt(el, e, ignore);
-		if (!at) return;
-		const { x, y } = at;
+	const bloom = (x, y) => {
 		const box = el.getBoundingClientRect();
 		const aspect = box.width / box.height;
 		fluid.splat(x, y, 0, 0, ink(1.1), 0.01 * radius);
@@ -473,6 +473,15 @@ export function stir(fluid, el, options) {
 			const vy = (cy + spin * cx * 0.7) * 520 * force;
 			fluid.splat(x + (cx * 0.03 * radius) / aspect, y + cy * 0.03 * radius, vx / aspect, vy, [0, 0, 0], 0.003 * radius);
 		}
+	};
+	/**
+	 * A click or tap: a bloom where it landed, unless it was on something of its own.
+	 *
+	 * @param {PointerEvent} e The press.
+	 */
+	const drop = (e) => {
+		const at = pressAt(el, e, ignore);
+		if (at) bloom(at.x, at.y);
 	};
 	if (drops) document.addEventListener('pointerdown', drop);
 
@@ -494,6 +503,7 @@ export function stir(fluid, el, options) {
 				fluid.splat(p.x, p.y, p.dx * push, p.dy * push, dye, 0.0025 * radius);
 			}
 		},
+		bloom,
 		setColors(next) {
 			colors = next;
 		},

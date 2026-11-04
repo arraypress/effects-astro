@@ -1969,6 +1969,16 @@
 				"live": "config"
 			},
 			{
+				"name": "idle",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "Seconds between drops of ink on their own, so it moves before anyone touches it; 0 for none. They wait while it's off screen or the tab is hidden. Default 0.",
+				"default": 0,
+				"live": "config"
+			},
+			{
 				"name": "ignore",
 				"kind": "string",
 				"doc": "Clicks on these are theirs, not the ink's. Default: links, buttons, form fields and `[data-effect-ignore]`.",
