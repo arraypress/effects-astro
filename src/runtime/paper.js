@@ -43,6 +43,45 @@ import { PRESETS, ENUMS, RENAMES, FITS } from '../vendor/paper/presets.js';
  * @property {number} [scale=1] Share of the pixel ratio drawn at.
  */
 
+/**
+ * Each shader's module, loaded on first use, in its own chunk. The paths
+ * are literals, not built from the name: a bundler gives a literal path its
+ * own chunk, but leaves a template path in a package as it is (Vite's
+ * dynamic-import-vars skips node_modules), and the built site 404s on it.
+ */
+const LOADERS = {
+	'color-panels': () => import('../vendor/paper/shaders/color-panels.js'),
+	dithering: () => import('../vendor/paper/shaders/dithering.js'),
+	'dot-grid': () => import('../vendor/paper/shaders/dot-grid.js'),
+	'dot-orbit': () => import('../vendor/paper/shaders/dot-orbit.js'),
+	'fluted-glass': () => import('../vendor/paper/shaders/fluted-glass.js'),
+	'gem-smoke': () => import('../vendor/paper/shaders/gem-smoke.js'),
+	'god-rays': () => import('../vendor/paper/shaders/god-rays.js'),
+	'grain-gradient': () => import('../vendor/paper/shaders/grain-gradient.js'),
+	'halftone-cmyk': () => import('../vendor/paper/shaders/halftone-cmyk.js'),
+	'halftone-dots': () => import('../vendor/paper/shaders/halftone-dots.js'),
+	heatmap: () => import('../vendor/paper/shaders/heatmap.js'),
+	'image-dithering': () => import('../vendor/paper/shaders/image-dithering.js'),
+	'lens-distortion': () => import('../vendor/paper/shaders/lens-distortion.js'),
+	'liquid-metal': () => import('../vendor/paper/shaders/liquid-metal.js'),
+	'mesh-gradient': () => import('../vendor/paper/shaders/mesh-gradient.js'),
+	metaballs: () => import('../vendor/paper/shaders/metaballs.js'),
+	'neuro-noise': () => import('../vendor/paper/shaders/neuro-noise.js'),
+	'paper-texture': () => import('../vendor/paper/shaders/paper-texture.js'),
+	'perlin-noise': () => import('../vendor/paper/shaders/perlin-noise.js'),
+	'pulsing-border': () => import('../vendor/paper/shaders/pulsing-border.js'),
+	'simplex-noise': () => import('../vendor/paper/shaders/simplex-noise.js'),
+	'smoke-ring': () => import('../vendor/paper/shaders/smoke-ring.js'),
+	spiral: () => import('../vendor/paper/shaders/spiral.js'),
+	'static-mesh-gradient': () => import('../vendor/paper/shaders/static-mesh-gradient.js'),
+	'static-radial-gradient': () => import('../vendor/paper/shaders/static-radial-gradient.js'),
+	swirl: () => import('../vendor/paper/shaders/swirl.js'),
+	voronoi: () => import('../vendor/paper/shaders/voronoi.js'),
+	warp: () => import('../vendor/paper/shaders/warp.js'),
+	water: () => import('../vendor/paper/shaders/water.js'),
+	waves: () => import('../vendor/paper/shaders/waves.js'),
+};
+
 /** The shaders that sample their picture blurred (mip levels), as Paper's React components set up. */
 const MIPMAPPED = new Set(['fluted-glass', 'gem-smoke', 'heatmap', 'liquid-metal', 'lens-distortion', 'paper-texture', 'water']);
 
@@ -59,6 +98,19 @@ const HOST = new Set(['speed', 'frame']);
  * @returns {string} camelCase.
  */
 const camel = (name) => name.replace(/-(\w)/g, (_, c) => c.toUpperCase());
+
+/**
+ * A shader's module, by name.
+ *
+ * @param {string} name The shader (`mesh-gradient`, `gem-smoke`…).
+ * @returns {Promise<Record<string, any>>} Its module: the fragment shader and any picture helper.
+ * @throws {TypeError} When there is no shader by that name.
+ */
+async function load(name) {
+	const loader = Object.hasOwn(LOADERS, name) ? LOADERS[/** @type {keyof typeof LOADERS} */ (name)] : undefined;
+	if (!loader) throw new TypeError(`No Paper shader "${name}" (there are ${Object.keys(LOADERS).join(', ')})`);
+	return loader();
+}
 
 /**
  * The shader's settings: its preset (the named one or its first), with the
@@ -202,8 +254,7 @@ export function paperShader(el, config) {
  * @returns {Promise<() => void>} Stops it.
  */
 async function start(el, config) {
-	/** @type {Record<string, any>} */
-	const module = await import(`../vendor/paper/shaders/${config.shader}.js`);
+	const module = await load(config.shader);
 	const fragment = module[`${camel(config.shader)}FragmentShader`];
 	if (!fragment) throw new Error(`No fragment shader in Paper's "${config.shader}"`);
 	let settings = paperSettings(config);

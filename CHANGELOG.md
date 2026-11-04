@@ -5,6 +5,12 @@ All notable changes to `@arraypress/effects-astro` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.1] — 2026-11-05
+
+### Fixed
+
+- Paper shaders load in production builds: static loader map instead of a variable import. `paperShader` (and `<PaperShader>`, `<PaperBackground>`, `<LiveGradient>`) loaded each shader with `` import(`../vendor/paper/shaders/${name}.js`) ``, which Vite leaves untouched inside node_modules, so a site built with the package asked for `/vendor/paper/shaders/<name>.js` and got a 404 (dev worked). Each shader now has its own literal `import()`, split into its own chunk as before, and an unknown shader name throws a clear error. A test keeps every module in `src` free of imports built at run time.
+
 ## [0.5.0] — 2026-11-05
 
 ### Added

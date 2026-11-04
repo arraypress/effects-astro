@@ -1,5 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync, readdirSync } from 'node:fs';
 import { paperSettings, paperUniforms } from '../src/runtime/paper.js';
 import { PRESETS } from '../src/vendor/paper/presets.js';
 
@@ -32,4 +33,17 @@ test('paperUniforms turns settings into uniforms', () => {
 	const c = paperUniforms('mesh-gradient', { colors: ['#ffffff', '#000000'] });
 	assert.equal(c.u_colorsCount, 2);
 	assert.deepEqual(c.u_colors, [[1, 1, 1, 1], [0, 0, 0, 1]]);
+});
+
+test('every Paper shader loads from a literal import path, so bundlers split it from a package', () => {
+	const source = readFileSync(new URL('../src/runtime/paper.js', import.meta.url), 'utf8');
+	const files = readdirSync(new URL('../src/vendor/paper/shaders/', import.meta.url)).filter((f) => f.endsWith('.js'));
+	for (const file of files) assert.ok(source.includes(`import('../vendor/paper/shaders/${file}')`), file);
+	assert.equal(files.length, Object.keys(PRESETS).length);
+});
+
+test('no module imports a path built at run time', () => {
+	const root = new URL('../src/', import.meta.url);
+	const sources = readdirSync(root, { recursive: true }).filter((f) => /\.(js|astro)$/.test(String(f)) && !String(f).startsWith('vendor'));
+	for (const file of sources) assert.doesNotMatch(readFileSync(new URL(String(file), root), 'utf8'), /import\(\s*[^'"\s]/, String(file));
 });
