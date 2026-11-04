@@ -10,7 +10,10 @@
  *
  * With `stroke` set, the text at rest is a hollow outline of that width and
  * the pixels it breaks into fill the letters solid, so the pointer lights
- * the word up as it passes.
+ * the word up as it passes. The outline is one shape for the whole word
+ * (the solid letters less themselves eroded by the width), so letters that
+ * touch or overlap under tight tracking merge rather than each outline
+ * crossing the next.
  *
  * The element keeps its text (it only turns transparent once the canvas
  * has drawn), so fit-text, selection and the no-JS look are unchanged.
@@ -21,8 +24,11 @@
  * `pointer-events: none` (a big wordmark's line box often overlaps links).
  * Animates only while some cell is hot, and only while the text is on
  * screen. Off with prefers-reduced-motion and without a hovering pointer.
+ * Repainted when the text's own face has loaded (a face used only here can
+ * arrive after `document.fonts.ready`).
  *
- * From the SampleGrid (WaveGrid) theme's footer.
+ * From the SampleGrid (WaveGrid) theme's footer; the merged outline and the
+ * font reload from the Logomarks site's.
  */
 
 import { canHover, prefersReducedMotion } from './device.js';
@@ -37,6 +43,44 @@ import { textNodes } from './text.js';
  * @property {number} [shift=16] How far the hottest rows slip sideways, CSS px.
  * @property {number} [stroke=0] With a width (CSS px), the text at rest is an outline that the pixels fill.
  */
+
+/** The 16 directions the outline's erosion looks in, as unit vectors. */
+const AROUND = Array.from({ length: 16 }, (_, k) => [Math.cos((k / 16) * Math.PI * 2), Math.sin((k / 16) * Math.PI * 2)]);
+
+/**
+ * The outline of a shape, from its coverage: each pixel's alpha less the
+ * smallest alpha within `radius` of it (looked for in 16 directions), so
+ * the line runs `radius` px inside the shape's edge and stays smooth where
+ * the edge is antialiased. Shapes that touch or overlap give one outline
+ * round the lot.
+ *
+ * @param {Uint8ClampedArray} rgba The shape, RGBA (only alpha is read).
+ * @param {number} width Its width, px.
+ * @param {number} height Its height, px.
+ * @param {number} radius The outline's width, px (rounded, at least 1).
+ * @returns {Uint8ClampedArray} The outline's alpha, one byte a pixel.
+ */
+export function outlineAlpha(rgba, width, height, radius) {
+	const r = Math.max(1, Math.round(radius));
+	const steps = AROUND.map(([x, y]) => [Math.round(x * r), Math.round(y * r)]);
+	const out = new Uint8ClampedArray(width * height);
+	for (let y = 0; y < height; y++) {
+		for (let x = 0; x < width; x++) {
+			const v = rgba[(y * width + x) * 4 + 3];
+			if (!v) continue;
+			let low = v;
+			for (const [dx, dy] of steps) {
+				const nx = x + dx;
+				const ny = y + dy;
+				const n = nx < 0 || ny < 0 || nx >= width || ny >= height ? 0 : rgba[(ny * width + nx) * 4 + 3];
+				if (n < low) low = n;
+				if (!low) break;
+			}
+			out[y * width + x] = v - low;
+		}
+	}
+	return out;
+}
 
 /**
  * Starts the pixel glitch on an element of text.
@@ -152,8 +196,8 @@ export function pixelGlitch(el, config) {
 
 	/**
 	 * Draws the text at rest into `crisp`, each glyph where the browser put
-	 * it: solid, or with `stroke` an outline (the stroke is centred on the
-	 * glyph's edge, so it is drawn twice as wide and the inner half cut away).
+	 * it: solid, or with `stroke` one outline round the whole word (see
+	 * outlineAlpha), so overlapping letters do not show their crossings.
 	 */
 	const paint = () => {
 		const texts = textNodes(el);
@@ -182,8 +226,6 @@ export function pixelGlitch(el, config) {
 		c2.setTransform(dpr, 0, 0, dpr, 0, 0);
 		c2.clearRect(0, 0, g.w, g.h);
 		c2.fillStyle = g.ink;
-		c2.strokeStyle = g.ink;
-		c2.lineJoin = 'round';
 		c2.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
 		c2.textBaseline = 'alphabetic';
 		const range = document.createRange();
@@ -209,12 +251,16 @@ export function pixelGlitch(el, config) {
 		eachGlyph((ch, x, y) => c2.fillText(ch, x, y));
 		g.alpha = c2.getImageData(0, 0, crisp.width, crisp.height).data;
 		if (STROKE > 0) {
-			c2.clearRect(0, 0, g.w, g.h);
-			c2.lineWidth = STROKE * 2;
-			eachGlyph((ch, x, y) => c2.strokeText(ch, x, y));
-			c2.globalCompositeOperation = 'destination-out';
-			eachGlyph((ch, x, y) => c2.fillText(ch, x, y));
+			// The pixels still sample the solid letters (g.alpha); what shows at rest is their outline, in the ink.
+			const line = outlineAlpha(g.alpha, crisp.width, crisp.height, STROKE * dpr);
+			const img = c2.createImageData(crisp.width, crisp.height);
+			for (let i = 0; i < line.length; i++) img.data[i * 4 + 3] = line[i];
+			c2.putImageData(img, 0, 0);
+			c2.setTransform(1, 0, 0, 1, 0, 0);
+			c2.globalCompositeOperation = 'source-in';
+			c2.fillRect(0, 0, crisp.width, crisp.height);
 			c2.globalCompositeOperation = 'source-over';
+			c2.setTransform(dpr, 0, 0, dpr, 0, 0);
 		}
 		g.cols = Math.ceil(g.w / CELL);
 		g.rows = Math.ceil(g.h / CELL);
@@ -274,10 +320,23 @@ export function pixelGlitch(el, config) {
 		g.visible = entry.isIntersecting;
 	});
 	watcher.observe(el);
-	document.fonts?.ready.then(paint).catch(() => {});
+	// Repaint once the fonts are in, and once the text's own face is (it may load after fonts.ready).
+	let stopped = false;
+	/** Repaints, unless stopped meanwhile. */
+	const repaint = () => {
+		if (!stopped) paint();
+	};
+	document.fonts?.ready.then(repaint).catch(() => {});
+	const face = getComputedStyle(el);
+	document.fonts
+		?.load(`${face.fontStyle} ${face.fontWeight} ${face.fontSize} ${face.fontFamily}`, el.textContent ?? '')
+		.then(repaint)
+		.catch(() => {});
 	paint();
 
 	return () => {
+		stopped = true;
+		cancelAnimationFrame(pending);
 		document.removeEventListener('pointermove', move);
 		resizer.disconnect();
 		watcher.disconnect();

@@ -1,0 +1,169 @@
+/* ─────────────────────────────────────────────────────────────────────
+ * @arraypress/effects-astro/glitch-text.css
+ *
+ * A headline that glitches now and then: two coloured copies of it, laid
+ * over the real one, flash on for a few frames near the end of each
+ * cycle, each sliced to a different band (clip-path) and shifted
+ * sideways, while the real text nudges with them. Mostly it sits still.
+ * Livelier under the pointer, on the text or a link or button round it.
+ *
+ * Markup: the real text first, then the two copies, hidden from assistive
+ * technology and from focus:
+ *
+ *   <h2 class="glitch-text" style="--glitch-delay: -1.7s">
+ *     <span>Make it yours</span>
+ *     <span class="glitch-text-a" aria-hidden="true" inert>Make it yours</span>
+ *     <span class="glitch-text-b" aria-hidden="true" inert>Make it yours</span>
+ *   </h2>
+ *
+ * Set from custom properties: `--glitch-every` (a cycle, default 5s),
+ * `--glitch-hover` (a cycle under the pointer, 1.6s), `--glitch-delay`
+ * (where in its cycle this one is, so several glitch on their own beats),
+ * `--glitch-a` and `--glitch-b` (the copies' colours, pink and blue) and
+ * `--glitch-blend` (how they blend: multiply on a light ground, screen on
+ * a dark one). With reduced motion it is the plain text, still.
+ *
+ * CSS only. From the Logomarks site's Custom card.
+ * ───────────────────────────────────────────────────────────────────── */
+
+.glitch-text {
+	position: relative;
+	display: block;
+}
+
+:is(span, a, em, strong, b, i, small).glitch-text {
+	display: inline-block;
+}
+
+.glitch-text > * {
+	display: block;
+	animation: effect-glitch-text-main var(--glitch-every, 5s) steps(1, end) infinite;
+	animation-delay: var(--glitch-delay, 0s);
+}
+
+.glitch-text > .glitch-text-a,
+.glitch-text > .glitch-text-b {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	user-select: none;
+	opacity: 0;
+	mix-blend-mode: var(--glitch-blend, multiply);
+	animation-name: effect-glitch-text-a;
+}
+
+.glitch-text > .glitch-text-a,
+.glitch-text > .glitch-text-a * {
+	color: var(--glitch-a, #ff3ea5);
+	-webkit-text-fill-color: currentColor;
+}
+
+.glitch-text > .glitch-text-b,
+.glitch-text > .glitch-text-b * {
+	color: var(--glitch-b, #2e4bff);
+	-webkit-text-fill-color: currentColor;
+}
+
+.glitch-text > .glitch-text-b {
+	animation-name: effect-glitch-text-b;
+}
+
+.glitch-text:hover > *,
+:is(a, button):is(:hover, :focus-visible) .glitch-text > * {
+	animation-duration: var(--glitch-hover, 1.6s);
+}
+
+/* Mostly hidden; a burst near the end of each cycle: a few frames of offset slices. */
+@keyframes effect-glitch-text-a {
+	0%,
+	88% {
+		opacity: 0;
+		clip-path: inset(0 0 100% 0);
+		transform: none;
+	}
+
+	89% {
+		opacity: 1;
+		clip-path: inset(12% 0 64% 0);
+		transform: translateX(-3px);
+	}
+
+	91% {
+		clip-path: inset(58% 0 22% 0);
+		transform: translateX(4px);
+	}
+
+	93% {
+		clip-path: inset(30% 0 48% 0);
+		transform: translateX(-2px);
+	}
+
+	95% {
+		clip-path: inset(78% 0 6% 0);
+		transform: translateX(2px);
+	}
+
+	96%,
+	100% {
+		opacity: 0;
+		clip-path: inset(0 0 100% 0);
+		transform: none;
+	}
+}
+
+/* The second copy a frame behind the first, on other bands. */
+@keyframes effect-glitch-text-b {
+	0%,
+	89% {
+		opacity: 0;
+		clip-path: inset(0 0 100% 0);
+		transform: none;
+	}
+
+	90% {
+		opacity: 1;
+		clip-path: inset(44% 0 36% 0);
+		transform: translateX(3px);
+	}
+
+	92% {
+		clip-path: inset(6% 0 76% 0);
+		transform: translateX(-4px);
+	}
+
+	94% {
+		clip-path: inset(66% 0 14% 0);
+		transform: translateX(2px);
+	}
+
+	96%,
+	100% {
+		opacity: 0;
+		clip-path: inset(0 0 100% 0);
+		transform: none;
+	}
+}
+
+/* The real text nudges with them. */
+@keyframes effect-glitch-text-main {
+	0%,
+	88.9%,
+	96%,
+	100% {
+		transform: none;
+	}
+
+	89% {
+		transform: translateX(1px);
+	}
+
+	92% {
+		transform: translateX(-1px);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.glitch-text > * {
+		animation: none !important;
+	}
+}

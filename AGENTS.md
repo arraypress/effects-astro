@@ -29,12 +29,14 @@ Pick by what is asked for:
 | A map, outdoors, travel or trail hero: contour lines like a survey map | `<Topography>` (dark by default; `background="#f3ead6" colors={['#9a6b43']}` for a paper map; `labels` for elevation numbers, `quiet` behind copy) |
 | A taxi, ride-hailing, delivery, mobility or city-services hero: a tiny living city | `<IsoCity accent="…">` (`night` for lit windows and headlights, `side="right"` + `quiet` beside copy; a click on a street calls a taxi) |
 | A "we sell worldwide" or "we ship from here" section | `<WorldRoutes>` with the cities that matter to the shop; `home="…"` for a hub, `colors` + `gradient` for colour, `labels`, `region="europe"` (or `routes`) to crop |
+| A space, astronomy, night-sky or sci-fi hero: a nebula with stars | `<Galaxy palette="…">` (Canvas 2D, no WebGL; `stars`, `glitter`, `speed`) |
 | A light or texture over a background (a spotlight, film grain) | `<GlowField>`, `<Grain>` (`still` for either to hold) |
 | The brand's logo as the hero's centrepiece | `<GlassGlyph>`, `<LiquidMetal>` (liquid chrome you can poke and splash; `tint="gold"`…), `<ParticleLogo>`, `<NeonSwarm>` (a flowing neon swarm), `<NebulaLogo>` (filled with nebula gas), `<VoxelLogo>`, `<PointCloud>`, all with `src="/logo.svg"` or `text` |
 | A footer wordmark | `<SpotlightText fit>`, `<PixelGlitchText fit>`, `<OutlineWordmark>` |
 | Sections that arrive on scroll, site-wide | `<ScrollReveal />` once in the layout, then reveal.css classes (`fade-in-up`…) on elements |
 | A type foundry or bold brand headline: big variable-font letters that swell under the pointer | `<VariableType as="h1" fit>` set in a variable font (`axes` for which axes swell) |
 | Text that arrives or moves | `<Reveal>`, `<ScrambleText>`, `<Typewriter>`, `<HighlightSweep>`, `<Marquee>` |
+| A headline that glitches now and then (a label, a studio, a "make it yours" card) | `<GlitchText as="h2">` (CSS only; `blend="screen"` on a dark ground, `every`, `colors`) |
 | A small logo mark, a loading or "live" sign | `<PulseMark>`, `.fx-live` from `motion.css` |
 | A hero photo that reacts like water: ripples, a pond, "touch the photo" | `<ImageRipple src="…" alt="…">` (`strength`, `size`, `viscosity`, `fringe`, `fit="contain"`) |
 | A digital-goods or shop hero showing the products: their covers as the centrepiece, copy beside them | `<ProductStack items={[{ src, href, alt }, …]}>` (`layout="fan"`, `"stack"` or `"arc"`), or the covers as `<a><img></a>` children |

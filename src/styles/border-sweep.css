@@ -15,7 +15,13 @@
  * a pill reads as a stall). Colour and speed from `--sweep-color` and
  * `--sweep-speed`. With reduced motion the ring stays, still.
  *
- * From the ArrayPress theme.
+ * `sweep-ring--two` sends two lights round, chasing each other half a lap
+ * apart. `sweep-ring--inset` lifts the ring over the element's own
+ * content (z-index 3, inside its edge), for cards that clip their
+ * contents (`overflow: hidden`) and fill themselves with a picture or a
+ * canvas that would otherwise cover it.
+ *
+ * From the ArrayPress theme; the two lights from the Logomarks site.
  * ───────────────────────────────────────────────────────────────────── */
 
 @property --sweep-angle {
@@ -61,6 +67,27 @@
 
 .sweep-ring--fast {
 	--sweep-speed: 1.8s;
+}
+
+/* Two lights, half a lap apart, each with a faint lead-in. */
+.sweep-ring--two::after {
+	background: conic-gradient(
+		from var(--sweep-angle),
+		transparent 0%,
+		color-mix(in srgb, var(--sweep-color, currentColor) 25%, transparent) 14%,
+		var(--sweep-color, currentColor) 24%,
+		transparent 30%,
+		transparent 50%,
+		color-mix(in srgb, var(--sweep-color, currentColor) 25%, transparent) 64%,
+		var(--sweep-color, currentColor) 74%,
+		transparent 80%
+	);
+}
+
+/* Inside the edge and over the content, for cards that clip and fill themselves. */
+.sweep-ring--inset::after {
+	inset: 0;
+	z-index: 3;
 }
 
 @keyframes effect-border-sweep {

@@ -54,6 +54,7 @@ Astro 6 or 7. The runtime underneath (`@arraypress/effects-astro`) works without
 | `<Ocean>` | Photoreal open sea to the horizon: wind-driven waves, a glittering sun path, light through thin crests, whitecaps, high cloud and haze; `time` dawn, noon, sunset or a moonlit night; the camera drifts with the pointer | WebGL |
 | `<IsoCity>` | A tiny isometric low-poly city with traffic keeping its lanes and the brand's taxis; click a street and the nearest one drives round to pick you up; `night` lights the windows and headlights | WebGL |
 | `<ColorPanels>` | Translucent panels of colour swinging open out of the dark and sweeping past like turning pages: Paper's color-panels shader with plain props (`density`, `skewLeft`, `length`, `edges`, `blur`, `blend`…), its Opening preset by default (`preset` for the others) | WebGL 2 |
+| `<Galaxy>` | Deep space in a palette's colours: soft nebula clouds with dust lanes, shimmering glitter and twinkling stars, drifting slowly | Canvas |
 | `<WorldRoutes>` | A dotted world map with comets of light arcing between cities: a home hub, per-route colours and Oklab gradients, labels, regions, great-circle arcs, hover | Canvas |
 | `<GlowField>` | A light to lay over a background: a bloom, a swaying stage spotlight, a horizon or a wash, breathing gently | CSS |
 | `<Grain>` | Flickering film grain, to dither smooth gradients and make a picture read as film | CSS |
@@ -87,6 +88,7 @@ Astro 6 or 7. The runtime underneath (`@arraypress/effects-astro`) works without
 | `<Reveal>` | Content, or each word, rising into place on scroll | CSS + JS |
 | `<ScrollReveal>` | Once in a layout: anything with a reveal.css class (`fade-in-up`, `zoom-in`, `flip-left`…) arrives on scroll | CSS + JS |
 | `<HighlightSweep>` | A marker underline sweeping in under a word | CSS |
+| `<GlitchText>` | A headline that glitches every few seconds, each on its own beat: two coloured copies sliced and shifted for a few frames; livelier under the pointer | CSS |
 | `<Marquee>` | An endless strip of names or logos, with a pause button | CSS + JS |
 | `<VariableType>` | A variable-font headline whose letters swell heavier and wider under the pointer in a springy wave, and drift gently on their own | JS |
 
@@ -99,7 +101,7 @@ Astro 6 or 7. The runtime underneath (`@arraypress/effects-astro`) works without
 | `<MosaicReveal>` | A slideshow whose pictures change through a GPU transition: tiles flipping in a diagonal wave, a pixel-sort melt, pixelation or a glowing dissolve | WebGL |
 | `<RadiantGlass>` | A cluster of frosted glass tiles on a dark ground, glowing from inside with soft drifting light that shifts with the pointer; a two-tone rim and a halo on each | WebGL |
 | `<Glass>` | A liquid glass panel with a lit rim and a pointer sheen; `refract` bends the live page behind it like a thick lens, with colour at the rim (Chromium; elsewhere it stays frosted) | CSS + JS |
-| `<BorderSweep>` | A light travelling round an outline | CSS |
+| `<BorderSweep>` | A light travelling round an outline (or two chasing each other); `inset` for cards that clip | CSS |
 | `<Tilt>` | A card that leans towards the pointer, with a glare | CSS + JS |
 | `<Parallax>` | Layers that drift with the pointer by depth | CSS + JS |
 | `<Magnetic>` | A button the pointer pulls on | CSS + JS |
@@ -111,7 +113,8 @@ Astro 6 or 7. The runtime underneath (`@arraypress/effects-astro`) works without
 | Import | Classes |
 |---|---|
 | `@arraypress/effects-astro/glass.css` | `.glass` (call `glassSheen()` once for the sheen) |
-| `@arraypress/effects-astro/border-sweep.css` | `.sweep-ring`, `--always`, `--fast` |
+| `@arraypress/effects-astro/border-sweep.css` | `.sweep-ring`, `--always`, `--fast`, `--two`, `--inset` |
+| `@arraypress/effects-astro/glitch-text.css` | `.glitch-text` with its copies `.glitch-text-a` and `.glitch-text-b` (markup in the file) |
 | `@arraypress/effects-astro/motion.css` | `.fx-pulse-ring`, `.fx-heartbeat`, `.fx-bump` (replay with `bump(el)`), `.fx-shimmer`, `.fx-pulse`, `.fx-wiggle`, `.fx-shake`, `.fx-settle`, `.fx-live` (a status dot) |
 | `@arraypress/effects-astro/reveal.css` | `.fade-in`, `.fade-in-up/down/left/right`, `.slide-in-*`, `.zoom-in`, `.zoom-out`, `.flip-up/down/left/right`, `.blur-in` (with `<ScrollReveal />`) |
 
@@ -139,7 +142,7 @@ Every effect that takes `colors` also takes `palette`, one of eighteen named set
 
 ## Changing colours
 
-The WebGL effects (`<LightField>`, `<InkField>`, `<Ink>`, `<AsciiRain>`, `<FlutedGlass>`, `<GlassGlyph>`, `<LiquidMetal>`, `<ParticleLogo>`, `<NeonSwarm>`, `<NebulaLogo>`, `<PointCloud>`, `<VoxelLogo>`, `<SignalLines>`, `<WaveBars>`, `<DotSurface>`, `<HaloRing>`, `<SilkRibbon>`, `<RadiantGlass>`, `<Topography>`, `<Caustics>`, `<RainOnGlass>`, `<MosaicReveal>`, `<Ocean>`, `<IsoCity>`) read a `data-colors` attribute; `setColors` writes it. A light or an ink field eases to the new palette in about a second; ink, rain and the rest take it from their next frame. Set before an effect starts, it is its colours from the first frame.
+The WebGL effects (`<LightField>`, `<InkField>`, `<Ink>`, `<AsciiRain>`, `<FlutedGlass>`, `<GlassGlyph>`, `<LiquidMetal>`, `<ParticleLogo>`, `<NeonSwarm>`, `<NebulaLogo>`, `<PointCloud>`, `<VoxelLogo>`, `<SignalLines>`, `<WaveBars>`, `<DotSurface>`, `<HaloRing>`, `<SilkRibbon>`, `<RadiantGlass>`, `<Topography>`, `<Caustics>`, `<RainOnGlass>`, `<MosaicReveal>`, `<Ocean>`, `<IsoCity>`) and `<Galaxy>` read a `data-colors` attribute; `setColors` writes it. A light or an ink field eases to the new palette in about a second; ink, rain and the rest take it from their next frame. Set before an effect starts, it is its colours from the first frame.
 
 ```js
 import { setColors } from '@arraypress/effects-astro';

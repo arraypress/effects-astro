@@ -1,0 +1,69 @@
+---
+/**
+ * GlitchText: a headline that glitches now and then. Every few seconds two
+ * coloured copies of it (pink and blue by default) flash over it for a few
+ * frames, sliced into bands and shifted sideways, and the text nudges with
+ * them; the rest of the time it sits still. Livelier under the pointer (on
+ * the text, or a link or button round it). Each one on the page glitches
+ * on its own beat. CSS only, from glitch-text.css; with reduced motion it
+ * is the plain text. Not the canvas `<PixelGlitchText>`, which breaks
+ * into pixels under the pointer.
+ *
+ * The slot is rendered three times: once as the real text, twice as the
+ * copies (hidden from assistive technology and from focus), so keep it to
+ * text and inline formatting. For elements you render yourself, import
+ * `@arraypress/effects-astro/glitch-text.css` and follow its markup.
+ *
+ * @example
+ * <GlitchText as="h2" blend="screen">Seen one you like? <em>Make it yours.</em></GlitchText>
+ */
+import type { HTMLTag } from 'astro/types';
+import type { PaletteName } from '../runtime/palettes.js';
+import { pickColors } from '../runtime/palettes.js';
+import '../styles/glitch-text.css';
+import { withStyle } from './style.js';
+
+interface Props {
+	/** The element to render. Default `span`. */
+	as?: HTMLTag;
+	/** Seconds from one glitch to the next, 2–12 (the burst is a fixed share of it, so it lengthens too). Default 5. */
+	every?: number;
+	/** Seconds from one glitch to the next under the pointer, 0.5–5. Default 1.6. */
+	hoverEvery?: number;
+	/** Where in its cycle it starts, seconds (negative is part way in); give several the same to glitch together. Default a random offset, so each has its own beat. */
+	delay?: number;
+	/** The two copies' colours. Default `['#ff3ea5', '#2e4bff']` (pink and blue). */
+	colors?: string[];
+	/** A shared palette by name (`PALETTES`, any case), its first two colours, when there are no `colors`. */
+	palette?: PaletteName | (string & {});
+	/** How the copies blend with the text and what is behind: `multiply` on a light ground, `screen` on a dark one. Default `multiply`. */
+	blend?: 'multiply' | 'screen' | 'normal' | 'difference' | 'plus-lighter';
+	class?: string;
+	[attribute: string]: unknown;
+}
+
+const { as: Tag = 'span', every, hoverEvery, delay, colors, palette, blend, class: className, style: given, ...attributes } = Astro.props;
+const [a, b] = colors?.length || palette ? pickColors({ colors, palette }, ['#ff3ea5', '#2e4bff'], (p) => [p.colors[0], p.colors[1]]) : [];
+const cycle = every ?? 5;
+// Rendered once, at build time: each instance gets its own beat in the static page.
+const offset = delay ?? -Number((Math.random() * cycle).toFixed(2));
+const style = [
+	every !== undefined && `--glitch-every: ${every}s`,
+	hoverEvery !== undefined && `--glitch-hover: ${hoverEvery}s`,
+	`--glitch-delay: ${offset}s`,
+	a && `--glitch-a: ${a}`,
+	(b ?? a) && `--glitch-b: ${b ?? a}`,
+	blend && `--glitch-blend: ${blend}`,
+]
+	.filter(Boolean)
+	.join('; ');
+const html = await Astro.slots.render('default');
+---
+
+<Tag class:list={['glitch-text', className]} style={withStyle(style, given)} {...attributes}
+	><span><Fragment set:html={html} /></span><span class="glitch-text-a" aria-hidden="true" inert><Fragment set:html={html} /></span><span
+		class="glitch-text-b"
+		aria-hidden="true"
+		inert><Fragment set:html={html} /></span
+	></Tag
+>

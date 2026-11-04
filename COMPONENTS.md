@@ -58,6 +58,8 @@ BorderSweep: a light travelling round an element's outline, on hover and focus o
 | `speed` | `number` | Seconds a lap takes. Default 2.6. |
 | `width` | `number` | The ring's width, px. Default 1. |
 | `always` | `boolean` | Run all the time, not only on hover. Default false. |
+| `lights` | `1 \| 2` | How many lights go round, 1–2: two chase each other half a lap apart. Default 1. |
+| `inset` | `boolean` | Draw the ring inside the edge and over the content, for elements that clip (`overflow: hidden`) and fill themselves with a picture or a canvas. Default false. |
 | `class` | `string` | Classes for the element. |
 
 ## `<Caustics>`
@@ -222,6 +224,30 @@ FlutedGlass: a pane of slanted fluted glass over soft blooms of colour, the main
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
 | `class` | `string` | Classes for the element. |
 
+## `<Galaxy>`
+
+Galaxy: deep space in your colours. Soft nebula clouds with dark dust lanes, fine glitter shimmering over them and stars twinkling each on its own beat, the brightest with a cross of light, all drifting slowly. See src/runtime/galaxy.js.
+
+```astro
+<section class="hero" style="position: relative">
+  <Galaxy palette="Peacock" />
+  <h1>Made for <em>night owls.</em></h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `colors` | `string[]` | The nebula's colours, deep to bright (two to five read best), blended in Oklab from near-black up to a pale highlight. Default indigo, cornflower, violet and cyan. |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`. |
+| `speed` | `number` | How fast it drifts and twinkles, 0–4; 0 holds it still. Default 1. |
+| `stars` | `number` | How many stars, as a share of the usual, 0–3; 0 for none. Default 1. |
+| `glitter` | `number` | How bright the fine glitter is, as a share of the usual, 0–2; 0 for none. Default 1. |
+| `seed` | `number` | Which sky, 1–999: the same seed draws the same nebula and stars. Default 7. |
+| `lazy` | `boolean \| string` | Run only while near the screen (true, or a CSS length; default `200px`), handled by `mount`. Default false. |
+| `background` | `string` | What shows before it draws. Default `#05040d`. |
+| `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
+| `class` | `string` | Classes for the element. |
+
 ## `<Glass>`
 
 Glass: a liquid glass panel, with a rim that catches the light and a sheen that follows the pointer. A wrapper for `class="glass"` from glass.css that also starts the sheen; for elements you render yourself, import `@arraypress/effects-astro/glass.css` and add the class, then call `glassSheen()` once.
@@ -279,6 +305,25 @@ GlassGlyph: a character or a logo as a thick slab of dark, smoked glass, lit fro
 | `halftone` | `boolean` | Dither the light outside the glass into dots where it fades. Default false. |
 | `sway` | `number` | How far the slab turns on its own and away from the pointer, 0–2; 0 holds it still. Default 1. |
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
+| `class` | `string` | Classes for the element. |
+
+## `<GlitchText>`
+
+GlitchText: a headline that glitches now and then. Every few seconds two coloured copies of it (pink and blue by default) flash over it for a few frames, sliced into bands and shifted sideways, and the text nudges with them; the rest of the time it sits still. Livelier under the pointer (on the text, or a link or button round it). Each one on the page glitches on its own beat. CSS only, from glitch-text.css; with reduced motion it is the plain text. Not the canvas `<PixelGlitchText>`, which breaks into pixels under the pointer.
+
+```astro
+<GlitchText as="h2" blend="screen">Seen one you like? <em>Make it yours.</em></GlitchText>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `as` | `HTMLTag` | The element to render. Default `span`. |
+| `every` | `number` | Seconds from one glitch to the next, 2–12 (the burst is a fixed share of it, so it lengthens too). Default 5. |
+| `hoverEvery` | `number` | Seconds from one glitch to the next under the pointer, 0.5–5. Default 1.6. |
+| `delay` | `number` | Where in its cycle it starts, seconds (negative is part way in); give several the same to glitch together. Default a random offset, so each has its own beat. |
+| `colors` | `string[]` | The two copies' colours. Default `['#ff3ea5', '#2e4bff']` (pink and blue). |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), its first two colours, when there are no `colors`. |
+| `blend` | `'multiply' \| 'screen' \| 'normal' \| 'difference' \| 'plus-lighter'` | How the copies blend with the text and what is behind: `multiply` on a light ground, `screen` on a dark one. Default `multiply`. |
 | `class` | `string` | Classes for the element. |
 
 ## `<GlowField>`
@@ -816,7 +861,7 @@ PixelGlitchText: one line of text that breaks into pixels under the pointer and 
 | `decay` | `number` | Heat kept each frame (0.9 is gone in about half a second). Default 0.9. |
 | `block` | `number` | The pixel block size at full heat, CSS px. Default 22. |
 | `shift` | `number` | How far the hottest rows slip sideways, CSS px. Default 16. |
-| `stroke` | `number` | With a width (CSS px), the text at rest is an outline that the pixels fill. Default 0 (solid). |
+| `stroke` | `number` | With a width (CSS px), the text at rest is an outline that the pixels fill: one outline round the word, so overlapping letters merge. Default 0 (solid). |
 | `as` | `HTMLTag` | The element to render. Default `span`. |
 | `fit` | `boolean` | Size the text to span its parent's width. Default false. |
 | `class` | `string` | Classes for the element. |

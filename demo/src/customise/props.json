@@ -304,6 +304,21 @@
 				}
 			},
 			{
+				"name": "lights",
+				"kind": "other",
+				"doc": "How many lights go round, 1–2: two chase each other half a lap apart. Default 1.",
+				"default": 1
+			},
+			{
+				"name": "inset",
+				"kind": "boolean",
+				"doc": "Draw the ring inside the edge and over the content, for elements that clip (`overflow: hidden`) and fill themselves with a picture or a canvas. Default false.",
+				"default": false,
+				"live": {
+					"class": "sweep-ring--inset"
+				}
+			},
+			{
 				"name": "class",
 				"kind": "string",
 				"doc": "Classes for the element."
@@ -1096,6 +1111,87 @@
 			}
 		]
 	},
+	"Galaxy": {
+		"selector": "[data-effect-galaxy]",
+		"props": [
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "The nebula's colours, deep to bright (two to five read best), blended in Oklab from near-black up to a pale highlight. Default indigo, cornflower, violet and cyan.",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), when there are no `colors`.",
+				"live": "config"
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 0,
+				"max": 4,
+				"step": 0.02,
+				"doc": "How fast it drifts and twinkles, 0–4; 0 holds it still. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "stars",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How many stars, as a share of the usual, 0–3; 0 for none. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "glitter",
+				"kind": "number",
+				"min": 0,
+				"max": 2,
+				"step": 0.01,
+				"doc": "How bright the fine glitter is, as a share of the usual, 0–2; 0 for none. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "seed",
+				"kind": "number",
+				"min": 1,
+				"max": 999,
+				"step": 1,
+				"doc": "Which sky, 1–999: the same seed draws the same nebula and stars. Default 7.",
+				"default": 7,
+				"live": "config"
+			},
+			{
+				"name": "lazy",
+				"kind": "boolean",
+				"doc": "Run only while near the screen (true, or a CSS length; default `200px`), handled by `mount`. Default false.",
+				"default": false,
+				"live": "config"
+			},
+			{
+				"name": "background",
+				"kind": "color",
+				"doc": "What shows before it draws. Default `#05040d`.",
+				"default": "#05040d"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
 	"Glass": {
 		"selector": ".glass",
 		"props": [
@@ -1433,6 +1529,84 @@
 				"kind": "boolean",
 				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
 				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"GlitchText": {
+		"selector": ".glitch-text",
+		"props": [
+			{
+				"name": "as",
+				"kind": "other",
+				"doc": "The element to render. Default `span`.",
+				"default": "span"
+			},
+			{
+				"name": "every",
+				"kind": "number",
+				"min": 2,
+				"max": 12,
+				"step": 1,
+				"doc": "Seconds from one glitch to the next, 2–12 (the burst is a fixed share of it, so it lengthens too). Default 5.",
+				"default": 5,
+				"live": {
+					"css": "--glitch-every",
+					"unit": "s"
+				}
+			},
+			{
+				"name": "hoverEvery",
+				"kind": "number",
+				"min": 0.5,
+				"max": 5,
+				"step": 0.05,
+				"doc": "Seconds from one glitch to the next under the pointer, 0.5–5. Default 1.6.",
+				"default": 1.6,
+				"live": {
+					"css": "--glitch-hover",
+					"unit": "s"
+				}
+			},
+			{
+				"name": "delay",
+				"kind": "number",
+				"doc": "Where in its cycle it starts, seconds (negative is part way in); give several the same to glitch together. Default a random offset, so each has its own beat."
+			},
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "The two copies' colours. Default `['#ff3ea5', '#2e4bff']` (pink and blue).",
+				"default": [
+					"#ff3ea5",
+					"#2e4bff"
+				]
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), its first two colours, when there are no `colors`."
+			},
+			{
+				"name": "blend",
+				"kind": "enum",
+				"options": [
+					"multiply",
+					"screen",
+					"normal",
+					"difference",
+					"plus-lighter"
+				],
+				"doc": "How the copies blend with the text and what is behind: `multiply` on a light ground, `screen` on a dark one. Default `multiply`.",
+				"default": "multiply",
+				"live": {
+					"css": "--glitch-blend",
+					"unit": ""
+				}
 			},
 			{
 				"name": "class",
@@ -3803,7 +3977,7 @@
 				"min": 0,
 				"max": 40,
 				"step": 1,
-				"doc": "With a width (CSS px), the text at rest is an outline that the pixels fill. Default 0 (solid).",
+				"doc": "With a width (CSS px), the text at rest is an outline that the pixels fill: one outline round the word, so overlapping letters merge. Default 0 (solid).",
 				"default": 0,
 				"live": "config"
 			},

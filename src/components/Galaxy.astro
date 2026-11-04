@@ -1,0 +1,40 @@
+---
+/**
+ * Galaxy: deep space in your colours. Soft nebula clouds with dark dust
+ * lanes, fine glitter shimmering over them and stars twinkling each on
+ * its own beat, the brightest with a cross of light, all drifting slowly.
+ * See src/runtime/galaxy.js.
+ *
+ * Opaque: it is the whole background of what it fills (its nearest
+ * positioned ancestor, or the viewport with `fixed`). Canvas 2D, so it
+ * needs no WebGL; one still frame with reduced motion. `setColors`
+ * recolours it live.
+ *
+ * @example
+ * <section class="hero" style="position: relative">
+ *   <Galaxy palette="Peacock" />
+ *   <h1>Made for <em>night owls.</em></h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { GalaxyConfig } from '../runtime/galaxy.js';
+
+interface Props extends GalaxyConfig {
+	/** What shows before it draws. Default `#05040d`. */
+	background?: string;
+	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
+	fixed?: boolean;
+	class?: string;
+}
+
+const { background = '#05040d', fixed = false, class: className, ...config } = Astro.props;
+---
+
+<EffectCanvas name="galaxy" config={config} fixed={fixed} class={className} behind background={background} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { galaxy } from '../runtime/galaxy.js';
+
+	mount('[data-effect-galaxy]', galaxy);
+</script>

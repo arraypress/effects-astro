@@ -22,6 +22,7 @@ import ShaderBackground from '@arraypress/effects-astro/ShaderBackground.astro';
 import { SHADER_BACKGROUNDS } from '@arraypress/effects-astro/runtime/shader-background';
 import { ACCENTS, pitch, title, PICTURES, LOGOS } from '../gallery';
 import Topography from '@arraypress/effects-astro/Topography.astro';
+import Galaxy from '@arraypress/effects-astro/Galaxy.astro';
 import Caustics from '@arraypress/effects-astro/Caustics.astro';
 import RainOnGlass from '@arraypress/effects-astro/RainOnGlass.astro';
 import '@arraypress/waveform-player/styles.css';
@@ -168,6 +169,13 @@ const papers = (Object.keys(PRESETS) as (keyof typeof PRESETS)[]).filter((shader
 	<h2 class="headline">The western fells,<br /><em>line by line.</em></h2>
 	<p class="lede">A 1:25,000 atlas drawn from three summers on foot: 62 routes, every cairn and stile, on paper that shrugs off the rain.</p>
 	<div class="actions"><a class="btn" href="#">Pre-order, £38</a><a class="btn btn--ghost" href="#">See a sample sheet</a></div>
+</Hero>
+<Hero id="galaxy" name="Galaxy" code="<Galaxy />" scrim style="--hero-ground: #05040d">
+	<Galaxy slot="effect" />
+	<span class="eyebrow">Nightfall Lodge · dark-sky weekends</span>
+	<h2 class="headline">The sky you<br /><em>forgot was there.</em></h2>
+	<p class="lede">Two nights in a Bortle 1 valley with a telescope on every deck, an astronomer at dinner, and no street light for forty miles.</p>
+	<div class="actions"><a class="btn" href="#">Book a clear night</a><a class="btn btn--ghost" href="#">See the forecast</a></div>
 </Hero>
 <Hero id="caustics" name="Caustics" code={`<Caustics tiles quiet={{ y: 0.45, radius: 0.6, depth: 0.5 }} />`} style="--hero-ground: #075a78; --muted: #e3fbff">
 	<Caustics slot="effect" tiles quiet={{ y: 0.45, radius: 0.6, depth: 0.5 }} />

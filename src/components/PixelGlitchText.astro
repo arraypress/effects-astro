@@ -58,10 +58,10 @@ const { as: Tag = 'span', fit = false, cell, reach, decay, block, shift, stroke,
 		-webkit-text-fill-color: transparent;
 		-webkit-text-stroke: var(--glitch-stroke) currentColor;
 	}
-	/* Once the canvas draws the text, the element's own is only for layout. */
+	/* Once the canvas draws the text (and its outline, merged), the element's own is only for layout. */
 	.effect-pixel-glitch:global(.is-ready) {
 		-webkit-text-fill-color: transparent;
-		-webkit-text-stroke: 0;
+		-webkit-text-stroke: 0 transparent;
 	}
 	.effect-pixel-glitch :global(.effect-pixel-glitch-canvas) {
 		position: absolute;

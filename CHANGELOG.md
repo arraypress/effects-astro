@@ -5,6 +5,19 @@ All notable changes to `@arraypress/effects-astro` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] — 2026-11-04
+
+### Added
+
+- `<GlitchText>`: a headline that glitches now and then. Two coloured copies of it (pink `#ff3ea5` and blue `#2e4bff`) flash over it for a few frames, sliced into bands with `clip-path` and shifted sideways, every `every` seconds (5), each instance on its own beat (a random `delay` fixed at build time); livelier under the pointer (`hoverEvery`, 1.6), on the text or a link or button round it. `colors` or `palette`, `blend` (`multiply` on a light ground, `screen` on a dark one), `as`. CSS only (`glitch-text.css`, for markup you render yourself); the plain text with reduced motion. From the Logomarks site's Custom card.
+- `<Galaxy>`: deep space in a palette's colours, in Canvas 2D: soft nebula clouds of layered value noise with ridged dust lanes through them, coloured along a ramp blended in Oklab (near-black, the colours, a pale top), fine glitter shimmering over them, and stars twinkling each on its own beat (the brightest with a cross of light), drifting slowly. `colors`/`palette` (and `setColors` live), `speed`, `stars`, `glitter`, `seed`, `background`, `fixed`, `lazy`; one still frame with reduced motion. `nebulaField`, `galaxyRamp` and `nebulaPixels` are its pure parts. From the Logomarks studio's showcase.
+- `<BorderSweep lights={2}>` (`sweep-ring--two`): two lights chasing each other half a lap apart. `<BorderSweep inset>` (`sweep-ring--inset`): the ring inside the edge and over the content (z-index 3), for cards that clip (`overflow: hidden`) and fill themselves with a picture or a canvas. The default ring is unchanged; its colour is still `--sweep-color`.
+- `outlineAlpha(rgba, width, height, radius)`: the outline of a shape from its coverage, one outline round shapes that touch.
+
+### Changed
+
+- `<PixelGlitchText stroke>`: the outline at rest is one outline round the whole word (the solid letters less themselves eroded by the stroke's width), so letters that touch or overlap under tight tracking merge instead of each outline crossing the next. It runs inside the letters' edge now, where the pixels fill. The text is also repainted once its own face has loaded (`document.fonts.load`), not only on `document.fonts.ready`, so a face used only there no longer leaves the canvas in the fallback font. From the Logomarks site's footer.
+
 ## [0.3.0] — 2026-11-04
 
 ### Added
