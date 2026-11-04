@@ -101,6 +101,8 @@ export type { LiveGradientOptions } from './runtime/live-gradient.js';
 export type { PaperConfig, PaperShaderName } from './runtime/paper.js';
 export { paperLook, paperLookSettings } from './runtime/paper-look.js';
 export type { PaperLookConfig, PaperLookOptions } from './runtime/paper-look.js';
+export { scene, sceneSettings } from './runtime/scene.js';
+export type { SceneConfig, SceneName } from './runtime/scene.js';
 export { PAPER_LOOKS } from './runtime/paper-looks.js';
 export type { PaperLook, PaperLookName } from './runtime/paper-looks.js';
 export { createStage } from './runtime/stage.js';
@@ -142,7 +144,7 @@ export { mount, readConfig, watchColors } from './runtime/mount.js';
 /**
  * Changes the colours of a WebGL effect (`<LightField>`, `<Ink>`, `<AsciiRain>`,
  * `<FlutedGlass>`, `<GlassGlyph>`, `<LiquidMetal>`, `<ParticleLogo>`, `<PointCloud>`,
- * `<VoxelLogo>`, `<HaloRing>`, `<SilkRibbon>`, `<RadiantGlass>`, `<Topography>`, `<Caustics>`, `<RainOnGlass>`, `<MosaicReveal>`, `<Ocean>`, `<IsoCity>`),
+ * `<VoxelLogo>`, `<HaloRing>`, `<SilkRibbon>`, `<RadiantGlass>`, `<Topography>`, `<Caustics>`, `<RainOnGlass>`, `<MosaicReveal>`, `<Ocean>`, `<IsoCity>`, `<Scene>`),
  * in the order its `colors` takes. A light eases to them; the others take them next frame.
  */
 export function setColors(el: Element | null, colors: string[], glint?: string): void;

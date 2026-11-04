@@ -69,6 +69,7 @@ export { paperShader, paperSettings, paperUniforms } from './runtime/paper.js';
 export { whenNear, lazyMargin } from './runtime/near.js';
 export { liveGradient } from './runtime/live-gradient.js';
 export { paperLook, paperLookSettings } from './runtime/paper-look.js';
+export { scene, sceneSettings } from './runtime/scene.js';
 export { PAPER_LOOKS } from './runtime/paper-looks.js';
 export { createStage } from './runtime/stage.js';
 export { createMesh, STRIDE } from './runtime/mesh.js';
@@ -95,7 +96,7 @@ export { mount, readConfig, watchColors } from './runtime/mount.js';
 /**
  * Changes the colours of a WebGL effect (`<LightField>`, `<Ink>`,
  * `<AsciiRain>`, `<FlutedGlass>`, `<GlassGlyph>`, `<LiquidMetal>`,
- * `<ParticleLogo>`, `<PointCloud>`, `<VoxelLogo>`, `<HaloRing>`, `<SilkRibbon>`, `<RadiantGlass>`, `<Topography>`, `<Caustics>`, `<RainOnGlass>`, `<MosaicReveal>`, `<Ocean>`, `<IsoCity>`): a light
+ * `<ParticleLogo>`, `<PointCloud>`, `<VoxelLogo>`, `<HaloRing>`, `<SilkRibbon>`, `<RadiantGlass>`, `<Topography>`, `<Caustics>`, `<RainOnGlass>`, `<MosaicReveal>`, `<Ocean>`, `<IsoCity>`, `<Scene>`): a light
  * eases to them in about a second, the others take them from their next frame.
  *
  * @param {Element | null} el The effect's element (`[data-effect-light-field]` and so on).

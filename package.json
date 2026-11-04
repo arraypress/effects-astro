@@ -1,7 +1,7 @@
 {
   "name": "@arraypress/effects-astro",
-  "version": "0.4.0",
-  "description": "GPU effects for Astro sites, as components: liquid light with a real fluid under it, ink in water, and outline text a spotlight fills. Plain WebGL, no dependencies, with the fallbacks a theme needs (reduced motion, no WebGL, touch screens, off-screen pausing).",
+  "version": "0.5.0",
+  "description": "GPU effects for Astro sites, as components: liquid light with a real fluid under it, ink in water, and outline text a spotlight fills. Plain WebGL, no third-party dependencies, with the fallbacks a theme needs (reduced motion, no WebGL, touch screens, off-screen pausing).",
   "type": "module",
   "main": "src/index.js",
   "types": "src/index.d.ts",
@@ -42,6 +42,9 @@
   "license": "MIT",
   "engines": {
     "node": ">=20"
+  },
+  "dependencies": {
+    "@arraypress/shaders": "^0.1.0"
   },
   "peerDependencies": {
     "astro": "^6 || ^7"

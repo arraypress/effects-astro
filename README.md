@@ -1,6 +1,6 @@
 # @arraypress/effects-astro
 
-Effects for Astro sites, as components: shader backgrounds, a real fluid, logos made of glass, particles or cubes, text that glitches, scrambles or types itself, glass panels and marquees: what makes a page look alive. Small UI pieces (countdowns, sliders, drop zones, tooltips) live in [`@arraypress/ui-astro`](https://github.com/LumiThemes/ui-astro); counters and drag-to-scroll in [`@arraypress/behaviors-astro`](https://github.com/arraypress/behaviors-astro). Plain WebGL, Canvas and CSS with no dependencies, and with the fallbacks a theme needs built in.
+Effects for Astro sites, as components: shader backgrounds, a real fluid, logos made of glass, particles or cubes, text that glitches, scrambles or types itself, glass panels and marquees: what makes a page look alive. Small UI pieces (countdowns, sliders, drop zones, tooltips) live in [`@arraypress/ui-astro`](https://github.com/LumiThemes/ui-astro); counters and drag-to-scroll in [`@arraypress/behaviors-astro`](https://github.com/arraypress/behaviors-astro). Plain WebGL, Canvas and CSS with no third-party dependencies (`<Scene>`'s shaders come from the owner's own [`@arraypress/shaders`](https://github.com/arraypress/shaders)), and with the fallbacks a theme needs built in.
 
 ```astro
 ---
@@ -55,6 +55,7 @@ Astro 6 or 7. The runtime underneath (`@arraypress/effects-astro`) works without
 | `<IsoCity>` | A tiny isometric low-poly city with traffic keeping its lanes and the brand's taxis; click a street and the nearest one drives round to pick you up; `night` lights the windows and headlights | WebGL |
 | `<ColorPanels>` | Translucent panels of colour swinging open out of the dark and sweeping past like turning pages: Paper's color-panels shader with plain props (`density`, `skewLeft`, `length`, `edges`, `blur`, `blend`…), its Opening preset by default (`preset` for the others) | WebGL 2 |
 | `<Galaxy>` | Deep space in a palette's colours: soft nebula clouds with dust lanes, shimmering glitter and twinkling stars, drifting slowly | Canvas |
+| `<Scene>` | One of twenty studio-lit scenes from [`@arraypress/shaders`](https://github.com/arraypress/shaders) by `name`: liquid marble, frosted or ribbed glass, glossy tiles, chrome, glitter, holographic foil, a neon ribbon, pastel spheres, glass rings, ink in water, oil bubbles, a melting hologram, topographic lines and more; any `palette` recolours it, `params` reshapes it, lazy by default | WebGL 2 |
 | `<WorldRoutes>` | A dotted world map with comets of light arcing between cities: a home hub, per-route colours and Oklab gradients, labels, regions, great-circle arcs, hover | Canvas |
 | `<GlowField>` | A light to lay over a background: a bloom, a swaying stage spotlight, a horizon or a wash, breathing gently | CSS |
 | `<Grain>` | Flickering film grain, to dither smooth gradients and make a picture read as film | CSS |
@@ -142,7 +143,7 @@ Every effect that takes `colors` also takes `palette`, one of eighteen named set
 
 ## Changing colours
 
-The WebGL effects (`<LightField>`, `<InkField>`, `<Ink>`, `<AsciiRain>`, `<FlutedGlass>`, `<GlassGlyph>`, `<LiquidMetal>`, `<ParticleLogo>`, `<NeonSwarm>`, `<NebulaLogo>`, `<PointCloud>`, `<VoxelLogo>`, `<SignalLines>`, `<WaveBars>`, `<DotSurface>`, `<HaloRing>`, `<SilkRibbon>`, `<RadiantGlass>`, `<Topography>`, `<Caustics>`, `<RainOnGlass>`, `<MosaicReveal>`, `<Ocean>`, `<IsoCity>`) and `<Galaxy>` read a `data-colors` attribute; `setColors` writes it. A light or an ink field eases to the new palette in about a second; ink, rain and the rest take it from their next frame. Set before an effect starts, it is its colours from the first frame.
+The WebGL effects (`<LightField>`, `<InkField>`, `<Ink>`, `<AsciiRain>`, `<FlutedGlass>`, `<GlassGlyph>`, `<LiquidMetal>`, `<ParticleLogo>`, `<NeonSwarm>`, `<NebulaLogo>`, `<PointCloud>`, `<VoxelLogo>`, `<SignalLines>`, `<WaveBars>`, `<DotSurface>`, `<HaloRing>`, `<SilkRibbon>`, `<RadiantGlass>`, `<Topography>`, `<Caustics>`, `<RainOnGlass>`, `<MosaicReveal>`, `<Ocean>`, `<IsoCity>`, `<Scene>`) and `<Galaxy>` read a `data-colors` attribute; `setColors` writes it. A light or an ink field eases to the new palette in about a second; ink, rain and the rest take it from their next frame. Set before an effect starts, it is its colours from the first frame.
 
 ```js
 import { setColors } from '@arraypress/effects-astro';
@@ -157,6 +158,7 @@ The package's main entry is the runtime the components are built on, for use wit
 | Export | |
 |---|---|
 | `paperShader(el, config)`, `paperSettings`, `paperUniforms` | Paper's shaders, and the settings and uniforms for a shader and preset |
+| `scene(el, config)`, `sceneSettings` | `<Scene>`: an `@arraypress/shaders` scene on an element's canvas, and its props as that package's options |
 | `paperLook(el, config)`, `paperLookSettings`, `PAPER_LOOKS` | The Paper looks (`<ColorPanels>`…): a look's plain props as a Paper shader's settings, and the looks by name |
 | `createStage(el, options)` | A full-canvas WebGL effect: context, program, sizing, the loop, reduced motion, clean-up |
 | `createCanvas2D(el, options)`, `grainPattern`, `grainOnto` | The same for Canvas 2D effects, and grain laid onto strokes only |

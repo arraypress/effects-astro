@@ -4663,6 +4663,200 @@
 			}
 		]
 	},
+	"Scene": {
+		"selector": "[data-effect-scene]",
+		"props": [
+			{
+				"name": "name",
+				"kind": "enum",
+				"options": [
+					"marble",
+					"frosted",
+					"ribs",
+					"tiles",
+					"blob",
+					"chrome",
+					"glitter",
+					"foil",
+					"ribbon",
+					"spiral",
+					"swirl",
+					"arches",
+					"spheres",
+					"spheres2",
+					"strands",
+					"rings",
+					"ink-water",
+					"topo",
+					"oil-bubbles",
+					"melting-hologram"
+				],
+				"doc": "The scene: marble, frosted, ribs, tiles, blob, chrome, glitter, foil, ribbon, spiral, swirl, arches, spheres, spheres2, strands, rings, ink-water or topo. Required.",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A named palette (PALETTES): its three colours and its glint. Default the scene's own colours.",
+				"live": "config"
+			},
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "One to three colours (hex), over the palette's. Default the palette's, or the scene's own.",
+				"live": "config"
+			},
+			{
+				"name": "glint",
+				"kind": "color",
+				"doc": "The highlight colour (hex), over the palette's. Default the palette's, or the scene's own.",
+				"live": "config"
+			},
+			{
+				"name": "params",
+				"kind": "other",
+				"doc": "The scene's own settings by key (`PARAMS[name]` in `@arraypress/shaders`; marble takes `scale`, `sharpness`, `warp` and `relief`). Default the scene's.",
+				"live": "config"
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How fast it moves, 0–3 (0 still). Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "hue",
+				"kind": "number",
+				"min": -180,
+				"max": 360,
+				"step": 1,
+				"doc": "Hue turned round the colour wheel, -180–180 degrees. Default 0.",
+				"default": 0,
+				"live": "config"
+			},
+			{
+				"name": "sat",
+				"kind": "number",
+				"min": 0,
+				"max": 2,
+				"step": 0.01,
+				"doc": "Saturation, 0–2 (0 grey). Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "exposure",
+				"kind": "number",
+				"min": 0.3,
+				"max": 2,
+				"step": 0.01,
+				"doc": "Brightness, 0.3–2. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "tint",
+				"kind": "color",
+				"doc": "A colour to lean toward (hex), keeping the light and dark, by `tintAmount`. Default `#d4ff3a`.",
+				"default": "#d4ff3a",
+				"live": "config"
+			},
+			{
+				"name": "tintAmount",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How far toward `tint`, 0–1. Default 0.",
+				"default": 0,
+				"live": "config"
+			},
+			{
+				"name": "zoom",
+				"kind": "number",
+				"min": 0.5,
+				"max": 2.5,
+				"step": 0.01,
+				"doc": "Zoom, 0.5–2.5. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "angle",
+				"kind": "number",
+				"min": -180,
+				"max": 360,
+				"step": 1,
+				"doc": "Rotation, -180–180 degrees. Default 0.",
+				"default": 0,
+				"live": "config"
+			},
+			{
+				"name": "grain",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "Film grain, 0–3. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "fps",
+				"kind": "number",
+				"min": 1,
+				"max": 60,
+				"step": 1,
+				"doc": "Frames a second, 1–60. Default 30.",
+				"default": 30,
+				"live": "config"
+			},
+			{
+				"name": "scale",
+				"kind": "number",
+				"min": 0.1,
+				"max": 1,
+				"step": 0.005,
+				"doc": "Share of CSS pixels drawn at, 0.1–1 (lowered while frames come late). Default the scene's own, 0.45–0.85.",
+				"live": "config"
+			},
+			{
+				"name": "lazy",
+				"kind": "boolean",
+				"doc": "Hold a WebGL context only while near the screen (true, or how near as a CSS length), giving it back four seconds after leaving; false holds one from the start. Default true.",
+				"default": true
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "background",
+				"kind": "color",
+				"doc": "What shows before it draws, and without WebGL 2 (a CSS background). Default the scene's colours as soft blooms over its ground."
+			},
+			{
+				"name": "opacity",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "Its opacity, 0–1, for backdrops under copy. Default 1.",
+				"default": 1
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
 	"ScrambleText": {
 		"selector": ".effect-scramble",
 		"props": [

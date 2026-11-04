@@ -17,6 +17,7 @@ Pick by what is asked for:
 | Smoke or ink on a light page | `<Ink dark colors={[…]}>` (dark dye alone barely shows) |
 | Panels of colour fanning out of the dark, a bold launch or fintech hero with depth | `<ColorPanels>` (Opening by default; `preset="Glass"`, `"Default"` or `"Gradient"`; `palette` or `colors`, `quiet` behind copy) |
 | A gradient, noise, halftone or liquid-metal look by name | `<PaperShader shader="…" preset="…">`; the demo has a hero for every shader, its presets in the tag |
+| A glossy, glassy or studio-lit background a palette recolours: liquid marble, frosted or ribbed glass, glossy tiles, chrome, glitter, holographic foil, a neon ribbon, pastel spheres or a blob, glass rings or strands, ink in water, topographic lines | `<Scene name="…" palette="…">` (`marble`, `frosted`, `ribs`, `tiles`, `blob`, `chrome`, `glitter`, `foil`, `ribbon`, `spiral`, `swirl`, `arches`, `spheres`, `spheres2`, `strands`, `rings`, `ink-water`, `topo`); `params` reshapes it (`PARAMS[name]` in `@arraypress/shaders` lists each scene's); lazy by default, so a wall of cards can each have one |
 | A themed hero background by name (mesh gradient, grainy gradient, silk, light bands, synthwave grid, neon waves), tinted from the site's accent | `<ShaderBackground effect="…">`; `static` when it sits behind body copy or is `fixed` |
 | A launch, waitlist or coming-soon hero: light around centred copy | `<HaloRing>` |
 | A dark, premium product or smart-home hero: frosted glass lit from within, copy beside it | `<RadiantGlass>` (`side="right"` mirrors it; `layout`, `shape`) |
@@ -59,6 +60,7 @@ Things that trip people up:
 - **Clicks:** effects that react to clicks ignore links, buttons and form fields. Add `data-effect-ignore` to anything else whose clicks are its own.
 - **`<SpotlightText fill="dodge">`** blends with what is behind it: no stacking context may sit between them (no `z-index` on a positioned ancestor, no `opacity`, `transform`, `filter` or `isolation`). Use `fill="solid"` where that cannot be arranged.
 - **Styling a component's element** from the page needs `:global(.its-class)`, since the element belongs to the component.
+- **`<Scene>` takes a palette by name** (`palette="Barbie"`); `@arraypress/shaders` itself takes the palette object (`PALETTES.Barbie`), never the name. Its `lazy` is the scene's own (a context held near the screen, given back four seconds after leaving on a fresh canvas), not `mount()`'s.
 - **`<PaperShader>` needs WebGL 2** and shows `background` without it. Its picture shaders take `image` (same origin, or served with CORS).
 - **Colour presets:** any effect that takes `colors` takes `palette="…"` (`PALETTES`: Lumetri, Forest, Cadmium, Peacock, Vermillion, Barbie, Uranium, Azure, Ruby, Ultramarine, Saffron, Crimson, Ember, Lagoon, Citrus, Glacier, Rosewater, Mono). Reach for a palette before inventing colours, and avoid violet unless the brand is violet.
 - **Changing colours at runtime:** `setColors(el, colors, glint?)` from `@arraypress/effects-astro`.
@@ -66,7 +68,7 @@ Things that trip people up:
 
 ## Working on this package
 
-Plain ES modules in `src/` with hand-written `.d.ts` files beside them: components in `src/components/`, the runtime in `src/runtime/` (one concern a file), stylesheets in `src/styles/`. No build step and no dependencies. `demo/` is an Astro site (not published): one gallery page of every effect as a working hero, a file of heroes per group in `demo/src/heroes/` (listed in `demo/src/tour/groups.ts`), shown one at a time and filtered by type (`src/scripts/viewer.js`; only the hero on show has its effect stamped in). Each hero's Customise panel is generated from the components' prop docs by `npm run docs`, so every prop needs a doc comment with its default and, for numbers, a range written "0–1".
+Plain ES modules in `src/` with hand-written `.d.ts` files beside them: components in `src/components/`, the runtime in `src/runtime/` (one concern a file), stylesheets in `src/styles/`. No build step, and one dependency: `@arraypress/shaders` (the owner's own scene shaders, for `<Scene>`). `demo/` is an Astro site (not published): one gallery page of every effect as a working hero, a file of heroes per group in `demo/src/heroes/` (listed in `demo/src/tour/groups.ts`), shown one at a time and filtered by type (`src/scripts/viewer.js`; only the hero on show has its effect stamped in). Each hero's Customise panel is generated from the components' prop docs by `npm run docs`, so every prop needs a doc comment with its default and, for numbers, a range written "0–1".
 
 | | |
 |---|---|
@@ -85,7 +87,7 @@ The shaders and canvases cannot run under Node. After changing an effect, check 
 - **No repetition.** Anything two effects need goes in its own runtime module and is imported.
 - **JSDoc on every function**, nested ones included: a short description, `@param` for each parameter, `@returns`, `@throws` where it applies. Every prop has a doc comment with its default (COMPONENTS.md is built from them). Keep the `.d.ts` files in step. Plain, concise voice: what a thing does and why.
 - **Colour in Oklab** (`mixOklab`, `paletteAt`, `GLSL_PALETTE`), never mixed in RGB.
-- **No telemetry, no network, no dependencies.** Effects ship inside sites for other people's visitors.
+- **No telemetry, no network, no third-party dependencies.** Effects ship inside sites for other people's visitors. The one dependency is `@arraypress/shaders`, the owner's own; a scene's shader belongs there, and `<Scene>` only wraps it.
 - **`src/vendor/paper/` is Paper's code, unchanged but for dropped source-map comments** (Apache-2.0). Update it by re-vendoring a release and regenerating `presets.js`; never edit it by hand.
 - **Credit what is adapted**, in the module's header, the README's Credits and LICENSE, and only from MIT-compatible sources. shaders.com's open-source components (MIT) may be adapted; its presets and sections are licensed content and may not be copied, even modified.
 - **Every change goes in CHANGELOG.md** (Keep a Changelog, SemVer). Commit and push only with the owner's go-ahead; the owner publishes to npm.

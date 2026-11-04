@@ -1013,6 +1013,40 @@ Reveal: content that rises, slides, zooms or un-blurs into place as it scrolls i
 | `distance` | `number` | How far it travels, px. Default 24. |
 | `class` | `string` | Classes for the element. |
 
+## `<Scene>`
+
+Scene: one of the scenes from `@arraypress/shaders` as a background: liquid marble, frosted glass, ribbed light, glossy tiles, a pastel blob, chrome liquid, a glitter galaxy, holographic foil, a neon ribbon, spiral trails, a glass swirl, arches, pastel spheres, glass strands, glass rings, ink in water and topographic lines. Any palette recolours it, and its own settings (`params`) reshape it. See src/runtime/scene.js.
+
+```astro
+<Scene name="marble" palette="Barbie" params={{ scale: 1.2 }} />
+<Scene name="ink-water" colors={['#0d1461', '#990f61', '#050514']} speed={0.6} />
+<Scene name="foil" fixed opacity={0.5} />
+```
+
+| Prop | Type | |
+|---|---|---|
+| `name` (required) | `SceneName` | The scene: marble, frosted, ribs, tiles, blob, chrome, glitter, foil, ribbon, spiral, swirl, arches, spheres, spheres2, strands, rings, ink-water or topo. Required. |
+| `palette` | `PaletteName` | A named palette (PALETTES): its three colours and its glint. Default the scene's own colours. |
+| `colors` | `string[]` | One to three colours (hex), over the palette's. Default the palette's, or the scene's own. |
+| `glint` | `string` | The highlight colour (hex), over the palette's. Default the palette's, or the scene's own. |
+| `params` | `Record<string, number>` | The scene's own settings by key (`PARAMS[name]` in `@arraypress/shaders`; marble takes `scale`, `sharpness`, `warp` and `relief`). Default the scene's. |
+| `speed` | `number` | How fast it moves, 0–3 (0 still). Default 1. |
+| `hue` | `number` | Hue turned round the colour wheel, -180–180 degrees. Default 0. |
+| `sat` | `number` | Saturation, 0–2 (0 grey). Default 1. |
+| `exposure` | `number` | Brightness, 0.3–2. Default 1. |
+| `tint` | `string` | A colour to lean toward (hex), keeping the light and dark, by `tintAmount`. Default `#d4ff3a`. |
+| `tintAmount` | `number` | How far toward `tint`, 0–1. Default 0. |
+| `zoom` | `number` | Zoom, 0.5–2.5. Default 1. |
+| `angle` | `number` | Rotation, -180–180 degrees. Default 0. |
+| `grain` | `number` | Film grain, 0–3. Default 1. |
+| `fps` | `number` | Frames a second, 1–60. Default 30. |
+| `scale` | `number` | Share of CSS pixels drawn at, 0.1–1 (lowered while frames come late). Default the scene's own, 0.45–0.85. |
+| `lazy` | `boolean \| string` | Hold a WebGL context only while near the screen (true, or how near as a CSS length), giving it back four seconds after leaving; false holds one from the start. Default true. |
+| `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
+| `background` | `string` | What shows before it draws, and without WebGL 2 (a CSS background). Default the scene's colours as soft blooms over its ground. |
+| `opacity` | `number` | Its opacity, 0–1, for backdrops under copy. Default 1. |
+| `class` | `string` | Classes for the element. |
+
 ## `<ScrambleText>`
 
 ScrambleText: text that resolves out of random characters, left to right, when it scrolls into view, and again on hover if asked. For a label, a stat, a short headline. Screen readers and search get the real text; the scramble is drawn over it. See src/runtime/text-motion.js.

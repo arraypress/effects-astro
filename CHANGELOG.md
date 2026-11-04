@@ -5,6 +5,17 @@ All notable changes to `@arraypress/effects-astro` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] — 2026-11-05
+
+### Added
+
+- `<Scene name="…">`: the twenty scenes of [`@arraypress/shaders`](https://github.com/arraypress/shaders) as backgrounds (`marble`, `frosted`, `ribs`, `tiles`, `blob`, `chrome`, `glitter`, `foil`, `ribbon`, `spiral`, `swirl`, `arches`, `spheres`, `spheres2`, `strands`, `rings`, `ink-water`, `topo`, `oil-bubbles`, `melting-hologram`), from the Logomarks site's scenes lab. `palette` (any of `PALETTES`, by name) or `colors` + `glint` recolour it, and `setColors` recolours it live. `params` reshapes it (each scene's settings are `PARAMS[name]` in that package). The look props are `speed`, `hue`, `sat`, `exposure`, `tint`, `tintAmount`, `zoom`, `angle` and `grain`, and there are also `fps`, `scale`, `fixed`, `opacity` and `background`. It's lazy by default, with the package's own lifecycle: it holds a context only near the screen and gives it back four seconds after it leaves, on a fresh canvas. It draws at 30 fps and adapts its resolution, and with reduced motion it draws one still frame. Without WebGL 2 its colours show as soft blooms over its ground. A bad scene name, param or colour fails the build. Each scene's shader loads in its own chunk. `scene(el, config)` and `sceneSettings(config)` are its runtime.
+- The demo has a `<Scene>` hero (marble in Barbie), plus one for each other scene in its own colours.
+
+### Changed
+
+- **A dependency:** `@arraypress/shaders` (`^0.1.0`), the owner's own, for `<Scene>`.
+
 ## [0.4.0] — 2026-11-04
 
 ### Added

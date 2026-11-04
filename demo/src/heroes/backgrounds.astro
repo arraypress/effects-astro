@@ -33,10 +33,16 @@ import ColorPanels from '@arraypress/effects-astro/ColorPanels.astro';
 import PaperShader from '@arraypress/effects-astro/PaperShader.astro';
 import { PRESETS } from '../../../src/vendor/paper/presets.js';
 import { PAPER_LOOKS } from '@arraypress/effects-astro/runtime/paper-looks';
+import Scene from '@arraypress/effects-astro/Scene.astro';
+import { SCENES } from '@arraypress/shaders';
 const shaders = Object.keys(SHADER_BACKGROUNDS) as (keyof typeof SHADER_BACKGROUNDS)[];
 // Paper's shaders, for picking looks from; those already made a background of their own (PAPER_LOOKS) are left out.
 const looks = new Set<string>(Object.values(PAPER_LOOKS).map((look) => look.shader));
 const papers = (Object.keys(PRESETS) as (keyof typeof PRESETS)[]).filter((shader) => !looks.has(shader));
+// @arraypress/shaders' scenes: marble has a hero of its own, the rest one each in their own colours.
+const scenes = (Object.keys(SCENES) as (keyof typeof SCENES)[]).filter((name) => name !== 'marble');
+// the scenes on a pale ground, whose copy is dark
+const paleScenes = ['blob', 'ink-water'];
 ---
 
 <Hero id="ink-field" name="InkField" code={`<InkField palette="Barbie" drops />`} style="--hero-ground: #08080a">
@@ -277,6 +283,24 @@ const papers = (Object.keys(PRESETS) as (keyof typeof PRESETS)[]).filter((shader
 	<div class="actions"><a class="btn" href="#">Send your first invoice</a></div>
 	<PresetChips slot="tools" names={PRESETS['color-panels'].map((p) => p.name)} on="Opening" />
 </Hero>
+<Hero id="scene" name="Scene" code={`<Scene name="marble" palette="Barbie" params={{ scale: 1.2 }} />`} scrim style="--hero-ground: #2d026e">
+	<Scene slot="effect" name="marble" palette="Barbie" params={{ scale: 1.2 }} />
+	<span class="eyebrow">Gloss Theory · nail lacquer</span>
+	<h2 class="headline">Colour that<br /><em>pours.</em></h2>
+	<p class="lede">Twelve high-shine shades that dry in a minute and last a fortnight. Press Customise and pour the glass into any palette.</p>
+	<div class="actions"><a class="btn" href="#">Shop the shades</a><a class="btn btn--ghost" href="#">Find your colour</a></div>
+</Hero>
+{
+	scenes.map((name, i) => (
+		<Hero id={`scene-${name}`} name={`Scene · ${SCENES[name].title}`} code={`<Scene name="${name}" />`} theme={paleScenes.includes(name) ? 'light' : 'dark'} scrim>
+			<Scene slot="effect" name={name} />
+			<span class="eyebrow">{pitch(i + 3).brand}</span>
+			<h2 class="headline">{pitch(i + 3).headline}</h2>
+			<p class="lede">{pitch(i + 3).lede}</p>
+			<div class="actions"><a class="btn" href="#">{pitch(i + 3).cta}</a></div>
+		</Hero>
+	))
+}
 {
 	shaders.map((effect, i) => (
 		<Hero id={`shader-${effect}`} name={`ShaderBackground · ${effect}`} code={`<ShaderBackground effect="${effect}" interactive />`} style={`--color-accent: ${ACCENTS[i % ACCENTS.length]}`}>

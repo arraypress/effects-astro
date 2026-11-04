@@ -1,0 +1,89 @@
+---
+/**
+ * Scene: one of the scenes from `@arraypress/shaders` as a
+ * background: liquid marble, frosted glass, ribbed light, glossy tiles, a
+ * pastel blob, chrome liquid, a glitter galaxy, holographic foil, a neon
+ * ribbon, spiral trails, a glass swirl, arches, pastel spheres, glass
+ * strands, glass rings, ink in water and topographic lines. Any palette
+ * recolours it, and its own settings (`params`) reshape it. See
+ * src/runtime/scene.js.
+ *
+ * Fills its nearest positioned ancestor, or the viewport with `fixed`.
+ * Lazy by default: it holds a WebGL context only while near the screen
+ * and gives it back four seconds after it leaves, so a page can carry
+ * many. It draws at 30 frames a second, at a share of the screen's
+ * resolution that drops on slow devices, pauses off screen, and draws one
+ * still frame with reduced motion. Without WebGL 2, its colours show as
+ * soft blooms over its ground. `setColors` recolours it live.
+ *
+ * @example
+ * <Scene name="marble" palette="Barbie" params={{ scale: 1.2 }} />
+ * <Scene name="ink-water" colors={['#0d1461', '#990f61', '#050514']} speed={0.6} />
+ * <Scene name="foil" fixed opacity={0.5} />
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import { SCENES, fallback, validateOptions } from '@arraypress/shaders';
+import { sceneSettings } from '../runtime/scene.js';
+import type { SceneName } from '../runtime/scene.js';
+import type { PaletteName } from '../runtime/palettes.js';
+
+interface Props {
+	/** The scene: marble, frosted, ribs, tiles, blob, chrome, glitter, foil, ribbon, spiral, swirl, arches, spheres, spheres2, strands, rings, ink-water or topo. Required. */
+	name: SceneName;
+	/** A named palette (PALETTES): its three colours and its glint. Default the scene's own colours. */
+	palette?: PaletteName;
+	/** One to three colours (hex), over the palette's. Default the palette's, or the scene's own. */
+	colors?: string[];
+	/** The highlight colour (hex), over the palette's. Default the palette's, or the scene's own. */
+	glint?: string;
+	/** The scene's own settings by key (`PARAMS[name]` in `@arraypress/shaders`; marble takes `scale`, `sharpness`, `warp` and `relief`). Default the scene's. */
+	params?: Record<string, number>;
+	/** How fast it moves, 0–3 (0 still). Default 1. */
+	speed?: number;
+	/** Hue turned round the colour wheel, -180–180 degrees. Default 0. */
+	hue?: number;
+	/** Saturation, 0–2 (0 grey). Default 1. */
+	sat?: number;
+	/** Brightness, 0.3–2. Default 1. */
+	exposure?: number;
+	/** A colour to lean toward (hex), keeping the light and dark, by `tintAmount`. Default `#d4ff3a`. */
+	tint?: string;
+	/** How far toward `tint`, 0–1. Default 0. */
+	tintAmount?: number;
+	/** Zoom, 0.5–2.5. Default 1. */
+	zoom?: number;
+	/** Rotation, -180–180 degrees. Default 0. */
+	angle?: number;
+	/** Film grain, 0–3. Default 1. */
+	grain?: number;
+	/** Frames a second, 1–60. Default 30. */
+	fps?: number;
+	/** Share of CSS pixels drawn at, 0.1–1 (lowered while frames come late). Default the scene's own, 0.45–0.85. */
+	scale?: number;
+	/** Hold a WebGL context only while near the screen (true, or how near as a CSS length), giving it back four seconds after leaving; false holds one from the start. Default true. */
+	lazy?: boolean | string;
+	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
+	fixed?: boolean;
+	/** What shows before it draws, and without WebGL 2 (a CSS background). Default the scene's colours as soft blooms over its ground. */
+	background?: string;
+	/** Its opacity, 0–1, for backdrops under copy. Default 1. */
+	opacity?: number;
+	class?: string;
+}
+
+const { fixed = false, background, opacity = 1, lazy = true, class: className, ...config } = Astro.props;
+if (!Object.hasOwn(SCENES, config.name)) throw new Error(`<Scene>: no scene "${config.name}" (there are ${Object.keys(SCENES).join(', ')})`);
+// `lazy` reaches the scene as `near`: under its own name, mount() would start and stop the scene itself, without the scene's own grace period and fresh canvas.
+Object.assign(config, { near: lazy });
+const { options } = sceneSettings(config);
+validateOptions(config.name, options); // a bad param or colour fails the build, not the page
+---
+
+<EffectCanvas name="scene" config={config} fixed={fixed} behind background={background ?? fallback(config.name, options)} opacity={opacity} class={className} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { scene } from '../runtime/scene.js';
+
+	mount('[data-effect-scene]', scene);
+</script>
