@@ -1,0 +1,62 @@
+---
+/**
+ * LiveGradient: a gradient that's alive — Paper's mesh gradient in your
+ * colours, morphing slowly, with film grain over it. Subtle by default (a
+ * sixth of Paper's speed, a gentle swirl), so it sits behind a card, a hero
+ * or a section without pulling the eye. The same colours show as a still
+ * CSS gradient first (and without WebGL); the live one fades in over it.
+ * Lazy by default: it runs only while near the screen, so a page can have
+ * many. Fills its nearest positioned ancestor. See src/runtime/live-gradient.js.
+ *
+ * @example
+ * <article class="card" style="position: relative">
+ *   <LiveGradient colors={['#ff5c8a', '#ffb347', '#7b3ff2', '#1a0b2e']} />
+ *   <h3>…</h3>
+ * </article>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import Grain from './Grain.astro';
+import { liveGradient } from '../runtime/live-gradient.js';
+
+interface Props {
+	/** Two to four colours (hex); the last is the ground the others bloom on. Required. */
+	colors: string[];
+	/** How fast it morphs (1 is Paper's own speed). Default 0.16. */
+	speed?: number;
+	/** How far the colours bend into each other, 0–1. Default 0.7. */
+	distortion?: number;
+	/** How much they turn, 0–1. Default 0.3. */
+	swirl?: number;
+	/** Film grain over it, 0–1 (0 for none). Default 0.35. */
+	grain?: number;
+	/** Run only while near the screen (true, or a CSS length). Default true. */
+	lazy?: boolean | string;
+	class?: string;
+}
+
+const { colors, speed, distortion, swirl, grain = 0.35, lazy = true, class: className } = Astro.props;
+const { config, fallback } = liveGradient(colors, { speed, distortion, swirl });
+---
+
+<div class:list={['effect-live-gradient', className]} aria-hidden="true">
+	<EffectCanvas name="paper" config={config} background={fallback} lazy={lazy} fadeIn />
+	{grain > 0 && <Grain opacity={grain} still />}
+</div>
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { paperShader } from '../runtime/paper.js';
+
+	mount('[data-effect-paper]', paperShader);
+</script>
+
+<style>
+	.effect-live-gradient {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		overflow: hidden;
+		border-radius: inherit;
+		pointer-events: none;
+	}
+</style>

@@ -1979,6 +1979,20 @@
 				"live": "config"
 			},
 			{
+				"name": "dark",
+				"kind": "boolean",
+				"doc": "Ink for a light ground: the colours given are laid dark on light (dark dye alone would barely show). Default false.",
+				"default": false,
+				"live": "config"
+			},
+			{
+				"name": "lazy",
+				"kind": "boolean",
+				"doc": "Run only while near the screen (true, or a CSS length; default `200px`), handled by `mount`. Default false.",
+				"default": false,
+				"live": "config"
+			},
+			{
 				"name": "ignore",
 				"kind": "string",
 				"doc": "Clicks on these are theirs, not the ink's. Default: links, buttons, form fields and `[data-effect-ignore]`.",
@@ -2553,6 +2567,63 @@
 				"kind": "boolean",
 				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
 				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"LiveGradient": {
+		"selector": "[data-effect-paper]",
+		"props": [
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "Two to four colours (hex); the last is the ground the others bloom on. Required."
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 0.04,
+				"max": 0.48,
+				"step": 0.005,
+				"doc": "How fast it morphs (1 is Paper's own speed). Default 0.16.",
+				"default": 0.16
+			},
+			{
+				"name": "distortion",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How far the colours bend into each other, 0–1. Default 0.7.",
+				"default": 0.7
+			},
+			{
+				"name": "swirl",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How much they turn, 0–1. Default 0.3.",
+				"default": 0.3
+			},
+			{
+				"name": "grain",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "Film grain over it, 0–1 (0 for none). Default 0.35.",
+				"default": 0.35
+			},
+			{
+				"name": "lazy",
+				"kind": "boolean",
+				"doc": "Run only while near the screen (true, or a CSS length). Default true.",
+				"default": true
 			},
 			{
 				"name": "class",
@@ -3469,6 +3540,13 @@
 				"step": 0.02,
 				"doc": "Share of the pixel ratio drawn at. Default 1.",
 				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "lazy",
+				"kind": "boolean",
+				"doc": "Run only while near the screen (true, or a CSS length; default `200px`), handled by `mount`. Default false.",
+				"default": false,
 				"live": "config"
 			},
 			{
@@ -4562,6 +4640,13 @@
 				"name": "interactive",
 				"kind": "boolean",
 				"doc": "Lean towards the pointer, on devices that hover. Default false.",
+				"default": false,
+				"live": "config"
+			},
+			{
+				"name": "lazy",
+				"kind": "boolean",
+				"doc": "Run only while near the screen (true, or a CSS length; default `200px`), handled by `mount`. Default false.",
 				"default": false,
 				"live": "config"
 			},

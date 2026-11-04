@@ -25,6 +25,10 @@ export interface InkConfig {
 	opacity?: number;
 	/** Seconds between drops of ink on their own, so it moves before anyone touches it; 0 for none. They wait while it's off screen or the tab is hidden. Default 0. */
 	idle?: number;
+	/** Ink for a light ground: the colours given are laid dark on light (dark dye alone would barely show). Default false. */
+	dark?: boolean;
+	/** Run only while near the screen (true, or a CSS length; default `200px`), handled by `mount`. Default false. */
+	lazy?: boolean | string;
 	/** Clicks on these are theirs, not the ink's. Default: links, buttons, form fields and `[data-effect-ignore]`. */
 	ignore?: string;
 }

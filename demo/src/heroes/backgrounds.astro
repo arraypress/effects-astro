@@ -5,6 +5,7 @@ import FilmScene from '../components/FilmScene.astro';
 import PresetChips from '../components/PresetChips.astro';
 import LightField from '@arraypress/effects-astro/LightField.astro';
 import Ink from '@arraypress/effects-astro/Ink.astro';
+import LiveGradient from '@arraypress/effects-astro/LiveGradient.astro';
 import InkField from '@arraypress/effects-astro/InkField.astro';
 import AsciiRain from '@arraypress/effects-astro/AsciiRain.astro';
 import FlutedGlass from '@arraypress/effects-astro/FlutedGlass.astro';
@@ -56,6 +57,20 @@ const papers = (Object.keys(PRESETS) as (keyof typeof PRESETS)[]).filter((shader
 	<h2 class="headline">Every stroke<br /><em>counts.</em></h2>
 	<p class="lede">Six weeks of brush lettering, from your first line to a finished alphabet. Drag through the water to stir the ink.</p>
 	<div class="actions"><a class="btn" href="#">Enrol for May</a><a class="btn btn--ghost" href="#">Watch a lesson</a></div>
+</Hero>
+<Hero id="live-gradient" name="LiveGradient" code={`<LiveGradient colors={['#ff5c8a', '#ffb347', '#7b3ff2', '#1a0b2e']} />`} scrim style="--hero-ground: #1a0b2e">
+	<LiveGradient slot="effect" colors={['#ff5c8a', '#ffb347', '#7b3ff2', '#1a0b2e']} />
+	<span class="eyebrow">Meridian · a sleep studio</span>
+	<h2 class="headline">Slow down,<br /><em>slowly.</em></h2>
+	<p class="lede">Evening sessions for people who can't switch off. The colours drift as slowly as you will.</p>
+	<div class="actions"><a class="btn" href="#">Book a session</a><a class="btn btn--ghost" href="#">How it works</a></div>
+</Hero>
+<Hero id="ink-dark" name="Ink · dark" code={`<Ink dark colors={['#1b1b22', '#3a2bd9', '#0b0b0b']} />`} theme="light" style="--hero-ground: #f4f3ef">
+	<Ink slot="effect" dark colors={['#1b1b22', '#3a2bd9', '#0b0b0b']} idle={3} />
+	<span class="eyebrow">Inkwell · stationery</span>
+	<h2 class="headline">Ink on<br /><em>paper.</em></h2>
+	<p class="lede">Dark ink on a light page: <code>dark</code> lays it the right way round. It drops on its own every few seconds with <code>idle</code>.</p>
+	<div class="actions"><a class="btn" href="#">Shop the inks</a></div>
 </Hero>
 <Hero id="ascii-rain" name="AsciiRain" code={`<AsciiRain quiet={{ x: 0.05, y: 0.25, radius: 0.7, depth: 0.95 }} />`} align="left" style="--hero-ground: #000">
 	<AsciiRain slot="effect" quiet={{ x: 0.05, y: 0.25, radius: 0.7, depth: 0.95 }} />

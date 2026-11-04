@@ -25,6 +25,8 @@ export interface PaperConfig {
 	speed?: number;
 	/** Share of the pixel ratio drawn at. Default 1. */
 	scale?: number;
+	/** Run only while near the screen (true, or a CSS length; default `200px`), handled by `mount`. Default false. */
+	lazy?: boolean | string;
 }
 
 /** A shader's settings: its preset with the config's settings over it. Throws for an unknown shader. */

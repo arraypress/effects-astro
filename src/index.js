@@ -65,6 +65,8 @@ export { createCanvas2D, grainPattern, grainOnto } from './runtime/canvas2d.js';
 export { loadImage, imageTexture, coverScale, GLSL_COVER } from './runtime/image.js';
 export { boxBlur } from './runtime/blur.js';
 export { paperShader, paperSettings, paperUniforms } from './runtime/paper.js';
+export { whenNear, lazyMargin } from './runtime/near.js';
+export { liveGradient } from './runtime/live-gradient.js';
 export { paperLook, paperLookSettings } from './runtime/paper-look.js';
 export { PAPER_LOOKS } from './runtime/paper-looks.js';
 export { createStage } from './runtime/stage.js';

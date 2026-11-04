@@ -9,7 +9,13 @@
  * an element with its settings as JSON in `data-effect-config`; the setup
  * function is called once per element with those settings, and the
  * function it returns is called when the element leaves the page.
+ *
+ * An element marked lazy (`data-effect-lazy`, or `lazy` in its settings)
+ * runs only while it is near the screen (./near.js): a page can carry many
+ * effects and still hold only the WebGL contexts it shows.
  */
+
+import { whenNear, lazyMargin } from './near.js';
 
 /** @type {Map<string, (el: HTMLElement, config: any) => (() => void) | void>} */
 const effects = new Map();
@@ -48,7 +54,13 @@ function scan() {
 		document.querySelectorAll(selector).forEach((node) => {
 			const el = /** @type {HTMLElement} */ (node);
 			if (live.has(el)) return;
-			live.set(el, setup(el, readConfig(el)) ?? (() => {}));
+			const config = readConfig(el);
+			const margin = lazyMargin(el, config);
+			if (margin) live.set(el, whenNear(el, () => setup(el, config), { margin }));
+			else {
+				live.set(el, setup(el, config) ?? (() => {}));
+				el.setAttribute('data-effect-live', '');
+			}
 		});
 	}
 }

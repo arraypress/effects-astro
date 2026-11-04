@@ -32,10 +32,14 @@ interface Props {
 	opacity?: number;
 	/** CSS `mix-blend-mode` with what is behind it (`screen`, `plus-lighter`…). Default normal. */
 	blend?: string;
+	/** Run only while near the screen (true, or how near as a CSS length; default `200px`), giving its WebGL context back when away: for pages with many effects. Default false. */
+	lazy?: boolean | string;
+	/** Fade the canvas in once it starts, over the `background`. Default false. */
+	fadeIn?: boolean;
 	class?: string;
 }
 
-const { name, config, fixed = false, behind = false, background, pixelated = false, fade = false, opacity, blend, class: className } = Astro.props;
+const { name, config, fixed = false, behind = false, background, pixelated = false, fade = false, opacity, blend, lazy = false, fadeIn = false, class: className } = Astro.props;
 const style = [
 	background && `background: ${background}`,
 	opacity !== undefined && opacity < 1 && `opacity: ${opacity}`,
@@ -46,7 +50,8 @@ const style = [
 ---
 
 <div
-	class:list={['effect-canvas', { 'is-fixed': fixed, 'is-behind': fixed && behind, 'is-pixelated': pixelated, 'is-faded': fade === true }, typeof fade === 'string' && `is-faded-${fade}`, className]}
+	class:list={['effect-canvas', { 'is-fixed': fixed, 'is-behind': fixed && behind, 'is-pixelated': pixelated, 'is-faded': fade === true, 'is-fade-in': fadeIn }, typeof fade === 'string' && `is-faded-${fade}`, className]}
+	data-effect-lazy={lazy === false ? undefined : lazy === true ? '' : lazy}
 	data-effect-config={JSON.stringify(config)}
 	style={style || undefined}
 	aria-hidden="true"
@@ -72,6 +77,19 @@ const style = [
 		display: block;
 		width: 100%;
 		height: 100%;
+	}
+	/* fadeIn: the canvas comes in over the background once the effect starts (mount sets data-effect-live) */
+	.effect-canvas.is-fade-in canvas {
+		opacity: 0;
+		transition: opacity 1.2s ease;
+	}
+	.effect-canvas.is-fade-in[data-effect-live] canvas {
+		opacity: 1;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.effect-canvas.is-fade-in canvas {
+			transition: none;
+		}
 	}
 	.effect-canvas.is-faded {
 		-webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);

@@ -415,6 +415,8 @@ Ink: ink in water over whatever is behind it. The pointer stirs it and trails in
 | `momentum` | `number` | How fast the motion dies away, per second (lower flows on longer). Default 0.25. |
 | `opacity` | `number` | The ink's strongest cover, 0–1. Default 1. |
 | `idle` | `number` | Seconds between drops of ink on their own, so it moves before anyone touches it; 0 for none. They wait while it's off screen or the tab is hidden. Default 0. |
+| `dark` | `boolean` | Ink for a light ground: the colours given are laid dark on light (dark dye alone would barely show). Default false. |
+| `lazy` | `boolean \| string` | Run only while near the screen (true, or a CSS length; default `200px`), handled by `mount`. Default false. |
 | `ignore` | `string` | Clicks on these are theirs, not the ink's. Default: links, buttons, form fields and `[data-effect-ignore]`. |
 | `fixed` | `boolean` | Fill the viewport (position: fixed). Default false. |
 | `class` | `string` | Classes for the element. |
@@ -526,6 +528,27 @@ LiquidMetal: a logo or a word made of liquid chrome. At rest it is a polished sl
 | `shadow` | `number` | The soft shadow under it; 0 for none. Default 1. |
 | `background` | `string` | A ground behind the metal (any CSS background). Default none: transparent. |
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
+| `class` | `string` | Classes for the element. |
+
+## `<LiveGradient>`
+
+LiveGradient: a gradient that's alive — Paper's mesh gradient in your colours, morphing slowly, with film grain over it. Subtle by default (a sixth of Paper's speed, a gentle swirl), so it sits behind a card, a hero or a section without pulling the eye. The same colours show as a still CSS gradient first (and without WebGL); the live one fades in over it. Lazy by default: it runs only while near the screen, so a page can have many. Fills its nearest positioned ancestor. See src/runtime/live-gradient.js.
+
+```astro
+<article class="card" style="position: relative">
+  <LiveGradient colors={['#ff5c8a', '#ffb347', '#7b3ff2', '#1a0b2e']} />
+  <h3>…</h3>
+</article>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `colors` (required) | `string[]` | Two to four colours (hex); the last is the ground the others bloom on. Required. |
+| `speed` | `number` | How fast it morphs (1 is Paper's own speed). Default 0.16. |
+| `distortion` | `number` | How far the colours bend into each other, 0–1. Default 0.7. |
+| `swirl` | `number` | How much they turn, 0–1. Default 0.3. |
+| `grain` | `number` | Film grain over it, 0–1 (0 for none). Default 0.35. |
+| `lazy` | `boolean \| string` | Run only while near the screen (true, or a CSS length). Default true. |
 | `class` | `string` | Classes for the element. |
 
 ## `<Magnetic>`
@@ -724,6 +747,7 @@ PaperShader: any of the thirty Paper Shaders (mesh and grain gradients, god rays
 | `gradientAngle` | `number` | The made picture's angle, degrees. Default 135. |
 | `speed` | `number` | How fast it moves, over the preset's (0 is still). |
 | `scale` | `number` | Share of the pixel ratio drawn at. Default 1. |
+| `lazy` | `boolean \| string` | Run only while near the screen (true, or a CSS length; default `200px`), handled by `mount`. Default false. |
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
 | `background` | `string` | The colour shown before it draws, and without WebGL 2. Default transparent. |
 | `opacity` | `number` | Its opacity, 0–1, for backdrops under copy. Default 1. |
@@ -1001,6 +1025,7 @@ ShaderBackground: six animated shader backgrounds for a hero or section, tinted 
 | `static` | `boolean` | One frame, never the loop: for a shader background that is wallpaper. Default false. |
 | `frame` | `number` | With `static`, the moment drawn, in seconds. Default 12. |
 | `interactive` | `boolean` | Lean towards the pointer, on devices that hover. Default false. |
+| `lazy` | `boolean \| string` | Run only while near the screen (true, or a CSS length; default `200px`), handled by `mount`. Default false. |
 | `opacity` | `number` | Its opacity, 0–1, to fade it against the section without changing the shader. Default 1. |
 | `blend` | `string` | CSS `mix-blend-mode` with what is behind it (`screen`, `lighten`, `plus-lighter`…), for layering over imagery. Default normal. |
 | `fade` | `'none' \| 'bottom' \| 'top' \| 'both'` | Fade it out towards an edge, so it melts into the page: 'bottom', 'top', 'both' (top and bottom) or 'none'. Default 'bottom'. |

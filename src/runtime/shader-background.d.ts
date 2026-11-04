@@ -21,6 +21,8 @@ export interface ShaderBackgroundConfig {
 	frame?: number;
 	/** Lean towards the pointer, on devices that hover. Default false. */
 	interactive?: boolean;
+	/** Run only while near the screen (true, or a CSS length; default `200px`), handled by `mount`. Default false. */
+	lazy?: boolean | string;
 }
 
 /** Every shader background's fragment shader, by name. */

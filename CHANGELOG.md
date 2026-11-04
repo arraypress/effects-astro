@@ -5,6 +5,15 @@ All notable changes to `@arraypress/effects-astro` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] — 2026-11-04
+
+### Added
+
+- **Lazy effects:** any effect marked `lazy` (`data-effect-lazy`, `lazy` in its settings, or `<EffectCanvas lazy>`) runs only while it's near the screen and gives its WebGL context back when it's away, so a page can carry many (a browser keeps about sixteen contexts and drops the oldest). `whenNear(el, start, { margin })` does the same from code. A running effect's element carries `data-effect-live`.
+- `<EffectCanvas fadeIn>`: the canvas fades in over its `background` once the effect starts.
+- `<LiveGradient colors={…}>`: Paper's mesh gradient in your colours, morphing slowly under film grain, with the same colours as a still CSS gradient first and without WebGL; lazy by default. `liveGradient(colors, options)` builds its settings for pages that write their own HTML.
+- `<Ink dark>`: dark ink on a light ground (the ink's cover follows the dye's brightness, so dark dye alone barely showed).
+
 ## [0.2.0] — 2026-11-04
 
 ### Added

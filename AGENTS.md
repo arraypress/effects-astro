@@ -13,6 +13,8 @@ Pick by what is asked for:
 | An animated, colourful background for a page or hero | `<LightField>` (liquid light), `<FlutedGlass>` (light, gallery-white or dark), `<AsciiRain>` (techy, dark), `<DotGrid>` (quiet, minimal), `<SignalLines>` / `<WaveBars>` (audio) |
 | Ink in water, a lit fluid background, or a hero whose colours a palette switcher changes | `<InkField palette="…">` (Lumetri, Forest, Cadmium, Peacock, Vermillion, Barbie, Uranium, Azure, Ruby, Ultramarine, Saffron, Crimson); `setColors(el, INK_PALETTES[name].colors, INK_PALETTES[name].glint)` recolours it live |
 | Something to play with: ink, smoke, liquid, "interactive" | `<Ink>` over a section, or `<LightField>` (it has the fluid under it), or `<DotGrid>` (click ripples) |
+| A soft gradient that drifts (a card, a hero, a section) — "grainy gradient", "mesh", "aurora" | `<LiveGradient colors={[…]}>` (lazy by default; `liveGradient(colors)` for HTML made in a script) |
+| Smoke or ink on a light page | `<Ink dark colors={[…]}>` (dark dye alone barely shows) |
 | Panels of colour fanning out of the dark, a bold launch or fintech hero with depth | `<ColorPanels>` (Opening by default; `preset="Glass"`, `"Default"` or `"Gradient"`; `palette` or `colors`, `quiet` behind copy) |
 | A gradient, noise, halftone or liquid-metal look by name | `<PaperShader shader="…" preset="…">`; the demo has a hero for every shader, its presets in the tag |
 | A themed hero background by name (mesh gradient, grainy gradient, silk, light bands, synthwave grid, neon waves), tinted from the site's accent | `<ShaderBackground effect="…">`; `static` when it sits behind body copy or is `fixed` |
@@ -43,6 +45,8 @@ Pick by what is asked for:
 | UI pieces: countdowns, sliders, drop zones, timelines, tooltips, skeletons, scroll progress, back to top, vinyl and equalizer | Not here: `@arraypress/ui-astro`. Counters and drag-to-scroll rails: `@arraypress/behaviors-astro`. |
 
 Things that trip people up:
+
+- **Many effects on one page** (a wall of cards, a long list): mark them `lazy` (or use `whenNear`). A browser keeps about sixteen WebGL contexts and silently drops the oldest past that.
 
 - **`fixed` backgrounds need a transparent `body`.** They sit at `z-index: -1` behind the page: `body { background: transparent }` and paint the page colour on `html`.
 - **Non-fixed effects fill their nearest positioned ancestor.** Give the section `position: relative`, and put the effect before the content.
