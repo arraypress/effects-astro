@@ -8,6 +8,11 @@
  * pointer and the text knits back together behind it. Faster movement adds
  * more heat.
  *
+ * The slip is each hot cell's own by default; with `tear: 'row'` a whole
+ * row tears at once, now and then, by its hottest cell (the Logomarks
+ * site's footer). With `ghost`, a copy of the blocks in that colour sits
+ * nudged 3px right behind them, an accent under the break.
+ *
  * With `stroke` set, the text at rest is a hollow outline of that width and
  * the pixels it breaks into fill the letters solid, so the pointer lights
  * the word up as it passes. The outline is one shape for the whole word
@@ -42,7 +47,46 @@ import { textNodes } from './text.js';
  * @property {number} [block=22] The pixel block size at full heat, CSS px.
  * @property {number} [shift=16] How far the hottest rows slip sideways, CSS px.
  * @property {number} [stroke=0] With a width (CSS px), the text at rest is an outline that the pixels fill.
+ * @property {'cell' | 'row'} [tear='cell'] What slips: each hot cell on its own, or a whole row at once.
+ * @property {string} [ghost] A colour for a copy of the blocks, nudged right behind them (none by default).
  */
+
+/** How far the ghost sits right of its block, CSS px. */
+const GHOST_OFFSET = 3;
+
+/** The heat a block needs to cast its ghost. */
+const GHOST_HEAT = 0.3;
+
+/** A row's hottest cell must pass this for the row to tear… */
+const TEAR_HEAT = 0.45;
+
+/** …and then it tears on this share of frames. */
+const TEAR_CHANCE = 0.35;
+
+/** The heat a cell needs to slip on its own (`tear: 'cell'`). */
+const SLIP_HEAT = 0.55;
+
+/**
+ * How far each row of a heat grid tears this frame: rows whose hottest
+ * cell passes TEAR_HEAT tear on some frames, by up to half of `shift`
+ * either way (scaled by that heat), and the rest stay put.
+ *
+ * @param {Float32Array} heat The grid, row by row.
+ * @param {number} cols Cells a row.
+ * @param {number} rows Rows.
+ * @param {number} shift The most a row slips, at full heat, CSS px (end to end).
+ * @param {() => number} [random=Math.random] Random values, 0–1.
+ * @returns {Float32Array} Each row's slip, whole CSS px.
+ */
+export function rowTears(heat, cols, rows, shift, random = Math.random) {
+	const tear = new Float32Array(rows);
+	for (let row = 0; row < rows; row++) {
+		let h = 0;
+		for (let col = 0; col < cols; col++) h = Math.max(h, heat[row * cols + col]);
+		tear[row] = h > TEAR_HEAT && random() < TEAR_CHANCE ? Math.round((random() - 0.5) * h * shift) : 0;
+	}
+	return tear;
+}
 
 /** The 16 directions the outline's erosion looks in, as unit vectors. */
 const AROUND = Array.from({ length: 16 }, (_, k) => [Math.cos((k / 16) * Math.PI * 2), Math.sin((k / 16) * Math.PI * 2)]);
@@ -97,6 +141,8 @@ export function pixelGlitch(el, config) {
 	const MAX_BLOCK = config.block ?? 22;
 	const SHIFT = config.shift ?? 16;
 	const STROKE = config.stroke ?? 0;
+	const ROWS = config.tear === 'row';
+	const GHOST = config.ghost || '';
 
 	const canvas = document.createElement('canvas');
 	canvas.className = 'effect-pixel-glitch-canvas';
@@ -148,6 +194,7 @@ export function pixelGlitch(el, config) {
 		ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 		ctx.fillStyle = g.ink;
 		let hot = false;
+		const tears = ROWS ? rowTears(g.heat, g.cols, g.rows, SHIFT) : null;
 		for (let row = 0; row < g.rows; row++) {
 			for (let col = 0; col < g.cols; col++) {
 				const i = row * g.cols + col;
@@ -162,17 +209,24 @@ export function pixelGlitch(el, config) {
 				// Wipe the cell, then fill it with blocks sampled from the filled text.
 				ctx.clearRect(x0, y0, CELL, CELL);
 				const block = Math.max(3, Math.round(3 + heat * (MAX_BLOCK - 3)));
-				// The hottest cells also slip sideways: the glitch.
-				const shift = heat > 0.55 ? Math.round((Math.random() - 0.5) * heat * SHIFT) : 0;
+				// The hottest cells (or rows) also slip sideways: the glitch.
+				const shift = tears ? tears[row] : heat > SLIP_HEAT ? Math.round((Math.random() - 0.5) * heat * SHIFT) : 0;
 				const bx0 = Math.floor(x0 / block) * block;
 				const by0 = Math.floor(y0 / block) * block;
 				for (let by = by0; by < y0 + CELL; by += block) {
 					for (let bx = bx0; bx < x0 + CELL; bx += block) {
 						if (!inked(bx + block / 2, by + block / 2)) continue;
 						// Clipped to the cell, so neighbours tile cleanly.
+						const x = Math.max(bx, x0) + shift;
+						const y = Math.max(by, y0);
 						const w = Math.min(bx + block, x0 + CELL) - Math.max(bx, x0);
 						const h = Math.min(by + block, y0 + CELL) - Math.max(by, y0);
-						ctx.fillRect(Math.max(bx, x0) + shift, Math.max(by, y0), w, h);
+						if (GHOST && heat > GHOST_HEAT) {
+							ctx.fillStyle = GHOST;
+							ctx.fillRect(x + GHOST_OFFSET, y, w, h);
+							ctx.fillStyle = g.ink;
+						}
+						ctx.fillRect(x, y, w, h);
 					}
 				}
 				g.heat[i] = heat * DECAY;

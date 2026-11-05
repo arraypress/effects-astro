@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { outlineAlpha } from '../src/runtime/pixel-glitch.js';
+import { outlineAlpha, rowTears } from '../src/runtime/pixel-glitch.js';
 
 /**
  * An RGBA picture with solid rectangles in it.
@@ -41,4 +41,35 @@ test('outlineAlpha keeps antialiased edges soft and takes at least a pixel', () 
 	const out = outlineAlpha(px, 10, 10, 0.2);
 	assert.equal(out[5 * 10 + 1], 100, 'a half-covered edge pixel keeps its coverage');
 	assert.equal(out[5 * 10 + 5], 0, 'the inside is still hollow at a width under a pixel');
+});
+
+/**
+ * Random values from a list, recording how many were asked for.
+ *
+ * @param {number[]} values The values, in order.
+ * @returns {(() => number) & { used: number }} The generator.
+ */
+function scripted(values) {
+	const next = () => values[next.used++];
+	next.used = 0;
+	return next;
+}
+
+test('rowTears: a row tears by its hottest cell, on some frames, the rest stay put', () => {
+	// Three rows of four: cold, warm (0.4), hot (0.9 in one cell).
+	const heat = Float32Array.from([0, 0, 0, 0, 0.4, 0.4, 0.4, 0.4, 0.1, 0.9, 0.2, 0]);
+	const rnd = scripted([0.1, 1]);
+	const tears = rowTears(heat, 4, 3, 22, rnd);
+	assert.equal(rnd.used, 2, 'only the hot row draws (whether, then how far), as the site did');
+	assert.deepEqual([...tears], [0, 0, Math.round((1 - 0.5) * Math.fround(0.9) * 22)]);
+	// The same row, on a frame that does not tear.
+	const calm = scripted([0.5]);
+	assert.deepEqual([...rowTears(heat, 4, 3, 22, calm)], [0, 0, 0]);
+	assert.equal(calm.used, 1);
+});
+
+test('rowTears slips either way, at most half the shift', () => {
+	const heat = Float32Array.from([1, 1]);
+	assert.deepEqual([...rowTears(heat, 1, 2, 22, scripted([0, 0, 0, 0.999999]))], [-11, 11]);
+	assert.deepEqual([...rowTears(heat, 1, 2, 22, Math.random)].map((v) => Math.abs(v) <= 11), [true, true]);
 });

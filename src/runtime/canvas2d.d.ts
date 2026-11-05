@@ -6,11 +6,20 @@ export interface Canvas2D {
 	/** The element's size, CSS px. */
 	width: number;
 	height: number;
+	/** The canvas's pixels per CSS px (the device's, up to 2). */
+	dpr: number;
 	/** True with prefers-reduced-motion. */
 	still: boolean;
 }
 
-/** Starts a Canvas 2D effect in `el`'s canvas: sized, looped while near the screen, still with reduced motion. */
+/**
+ * The element's canvas, ready for 2D drawing: its first canvas, or a fresh one in its place (with its attributes)
+ * when that one is already claimed for WebGL, or a fresh one added when it has none. `release` puts the element's
+ * own canvas back (or takes the added one out).
+ */
+export function claimCanvas(el: HTMLElement): { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D | null; release(): void };
+
+/** Starts a Canvas 2D effect in `el`'s canvas (or one in its place: see claimCanvas): sized, looped while near the screen, still with reduced motion. */
 export function createCanvas2D(
 	el: HTMLElement,
 	options: { draw(c: Canvas2D, now: number, dt: number): void; resize?(c: Canvas2D): void },

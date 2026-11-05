@@ -161,7 +161,7 @@ The package's main entry is the runtime the components are built on, for use wit
 | `scene(el, config)`, `sceneSettings` | `<Scene>`: an `@arraypress/shaders` scene on an element's canvas, and its props as that package's options |
 | `paperLook(el, config)`, `paperLookSettings`, `PAPER_LOOKS` | The Paper looks (`<ColorPanels>`…): a look's plain props as a Paper shader's settings, and the looks by name |
 | `createStage(el, options)` | A full-canvas WebGL effect: context, program, sizing, the loop, reduced motion, clean-up |
-| `createCanvas2D(el, options)`, `grainPattern`, `grainOnto` | The same for Canvas 2D effects, and grain laid onto strokes only |
+| `createCanvas2D(el, options)`, `claimCanvas(el)`, `grainPattern`, `grainOnto` | The same for Canvas 2D effects (taking over a canvas the host claimed for WebGL), and grain laid onto strokes only |
 | `createFluid(gl, options)`, `stir(fluid, el, options)` | A Stable Fluids solve, and its pointer hookup |
 | `createPoints(gl, vertex)`, `projectPoint`, `GLSL_PROJECT` | Particles as soft points, with a 3D projection matched in JavaScript |
 | `drawShape`, `samplePoints`, `gridPoints`, `distanceField`, `blurField`, `fontAt` | Shapes from text or images, and what effects take from them |

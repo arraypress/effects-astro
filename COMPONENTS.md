@@ -243,6 +243,9 @@ Galaxy: deep space in your colours. Soft nebula clouds with dark dust lanes, fin
 | `stars` | `number` | How many stars, as a share of the usual, 0–3; 0 for none. Default 1. |
 | `glitter` | `number` | How bright the fine glitter is, as a share of the usual, 0–2; 0 for none. Default 1. |
 | `seed` | `number` | Which sky, 1–999: the same seed draws the same nebula and stars. Default 7. |
+| `starSeed` | `number` | The glitter and stars' own seed. Default `seed × 31 + 1`. |
+| `rng` | `RandomName` | The generator. `mulberry32` scatters the glitter and stars afresh from `starSeed` on each resize; `park-miller` (the Logomarks studio's first galaxy) scatters them from one stream that runs on across resizes. With `seed: 7`, `starSeed: 31` and `blend: 'srgb'`, `park-miller` draws that sky to the pixel. Default `mulberry32`. |
+| `blend` | `'oklab' \| 'srgb'` | How the ramp blends its colours: in Oklab, or plainly in sRGB (painted exactly along its stops, the first colour's bytes × 0.18 for its near-black). Default `oklab`. |
 | `lazy` | `boolean \| string` | Run only while near the screen (true, or a CSS length; default `200px`), handled by `mount`. Default false. |
 | `background` | `string` | What shows before it draws. Default `#05040d`. |
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
@@ -846,7 +849,7 @@ ParticleLogo: a logo or a word in thousands of twinkling particles that scatter 
 
 ## `<PixelGlitchText>`
 
-PixelGlitchText: one line of text that breaks into pixels under the pointer and knits back together behind it. With `stroke`, a hollow outline at rest that the pixels fill in. See src/runtime/pixel-glitch.js.
+PixelGlitchText: one line of text that breaks into pixels under the pointer and knits back together behind it. With `stroke`, a hollow outline at rest that the pixels fill in; `tear="row"` tears whole rows, and `ghost` lays a coloured copy behind the blocks. See src/runtime/pixel-glitch.js.
 
 ```astro
 <footer>
@@ -862,6 +865,8 @@ PixelGlitchText: one line of text that breaks into pixels under the pointer and 
 | `block` | `number` | The pixel block size at full heat, CSS px. Default 22. |
 | `shift` | `number` | How far the hottest rows slip sideways, CSS px. Default 16. |
 | `stroke` | `number` | With a width (CSS px), the text at rest is an outline that the pixels fill: one outline round the word, so overlapping letters merge. Default 0 (solid). |
+| `tear` | `'cell' \| 'row'` | What slips: `cell`, each hot cell on its own; `row`, a whole row at once, now and then, by its hottest cell (up to half of `shift` either way). Default `cell`. |
+| `ghost` | `string` | A colour for a copy of the blocks, nudged 3px right behind them (an accent under the break). Default none. |
 | `as` | `HTMLTag` | The element to render. Default `span`. |
 | `fit` | `boolean` | Size the text to span its parent's width. Default false. |
 | `class` | `string` | Classes for the element. |

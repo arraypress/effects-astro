@@ -6,6 +6,12 @@
  * frames from the page's one loop while it is near the screen, one still
  * frame with prefers-reduced-motion (redrawn on resize), and a grain tile
  * for texturing strokes.
+ *
+ * A canvas holds one kind of context for life, so when the element's
+ * canvas has already been claimed for WebGL (a host that makes one canvas
+ * for whichever effect it shows), a fresh canvas takes its place, with
+ * its attributes, and the host's goes back when the effect stops. An
+ * element with no canvas gets one.
  */
 
 import { prefersReducedMotion } from './device.js';
@@ -17,11 +23,37 @@ import { animate } from './loop.js';
  * @property {HTMLCanvasElement} canvas The canvas.
  * @property {number} width The element's width, CSS px.
  * @property {number} height The element's height, CSS px.
+ * @property {number} dpr The canvas's pixels per CSS px (the device's, up to 2).
  * @property {boolean} still True with prefers-reduced-motion.
  */
 
 /**
- * Starts a Canvas 2D effect on an element (its first canvas is drawn into).
+ * The element's canvas, ready for 2D drawing: its first canvas, or a
+ * fresh one in its place when that one is already claimed for another
+ * kind of context (WebGL), or a fresh one added when it has none.
+ *
+ * @param {HTMLElement} el The element.
+ * @returns {{ canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D | null, release: () => void }} The canvas, its context and a function that puts the element's own canvas back.
+ */
+export function claimCanvas(el) {
+	const found = el.querySelector('canvas');
+	const ctx = found?.getContext('2d', { alpha: true });
+	if (found && ctx) return { canvas: found, ctx, release: () => {} };
+	const canvas = document.createElement('canvas');
+	if (found) {
+		for (const { name, value } of found.attributes) canvas.setAttribute(name, value);
+		found.replaceWith(canvas);
+	} else el.append(canvas);
+	return {
+		canvas,
+		ctx: canvas.getContext('2d', { alpha: true }),
+		release: () => (found ? canvas.replaceWith(found) : canvas.remove()),
+	};
+}
+
+/**
+ * Starts a Canvas 2D effect on an element (its first canvas is drawn into,
+ * or one in its place: see claimCanvas).
  *
  * @param {HTMLElement} el The element.
  * @param {object} options The effect.
@@ -30,20 +62,22 @@ import { animate } from './loop.js';
  * @returns {{ c: Canvas2D | null, stop: () => void }} The canvas (null without a 2D context) and a function that stops it.
  */
 export function createCanvas2D(el, options) {
-	const canvas = el.querySelector('canvas');
-	const ctx = canvas?.getContext('2d', { alpha: true });
-	if (!canvas || !ctx) return { c: null, stop: () => {} };
+	const { canvas, ctx, release } = claimCanvas(el);
+	if (!ctx) {
+		release();
+		return { c: null, stop: () => {} };
+	}
 	/** @type {Canvas2D} */
-	const c = { ctx, canvas, width: 0, height: 0, still: prefersReducedMotion() };
+	const c = { ctx, canvas, width: 0, height: 0, dpr: 1, still: prefersReducedMotion() };
 
 	/** Sizes the canvas to the element. */
 	const size = () => {
-		const dpr = Math.min(window.devicePixelRatio || 1, 2);
+		c.dpr = Math.min(window.devicePixelRatio || 1, 2);
 		c.width = Math.max(1, el.clientWidth);
 		c.height = Math.max(1, el.clientHeight);
-		canvas.width = Math.floor(c.width * dpr);
-		canvas.height = Math.floor(c.height * dpr);
-		ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+		canvas.width = Math.floor(c.width * c.dpr);
+		canvas.height = Math.floor(c.height * c.dpr);
+		ctx.setTransform(c.dpr, 0, 0, c.dpr, 0, 0);
 		options.resize?.(c);
 		if (c.still) options.draw(c, performance.now(), 0);
 	};
@@ -56,6 +90,7 @@ export function createCanvas2D(el, options) {
 		stop: () => {
 			stopLoop();
 			resizer.disconnect();
+			release();
 		},
 	};
 }

@@ -5,6 +5,23 @@ All notable changes to `@arraypress/effects-astro` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] — 2026-11-05
+
+### Added
+
+- `<PixelGlitchText tear="row">` (`pixelGlitch` `tear: 'row'`): a whole row tears at once, now and then, by its hottest cell (over 0.45 heat, on about a third of frames, by up to half of `shift` either way), as the Logomarks site's footer did. The default, `cell`, is unchanged: each hot cell slips on its own. `rowTears(heat, cols, rows, shift, random?)` is its pure part.
+- `<PixelGlitchText ghost="…">` (`pixelGlitch` `ghost`): a colour for a copy of the blocks, nudged 3px right behind them, an accent under the break (the Logomarks footer's is pink, `rgba(255, 62, 165, 0.85)`). None by default.
+- `<Galaxy rng="park-miller">` (`galaxy` `rng`): the Park–Miller minimal standard generator (× 16807 mod 2³¹ − 1), as the Logomarks studio's first galaxy drew with, beside the default mulberry32. With it the glitter and stars come from one stream that runs on across resizes, as they did there. Named for the algorithm, not `legacy`: it is a standard generator anyone can choose, and the name says what the numbers are.
+- `<Galaxy starSeed>`: the glitter and stars' own seed (default `seed × 31 + 1`, as before).
+- `<Galaxy blend="srgb">`: the ramp blended plainly in sRGB (its near-black the first colour's bytes × 0.18), painted exactly along its stops, beside the default Oklab. `rng: 'park-miller'`, `seed: 7`, `starSeed: 31` and `blend: 'srgb'` draw the studio's first sky to the pixel (a test checks its nebula byte for byte). `galaxyStops(colors, blend)` gives the stops; `galaxyRamp` and `nebulaPixels` take the blend and a `smooth` flag.
+- Canvas 2D effects take over a canvas the host already claimed for WebGL: `createCanvas2D` (and so `<Galaxy>`, `<DotGrid>`, `<WorldRoutes>`) puts a fresh canvas in its place, with its attributes, and gives the host's back when it stops; an element with no canvas gets one. `claimCanvas(el)` is that step on its own. A page that makes one WebGL canvas for whichever effect it shows no longer needs a plain one for these.
+- `parkMiller(seed)`, `randomFrom(name, seed)` and `RANDOMS` beside `seededRandom`. `Canvas2D` has `dpr`.
+
+### Changed
+
+- `<Galaxy>` draws in device pixels, and its stars as a radial gradient each (a 64px sprite before), with crosses of light a CSS pixel thick (a device pixel before), so it matches the studio's first galaxy at any pixel ratio. A star's tint is picked from the tints in proportion (a 0–1 value), so the same seed gives stars different tints from 0.5.x. A resize while the element has no size scatters nothing.
+- `nebulaField` returns a `Float64Array` (it was `Float32Array`), so painting along exact stops matches to the byte; a handful of pixels in the default Oklab nebula move one step on the ramp.
+
 ## [0.5.1] — 2026-11-05
 
 ### Fixed

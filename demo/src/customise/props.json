@@ -1167,6 +1167,35 @@
 				"live": "config"
 			},
 			{
+				"name": "starSeed",
+				"kind": "number",
+				"doc": "The glitter and stars' own seed. Default `seed × 31 + 1`.",
+				"default": "seed × 31 + 1",
+				"live": "config"
+			},
+			{
+				"name": "rng",
+				"kind": "enum",
+				"options": [
+					"mulberry32",
+					"park-miller"
+				],
+				"doc": "The generator. `mulberry32` scatters the glitter and stars afresh from `starSeed` on each resize; `park-miller` (the Logomarks studio's first galaxy) scatters them from one stream that runs on across resizes. With `seed: 7`, `starSeed: 31` and `blend: 'srgb'`, `park-miller` draws that sky to the pixel. Default `mulberry32`.",
+				"default": "mulberry32",
+				"live": "config"
+			},
+			{
+				"name": "blend",
+				"kind": "enum",
+				"options": [
+					"oklab",
+					"srgb"
+				],
+				"doc": "How the ramp blends its colours: in Oklab, or plainly in sRGB (painted exactly along its stops, the first colour's bytes × 0.18 for its near-black). Default `oklab`.",
+				"default": "oklab",
+				"live": "config"
+			},
+			{
 				"name": "lazy",
 				"kind": "boolean",
 				"doc": "Run only while near the screen (true, or a CSS length; default `200px`), handled by `mount`. Default false.",
@@ -3979,6 +4008,23 @@
 				"step": 1,
 				"doc": "With a width (CSS px), the text at rest is an outline that the pixels fill: one outline round the word, so overlapping letters merge. Default 0 (solid).",
 				"default": 0,
+				"live": "config"
+			},
+			{
+				"name": "tear",
+				"kind": "enum",
+				"options": [
+					"cell",
+					"row"
+				],
+				"doc": "What slips: `cell`, each hot cell on its own; `row`, a whole row at once, now and then, by its hottest cell (up to half of `shift` either way). Default `cell`.",
+				"default": "cell",
+				"live": "config"
+			},
+			{
+				"name": "ghost",
+				"kind": "color",
+				"doc": "A colour for a copy of the blocks, nudged 3px right behind them (an accent under the break). Default none.",
 				"live": "config"
 			},
 			{

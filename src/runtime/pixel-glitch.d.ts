@@ -11,6 +11,10 @@ export interface PixelGlitchConfig {
 	shift?: number;
 	/** With a width (CSS px), the text at rest is an outline that the pixels fill: one outline round the word, so overlapping letters merge. Default 0 (solid). */
 	stroke?: number;
+	/** What slips: `cell`, each hot cell on its own; `row`, a whole row at once, now and then, by its hottest cell (up to half of `shift` either way). Default `cell`. */
+	tear?: 'cell' | 'row';
+	/** A colour for a copy of the blocks, nudged 3px right behind them (an accent under the break). Default none. */
+	ghost?: string;
 }
 
 /**
@@ -19,6 +23,9 @@ export interface PixelGlitchConfig {
  * touching shapes share one outline. One alpha byte a pixel.
  */
 export function outlineAlpha(rgba: Uint8ClampedArray, width: number, height: number, radius: number): Uint8ClampedArray;
+
+/** How far each row of a heat grid tears this frame (whole CSS px): a row whose hottest cell is over 0.45 tears on about a third of frames, by up to half of `shift` either way, scaled by that heat. */
+export function rowTears(heat: Float32Array, cols: number, rows: number, shift: number, random?: () => number): Float32Array;
 
 /** Starts the pixel glitch on an element of text. Returns a function that stops it. */
 export function pixelGlitch(el: HTMLElement, config: PixelGlitchConfig): () => void;
