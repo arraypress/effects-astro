@@ -1020,7 +1020,7 @@ Reveal: content that rises, slides, zooms or un-blurs into place as it scrolls i
 
 ## `<Scene>`
 
-Scene: one of the scenes from `@arraypress/shaders` as a background: liquid marble, frosted glass, ribbed light, glossy tiles, a pastel blob, chrome liquid, a glitter galaxy, holographic foil, a neon ribbon, spiral trails, a glass swirl, arches, pastel spheres, glass strands, glass rings, ink in water and topographic lines. Any palette recolours it, and its own settings (`params`) reshape it. See src/runtime/scene.js.
+Scene: one of the scenes from `@logomarks/shaders` as a background: liquid marble, frosted glass, ribbed light, glossy tiles, a pastel blob, chrome liquid, a glitter galaxy, holographic foil, a neon ribbon, spiral trails, a glass swirl, arches, pastel spheres, glass strands, glass rings, ink in water and topographic lines. Any palette recolours it, and its own settings (`params`) reshape it. See src/runtime/scene.js.
 
 ```astro
 <Scene name="marble" palette="Barbie" params={{ scale: 1.2 }} />
@@ -1034,7 +1034,7 @@ Scene: one of the scenes from `@arraypress/shaders` as a background: liquid marb
 | `palette` | `PaletteName` | A named palette (PALETTES): its three colours and its glint. Default the scene's own colours. |
 | `colors` | `string[]` | One to three colours (hex), over the palette's. Default the palette's, or the scene's own. |
 | `glint` | `string` | The highlight colour (hex), over the palette's. Default the palette's, or the scene's own. |
-| `params` | `Record<string, number>` | The scene's own settings by key (`PARAMS[name]` in `@arraypress/shaders`; marble takes `scale`, `sharpness`, `warp` and `relief`). Default the scene's. |
+| `params` | `Record<string, number>` | The scene's own settings by key (`PARAMS[name]` in `@logomarks/shaders`; marble takes `scale`, `sharpness`, `warp` and `relief`). Default the scene's. |
 | `speed` | `number` | How fast it moves, 0–3 (0 still). Default 1. |
 | `hue` | `number` | Hue turned round the colour wheel, -180–180 degrees. Default 0. |
 | `sat` | `number` | Saturation, 0–2 (0 grey). Default 1. |

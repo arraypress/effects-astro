@@ -1,7 +1,7 @@
-import type { SceneOptions } from '@arraypress/shaders';
+import type { SceneOptions } from '@logomarks/shaders';
 import type { PaletteName } from './palettes.js';
 
-/** A scene's name: one of `@arraypress/shaders`' scenes. */
+/** A scene's name: one of `@logomarks/shaders`' scenes. */
 export type SceneName =
 	| 'marble'
 	| 'frosted'
@@ -51,7 +51,7 @@ export interface SceneConfig {
 	near?: boolean | string;
 }
 
-/** A `<Scene>`'s settings as `@arraypress/shaders`' options: the palette found by name, `near` as `lazy`. */
+/** A `<Scene>`'s settings as `@logomarks/shaders`' options: the palette found by name, `near` as `lazy`. */
 export function sceneSettings(config: SceneConfig): { name: SceneName; options: SceneOptions };
 
 /** Starts a scene on an element's canvas; returns a function that stops it. */

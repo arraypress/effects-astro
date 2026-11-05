@@ -1,6 +1,6 @@
 ---
 /**
- * Scene: one of the scenes from `@arraypress/shaders` as a
+ * Scene: one of the scenes from `@logomarks/shaders` as a
  * background: liquid marble, frosted glass, ribbed light, glossy tiles, a
  * pastel blob, chrome liquid, a glitter galaxy, holographic foil, a neon
  * ribbon, spiral trails, a glass swirl, arches, pastel spheres, glass
@@ -22,7 +22,7 @@
  * <Scene name="foil" fixed opacity={0.5} />
  */
 import EffectCanvas from './EffectCanvas.astro';
-import { SCENES, fallback, validateOptions } from '@arraypress/shaders';
+import { SCENES, fallback, validateOptions } from '@logomarks/shaders';
 import { sceneSettings } from '../runtime/scene.js';
 import type { SceneName } from '../runtime/scene.js';
 import type { PaletteName } from '../runtime/palettes.js';
@@ -36,7 +36,7 @@ interface Props {
 	colors?: string[];
 	/** The highlight colour (hex), over the palette's. Default the palette's, or the scene's own. */
 	glint?: string;
-	/** The scene's own settings by key (`PARAMS[name]` in `@arraypress/shaders`; marble takes `scale`, `sharpness`, `warp` and `relief`). Default the scene's. */
+	/** The scene's own settings by key (`PARAMS[name]` in `@logomarks/shaders`; marble takes `scale`, `sharpness`, `warp` and `relief`). Default the scene's. */
 	params?: Record<string, number>;
 	/** How fast it moves, 0–3 (0 still). Default 1. */
 	speed?: number;

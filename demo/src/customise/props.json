@@ -4761,7 +4761,7 @@
 			{
 				"name": "params",
 				"kind": "other",
-				"doc": "The scene's own settings by key (`PARAMS[name]` in `@arraypress/shaders`; marble takes `scale`, `sharpness`, `warp` and `relief`). Default the scene's.",
+				"doc": "The scene's own settings by key (`PARAMS[name]` in `@logomarks/shaders`; marble takes `scale`, `sharpness`, `warp` and `relief`). Default the scene's.",
 				"live": "config"
 			},
 			{

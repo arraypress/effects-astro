@@ -34,12 +34,12 @@ import PaperShader from '@arraypress/effects-astro/PaperShader.astro';
 import { PRESETS } from '../../../src/vendor/paper/presets.js';
 import { PAPER_LOOKS } from '@arraypress/effects-astro/runtime/paper-looks';
 import Scene from '@arraypress/effects-astro/Scene.astro';
-import { SCENES } from '@arraypress/shaders';
+import { SCENES } from '@logomarks/shaders';
 const shaders = Object.keys(SHADER_BACKGROUNDS) as (keyof typeof SHADER_BACKGROUNDS)[];
 // Paper's shaders, for picking looks from; those already made a background of their own (PAPER_LOOKS) are left out.
 const looks = new Set<string>(Object.values(PAPER_LOOKS).map((look) => look.shader));
 const papers = (Object.keys(PRESETS) as (keyof typeof PRESETS)[]).filter((shader) => !looks.has(shader));
-// @arraypress/shaders' scenes: marble has a hero of its own, the rest one each in their own colours.
+// @logomarks/shaders' scenes: marble has a hero of its own, the rest one each in their own colours.
 const scenes = (Object.keys(SCENES) as (keyof typeof SCENES)[]).filter((name) => name !== 'marble');
 // the scenes on a pale ground, whose copy is dark
 const paleScenes = ['blob', 'ink-water'];

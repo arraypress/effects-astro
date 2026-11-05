@@ -1,13 +1,13 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { NAMES } from '@arraypress/shaders/load';
-import { validateOptions, LOOK_PARAMS } from '@arraypress/shaders';
+import { NAMES } from '@logomarks/shaders/load';
+import { validateOptions, LOOK_PARAMS } from '@logomarks/shaders';
 import { sceneSettings } from '../src/runtime/scene.js';
 import { PALETTES } from '../src/runtime/palettes.js';
 import { readComponent } from '../scripts/props.mjs';
 
-test("the scene names in the types are @arraypress/shaders' scenes", () => {
+test("the scene names in the types are @logomarks/shaders' scenes", () => {
 	const types = readFileSync(new URL('../src/runtime/scene.d.ts', import.meta.url), 'utf8');
 	const union = types.slice(types.indexOf('export type SceneName'), types.indexOf(';', types.indexOf('export type SceneName')));
 	assert.deepEqual([...union.matchAll(/'([a-z0-9-]+)'/g)].map((m) => m[1]), NAMES);

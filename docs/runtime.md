@@ -5,7 +5,7 @@ The package's main entry is the runtime the components are built on, for use wit
 | Export | |
 |---|---|
 | `paperShader(el, config)`, `paperSettings`, `paperUniforms` | Paper's shaders, and the settings and uniforms for a shader and preset |
-| `scene(el, config)`, `sceneSettings` | `<Scene>`: an `@arraypress/shaders` scene on an element's canvas, and its props as that package's options |
+| `scene(el, config)`, `sceneSettings` | `<Scene>`: an `@logomarks/shaders` scene on an element's canvas, and its props as that package's options |
 | `paperLook(el, config)`, `paperLookSettings`, `PAPER_LOOKS` | The Paper looks (`<ColorPanels>`…): a look's plain props as a Paper shader's settings, and the looks by name |
 | `createStage(el, options)` | A full-canvas WebGL effect: context, program, sizing, the loop, reduced motion, clean-up |
 | `createCanvas2D(el, options)`, `claimCanvas(el)`, `grainPattern`, `grainOnto` | The same for Canvas 2D effects (taking over a canvas the host claimed for WebGL), and grain laid onto strokes only |

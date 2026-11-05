@@ -1,7 +1,7 @@
 /**
  * @module @arraypress/effects-astro/scene
  *
- * A scene from `@arraypress/shaders` on an effect's canvas: liquid marble,
+ * A scene from `@logomarks/shaders` on an effect's canvas: liquid marble,
  * frosted glass, glossy tiles, chrome, glitter, holographic foil, ink in
  * water and the rest, recoloured by a palette and shaped by the scene's own
  * settings. `<Scene>` is the component.
@@ -14,14 +14,14 @@
  * with reduced motion. `setColors` recolours it live.
  */
 
-import { scene as run, LOOK } from '@arraypress/shaders/core';
-import { load } from '@arraypress/shaders/load';
+import { scene as run, LOOK } from '@logomarks/shaders/core';
+import { load } from '@logomarks/shaders/load';
 import { findPalette } from './palettes.js';
 import { watchColors } from './mount.js';
 
 /**
  * @typedef {import('./scene.js').SceneConfig} SceneConfig
- * @typedef {import('@arraypress/shaders').SceneOptions} SceneOptions
+ * @typedef {import('@logomarks/shaders').SceneOptions} SceneOptions
  */
 
 /** The settings a `<Scene>` hands to its scene as they are: the look, the colours, the params, the frame rate and resolution. */
@@ -61,7 +61,7 @@ export function scene(el, config) {
 	if (!canvas) return () => {};
 	const { name, options } = sceneSettings(config);
 	let stopped = false;
-	/** @type {import('@arraypress/shaders').SceneHandle | null} */
+	/** @type {import('@logomarks/shaders').SceneHandle | null} */
 	let handle = null;
 	let unwatch = () => {};
 	load(name)
