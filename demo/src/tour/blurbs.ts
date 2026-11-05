@@ -1,10 +1,10 @@
 /**
  * A one-line description of each hero, for the "All effects" overview,
  * read from what already describes it: a shader background's module
- * header, a Paper shader's presets, and otherwise the README's line for
- * the component.
+ * header, a Paper shader's presets, and otherwise the line for the
+ * component in docs/effects.md.
  */
-import readme from '../../../README.md?raw';
+import effectsDoc from '../../../docs/effects.md?raw';
 import { PRESETS } from '../../../src/vendor/paper/presets.js';
 import { parseLine } from '../customise/markup.js';
 
@@ -24,8 +24,8 @@ const plain = (text: string) =>
 		.replace(/\.$/, '')
 		.trim();
 
-/** The README's line for each component, from its tables (`| \`<Name>\` | What it is | … |`). */
-const README = new Map([...readme.matchAll(/^\| `<(\w+)>` \| ([^|]+) \|/gm)].map(([, name, text]) => [name, plain(text)]));
+/** Each component's line in docs/effects.md, from its tables (`| \`<Name>\` | What it is | … |`). */
+const LINES = new Map([...effectsDoc.matchAll(/^\| `<(\w+)>` \| ([^|]+) \|/gm)].map(([, name, text]) => [name, plain(text)]));
 
 /**
  * The first sentence of a module's header, without the name it opens with
@@ -62,5 +62,5 @@ export function blurb(code: string): string {
 		const presets = PRESETS[props.shader as keyof typeof PRESETS];
 		if (presets) return `Presets: ${presets.map((p) => p.name).join(', ')}`;
 	}
-	return README.get(name) ?? '';
+	return LINES.get(name) ?? '';
 }
