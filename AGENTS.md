@@ -34,6 +34,7 @@ Pick by what is asked for:
 | A light or texture over a background (a spotlight, film grain) | `<GlowField>`, `<Grain>` (`still` for either to hold) |
 | The brand's logo as the hero's centrepiece | `<GlassGlyph>`, `<LiquidMetal>` (liquid chrome you can poke and splash; `tint="gold"`…), `<ParticleLogo>`, `<NeonSwarm>` (a flowing neon swarm), `<NebulaLogo>` (filled with nebula gas), `<VoxelLogo>`, `<PointCloud>`, all with `src="/logo.svg"` or `text` |
 | A footer wordmark | `<SpotlightText fit>`, `<PixelGlitchText fit>`, `<OutlineWordmark>` |
+| Something retro or 8-bit on a footer: pixels firing out of it, sparks, "insert coin" | `<PixelFountain>` inside the footer (its top edge must not clip: `overflow-x: clip`, not `overflow: hidden`); `source="text"` sheds pixels from a wordmark; `color` or `colors` for the ramp |
 | Sections that arrive on scroll, site-wide | `<ScrollReveal />` once in the layout, then reveal.css classes (`fade-in-up`…) on elements |
 | A type foundry or bold brand headline: big variable-font letters that swell under the pointer | `<VariableType as="h1" fit>` set in a variable font (`axes` for which axes swell) |
 | Text that arrives or moves | `<Reveal>`, `<ScrambleText>`, `<Typewriter>`, `<HighlightSweep>`, `<Marquee>` |
@@ -58,6 +59,7 @@ Things that trip people up:
 - **Audio from another origin** needs CORS to be followed: `crossorigin="anonymous"` on the element (WaveformPlayer: `data-cross-origin="anonymous"`) and `Access-Control-Allow-Origin` on the server. Without it the effect keeps its own motion.
 - **`<Glass refract>` bends only in Chromium.** Safari and Firefox show the frosted glass instead; do not sniff browsers around it. It needs something detailed behind it (type, a photo) for the bending to show, and its bezel should be well under half the panel's shorter side.
 - **Clicks:** effects that react to clicks ignore links, buttons and form fields. Add `data-effect-ignore` to anything else whose clicks are its own.
+- **`<PixelFountain>` draws above its host's top edge**, so a host with `overflow: hidden` clips it away. Use `overflow-x: clip` on the host, or put the fountain in a zero-height positioned strip on the edge and name the host with `host="…"`.
 - **`<SpotlightText fill="dodge">`** blends with what is behind it: no stacking context may sit between them (no `z-index` on a positioned ancestor, no `opacity`, `transform`, `filter` or `isolation`). Use `fill="solid"` where that cannot be arranged.
 - **Styling a component's element** from the page needs `:global(.its-class)`, since the element belongs to the component.
 - **`<Scene>` takes a palette by name** (`palette="Barbie"`); `@logomarks/shaders` itself takes the palette object (`PALETTES.Barbie`), never the name. Its `lazy` is the scene's own (a context held near the screen, given back four seconds after leaving on a fresh canvas), not `mount()`'s.

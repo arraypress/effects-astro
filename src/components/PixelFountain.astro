@@ -1,0 +1,70 @@
+---
+/**
+ * PixelFountain: retro 8-bit sparks. Chunky square pixels fire up out of
+ * the host's top edge (a footer) or, with `source="text"`, out of the
+ * letters of its wordmark, arc under gravity and break down as they go:
+ * through a short ramp of colours, shrinking in whole-pixel steps or
+ * splitting into pieces that scatter, some flickering out like a dying CRT
+ * pixel. A few trickle up on their own; the pointer moving over the host
+ * fires a stream, a click or tap a power-up. See
+ * src/runtime/pixel-fountain.js.
+ *
+ * Put it inside the host (its nearest positioned ancestor): the canvas sits
+ * above the host's top edge, `rise` px tall (over the host and above it
+ * with `source="text"`), so the host must not clip its top (no
+ * `overflow: hidden`; `overflow-x: clip` is fine). Or put it in a
+ * zero-height positioned strip on the host's top edge and name the host
+ * with `host`. The canvas takes no pointer events; the host's are read.
+ * With reduced motion, a still scatter of pixels.
+ *
+ * @example
+ * <footer class="site-footer" style="position: relative">
+ *   <PixelFountain cell={8} />
+ *   …
+ * </footer>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { PixelFountainConfig } from '../runtime/pixel-fountain.js';
+
+interface Props extends PixelFountainConfig {
+	/** The canvas's `z-index`, over what is above the host. Default none (auto). */
+	zIndex?: number;
+	/** Run only while near the screen (true, or how near as a CSS length; default `200px`). Default false. */
+	lazy?: boolean | string;
+	class?: string;
+}
+
+const { zIndex, lazy = false, class: className, ...config } = Astro.props;
+const rise = config.rise ?? 240;
+const text = config.source === 'text';
+const classes = ['effect-pixel-fountain', text && 'is-text', className].filter(Boolean).join(' ');
+---
+
+<EffectCanvas
+	name="pixel-fountain"
+	config={config}
+	lazy={lazy}
+	pixelated
+	class={classes}
+	style={[`--fountain-rise: ${rise}px`, zIndex !== undefined && `z-index: ${zIndex}`].filter(Boolean).join('; ')}
+/>
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { pixelFountain } from '../runtime/pixel-fountain.js';
+
+	mount('[data-effect-pixel-fountain]', pixelFountain);
+</script>
+
+<style>
+	/* Above the host's top edge: the canvas's bottom on it, `rise` tall. Global, as the element is EffectCanvas's. */
+	:global(.effect-canvas.effect-pixel-fountain[data-effect-pixel-fountain]) {
+		inset: auto 0 100% 0;
+		height: var(--fountain-rise);
+	}
+	/* From the text: over the host and the space above it. */
+	:global(.effect-canvas.effect-pixel-fountain.is-text[data-effect-pixel-fountain]) {
+		inset: auto 0 0 0;
+		height: calc(100% + var(--fountain-rise));
+	}
+</style>

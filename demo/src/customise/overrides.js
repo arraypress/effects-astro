@@ -25,4 +25,5 @@ export const TWEAKS = {
 	OutlineWordmark: { weight: { min: 100, max: 900, step: 100 } },
 	NeonSwarm: { count: { min: 1000, max: 12000, step: 100 } },
 	ParticleLogo: { count: { min: 2000, max: 30000, step: 500 } },
+	PixelFountain: { hide: ['host', 'zIndex'], burst: { min: 0, max: 200, step: 1 }, rate: { min: 0, max: 80, step: 1 }, cell: { min: 3, max: 16, step: 1 }, rise: { min: 60, max: 480, step: 10 }, life: { min: 0.3, max: 3, step: 0.1 } },
 };

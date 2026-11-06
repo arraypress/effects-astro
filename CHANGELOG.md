@@ -5,6 +5,15 @@ All notable changes to `@arraypress/effects-astro` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] — 2026-11-07
+
+### Added
+
+- `<PixelFountain>`: retro 8-bit sparks for a footer. Chunky square pixels (`cell`, 8px) fire up out of the host's top edge, with a little `spread`, `gravity` pulling them back and a `drift`ing wind, and break down as they rise: through a short ramp of colours (from `color`, default the acid lime `#c8ff00`, then a darker lime, olive and gone; or `colors`, or a `palette`), shrinking a whole pixel step at a time (a double block, a block, half, a quarter) or, by `split`'s chance, splitting into two to four of its quarters that scatter; by `flicker`'s chance they blink out like a dying CRT pixel. Each is drawn on its own size's grid, anchored to the edge, in whole device pixels, so motion reads as stepped and the blocks stay crisp at any pixel ratio. A few trickle up on their own (`rate` a second per 1,000px of edge); moving the pointer over the host fires a stream from under it, and a click or tap a power-up (`burst` pixels whose first frames burn white). `source="text"` fires from the filled cells of the host's text instead (mostly the letters' tops), so a wordmark sheds pixels. The canvas sits `rise` px above the host (over it and above it for text), takes no pointer events, and reads the host's; `host` names the host when the fountain sits in a strip of its own; `zIndex`, `lazy`, `seed`. Canvas 2D, at most 400 pixels in a pool that allocates nothing as it runs, drawn only near the screen and while the tab shows; a still scatter with reduced motion; `setColors` recolours it live. `createFountain` is its pure, seeded simulation in fixed 60 Hz steps (the same seed and emits give the same pixels at any frame rate), with `fadeSteps`, `shadeAt`, `tierSizes`, `pixelRect`, `inkedCells` and `MAX_PIXELS`.
+- `textNodesWithin(root, skip)` and `paintGlyphs(ctx, texts, origin)` (`text.js`): text nodes at any depth, and text drawn into a canvas glyph by glyph where the browser laid it out, each in its own element's font. `<PixelGlitchText>` now draws with `paintGlyphs` (no change to how it looks).
+- `<EffectCanvas style>`: more inline style for the element (a component's own custom properties, a z-index).
+- The demo has two `<PixelFountain>` heroes: an arcade footer in lime, and "Game over" shedding pixels.
+
 ## [0.6.1] — 2026-11-06
 
 ### Changed

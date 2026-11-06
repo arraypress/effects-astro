@@ -3947,6 +3947,173 @@
 			}
 		]
 	},
+	"PixelFountain": {
+		"selector": "[data-effect-pixel-fountain]",
+		"props": [
+			{
+				"name": "color",
+				"kind": "color",
+				"doc": "The pixels' colour when they fire; the darker steps they fade through are made from it. Default `#c8ff00`.",
+				"default": "#c8ff00",
+				"live": "config"
+			},
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "The steps a pixel fades through, first to last (overrides `color`). Default made from `color`.",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name, its colours as the steps, when there are no `colors`. Default none.",
+				"live": "config"
+			},
+			{
+				"name": "cell",
+				"kind": "number",
+				"min": 2,
+				"max": 24,
+				"step": 1,
+				"doc": "A pixel's size, CSS px (a power-up's biggest blocks are two). Default 8.",
+				"default": 8,
+				"live": "config"
+			},
+			{
+				"name": "rise",
+				"kind": "number",
+				"min": 60,
+				"max": 720,
+				"step": 1,
+				"doc": "How far above the edge the pixels can fly, CSS px. Default 240.",
+				"default": 240,
+				"live": "config"
+			},
+			{
+				"name": "rate",
+				"kind": "number",
+				"min": 0,
+				"max": 42,
+				"step": 1,
+				"doc": "Pixels a second trickling up on their own, per 1,000 CSS px of edge; 0 for none. Default 14.",
+				"default": 14,
+				"live": "config"
+			},
+			{
+				"name": "burst",
+				"kind": "number",
+				"min": 10,
+				"max": 120,
+				"step": 1,
+				"doc": "Pixels a click or tap fires. Default 40.",
+				"default": 40,
+				"live": "config"
+			},
+			{
+				"name": "gravity",
+				"kind": "number",
+				"min": 0,
+				"max": 2,
+				"step": 0.01,
+				"doc": "How hard they are pulled back, 0–2. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "spread",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How widely they fan out, 0–1. Default 0.5.",
+				"default": 0.5,
+				"live": "config"
+			},
+			{
+				"name": "drift",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How much a wind pushes them sideways, 0–1. Default 0.3.",
+				"default": 0.3,
+				"live": "config"
+			},
+			{
+				"name": "life",
+				"kind": "number",
+				"min": 0.34,
+				"max": 4.2,
+				"step": 0.02,
+				"doc": "The longest a pixel lives, seconds. Default 1.4.",
+				"default": 1.4,
+				"live": "config"
+			},
+			{
+				"name": "split",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "The chance a pixel splits into smaller ones rather than shrinking, 0–1. Default 0.4.",
+				"default": 0.4,
+				"live": "config"
+			},
+			{
+				"name": "flicker",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "The chance a pixel flickers out on and off before it goes, 0–1. Default 0.35.",
+				"default": 0.35,
+				"live": "config"
+			},
+			{
+				"name": "source",
+				"kind": "enum",
+				"options": [
+					"edge",
+					"text"
+				],
+				"doc": "Fire from the host's top edge, or from the filled pixels of its text. Default `edge`.",
+				"default": "edge",
+				"live": "config"
+			},
+			{
+				"name": "host",
+				"kind": "string",
+				"doc": "A selector for the element the pixels fire from and the pointer is followed over: the nearest ancestor that matches, else the first on the page. Default the element's positioned parent.",
+				"live": "config"
+			},
+			{
+				"name": "seed",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "Seeds the randomness. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "zIndex",
+				"kind": "number",
+				"doc": "The canvas's `z-index`, over what is above the host. Default none (auto)."
+			},
+			{
+				"name": "lazy",
+				"kind": "boolean",
+				"doc": "Run only while near the screen (true, or how near as a CSS length; default `200px`). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
 	"PixelGlitchText": {
 		"selector": ".effect-pixel-glitch",
 		"props": [

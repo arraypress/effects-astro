@@ -37,7 +37,7 @@
  */
 
 import { canHover, prefersReducedMotion } from './device.js';
-import { textNodes } from './text.js';
+import { textNodes, paintGlyphs } from './text.js';
 
 /**
  * @typedef {object} PixelGlitchConfig
@@ -280,29 +280,7 @@ export function pixelGlitch(el, config) {
 		c2.setTransform(dpr, 0, 0, dpr, 0, 0);
 		c2.clearRect(0, 0, g.w, g.h);
 		c2.fillStyle = g.ink;
-		c2.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
-		c2.textBaseline = 'alphabetic';
-		const range = document.createRange();
-		/**
-		 * Draws every glyph where the browser laid it out.
-		 *
-		 * @param {(ch: string, x: number, y: number) => void} glyph Draws one glyph at a baseline position.
-		 */
-		const eachGlyph = (glyph) => {
-			for (const text of texts) {
-				const str = text.textContent ?? '';
-				for (let i = 0; i < str.length; i++) {
-					const ch = str[i];
-					if (!ch.trim()) continue;
-					range.setStart(text, i);
-					range.setEnd(text, i + 1);
-					const r = range.getBoundingClientRect();
-					// The glyph's box starts at r.top; its baseline sits one font ascent below.
-					glyph(ch, r.left - origin.x, r.top - origin.y + c2.measureText(ch).fontBoundingBoxAscent);
-				}
-			}
-		};
-		eachGlyph((ch, x, y) => c2.fillText(ch, x, y));
+		paintGlyphs(c2, texts, origin);
 		g.alpha = c2.getImageData(0, 0, crisp.width, crisp.height).data;
 		if (STROKE > 0) {
 			// The pixels still sample the solid letters (g.alpha); what shows at rest is their outline, in the ink.

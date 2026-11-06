@@ -847,6 +847,39 @@ ParticleLogo: a logo or a word in thousands of twinkling particles that scatter 
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
 | `class` | `string` | Classes for the element. |
 
+## `<PixelFountain>`
+
+PixelFountain: retro 8-bit sparks. Chunky square pixels fire up out of the host's top edge (a footer) or, with `source="text"`, out of the letters of its wordmark, arc under gravity and break down as they go: through a short ramp of colours, shrinking in whole-pixel steps or splitting into pieces that scatter, some flickering out like a dying CRT pixel. A few trickle up on their own; the pointer moving over the host fires a stream, a click or tap a power-up. See src/runtime/pixel-fountain.js.
+
+```astro
+<footer class="site-footer" style="position: relative">
+  <PixelFountain cell={8} />
+  …
+</footer>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `color` | `string` | The pixels' colour when they fire; the darker steps they fade through are made from it. Default `#c8ff00`. |
+| `colors` | `string[]` | The steps a pixel fades through, first to last (overrides `color`). Default made from `color`. |
+| `palette` | `string` | A shared palette by name, its colours as the steps, when there are no `colors`. Default none. |
+| `cell` | `number` | A pixel's size, CSS px (a power-up's biggest blocks are two). Default 8. |
+| `rise` | `number` | How far above the edge the pixels can fly, CSS px. Default 240. |
+| `rate` | `number` | Pixels a second trickling up on their own, per 1,000 CSS px of edge; 0 for none. Default 14. |
+| `burst` | `number` | Pixels a click or tap fires. Default 40. |
+| `gravity` | `number` | How hard they are pulled back, 0–2. Default 1. |
+| `spread` | `number` | How widely they fan out, 0–1. Default 0.5. |
+| `drift` | `number` | How much a wind pushes them sideways, 0–1. Default 0.3. |
+| `life` | `number` | The longest a pixel lives, seconds. Default 1.4. |
+| `split` | `number` | The chance a pixel splits into smaller ones rather than shrinking, 0–1. Default 0.4. |
+| `flicker` | `number` | The chance a pixel flickers out on and off before it goes, 0–1. Default 0.35. |
+| `source` | `'edge' \| 'text'` | Fire from the host's top edge, or from the filled pixels of its text. Default `edge`. |
+| `host` | `string` | A selector for the element the pixels fire from and the pointer is followed over: the nearest ancestor that matches, else the first on the page. Default the element's positioned parent. |
+| `seed` | `number` | Seeds the randomness. Default 1. |
+| `zIndex` | `number` | The canvas's `z-index`, over what is above the host. Default none (auto). |
+| `lazy` | `boolean \| string` | Run only while near the screen (true, or how near as a CSS length; default `200px`). Default false. |
+| `class` | `string` | Classes for the element. |
+
 ## `<PixelGlitchText>`
 
 PixelGlitchText: one line of text that breaks into pixels under the pointer and knits back together behind it. With `stroke`, a hollow outline at rest that the pixels fill in; `tear="row"` tears whole rows, and `ghost` lays a coloured copy behind the blocks. See src/runtime/pixel-glitch.js.

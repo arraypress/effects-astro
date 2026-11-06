@@ -52,6 +52,7 @@ Every prop of every component is in **[COMPONENTS.md](../COMPONENTS.md)**, gener
 |---|---|---|
 | `<SpotlightText>` | An outline a soft light under the pointer fills in | CSS + JS |
 | `<PixelGlitchText>` | Text that breaks into pixels under the pointer | Canvas |
+| `<PixelFountain>` | Retro 8-bit sparks: chunky pixels fire up out of a footer's top edge (or a wordmark's letters with `source="text"`), step through lime, darker lime and olive, shrink or split and flicker out; a trickle on its own, a stream under the pointer, a power-up on a click | Canvas |
 | `<OutlineWordmark>` | A huge outlined name sinking out of the page, a beam passing through and a light under the pointer filling the letters | CSS + SVG |
 | `<FitText>` | One line sized to span its parent exactly | JS |
 | `<ScrambleText>` | Text resolving out of random characters | JS |

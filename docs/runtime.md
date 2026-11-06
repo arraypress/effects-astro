@@ -14,6 +14,8 @@ The package's main entry is the runtime the components are built on, for use wit
 | `drawShape`, `samplePoints`, `gridPoints`, `distanceField`, `blurField`, `fontAt` | Shapes from text or images, and what effects take from them |
 | `createGlyphs`, `GLYPH_SETS`, `GLSL_GLYPHS` | Text characters as a texture, for ASCII effects |
 | `createTrackers(el, count)` | Machine-vision tracker boxes over an effect |
+| `createFountain(options)`, `fadeSteps`, `shadeAt`, `tierSizes`, `pixelRect`, `inkedCells`, `MAX_PIXELS` | `<PixelFountain>`'s pure, seeded simulation (fixed 60 Hz steps, a pooled 400 pixels), its colour ramp, its grid snapping and the cells a wordmark fills |
+| `textNodesWithin(root, skip)`, `paintGlyphs(ctx, texts, origin)` | Text nodes at any depth, and text redrawn into a canvas glyph by glyph where the browser laid it out |
 | `parseColor`, `toHex`, `toOklab`, `fromOklab`, `mixOklab`, `paletteAt`, `GLSL_OKLAB`, `GLSL_PALETTE`, `GLSL_NOISE`, `GLSL_QUIET` | Colour in Oklab and shared shader pieces |
 | `isLand(lat, lon)`, `LAND`, `CITIES` | Where the land is (Natural Earth, 1.5°), and cities by name |
 | `inView(el, show)` | A callback as an element scrolls into view |

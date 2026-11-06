@@ -36,14 +36,17 @@ interface Props {
 	lazy?: boolean | string;
 	/** Fade the canvas in once it starts, over the `background`. Default false. */
 	fadeIn?: boolean;
+	/** More inline style for the element (a component's own custom properties, a z-index). */
+	style?: string;
 	class?: string;
 }
 
-const { name, config, fixed = false, behind = false, background, pixelated = false, fade = false, opacity, blend, lazy = false, fadeIn = false, class: className } = Astro.props;
+const { name, config, fixed = false, behind = false, background, pixelated = false, fade = false, opacity, blend, lazy = false, fadeIn = false, style: extra, class: className } = Astro.props;
 const style = [
 	background && `background: ${background}`,
 	opacity !== undefined && opacity < 1 && `opacity: ${opacity}`,
 	blend && blend !== 'normal' && `mix-blend-mode: ${blend}`,
+	extra?.trim().replace(/;$/, ''),
 ]
 	.filter(Boolean)
 	.join('; ');

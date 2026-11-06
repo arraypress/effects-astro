@@ -6,7 +6,8 @@
  * all, whose box is the text's own extent rather than the element's, and
  * its letters, each in a span of its own, for effects that move or restyle
  * them one by one. Split letters stay real text: selectable, found by
- * search and read as words.
+ * search and read as words. For effects that redraw text into a canvas,
+ * `paintGlyphs` draws each glyph where the browser laid it out.
  */
 
 /** Marks a letter's span. */
@@ -87,4 +88,59 @@ export function splitLetters(el) {
 export function joinLetters(el) {
 	el.querySelectorAll(`[${LETTER}]`).forEach((span) => span.replaceWith(span.textContent ?? ''));
 	el.normalize();
+}
+
+/**
+ * Every non-empty text node inside an element, at any depth, except those
+ * inside `skip` (an effect's own element placed in the text).
+ *
+ * @param {Element} root The element.
+ * @param {Element | null} [skip] An element whose text is left out.
+ * @returns {Text[]} The text nodes, in document order.
+ */
+export function textNodesWithin(root, skip = null) {
+	const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+	/** @type {Text[]} */
+	const texts = [];
+	while (walker.nextNode()) {
+		const node = /** @type {Text} */ (walker.currentNode);
+		if (!node.textContent?.trim()) continue;
+		if (skip && skip.contains(node)) continue;
+		texts.push(node);
+	}
+	return texts;
+}
+
+/**
+ * Draws text into a 2D context glyph by glyph, each where the browser laid
+ * it out (one Range a character), so letter-spacing, kerning and wrapping
+ * match the CSS. Each glyph takes its own element's font; the context's
+ * fill style is the ink.
+ *
+ * @param {CanvasRenderingContext2D} ctx The context, in CSS px.
+ * @param {Text[]} texts The text nodes to draw.
+ * @param {{ x: number, y: number }} origin The viewport point the context's 0, 0 stands for.
+ */
+export function paintGlyphs(ctx, texts, origin) {
+	const range = document.createRange();
+	/** @type {Element | null} */
+	let parent = null;
+	ctx.textBaseline = 'alphabetic';
+	for (const text of texts) {
+		if (text.parentElement && text.parentElement !== parent) {
+			parent = text.parentElement;
+			const cs = getComputedStyle(parent);
+			ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+		}
+		const str = text.textContent ?? '';
+		for (let i = 0; i < str.length; i++) {
+			const ch = str[i];
+			if (!ch.trim()) continue;
+			range.setStart(text, i);
+			range.setEnd(text, i + 1);
+			const r = range.getBoundingClientRect();
+			// The glyph's box starts at r.top; its baseline sits one font ascent below.
+			ctx.fillText(ch, r.left - origin.x, r.top - origin.y + ctx.measureText(ch).fontBoundingBoxAscent);
+		}
+	}
 }

@@ -5,6 +5,7 @@ import SpotlightText from '@arraypress/effects-astro/SpotlightText.astro';
 import PixelGlitchText from '@arraypress/effects-astro/PixelGlitchText.astro';
 import OutlineWordmark from '@arraypress/effects-astro/OutlineWordmark.astro';
 import FitText from '@arraypress/effects-astro/FitText.astro';
+import PixelFountain from '@arraypress/effects-astro/PixelFountain.astro';
 ---
 
 <Hero id="spotlight-text" name="SpotlightText" code={`<SpotlightText as="div" fit fill="solid">LumiThemes</SpotlightText>`} align="bottom">
@@ -12,6 +13,22 @@ import FitText from '@arraypress/effects-astro/FitText.astro';
 </Hero>
 <Hero id="pixel-glitch-text" name="PixelGlitchText" code={`<PixelGlitchText as="div" fit>Northwave</PixelGlitchText>`} align="bottom">
 	<div style="width: 88vw"><PixelGlitchText as="div" fit style="font-weight: 800; letter-spacing: -0.05em; line-height: 0.85">Northwave</PixelGlitchText></div>
+</Hero>
+<Hero id="pixel-fountain" name="PixelFountain" code={`<PixelFountain />`} align="bottom" style="padding-bottom: 0; --hero-ground: #000">
+	<p class="lede" style="margin: 0 0 3rem; color: #a1a1aa">Insert coin. Move over the footer, or click it.</p>
+	<div class="bleed" style="position: relative; width: 100vw; box-sizing: border-box; padding: 2.25rem 6vw 0; background: #c8ff00; color: #0b0b0b">
+		<PixelFountain />
+		<div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; font: 500 0.85rem/1.4 'IBM Plex Mono', ui-monospace, monospace; letter-spacing: 0.04em; text-transform: uppercase">
+			<span>Arcadia Games · est. 1984</span><span>Play · Scores · Shop · Contact</span>
+		</div>
+		<FitText as="div" style="margin-top: 1.5rem; margin-bottom: -0.18em; font-weight: 800; letter-spacing: -0.06em; line-height: 0.8">Arcadia</FitText>
+	</div>
+</Hero>
+<Hero id="pixel-fountain-text" name="PixelFountain" code={`<PixelFountain source="text" />`} align="bottom" style="--hero-ground: #000">
+	<div style="width: 88vw; position: relative">
+		<FitText as="div" style="color: #c8ff00; font-weight: 800; letter-spacing: -0.05em; line-height: 0.85">Game over</FitText>
+		<PixelFountain source="text" rate={26} />
+	</div>
 </Hero>
 <Hero id="outline-wordmark" name="OutlineWordmark" code={`<OutlineWordmark text="ArrayPress" color="#a78bfa" />`} align="bottom" style="padding-bottom: 0">
 	<div style="width: 88vw">

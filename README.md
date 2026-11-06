@@ -1,6 +1,6 @@
 # @arraypress/effects-astro
 
-Effects for Astro sites, as components: shader backgrounds, a real fluid, logos made of glass, particles or cubes, text that glitches, scrambles or types itself, glass panels and marquees. Plain WebGL, Canvas and CSS with no third-party dependencies, and the fallbacks a theme needs built in.
+Effects for Astro sites, as components: shader backgrounds, a real fluid, logos made of glass, particles or cubes, text that glitches, scrambles or types itself, retro pixels firing out of a footer, glass panels and marquees. Plain WebGL, Canvas and CSS with no third-party dependencies, and the fallbacks a theme needs built in.
 
 ## Install
 
