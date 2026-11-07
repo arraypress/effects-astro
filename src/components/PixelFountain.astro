@@ -9,19 +9,31 @@
  * fires a stream, a click or tap a power-up. See
  * src/runtime/pixel-fountain.js.
  *
+ * With `source="pointer"`, blocks fire only where the pointer is, as it
+ * moves over the host: a block-dust trail off the cursor, in one solid ink
+ * (the text's colour, or `color`), that pops up, arcs and breaks down within
+ * about a second. Nothing on its own, nothing while the pointer rests; a
+ * tap fires a burst where it lands (a click too with `press`).
+ *
  * Put it inside the host (its nearest positioned ancestor): the canvas sits
  * above the host's top edge, `rise` px tall (over the host and above it
- * with `source="text"`), so the host must not clip its top (no
+ * with `source="text"` or `"pointer"`), so the host must not clip its top (no
  * `overflow: hidden`; `overflow-x: clip` is fine). Or put it in a
  * zero-height positioned strip on the host's top edge and name the host
  * with `host`. The canvas takes no pointer events; the host's are read.
- * With reduced motion, a still scatter of pixels.
+ * With reduced motion, a still scatter of pixels (nothing from the pointer).
  *
  * @example
  * <footer class="site-footer" style="position: relative">
  *   <PixelFountain cell={8} />
  *   …
  * </footer>
+ *
+ * @example
+ * <div class="wordmark-wrap" style="position: relative; color: #0b0b0b">
+ *   <PixelFountain source="pointer" cell={10} />
+ *   <FitText as="div">Arcadia</FitText>
+ * </div>
  */
 import EffectCanvas from './EffectCanvas.astro';
 import type { PixelFountainConfig } from '../runtime/pixel-fountain.js';
@@ -35,9 +47,10 @@ interface Props extends PixelFountainConfig {
 }
 
 const { zIndex, lazy = false, class: className, ...config } = Astro.props;
-const rise = config.rise ?? 240;
-const text = config.source === 'text';
-const classes = ['effect-pixel-fountain', text && 'is-text', className].filter(Boolean).join(' ');
+const pointer = config.source === 'pointer';
+const rise = config.rise ?? (pointer ? 160 : 240);
+const over = config.source === 'text' || pointer;
+const classes = ['effect-pixel-fountain', over && 'is-over', className].filter(Boolean).join(' ');
 ---
 
 <EffectCanvas
@@ -62,8 +75,8 @@ const classes = ['effect-pixel-fountain', text && 'is-text', className].filter(B
 		inset: auto 0 100% 0;
 		height: var(--fountain-rise);
 	}
-	/* From the text: over the host and the space above it. */
-	:global(.effect-canvas.effect-pixel-fountain.is-text[data-effect-pixel-fountain]) {
+	/* From the text or the pointer: over the host and the space above it. */
+	:global(.effect-canvas.effect-pixel-fountain.is-over[data-effect-pixel-fountain]) {
 		inset: auto 0 0 0;
 		height: calc(100% + var(--fountain-rise));
 	}

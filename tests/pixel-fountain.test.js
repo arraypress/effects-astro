@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createFountain, fadeSteps, shadeAt, tierSizes, pixelRect, inkedCells, MAX_PIXELS, STEP } from '../src/runtime/pixel-fountain.js';
+import { createFountain, fadeSteps, shadeAt, tierSizes, pixelRect, inkedCells, MAX_PIXELS, STEP, TRAIL_CAP, POINTER_DEFAULTS } from '../src/runtime/pixel-fountain.js';
 
 /**
  * The live pixels' state, rounded, for comparing two runs.
@@ -220,4 +220,111 @@ test('with origins the trickle fires from them, and a press near them from them'
 	assert.ok(f.pixels.slice(0, 5).every((p) => p.x === 100 && p.y === 200), 'from the origin near the point');
 	assert.equal(f.emitNear(200, 50, 5, 'move', 20), 0, 'a move far from the letters fires nothing');
 	assert.equal(f.emitNear(200, 50, 5, 'burst', 20), 5, 'a press far from them fires where it landed');
+});
+
+/**
+ * A fountain set up as `source: 'pointer'` is.
+ *
+ * @param {object} [extra] More settings.
+ * @returns {ReturnType<typeof createFountain>} The fountain.
+ */
+const pointerFountain = (extra = {}) => createFountain({ width: 1200, height: 400, cell: 10, ...POINTER_DEFAULTS, ...extra });
+
+test('from the pointer: nothing on its own', () => {
+	assert.equal(POINTER_DEFAULTS.rate, 0);
+	const f = pointerFountain();
+	for (let i = 0; i < 240; i++) f.step();
+	assert.equal(f.count, 0);
+});
+
+test('a pointer move fires blocks where the pointer is, along the way it came', () => {
+	const f = pointerFountain({ seed: 3 });
+	assert.equal(f.moveTo(400, 300), 0, 'the first place only marks the pointer');
+	const made = f.moveTo(440, 280);
+	assert.ok(made > 0, 'the move fired');
+	assert.equal(f.count, made);
+	// Within the stretch from (400, 300) to (440, 280), give or take a cell.
+	for (const p of f.pixels.slice(0, made)) {
+		assert.ok(p.x >= 390 && p.x <= 450, `x ${p.x}`);
+		assert.ok(p.y >= 270 && p.y <= 310, `y ${p.y}`);
+		assert.equal(p.hot, false, 'never hot');
+		assert.ok(p.tier <= 2);
+	}
+	// A short move fires right at the pointer.
+	const g = pointerFountain({ trail: 100 });
+	g.moveTo(800, 100);
+	const n = g.moveTo(803, 104);
+	assert.ok(n > 0);
+	for (const p of g.pixels.slice(0, n)) assert.ok(Math.abs(p.x - 801.5) <= 12 && Math.abs(p.y - 102) <= 12, 'at the pointer');
+});
+
+test('blocks fired are in proportion to the distance moved, a share carried over', () => {
+	const fired = (d, trail = 5) => {
+		const f = pointerFountain({ trail });
+		f.moveTo(100, 200);
+		return f.moveTo(100 + d, 200);
+	};
+	assert.equal(fired(100), 5);
+	assert.equal(fired(200), 10);
+	assert.equal(fired(20), 1);
+	assert.equal(fired(10), 0, 'half a block owed, none yet');
+	// Ten small moves of 10px add up to 100px: seven blocks at the default.
+	const f = pointerFountain();
+	f.moveTo(100, 200);
+	let total = 0;
+	for (let i = 1; i <= 10; i++) total += f.moveTo(100 + i * 10, 200);
+	assert.equal(total, POINTER_DEFAULTS.trail);
+});
+
+test('no move, no blocks: a still pointer, the first place after a lift', () => {
+	const f = pointerFountain();
+	f.moveTo(300, 200);
+	for (let i = 0; i < 30; i++) {
+		assert.equal(f.moveTo(300, 200), 0);
+		f.step();
+	}
+	assert.equal(f.count, 0);
+	assert.equal(f.moveTo(305, 200), 0, 'half a block owed');
+	f.lift();
+	assert.equal(f.moveTo(900, 50), 0, 'a jump after the pointer left fires nothing');
+	assert.equal(f.moveTo(905, 50), 0, 'and what was owed before it was dropped');
+	assert.equal(f.count, 0);
+});
+
+test('one move fires at most TRAIL_CAP blocks, and the pool never passes MAX_PIXELS', () => {
+	const f = pointerFountain({ life: 30 });
+	f.moveTo(0, 200);
+	assert.equal(f.moveTo(1200, 200), TRAIL_CAP, 'a long jump is capped');
+	assert.equal(f.moveTo(1200, 201), 0, 'and the excess is not saved up');
+	for (let i = 0; i < 200; i++) {
+		f.moveTo(i % 2 ? 0 : 1200, 200);
+		assert.ok(f.count <= MAX_PIXELS, `${f.count} alive`);
+	}
+	assert.equal(f.count, MAX_PIXELS, 'full');
+	assert.equal(f.moveTo(0, 200), 0, 'nothing more fits');
+});
+
+test('the trail pops up and out, kicked along the pointer, and is gone within its life', () => {
+	const f = pointerFountain({ seed: 12, drift: 0 });
+	f.moveTo(200, 300);
+	for (let i = 1; i <= 40; i++) f.moveTo(200 + i * 15, 300);
+	const n = f.count;
+	assert.ok(n > 30);
+	const pixels = f.pixels.slice(0, n);
+	assert.ok(pixels.filter((p) => p.vy < 0).length > n * 0.8, 'mostly rising');
+	const meanVx = pixels.reduce((s, p) => s + p.vx, 0) / n;
+	assert.ok(meanVx > 30, `carried right (${meanVx.toFixed(1)} px/s)`);
+	assert.ok(pixels.some((p) => p.tier === 0) && pixels.some((p) => p.tier >= 1), 'a few chunky blocks among smaller ones');
+	assert.ok(pixels.every((p) => p.life <= POINTER_DEFAULTS.life), 'short lives');
+	for (let i = 0; i < Math.ceil(POINTER_DEFAULTS.life / STEP) + 1; i++) f.step();
+	assert.equal(f.count, 0, 'all gone within a second');
+});
+
+test('a tap fires a burst at the point, never hot', () => {
+	const f = pointerFountain();
+	assert.equal(f.emit(500, 250, POINTER_DEFAULTS.burst, 'tap'), POINTER_DEFAULTS.burst);
+	for (const p of f.pixels.slice(0, f.count)) {
+		assert.equal(p.hot, false);
+		assert.ok(Math.abs(p.x - 500) < 40 && Math.abs(p.y - 250) < 40, 'near the tap');
+	}
 });

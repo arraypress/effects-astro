@@ -18,7 +18,7 @@ export { voxelLogo } from './runtime/voxel-logo.js';
 export type { VoxelLogoConfig } from './runtime/voxel-logo.js';
 export { pixelGlitch, outlineAlpha, rowTears } from './runtime/pixel-glitch.js';
 export type { PixelGlitchConfig } from './runtime/pixel-glitch.js';
-export { pixelFountain, createFountain, fadeSteps, shadeAt, tierSizes, pixelRect, inkedCells, MAX_PIXELS } from './runtime/pixel-fountain.js';
+export { pixelFountain, createFountain, fadeSteps, shadeAt, tierSizes, pixelRect, inkedCells, MAX_PIXELS, TRAIL_CAP, POINTER_DEFAULTS } from './runtime/pixel-fountain.js';
 export type { PixelFountainConfig, Pixel, EmitKind, FountainOptions, Fountain } from './runtime/pixel-fountain.js';
 export { fit, fitText } from './runtime/fit-text.js';
 export { textNodes, textRange, splitLetters, joinLetters, textNodesWithin, paintGlyphs } from './runtime/text.js';

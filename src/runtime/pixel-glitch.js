@@ -29,6 +29,9 @@
  * `pointer-events: none` (a big wordmark's line box often overlaps links).
  * Animates only while some cell is hot, and only while the text is on
  * screen. Off with prefers-reduced-motion and without a hovering pointer.
+ * With `glitch: false` it never breaks: the text (with `stroke`, its merged
+ * outline) is only drawn at rest, everywhere, for a wordmark that should
+ * look the same but leave the pointer to something else.
  * Repainted when the text's own face has loaded (a face used only here can
  * arrive after `document.fonts.ready`).
  *
@@ -49,6 +52,7 @@ import { textNodes, paintGlyphs } from './text.js';
  * @property {number} [stroke=0] With a width (CSS px), the text at rest is an outline that the pixels fill.
  * @property {'cell' | 'row'} [tear='cell'] What slips: each hot cell on its own, or a whole row at once.
  * @property {string} [ghost] A colour for a copy of the blocks, nudged right behind them (none by default).
+ * @property {boolean} [glitch=true] Break into pixels under the pointer; false only draws the text at rest (the merged outline with `stroke`).
  */
 
 /** How far the ghost sits right of its block, CSS px. */
@@ -134,7 +138,9 @@ export function outlineAlpha(rgba, width, height, radius) {
  * @returns {() => void} Stops it.
  */
 export function pixelGlitch(el, config) {
-	if (prefersReducedMotion() || !canHover()) return () => {};
+	const GLITCH = config.glitch !== false;
+	// Drawing the text at rest only is not motion, and needs no hover.
+	if (GLITCH && (prefersReducedMotion() || !canHover())) return () => {};
 	const CELL = config.cell ?? 14;
 	const REACH = config.reach ?? 120;
 	const DECAY = config.decay ?? 0.9;
@@ -339,7 +345,7 @@ export function pixelGlitch(el, config) {
 		}
 		heatAt(x, y);
 	};
-	document.addEventListener('pointermove', move, { passive: true });
+	if (GLITCH) document.addEventListener('pointermove', move, { passive: true });
 
 	// Repaint when the text changes size (fit-text, fonts loading).
 	let pending = 0;

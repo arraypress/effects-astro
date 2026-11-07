@@ -21,7 +21,7 @@ export { particleLogo } from './runtime/particle-logo.js';
 export { pointCloud } from './runtime/point-cloud.js';
 export { voxelLogo } from './runtime/voxel-logo.js';
 export { pixelGlitch, outlineAlpha, rowTears } from './runtime/pixel-glitch.js';
-export { pixelFountain, createFountain, fadeSteps, shadeAt, tierSizes, pixelRect, inkedCells, MAX_PIXELS } from './runtime/pixel-fountain.js';
+export { pixelFountain, createFountain, fadeSteps, shadeAt, tierSizes, pixelRect, inkedCells, MAX_PIXELS, TRAIL_CAP, POINTER_DEFAULTS } from './runtime/pixel-fountain.js';
 export { fit, fitText } from './runtime/fit-text.js';
 export { textNodes, textRange, splitLetters, joinLetters, textNodesWithin, paintGlyphs } from './runtime/text.js';
 export { variableType, DEFAULT_AXES } from './runtime/variable-type.js';
