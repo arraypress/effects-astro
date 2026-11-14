@@ -98,6 +98,7 @@ export { loadImage, imageTexture, coverScale, GLSL_COVER } from './runtime/image
 export { boxBlur } from './runtime/blur.js';
 export { paperShader, paperSettings, paperUniforms } from './runtime/paper.js';
 export { whenNear, lazyMargin } from './runtime/near.js';
+export { budget } from './runtime/budget.js';
 export { liveGradient } from './runtime/live-gradient.js';
 export type { LiveGradientOptions } from './runtime/live-gradient.js';
 export type { PaperConfig, PaperShaderName } from './runtime/paper.js';

@@ -5,6 +5,21 @@ All notable changes to `@arraypress/effects-astro` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] — 2026-11-15
+
+### Added
+
+- `runtime/export/*`: an element on the page saved as a picture, a plain SVG or a video, made in the browser. Imported by path only, not from the main entry.
+  - `export/snapshot`: `snapshot(el, { square, skip })`, the element as a self-contained SVG (a copy in a `<foreignObject>`, every computed style written inline, its pseudo-elements as rules, its pictures, canvases and fonts inlined), pixel-faithful when drawn, at any `svg(scale)`. `update(moved)` rewrites only what a stepped clock moved, so a recording draws frame after frame cheaply. `rootStyle`, `pseudoCss` and `snapshotSvg` are its pure parts.
+  - `export/clean-svg`: `cleanSvg(el, long)`, the element rebuilt as plain SVG (rects, pictures, its inline SVGs with their styles as attributes, its words as `<text>`, its fonts inlined) that a design tool can open and edit. `cleanIssues(el)` lists what plain SVG cannot say faithfully (a filter or blend, a gradient or image background, a shadow, a clip, a rotated box, a pseudo-element that paints), and `cleanSvg` refuses then. Built on `export/svg-attrs` (`inlineSvg`, `attrValue`, `aboutOrigin`), `export/svg-text` (`textLines`, `groupLines`, `transformText`), `export/probe` (`cssColor`, `pixelColor`, `fontMetrics`) and `export/format`.
+  - `export/clock`: `clock(root)`, the CSS animations under an element paused and stepped by hand (`seek(ms)`, `moved()`, `release()`), for a recording that is exact however long a frame takes to draw.
+  - `export/raster`: `drawSvg(svg, width, height, canvas?, settle?)`, `rasterize(svg, { width, height, settle? }, type?, quality?)` (an SVG to a PNG's bytes, or a JPEG's or WebP's at a quality), `imageOf(canvas, type?, quality?)`, `pngOf`, `svgDataUrl` and `decodeImage`. SVG is drawn from a `data:` URL, never a `blob:` one, so a page whose CSP allows `img-src data:` can use it.
+  - `export/video`: `record({ width, height, fps, duration, draw, progress, signal })`, frames drawn by the caller encoded with WebCodecs to MP4 (H.264), or WebM (VP9, VP8 or AV1) where the browser cannot, each at its exact time; `canRecord()`. `pickFormat`, `eachFrame` and `evenSize` are its separable parts.
+  - `export/save`: `save(data, filename, type?)` hands a file to the browser; `fileSlug(text)` makes a file name's part from any text.
+  - `export/fonts` (`fontFaceCss`: the `@font-face` rules an element's text uses, only the weights and unicode ranges it needs, files inlined), `export/fetch` (`toDataUrl`, `inlineCssUrls`, `hasOuterUrl`, `outerUrls`, `blobToDataUrl`: files as `data:` URLs, each fetched once) and `export/styles` (`declarations`, `releaseDefaults`, `kept`, `pseudoShows`: computed style as only the declarations that differ from the browser's defaults).
+- `budget(cap)` (`runtime/budget`, and the main entry): a cap on how many things run at once. `take(key, run)` runs it now if there is room, else when a turn comes up (the longest-waiting first); the function it returns gives the turn back. With `whenNear`, a wall of live cards keeps under the browser's WebGL contexts and spares the main thread.
+- **An optional peer dependency:** `mediabunny` (`^1.62.1`), loaded only when `export/video` records. Nothing else needs it.
+
 ## [0.7.0] — 2026-11-07
 
 ### Added

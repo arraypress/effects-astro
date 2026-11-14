@@ -26,7 +26,7 @@ import LightField from '@arraypress/effects-astro/LightField.astro';
 - [What every effect does for you](https://github.com/arraypress/effects-astro/blob/main/docs/guarantees.md): runs only when seen, reduced motion, fallbacks
 - [Your own logo](https://github.com/arraypress/effects-astro/blob/main/docs/logos.md)
 - [Palettes and colours](https://github.com/arraypress/effects-astro/blob/main/docs/colours.md)
-- [Runtime](https://github.com/arraypress/effects-astro/blob/main/docs/runtime.md): the effects without Astro
+- [Runtime](https://github.com/arraypress/effects-astro/blob/main/docs/runtime.md): the effects without Astro, and an element saved as a PNG, SVG or video
 - [Credits](https://github.com/arraypress/effects-astro/blob/main/docs/credits.md)
 
 ## Links
