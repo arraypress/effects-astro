@@ -8,7 +8,9 @@
  * Suits outlined things: cards, ghost buttons, a featured pricing tier. A
  * filled button has no outline for the light to travel. `lights={2}` sends
  * two round, chasing each other; `inset` keeps the ring over the content of
- * a card that clips and fills itself.
+ * a card that clips and fills itself. `long` draws a longer light with a
+ * faint lead-in, `outset` lays the ring over a border, `focus` picks which
+ * focus lights it, and `still` what reduced motion shows.
  *
  * @example
  * <BorderSweep as="a" href="/pricing" class="card" color="#a5b4fc" always>…</BorderSweep>
@@ -32,14 +34,51 @@ interface Props {
 	lights?: 1 | 2;
 	/** Draw the ring inside the edge and over the content, for elements that clip (`overflow: hidden`) and fill themselves with a picture or a canvas. Default false. */
 	inset?: boolean;
+	/** A longer light: a faint lead-in over the quarter lap before it, then the light and its tail. Default false. */
+	long?: boolean;
+	/** How far the ring sits out past the edge, px: 1 lays it over a 1px border. Default 0. */
+	outset?: number;
+	/** Which focus lights it: `within` when it or anything in it has the focus, `visible` only its own keyboard focus, `none` never (hover only). Default `within`. */
+	focus?: 'within' | 'visible' | 'none';
+	/** What reduced motion shows: `ring` a still lit edge where the light would run, `none` nothing. Default `ring`. */
+	still?: 'ring' | 'none';
 	class?: string;
 	[attribute: string]: unknown;
 }
 
-const { as: Tag = 'div', color, speed, width, always = false, lights = 1, inset = false, class: className, style: given, ...attributes } = Astro.props;
-const style = [color && `--sweep-color: ${color}`, speed !== undefined && `--sweep-speed: ${speed}s`, width !== undefined && `--sweep-width: ${width}px`]
+const {
+	as: Tag = 'div',
+	color,
+	speed,
+	width,
+	always = false,
+	lights = 1,
+	inset = false,
+	long = false,
+	outset,
+	focus = 'within',
+	still = 'ring',
+	class: className,
+	style: given,
+	...attributes
+} = Astro.props;
+const style = [
+	color && `--sweep-color: ${color}`,
+	speed !== undefined && `--sweep-speed: ${speed}s`,
+	width !== undefined && `--sweep-width: ${width}px`,
+	outset !== undefined && `--sweep-outset: ${outset}px`,
+]
 	.filter(Boolean)
 	.join('; ');
 ---
 
-<Tag class:list={['sweep-ring', { 'sweep-ring--always': always, 'sweep-ring--two': lights === 2, 'sweep-ring--inset': inset }, className]} style={withStyle(style, given)} {...attributes}><slot /></Tag>
+<Tag
+	class:list={['sweep-ring',
+		{ 'sweep-ring--always': always, 'sweep-ring--two': lights === 2, 'sweep-ring--inset': inset, 'sweep-ring--long': long },
+		focus !== 'within' && `sweep-ring--focus-${focus}`,
+		still !== 'ring' && `sweep-ring--still-${still}`,
+		className,
+	]}
+	style={withStyle(style, given)}
+	{...attributes}><slot /></Tag
+>

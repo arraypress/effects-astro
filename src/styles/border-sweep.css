@@ -21,7 +21,16 @@
  * contents (`overflow: hidden`) and fill themselves with a picture or a
  * canvas that would otherwise cover it.
  *
- * From the ArrayPress theme; the two lights from the Logomarks site.
+ * `sweep-ring--long` is a longer light: a faint lead-in over the quarter
+ * lap before it, then the light and its tail. `--sweep-outset` moves the
+ * ring out past the edge (`1px` lays it over a 1px border). Focus lights
+ * it when the element or anything in it has the focus; `--focus-visible`
+ * only on the element's own keyboard focus, `--focus-none` never (hover
+ * only). `sweep-ring--still-none` shows no ring at all with reduced
+ * motion, where the default keeps a still lit edge.
+ *
+ * From the ArrayPress theme; the two lights, the long light, the outset,
+ * the focus and the still options from the Logomarks site.
  * ───────────────────────────────────────────────────────────────────── */
 
 @property --sweep-angle {
@@ -37,7 +46,7 @@
 .sweep-ring::after {
 	content: '';
 	position: absolute;
-	inset: 0;
+	inset: calc(var(--sweep-outset, 0px) * -1);
 	border-radius: inherit;
 	padding: var(--sweep-width, 1px);
 	background: conic-gradient(
@@ -57,9 +66,10 @@
 	pointer-events: none;
 }
 
+/* Focus lights it unless told otherwise; `:where` keeps the selectors' weight as it was. */
 .sweep-ring:hover::after,
-.sweep-ring:focus-visible::after,
-.sweep-ring:focus-within::after,
+.sweep-ring:where(:not(.sweep-ring--focus-none)):focus-visible::after,
+.sweep-ring:where(:not(.sweep-ring--focus-visible, .sweep-ring--focus-none)):focus-within::after,
 .sweep-ring--always::after {
 	opacity: 1;
 	animation: effect-border-sweep var(--sweep-speed, 2.6s) linear infinite;
@@ -67,6 +77,19 @@
 
 .sweep-ring--fast {
 	--sweep-speed: 1.8s;
+}
+
+/* A longer light: a faint lead-in over the quarter lap before it, then the light and its tail. */
+.sweep-ring--long::after {
+	background: conic-gradient(
+		from var(--sweep-angle),
+		transparent 0%,
+		transparent 50%,
+		color-mix(in srgb, var(--sweep-color, currentColor) 30%, transparent) 64%,
+		var(--sweep-color, currentColor) 78%,
+		color-mix(in srgb, var(--sweep-color, currentColor) 35%, transparent) 88%,
+		transparent 96%
+	);
 }
 
 /* Two lights, half a lap apart, each with a faint lead-in. */
@@ -98,12 +121,18 @@
 
 @media (prefers-reduced-motion: reduce) {
 	.sweep-ring:hover::after,
-	.sweep-ring:focus-visible::after,
-	.sweep-ring:focus-within::after,
+	.sweep-ring:where(:not(.sweep-ring--focus-none)):focus-visible::after,
+	.sweep-ring:where(:not(.sweep-ring--focus-visible, .sweep-ring--focus-none)):focus-within::after,
 	.sweep-ring--always::after {
 		animation: none;
 		/* Keep the lit edge, drop the travel. */
 		background: none;
 		box-shadow: inset 0 0 0 1px var(--sweep-color, currentColor);
+	}
+
+	/* Or no ring at all: still and see-through, outweighing the lit states. */
+	.sweep-ring.sweep-ring--still-none::after {
+		animation: none;
+		opacity: 0;
 	}
 }

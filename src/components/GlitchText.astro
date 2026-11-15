@@ -11,7 +11,10 @@
  *
  * The slot is rendered three times: once as the real text, twice as the
  * copies (hidden from assistive technology and from focus), so keep it to
- * text and inline formatting. For elements you render yourself, import
+ * text and inline formatting. `copies="pseudo"` draws the copies as the
+ * element's `::before` and `::after` from a `data-text` instead: one
+ * element, for plain text. `variant="skew"` is another glitch, the whole
+ * word shaking and skewing. For elements you render yourself, import
  * `@arraypress/effects-astro/glitch-text.css` and follow its markup.
  *
  * @example
@@ -22,6 +25,7 @@ import type { PaletteName } from '../runtime/palettes.js';
 import { pickColors } from '../runtime/palettes.js';
 import '../styles/glitch-text.css';
 import { withStyle } from './style.js';
+import { plainText } from './text.js';
 
 interface Props {
 	/** The element to render. Default `span`. */
@@ -38,11 +42,15 @@ interface Props {
 	palette?: PaletteName | (string & {});
 	/** How the copies blend with the text and what is behind: `multiply` on a light ground, `screen` on a dark one. Default `multiply`. */
 	blend?: 'multiply' | 'screen' | 'normal' | 'difference' | 'plus-lighter';
+	/** How the copies are drawn: `spans`, the slot laid twice more (inline formatting kept), or `pseudo`, the element's `::before` and `::after` from a `data-text` of the slot's words (one element; plain text only). Default `spans`. */
+	copies?: 'spans' | 'pseudo';
+	/** The glitch: `slice`, the copies sliced into four bands and shifted a few pixels while the text nudges; `skew`, the whole word shaking and skewing while the copies tear through three bands, shifted by a share of the type size. Default `slice`. */
+	variant?: 'slice' | 'skew';
 	class?: string;
 	[attribute: string]: unknown;
 }
 
-const { as: Tag = 'span', every, hoverEvery, delay, colors, palette, blend, class: className, style: given, ...attributes } = Astro.props;
+const { as: Tag = 'span', every, hoverEvery, delay, colors, palette, blend, copies = 'spans', variant = 'slice', class: className, style: given, ...attributes } = Astro.props;
 const [a, b] = colors?.length || palette ? pickColors({ colors, palette }, ['#ff3ea5', '#2e4bff'], (p) => [p.colors[0], p.colors[1]]) : [];
 const cycle = every ?? 5;
 // Rendered once, at build time: each instance gets its own beat in the static page.
@@ -58,12 +66,13 @@ const style = [
 	.filter(Boolean)
 	.join('; ');
 const html = await Astro.slots.render('default');
+const pseudo = copies === 'pseudo';
 ---
 
-<Tag class:list={['glitch-text', className]} style={withStyle(style, given)} {...attributes}
-	><span><Fragment set:html={html} /></span><span class="glitch-text-a" aria-hidden="true" inert><Fragment set:html={html} /></span><span
-		class="glitch-text-b"
-		aria-hidden="true"
-		inert><Fragment set:html={html} /></span
-	></Tag
+<Tag
+	class:list={['glitch-text', pseudo && 'glitch-text--pseudo', variant !== 'slice' && `glitch-text--${variant}`, className]}
+	data-text={pseudo ? plainText(html) : undefined}
+	style={withStyle(style, given)}
+	{...attributes}
+	>{pseudo ? <Fragment set:html={html} /> : <Fragment><span><Fragment set:html={html} /></span><span class="glitch-text-a" aria-hidden="true" inert><Fragment set:html={html} /></span><span class="glitch-text-b" aria-hidden="true" inert><Fragment set:html={html} /></span></Fragment>}</Tag
 >

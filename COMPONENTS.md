@@ -60,6 +60,10 @@ BorderSweep: a light travelling round an element's outline, on hover and focus o
 | `always` | `boolean` | Run all the time, not only on hover. Default false. |
 | `lights` | `1 \| 2` | How many lights go round, 1–2: two chase each other half a lap apart. Default 1. |
 | `inset` | `boolean` | Draw the ring inside the edge and over the content, for elements that clip (`overflow: hidden`) and fill themselves with a picture or a canvas. Default false. |
+| `long` | `boolean` | A longer light: a faint lead-in over the quarter lap before it, then the light and its tail. Default false. |
+| `outset` | `number` | How far the ring sits out past the edge, px: 1 lays it over a 1px border. Default 0. |
+| `focus` | `'within' \| 'visible' \| 'none'` | Which focus lights it: `within` when it or anything in it has the focus, `visible` only its own keyboard focus, `none` never (hover only). Default `within`. |
+| `still` | `'ring' \| 'none'` | What reduced motion shows: `ring` a still lit edge where the light would run, `none` nothing. Default `ring`. |
 | `class` | `string` | Classes for the element. |
 
 ## `<Caustics>`
@@ -327,6 +331,8 @@ GlitchText: a headline that glitches now and then. Every few seconds two coloure
 | `colors` | `string[]` | The two copies' colours. Default `['#ff3ea5', '#2e4bff']` (pink and blue). |
 | `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), its first two colours, when there are no `colors`. |
 | `blend` | `'multiply' \| 'screen' \| 'normal' \| 'difference' \| 'plus-lighter'` | How the copies blend with the text and what is behind: `multiply` on a light ground, `screen` on a dark one. Default `multiply`. |
+| `copies` | `'spans' \| 'pseudo'` | How the copies are drawn: `spans`, the slot laid twice more (inline formatting kept), or `pseudo`, the element's `::before` and `::after` from a `data-text` of the slot's words (one element; plain text only). Default `spans`. |
+| `variant` | `'slice' \| 'skew'` | The glitch: `slice`, the copies sliced into four bands and shifted a few pixels while the text nudges; `skew`, the whole word shaking and skewing while the copies tear through three bands, shifted by a share of the type size. Default `slice`. |
 | `class` | `string` | Classes for the element. |
 
 ## `<GlowField>`
@@ -632,7 +638,10 @@ Marquee: an endless strip that scrolls sideways, for "as featured in" logos, art
 | `gap` | `string` | Space between items, CSS length. Default `2.5rem`. |
 | `pauseOnHover` | `boolean` | Pause while the pointer is over it. Default true. |
 | `pauseButton` | `boolean` | Show a pause button. Default true. |
-| `fade` | `number` | How wide the faded edges are, % of the strip. Default 8. |
+| `fade` | `number` | How wide the faded edges are, % of the strip; 0 cuts them. Default 8. |
+| `copies` | `2 \| 3 \| 4` | How many times the content is laid, 2–4; the strip moves by one of them a loop. Two is enough when one set is always wider than the strip. Default 4. |
+| `role` | `'region' \| 'marquee' \| 'note'` | What it is to assistive technology: `region` a landmark, `marquee` a ticker, `note` an aside. Default `region`. |
+| `still` | `'scroll' \| 'hold'` | With reduced motion: `scroll`, one set as a still row to scroll by hand; `hold`, the strip held where it starts, every set laid. Default `scroll`. |
 | `labels` | `{ pause: string; resume: string }` | The pause button's labels, for other languages. Default English. |
 | `label` | `string` | What the strip is, for screen readers. Default the items joined. |
 | `class` | `string` | Classes for the element. |

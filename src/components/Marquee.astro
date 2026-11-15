@@ -5,10 +5,12 @@
  * anything as the slot (logos, images, cards).
  *
  * The content is laid four times and the strip moves by one set, so the
- * loop is seamless even when a set is narrower than the screen. The edges
- * fade out rather than cutting, it can pause under the pointer, and a
- * small pause button stops it for good (moving content needs one, WCAG
- * 2.2.2). With reduced motion it is a still row, scrollable by hand.
+ * loop is seamless even when a set is narrower than the screen (`copies`
+ * lays it fewer times, for a set that is always wider). The edges fade
+ * out rather than cutting (`fade={0}` cuts them), it can pause under the
+ * pointer, and a small pause button stops it for good (moving content
+ * needs one, WCAG 2.2.2). With reduced motion it is a still row,
+ * scrollable by hand, or (`still="hold"`) the strip held where it starts.
  * Screen readers get the content once.
  *
  * Merges the marquees of the WaveGrid, SellGrid, LinkGrid and LaunchGrid
@@ -34,8 +36,14 @@ interface Props {
 	pauseOnHover?: boolean;
 	/** Show a pause button. Default true. */
 	pauseButton?: boolean;
-	/** How wide the faded edges are, % of the strip. Default 8. */
+	/** How wide the faded edges are, % of the strip; 0 cuts them. Default 8. */
 	fade?: number;
+	/** How many times the content is laid, 2–4; the strip moves by one of them a loop. Two is enough when one set is always wider than the strip. Default 4. */
+	copies?: 2 | 3 | 4;
+	/** What it is to assistive technology: `region` a landmark, `marquee` a ticker, `note` an aside. Default `region`. */
+	role?: 'region' | 'marquee' | 'note';
+	/** With reduced motion: `scroll`, one set as a still row to scroll by hand; `hold`, the strip held where it starts, every set laid. Default `scroll`. */
+	still?: 'scroll' | 'hold';
 	/** The pause button's labels, for other languages. Default English. */
 	labels?: { pause: string; resume: string };
 	/** What the strip is, for screen readers. Default the items joined. */
@@ -52,6 +60,9 @@ const {
 	pauseOnHover = true,
 	pauseButton = true,
 	fade = 8,
+	copies = 4,
+	role = 'region',
+	still = 'scroll',
 	labels = { pause: 'Pause scrolling', resume: 'Resume scrolling' },
 	label,
 	class: className,
@@ -59,13 +70,14 @@ const {
 
 // Slot content is rendered once and laid again for the copies.
 const slotted = items ? '' : await Astro.slots.render('default');
-const sets = [0, 1, 2, 3];
+const sets = Array.from({ length: copies }, (_, set) => set);
+const shift = copies === 4 ? '' : `; --marquee-shift: ${-100 / copies}%`;
 ---
 
 <div
-	class:list={['effect-marquee', `is-${direction}`, { 'pause-on-hover': pauseOnHover }, className]}
-	style={`--marquee-speed: ${speed}s; --marquee-gap: ${gap}; --marquee-fade: ${fade}%`}
-	role="region"
+	class:list={['effect-marquee', `is-${direction}`, { 'pause-on-hover': pauseOnHover, 'no-fade': fade === 0, 'still-hold': still === 'hold' }, className]}
+	style={`--marquee-speed: ${speed}s; --marquee-gap: ${gap}; --marquee-fade: ${fade}%${shift}`}
+	role={role}
 	aria-label={label ?? items?.join(', ')}
 	data-effect-marquee
 >
@@ -159,9 +171,14 @@ const sets = [0, 1, 2, 3];
 	.effect-marquee:global(.is-paused) .track {
 		animation-play-state: paused;
 	}
+	.no-fade .viewport {
+		-webkit-mask-image: none;
+		mask-image: none;
+	}
+	/* One set a loop: a quarter of the four, or --marquee-shift for fewer. */
 	@keyframes effect-marquee {
 		to {
-			transform: translateX(-25%);
+			transform: translateX(var(--marquee-shift, -25%));
 		}
 	}
 
@@ -211,6 +228,13 @@ const sets = [0, 1, 2, 3];
 		.set[aria-hidden='true'],
 		.toggle {
 			display: none;
+		}
+		/* Held: every set laid, still, as it starts. */
+		.still-hold .viewport {
+			overflow-x: hidden;
+		}
+		.still-hold .set[aria-hidden='true'] {
+			display: flex;
 		}
 	}
 </style>

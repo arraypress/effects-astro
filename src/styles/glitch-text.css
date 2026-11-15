@@ -23,7 +23,18 @@
  * `--glitch-blend` (how they blend: multiply on a light ground, screen on
  * a dark one). With reduced motion it is the plain text, still.
  *
- * CSS only. From the Logomarks site's Custom card.
+ * `glitch-text--pseudo` draws the copies as the element's own `::before`
+ * and `::after` from its `data-text` instead, for one element of plain
+ * text:
+ *
+ *   <span class="glitch-text glitch-text--pseudo" data-text="Free logos">Free logos</span>
+ *
+ * `glitch-text--skew` is another glitch: the whole word shakes and skews
+ * while the copies tear through three bands each, shifted by a share of
+ * the type size (em), the second a touch fainter. With either markup.
+ *
+ * CSS only. From the Logomarks site's Custom card; the pseudo copies and
+ * the skew from its home page's headline.
  * ───────────────────────────────────────────────────────────────────── */
 
 .glitch-text {
@@ -162,8 +173,150 @@
 	}
 }
 
+/* The copies as the element's ::before and ::after, from its data-text: one element, plain text. */
+.glitch-text--pseudo::before,
+.glitch-text--pseudo::after {
+	content: attr(data-text);
+	position: absolute;
+	inset: 0;
+	opacity: 0;
+	pointer-events: none;
+	mix-blend-mode: var(--glitch-blend, multiply);
+	animation: effect-glitch-text-a var(--glitch-every, 5s) steps(1, end) infinite;
+	animation-delay: var(--glitch-delay, 0s);
+}
+
+.glitch-text--pseudo::before {
+	color: var(--glitch-a, #ff3ea5);
+	-webkit-text-fill-color: currentColor;
+}
+
+.glitch-text--pseudo::after {
+	color: var(--glitch-b, #2e4bff);
+	-webkit-text-fill-color: currentColor;
+	animation-name: effect-glitch-text-b;
+}
+
+/* Here the element itself nudges, its copies with it. */
+.glitch-text--pseudo {
+	animation: effect-glitch-text-main var(--glitch-every, 5s) steps(1, end) infinite;
+	animation-delay: var(--glitch-delay, 0s);
+}
+
+/* The skew: the whole word shakes and skews while the copies tear through three bands. */
+.glitch-text--skew {
+	animation: effect-glitch-text-skew var(--glitch-every, 5s) steps(1, end) infinite;
+	animation-delay: var(--glitch-delay, 0s);
+}
+
+.glitch-text--skew > :not(.glitch-text-a, .glitch-text-b) {
+	animation: none;
+}
+
+.glitch-text--skew > .glitch-text-a,
+.glitch-text--skew::before {
+	animation-name: effect-glitch-text-skew-a;
+}
+
+.glitch-text--skew > .glitch-text-b,
+.glitch-text--skew::after {
+	animation-name: effect-glitch-text-skew-b;
+}
+
+.glitch-text:is(.glitch-text--pseudo, .glitch-text--skew):hover,
+.glitch-text--pseudo:hover::before,
+.glitch-text--pseudo:hover::after,
+:is(a, button):is(:hover, :focus-visible) .glitch-text:is(.glitch-text--pseudo, .glitch-text--skew),
+:is(a, button):is(:hover, :focus-visible) .glitch-text--pseudo::before,
+:is(a, button):is(:hover, :focus-visible) .glitch-text--pseudo::after {
+	animation-duration: var(--glitch-hover, 1.6s);
+}
+
+@keyframes effect-glitch-text-skew-a {
+	0%,
+	88%,
+	100% {
+		opacity: 0;
+		transform: none;
+		clip-path: inset(0 0 100% 0);
+	}
+
+	89% {
+		opacity: 1;
+		transform: translate(-0.04em, 0.01em);
+		clip-path: inset(12% 0 58% 0);
+	}
+
+	91% {
+		opacity: 1;
+		transform: translate(0.05em, -0.01em);
+		clip-path: inset(62% 0 8% 0);
+	}
+
+	93% {
+		opacity: 1;
+		transform: translate(-0.02em, 0);
+		clip-path: inset(38% 0 40% 0);
+	}
+
+	95% {
+		opacity: 0;
+	}
+}
+
+@keyframes effect-glitch-text-skew-b {
+	0%,
+	89%,
+	100% {
+		opacity: 0;
+		transform: none;
+		clip-path: inset(0 0 100% 0);
+	}
+
+	90% {
+		opacity: 0.9;
+		transform: translate(0.05em, 0);
+		clip-path: inset(48% 0 22% 0);
+	}
+
+	92% {
+		opacity: 0.9;
+		transform: translate(-0.04em, 0.01em);
+		clip-path: inset(6% 0 70% 0);
+	}
+
+	94% {
+		opacity: 0;
+	}
+}
+
+@keyframes effect-glitch-text-skew {
+	0%,
+	88%,
+	95%,
+	100% {
+		transform: none;
+	}
+
+	89% {
+		transform: translateX(0.012em) skewX(-4deg);
+	}
+
+	91% {
+		transform: translateX(-0.012em);
+	}
+
+	93% {
+		transform: skewX(3deg);
+	}
+}
+
 @media (prefers-reduced-motion: reduce) {
-	.glitch-text > * {
+	.glitch-text > *,
+	.glitch-text--pseudo,
+	.glitch-text--pseudo::before,
+	.glitch-text--pseudo::after,
+	.glitch-text--skew {
 		animation: none !important;
 	}
 }

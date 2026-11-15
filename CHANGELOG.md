@@ -5,6 +5,27 @@ All notable changes to `@arraypress/effects-astro` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0] — 2026-11-15
+
+### Added
+
+- `<BorderSweep long>` (`sweep-ring--long`): a longer light, a faint lead-in over the quarter lap before it, then the light and its tail.
+- `<BorderSweep outset>` (`--sweep-outset`): the ring moved out past the edge, px; `1` lays it over a 1px border. Default 0, as before.
+- `<BorderSweep focus>`: which focus lights it. `within` (the default, as before) when it or anything in it has the focus, `visible` (`sweep-ring--focus-visible`) only on its own keyboard focus, `none` (`sweep-ring--focus-none`) never, hover only. The selectors keep their weight (`:where`), so a site's overrides hold.
+- `<BorderSweep still>`: what reduced motion shows. `ring` (the default, as before) a still lit edge, `none` (`sweep-ring--still-none`) nothing.
+- `<GlitchText copies="pseudo">` (`glitch-text--pseudo`): the two copies drawn as the element's `::before` and `::after` from a `data-text` the component writes from the slot's words, so the text is one element. For plain text. The default, `spans`, is unchanged.
+- `<GlitchText variant="skew">` (`glitch-text--skew`): another glitch. The whole word shakes and skews while the copies tear through three bands each, shifted by a share of the type size (em), the second at 0.9 opacity. With either markup. The default, `slice`, is unchanged.
+- `<Marquee copies>`: how many times the content is laid, 2–4 (default 4, as before); the strip moves by one of them a loop (`--marquee-shift`). Two is enough when one set is always wider than the strip.
+- `<Marquee role>`: `region` (the default, as before), `marquee` or `note`.
+- `<Marquee still="hold">` (`still-hold`): with reduced motion the strip held where it starts, every set laid and none scrollable, rather than one set to scroll by hand (`scroll`, the default).
+- `plainText(html)` (`components/text.js`): a rendered slot's words, its tags dropped and its character references decoded.
+
+### Changed
+
+- `<Marquee fade={0}>` draws no mask at all, rather than one with edges of no width. Nothing shows differently.
+
+The options come from the Logomarks site, so its border sweep, hero glitch and ticker can be these components.
+
 ## [0.8.0] — 2026-11-15
 
 ### Added

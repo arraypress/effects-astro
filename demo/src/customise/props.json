@@ -319,6 +319,55 @@
 				}
 			},
 			{
+				"name": "long",
+				"kind": "boolean",
+				"doc": "A longer light: a faint lead-in over the quarter lap before it, then the light and its tail. Default false.",
+				"default": false,
+				"live": {
+					"class": "sweep-ring--long"
+				}
+			},
+			{
+				"name": "outset",
+				"kind": "number",
+				"min": 0,
+				"max": 40,
+				"step": 1,
+				"doc": "How far the ring sits out past the edge, px: 1 lays it over a 1px border. Default 0.",
+				"default": 0,
+				"live": {
+					"css": "--sweep-outset",
+					"unit": "px"
+				}
+			},
+			{
+				"name": "focus",
+				"kind": "enum",
+				"options": [
+					"within",
+					"visible",
+					"none"
+				],
+				"doc": "Which focus lights it: `within` when it or anything in it has the focus, `visible` only its own keyboard focus, `none` never (hover only). Default `within`.",
+				"default": "within",
+				"live": {
+					"classPrefix": "sweep-ring--focus-"
+				}
+			},
+			{
+				"name": "still",
+				"kind": "enum",
+				"options": [
+					"ring",
+					"none"
+				],
+				"doc": "What reduced motion shows: `ring` a still lit edge where the light would run, `none` nothing. Default `ring`.",
+				"default": "ring",
+				"live": {
+					"classPrefix": "sweep-ring--still-"
+				}
+			},
+			{
 				"name": "class",
 				"kind": "string",
 				"doc": "Classes for the element."
@@ -1638,6 +1687,29 @@
 				}
 			},
 			{
+				"name": "copies",
+				"kind": "enum",
+				"options": [
+					"spans",
+					"pseudo"
+				],
+				"doc": "How the copies are drawn: `spans`, the slot laid twice more (inline formatting kept), or `pseudo`, the element's `::before` and `::after` from a `data-text` of the slot's words (one element; plain text only). Default `spans`.",
+				"default": "spans"
+			},
+			{
+				"name": "variant",
+				"kind": "enum",
+				"options": [
+					"slice",
+					"skew"
+				],
+				"doc": "The glitch: `slice`, the copies sliced into four bands and shifted a few pixels while the text nudges; `skew`, the whole word shaking and skewing while the copies tear through three bands, shifted by a share of the type size. Default `slice`.",
+				"default": "slice",
+				"live": {
+					"classPrefix": "glitch-text--"
+				}
+			},
+			{
 				"name": "class",
 				"kind": "string",
 				"doc": "Classes for the element."
@@ -2941,12 +3013,39 @@
 				"min": 2,
 				"max": 24,
 				"step": 1,
-				"doc": "How wide the faded edges are, % of the strip. Default 8.",
+				"doc": "How wide the faded edges are, % of the strip; 0 cuts them. Default 8.",
 				"default": 8,
 				"live": {
 					"css": "--marquee-fade",
 					"unit": "%"
 				}
+			},
+			{
+				"name": "copies",
+				"kind": "other",
+				"doc": "How many times the content is laid, 2–4; the strip moves by one of them a loop. Two is enough when one set is always wider than the strip. Default 4.",
+				"default": 4
+			},
+			{
+				"name": "role",
+				"kind": "enum",
+				"options": [
+					"region",
+					"marquee",
+					"note"
+				],
+				"doc": "What it is to assistive technology: `region` a landmark, `marquee` a ticker, `note` an aside. Default `region`.",
+				"default": "region"
+			},
+			{
+				"name": "still",
+				"kind": "enum",
+				"options": [
+					"scroll",
+					"hold"
+				],
+				"doc": "With reduced motion: `scroll`, one set as a still row to scroll by hand; `hold`, the strip held where it starts, every set laid. Default `scroll`.",
+				"default": "scroll"
 			},
 			{
 				"name": "labels",

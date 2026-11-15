@@ -38,7 +38,7 @@ Pick by what is asked for:
 | Sections that arrive on scroll, site-wide | `<ScrollReveal />` once in the layout, then reveal.css classes (`fade-in-up`…) on elements |
 | A type foundry or bold brand headline: big variable-font letters that swell under the pointer | `<VariableType as="h1" fit>` set in a variable font (`axes` for which axes swell) |
 | Text that arrives or moves | `<Reveal>`, `<ScrambleText>`, `<Typewriter>`, `<HighlightSweep>`, `<Marquee>` |
-| A headline that glitches now and then (a label, a studio, a "make it yours" card) | `<GlitchText as="h2">` (CSS only; `blend="screen"` on a dark ground, `every`, `colors`) |
+| A headline that glitches now and then (a label, a studio, a "make it yours" card) | `<GlitchText as="h2">` (CSS only; `blend="screen"` on a dark ground, `every`, `colors`; `variant="skew"` shakes the whole word; `copies="pseudo"` for one element of plain text) |
 | A small logo mark, a loading or "live" sign | `<PulseMark>`, `.fx-live` from `motion.css` |
 | A hero photo that reacts like water: ripples, a pond, "touch the photo" | `<ImageRipple src="…" alt="…">` (`strength`, `size`, `viscosity`, `fringe`, `fit="contain"`) |
 | A digital-goods or shop hero showing the products: their covers as the centrepiece, copy beside them | `<ProductStack items={[{ src, href, alt }, …]}>` (`layout="fan"`, `"stack"` or `"arc"`), or the covers as `<a><img></a>` children |

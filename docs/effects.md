@@ -85,7 +85,7 @@ Every prop of every component is in **[COMPONENTS.md](../COMPONENTS.md)**, gener
 | Import | Classes |
 |---|---|
 | `@arraypress/effects-astro/glass.css` | `.glass` (call `glassSheen()` once for the sheen) |
-| `@arraypress/effects-astro/border-sweep.css` | `.sweep-ring`, `--always`, `--fast`, `--two`, `--inset` |
-| `@arraypress/effects-astro/glitch-text.css` | `.glitch-text` with its copies `.glitch-text-a` and `.glitch-text-b` (markup in the file) |
+| `@arraypress/effects-astro/border-sweep.css` | `.sweep-ring`, `--always`, `--fast`, `--two`, `--inset`, `--long`, `--focus-visible`, `--focus-none`, `--still-none`; `--sweep-outset` |
+| `@arraypress/effects-astro/glitch-text.css` | `.glitch-text` with its copies `.glitch-text-a` and `.glitch-text-b` (markup in the file), or `--pseudo` with a `data-text`; `--skew` |
 | `@arraypress/effects-astro/motion.css` | `.fx-pulse-ring`, `.fx-heartbeat`, `.fx-bump` (replay with `bump(el)`), `.fx-shimmer`, `.fx-pulse`, `.fx-wiggle`, `.fx-shake`, `.fx-settle`, `.fx-live` (a status dot) |
 | `@arraypress/effects-astro/reveal.css` | `.fade-in`, `.fade-in-up/down/left/right`, `.slide-in-*`, `.zoom-in`, `.zoom-out`, `.flip-up/down/left/right`, `.blur-in` (with `<ScrollReveal />`) |
