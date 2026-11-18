@@ -5,6 +5,16 @@ All notable changes to `@arraypress/effects-astro` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- The demo's Cloudflare build (`lumithemes-effects`, effects.lumithemes.com), failing since `@logomarks/shaders` became a
+  dependency in 0.6.1: a clean install of `demo/` links the library from the parent (`file:..`) without installing the
+  parent's own dependencies, so `@logomarks/shaders` couldn't be resolved, from the demo's heroes or from the library's
+  runtime. The demo now depends on it itself, and `vite.resolve.dedupe` resolves the library's imports of it from the
+  demo's `node_modules`. The published package is unchanged.
+
 ## [0.9.0] — 2026-11-15
 
 ### Added
