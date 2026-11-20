@@ -8,6 +8,7 @@
 - `<WorldRoutes>`'s land is sampled from [Natural Earth](https://www.naturalearthdata.com)'s 1:110m land (public domain).
 - `<Ocean>`'s and `<LiquidMetal>`'s tone curve is Krzysztof Narkowicz's ACES fit.
 - `<Glass refract>`'s lens (an SDF displacement map with a specular channel, fed to `feDisplacementMap` through `backdrop-filter`, and a three-pass RGB split) is adapted from Sam Asante's [liquid-glass](https://github.com/samasante/liquid-glass) (MIT, © 2026 Sam Asante).
+- `<AsciiNoise>`'s field, warp, tunings and ramps are after `ascii_noise_bg`, a Processing sketch shared with the owner (2026-11-20); its lattice hash is Dave Hoskins' [Hash without Sine](https://www.shadertoy.com/view/4djSRW) (MIT, © 2014 David Hoskins).
 - Oklab is Björn Ottosson's.
 
 The full notices are in [LICENSE](../LICENSE).

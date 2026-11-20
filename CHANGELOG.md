@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0] — 2026-11-20
+
+### Added
+
+- `<AsciiNoise>` (`asciiNoise`, `runtime/ascii-noise`): a field of slow noise drawn as a grid of monospace characters, soft-edged blobs of type drifting and morphing, the quiet cells in one colour and the loud in another (Oklab). Nine ramps (`NOISE_RAMPS`: `ascii`, `shade`, `digits`, `rise`, `quads`, `bars`, `arrows`, `letters`, `dense`) or any characters; `cell` or `cols`, `scale`, `contrast`, `brightness`, `drift`, `evolve`, `offset`, `speed`, `quiet`, `background`, `font` (loaded before the glyphs are drawn). The same field in plain JavaScript (`noiseField`, `asciiCells`), so a page can lay the first frame as text and the shader starts on the same cells. After `ascii_noise_bg`, a Processing sketch shared with the owner.
+
 ### Fixed
 
 - The demo's Cloudflare build (`lumithemes-effects`, effects.lumithemes.com), failing since `@logomarks/shaders` became a

@@ -8,6 +8,7 @@ import Ink from '@arraypress/effects-astro/Ink.astro';
 import LiveGradient from '@arraypress/effects-astro/LiveGradient.astro';
 import InkField from '@arraypress/effects-astro/InkField.astro';
 import AsciiRain from '@arraypress/effects-astro/AsciiRain.astro';
+import AsciiNoise from '@arraypress/effects-astro/AsciiNoise.astro';
 import FlutedGlass from '@arraypress/effects-astro/FlutedGlass.astro';
 import DotGrid from '@arraypress/effects-astro/DotGrid.astro';
 import DotSurface from '@arraypress/effects-astro/DotSurface.astro';
@@ -85,6 +86,13 @@ const paleScenes = ['blob', 'ink-water'];
 	<h2 class="headline">Every event,<br />accounted for.</h2>
 	<p class="lede">Pipe in clicks, orders and errors from every service, then ask questions in plain English. Answers in seconds, not sprints.</p>
 	<div class="actions"><a class="btn" href="#">Start free</a><a class="btn btn--ghost" href="#">See a live dashboard</a></div>
+</Hero>
+<Hero id="ascii-noise" name="AsciiNoise" code={`<AsciiNoise glyphs="shade" colors={['#2c3a0a', '#c8ff00']} quiet={{ x: 0.15, y: 0.45, radius: 0.75, depth: 0.95 }} />`} align="left" style="--hero-ground: #0b0b0b">
+	<AsciiNoise slot="effect" glyphs="shade" colors={['#2c3a0a', '#c8ff00']} quiet={{ x: 0.15, y: 0.45, radius: 0.75, depth: 0.95 }} />
+	<span class="eyebrow" style="font-family: 'IBM Plex Mono', ui-monospace, monospace">Fieldnote · a type studio</span>
+	<h2 class="headline" style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-weight: 500; letter-spacing: -0.03em">Every letter<br />earns its cell.</h2>
+	<p class="lede">Monospaced families for code, catalogues and quiet interfaces. Licensed per seat, hinted by hand.</p>
+	<div class="actions"><a class="btn" href="#">Try the fonts</a></div>
 </Hero>
 <Hero id="fluted-glass" name="FlutedGlass" code="<FlutedGlass />" theme="light" align="bottom">
 	<FlutedGlass slot="effect" />

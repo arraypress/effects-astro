@@ -1,0 +1,37 @@
+---
+/**
+ * AsciiNoise: a field of slow noise drawn as a grid of monospace
+ * characters, soft-edged blobs of type drifting and morphing, the quiet
+ * cells in one colour and the loud in another. See
+ * src/runtime/ascii-noise.js.
+ *
+ * Fills its nearest positioned ancestor, or the viewport with `fixed`.
+ * Clear where the cells are empty (or `background`), so it lays over any
+ * ground. Without WebGL nothing is drawn.
+ *
+ * @example
+ * <section class="hero" style="position: relative; background: #0b0b0b">
+ *   <AsciiNoise glyphs="shade" colors={['#2c3a0a', '#c8ff00']} quiet={{ x: 0.3, y: 0.5, radius: 0.6, depth: 0.9 }} />
+ *   <h1>…</h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { AsciiNoiseConfig } from '../runtime/ascii-noise.js';
+
+interface Props extends AsciiNoiseConfig {
+	/** Fill the viewport (position: fixed). Default false. */
+	fixed?: boolean;
+	class?: string;
+}
+
+const { fixed = false, class: className, ...config } = Astro.props;
+---
+
+<EffectCanvas name="ascii-noise" config={config} fixed={fixed} class={className} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { asciiNoise } from '../runtime/ascii-noise.js';
+
+	mount('[data-effect-ascii-noise]', asciiNoise);
+</script>

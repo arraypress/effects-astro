@@ -15,6 +15,7 @@ export { lightField } from './runtime/light-field.js';
 export { ink } from './runtime/ink.js';
 export { spotlight } from './runtime/spotlight.js';
 export { asciiRain } from './runtime/ascii-rain.js';
+export { asciiNoise, asciiCells, noiseField, noiseColors, rampOf, NOISE_RAMPS, NOISE_DEFAULTS } from './runtime/ascii-noise.js';
 export { glassGlyph } from './runtime/glass-glyph.js';
 export { flutedGlass } from './runtime/fluted-glass.js';
 export { particleLogo } from './runtime/particle-logo.js';

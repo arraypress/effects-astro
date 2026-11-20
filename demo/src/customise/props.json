@@ -1,4 +1,199 @@
 {
+	"AsciiNoise": {
+		"selector": "[data-effect-ascii-noise]",
+		"props": [
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "Two CSS hex colours: the quietest cells' and the loudest's. Default a dim grey and white.",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), when there are no `colors`: its first and last colours.",
+				"live": "config"
+			},
+			{
+				"name": "background",
+				"kind": "color",
+				"doc": "A CSS hex colour to fill behind the type; none leaves the canvas clear there.",
+				"live": "config"
+			},
+			{
+				"name": "glyphs",
+				"kind": "other",
+				"doc": "A ramp (`ascii`, `shade`, `digits`, `rise`, `quads`, `bars`, `arrows`, `letters`, `dense`, or a set of `GLYPH_SETS`) or the characters, quietest first. Default `ascii`.",
+				"default": "ascii",
+				"live": "config"
+			},
+			{
+				"name": "cell",
+				"kind": "number",
+				"min": 3,
+				"max": 42,
+				"step": 1,
+				"doc": "A character cell's height in CSS px. Default 14.",
+				"default": 14,
+				"live": "config"
+			},
+			{
+				"name": "cols",
+				"kind": "number",
+				"doc": "Cells across instead, whatever the width (overrides `cell`).",
+				"live": "config"
+			},
+			{
+				"name": "aspect",
+				"kind": "number",
+				"min": 0.15,
+				"max": 1.8,
+				"step": 0.01,
+				"doc": "A cell's width over its height. Default 0.6.",
+				"default": 0.6,
+				"live": "config"
+			},
+			{
+				"name": "scale",
+				"kind": "number",
+				"min": 0.6,
+				"max": 7.4,
+				"step": 0.05,
+				"doc": "How many noise features span the width (higher is busier). Default 2.45.",
+				"default": 2.45,
+				"live": "config"
+			},
+			{
+				"name": "contrast",
+				"kind": "number",
+				"min": 1,
+				"max": 18,
+				"step": 1,
+				"doc": "How hard the edges are: higher pushes cells to empty or full. Default 6.",
+				"default": 6,
+				"live": "config"
+			},
+			{
+				"name": "brightness",
+				"kind": "number",
+				"min": -0.2,
+				"max": 0.2,
+				"step": 0.002,
+				"doc": "Shifts the whole field; lower leaves more cells empty. Default -0.1.",
+				"default": -0.1,
+				"live": "config"
+			},
+			{
+				"name": "drift",
+				"kind": "vector",
+				"fields": [
+					{
+						"name": "x",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "How fast the sample window pans, widths a second, x and y. Default [0.036, 0.012].",
+				"live": "config"
+			},
+			{
+				"name": "evolve",
+				"kind": "number",
+				"min": 0.06,
+				"max": 0.72,
+				"step": 0.005,
+				"doc": "How fast the shapes morph. Default 0.24.",
+				"default": 0.24,
+				"live": "config"
+			},
+			{
+				"name": "offset",
+				"kind": "vector",
+				"fields": [
+					{
+						"name": "x",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "Where the sample window starts, so two cards differ. Default [0, 0].",
+				"live": "config"
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "Plays every clock faster or slower; 0 for one still frame. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "quiet",
+				"kind": "point",
+				"fields": [
+					{
+						"name": "x",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "radius",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "depth",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "An area kept quiet: centre (0–1 from the top left), radius (share of the height), depth (0–1).",
+				"live": "config"
+			},
+			{
+				"name": "font",
+				"kind": "string",
+				"doc": "The font family the glyphs are drawn in (a monospace stack by default); it is loaded first.",
+				"live": "config"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport (position: fixed). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
 	"AsciiRain": {
 		"selector": "[data-effect-ascii-rain]",
 		"props": [

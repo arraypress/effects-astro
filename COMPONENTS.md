@@ -4,6 +4,38 @@ Every component in `@arraypress/effects-astro`, with every prop. Generated from 
 
 Import each from its own path: `import Name from '@arraypress/effects-astro/Name.astro'`.
 
+## `<AsciiNoise>`
+
+AsciiNoise: a field of slow noise drawn as a grid of monospace characters, soft-edged blobs of type drifting and morphing, the quiet cells in one colour and the loud in another. See src/runtime/ascii-noise.js.
+
+```astro
+<section class="hero" style="position: relative; background: #0b0b0b">
+  <AsciiNoise glyphs="shade" colors={['#2c3a0a', '#c8ff00']} quiet={{ x: 0.3, y: 0.5, radius: 0.6, depth: 0.9 }} />
+  <h1>…</h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `colors` | `string[]` | Two CSS hex colours: the quietest cells' and the loudest's. Default a dim grey and white. |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`: its first and last colours. |
+| `background` | `string` | A CSS hex colour to fill behind the type; none leaves the canvas clear there. |
+| `glyphs` | `keyof typeof NOISE_RAMPS \| (string & {})` | A ramp (`ascii`, `shade`, `digits`, `rise`, `quads`, `bars`, `arrows`, `letters`, `dense`, or a set of `GLYPH_SETS`) or the characters, quietest first. Default `ascii`. |
+| `cell` | `number` | A character cell's height in CSS px. Default 14. |
+| `cols` | `number` | Cells across instead, whatever the width (overrides `cell`). |
+| `aspect` | `number` | A cell's width over its height. Default 0.6. |
+| `scale` | `number` | How many noise features span the width (higher is busier). Default 2.45. |
+| `contrast` | `number` | How hard the edges are: higher pushes cells to empty or full. Default 6. |
+| `brightness` | `number` | Shifts the whole field; lower leaves more cells empty. Default -0.1. |
+| `drift` | `[number, number]` | How fast the sample window pans, widths a second, x and y. Default [0.036, 0.012]. |
+| `evolve` | `number` | How fast the shapes morph. Default 0.24. |
+| `offset` | `[number, number]` | Where the sample window starts, so two cards differ. Default [0, 0]. |
+| `speed` | `number` | Plays every clock faster or slower; 0 for one still frame. Default 1. |
+| `quiet` | `{ x?: number; y?: number; radius?: number; depth?: number } \| null` | An area kept quiet: centre (0–1 from the top left), radius (share of the height), depth (0–1). |
+| `font` | `string` | The font family the glyphs are drawn in (a monospace stack by default); it is loaded first. |
+| `fixed` | `boolean` | Fill the viewport (position: fixed). Default false. |
+| `class` | `string` | Classes for the element. |
+
 ## `<AsciiRain>`
 
 AsciiRain: data rain on a rippling surface, drawn in text characters, with red and blue fringes at the glyph edges. The pointer ripples the surface and a click sends a ring out. See src/runtime/ascii-rain.js.

@@ -6,6 +6,8 @@ export { spotlight } from './runtime/spotlight.js';
 export type { SpotlightConfig } from './runtime/spotlight.js';
 export { asciiRain } from './runtime/ascii-rain.js';
 export type { AsciiRainConfig } from './runtime/ascii-rain.js';
+export { asciiNoise, asciiCells, noiseField, noiseColors, rampOf, NOISE_RAMPS, NOISE_DEFAULTS } from './runtime/ascii-noise.js';
+export type { AsciiNoiseConfig } from './runtime/ascii-noise.js';
 export { glassGlyph } from './runtime/glass-glyph.js';
 export type { GlassGlyphConfig } from './runtime/glass-glyph.js';
 export { flutedGlass } from './runtime/fluted-glass.js';

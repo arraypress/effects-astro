@@ -9,6 +9,7 @@ Every prop of every component is in **[COMPONENTS.md](../COMPONENTS.md)**, gener
 | `<LightField>` | Liquid light in three colours with caustic glints and a pointer lens, over a real fluid that the pointer stirs and a click drops ink into | WebGL |
 | `<Ink>` | The fluid on its own: ink in water over whatever is behind | WebGL 2 |
 | `<InkField>` | Ink in water, lit by a lamp that follows the pointer: slow emitters keep it moving, the pointer stirs it, twelve named palettes (`palette="Peacock"`) that a palette switcher recolours live; with `audio`, the beat stirs it | WebGL |
+| `<AsciiNoise>` | A field of slow noise drawn as monospace characters, soft-edged blobs of type drifting and morphing, quiet cells in one colour and loud in another; nine ramps (punctuation, shade blocks, numerals, rising blocks, quadrants, bars, arrows, letters, the long classic) | WebGL |
 | `<AsciiRain>` | Streams of data in text characters, rows sliding at their own pace, a cool cyan-green cast, a lens fringe and the odd glitch (or, with `pattern="waves"`, streaks on a rippling 3D surface) | WebGL |
 | `<FlutedGlass>` | Slanted fluted glass bending soft blooms of colour, one following the pointer | WebGL |
 | `<DotGrid>` | A sea of dots with a drifting current; a click sends a ripple across | Canvas |
