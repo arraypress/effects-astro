@@ -1,0 +1,38 @@
+---
+/**
+ * KineticGrid: a fine wireframe grid that ripples where drops land, the
+ * rings spreading and settling, brighter where a wire is stretched, with
+ * thin bright ring pulses lighting the wire segments they cross. See
+ * src/runtime/kinetic-grid.js.
+ *
+ * Fills its nearest positioned ancestor, or the viewport with `fixed`.
+ * Paints its own ground (`background`; `transparent` lays it over the
+ * section's). Without WebGL the ground shows.
+ *
+ * @example
+ * <section class="hero" style="position: relative">
+ *   <KineticGrid colors={['#c8ff00', '#ffffff']} background="#0b0b0b" quiet={{ x: 0.3, y: 0.5, radius: 0.6, depth: 0.85 }} />
+ *   <h1>…</h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { KineticGridConfig } from '../runtime/kinetic-grid.js';
+
+interface Props extends KineticGridConfig {
+	/** Fill the viewport (position: fixed). Default false. */
+	fixed?: boolean;
+	class?: string;
+}
+
+const { fixed = false, class: className, ...config } = Astro.props;
+const ground = config.background ?? '#0a0a0a';
+---
+
+<EffectCanvas name="kinetic-grid" config={config} fixed={fixed} class={className} background={ground === 'transparent' ? undefined : ground} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { kineticGrid } from '../runtime/kinetic-grid.js';
+
+	mount('[data-effect-kinetic-grid]', kineticGrid);
+</script>

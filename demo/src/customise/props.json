@@ -569,6 +569,28 @@
 			}
 		]
 	},
+	"CascadeGrid": {
+		"selector": "[data-effect-cascade-grid]",
+		"props": [
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport (position: fixed). Default false.",
+				"default": false
+			},
+			{
+				"name": "lazy",
+				"kind": "boolean",
+				"doc": "Run only while near the screen, giving its WebGL context back when away: for pages with many effects. Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
 	"Caustics": {
 		"selector": "[data-effect-caustics]",
 		"props": [
@@ -954,6 +976,28 @@
 			}
 		]
 	},
+	"DitherField": {
+		"selector": "[data-effect-dither-field]",
+		"props": [
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport (position: fixed). Default false.",
+				"default": false
+			},
+			{
+				"name": "lazy",
+				"kind": "boolean",
+				"doc": "Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away: for pages with many effects. Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
 	"DotGrid": {
 		"selector": "[data-effect-dot-grid]",
 		"props": [
@@ -1242,6 +1286,195 @@
 				"kind": "other",
 				"doc": "The element to render. Default `div`.",
 				"default": "div"
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"FlowField": {
+		"selector": "[data-effect-flow-field]",
+		"props": [
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "The trails' colours, CSS hex, blended in Oklab along each trail's life (or by its speed). Default white.",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), when there are no `colors`.",
+				"live": "config"
+			},
+			{
+				"name": "background",
+				"kind": "color",
+				"doc": "The ground, CSS hex: filled every frame, so the canvas is opaque. Default `#000000`.",
+				"default": "#000000",
+				"live": "config"
+			},
+			{
+				"name": "colorBy",
+				"kind": "enum",
+				"options": [
+					"life",
+					"speed",
+					"random"
+				],
+				"doc": "What picks a trail's colour along `colors`: its age, how fast it travels, or one colour each at random. Default `life`.",
+				"default": "life",
+				"live": "config"
+			},
+			{
+				"name": "density",
+				"kind": "number",
+				"min": 3,
+				"max": 36,
+				"step": 1,
+				"doc": "Trails per 100 × 100 CSS px, on average. Default 12.",
+				"default": 12,
+				"live": "config"
+			},
+			{
+				"name": "length",
+				"kind": "number",
+				"min": 0.13,
+				"max": 1.5,
+				"step": 0.01,
+				"doc": "How much of its path a trail shows behind it, seconds. Default 0.5.",
+				"default": 0.5,
+				"live": "config"
+			},
+			{
+				"name": "weight",
+				"kind": "number",
+				"min": 0.17,
+				"max": 2.1,
+				"step": 0.01,
+				"doc": "Line width, CSS px. Default 0.7.",
+				"default": 0.7,
+				"live": "config"
+			},
+			{
+				"name": "opacity",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "A trail head's opacity, 0–1; the tail fades from it. Default 0.75.",
+				"default": 0.75,
+				"live": "config"
+			},
+			{
+				"name": "pace",
+				"kind": "number",
+				"min": 28,
+				"max": 330,
+				"step": 1,
+				"doc": "How fast trails travel, CSS px a second, on average. Default 110.",
+				"default": 110,
+				"live": "config"
+			},
+			{
+				"name": "scale",
+				"kind": "number",
+				"min": 0.5,
+				"max": 6,
+				"step": 0.05,
+				"doc": "How many noise features span the element (across √(width × height)); higher is busier. Default 2.",
+				"default": 2,
+				"live": "config"
+			},
+			{
+				"name": "evolve",
+				"kind": "number",
+				"min": 0.035,
+				"max": 0.45,
+				"step": 0.005,
+				"doc": "How fast the field changes, noise units a second. Default 0.15.",
+				"default": 0.15,
+				"live": "config"
+			},
+			{
+				"name": "life",
+				"kind": "number",
+				"min": 1,
+				"max": 12,
+				"step": 1,
+				"doc": "A trail's average life, seconds (each lives half to one and a half times it). Default 4.",
+				"default": 4,
+				"live": "config"
+			},
+			{
+				"name": "vary",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How far the slow drives swing density, pace, weight and evolution, 0–1; 0 holds them. Default 0.7.",
+				"default": 0.7,
+				"live": "config"
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "Plays every clock faster or slower; 0 for one still frame. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "seed",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "Which field and which trails: the same seed draws the same. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "quiet",
+				"kind": "point",
+				"fields": [
+					{
+						"name": "x",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "radius",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "depth",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "An area with fewer, fainter trails: centre (0–1 from the top left), radius (share of the height), depth (0–1).",
+				"live": "config"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
 			},
 			{
 				"name": "class",
@@ -2745,6 +2978,162 @@
 			}
 		]
 	},
+	"KineticGrid": {
+		"selector": "[data-effect-kinetic-grid]",
+		"props": [
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "Two CSS hex colours: the wires' and the pulses'. Default the sketch's blue and white.",
+				"live": "config"
+			},
+			{
+				"name": "palette",
+				"kind": "palette",
+				"doc": "A shared palette by name (`PALETTES`, any case), when there are no `colors`: its first colour for the wires, its glint for the pulses.",
+				"live": "config"
+			},
+			{
+				"name": "background",
+				"kind": "color",
+				"doc": "The ground, a CSS hex colour (opaque, so the canvas covers what is under it); `transparent` leaves it clear. Default '#0a0a0a'.",
+				"live": "config"
+			},
+			{
+				"name": "cols",
+				"kind": "number",
+				"min": 12,
+				"max": 140,
+				"step": 1,
+				"doc": "Grid cells across, whatever the width (cells are square). Default 48.",
+				"default": 48,
+				"live": "config"
+			},
+			{
+				"name": "width",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "A wire's width, CSS px. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "rest",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How bright a wire at rest is, 0–1; stretched wires brighten to full. Default 0.35.",
+				"default": 0.35,
+				"live": "config"
+			},
+			{
+				"name": "drops",
+				"kind": "number",
+				"min": 0,
+				"max": 6,
+				"step": 0.05,
+				"doc": "Drops alive at once, 0–6 (each slot lands a new one about every five seconds). Default 4.",
+				"default": 4,
+				"live": "config"
+			},
+			{
+				"name": "strength",
+				"kind": "number",
+				"min": 0,
+				"max": 1.6,
+				"step": 0.01,
+				"doc": "How far the ripples push the wires, 0–1.6 (past that they fold). Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "size",
+				"kind": "number",
+				"min": 0.5,
+				"max": 2,
+				"step": 0.01,
+				"doc": "The ripples' scale: wavelength, reach and speed together, 0.5–2. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "pulses",
+				"kind": "number",
+				"min": 0,
+				"max": 4,
+				"step": 0.02,
+				"doc": "Ring pulses alive at once, 0–4 (each slot about every two and a half seconds). Default 3.",
+				"default": 3,
+				"live": "config"
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "Plays the clock faster or slower; 0 for one still frame. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "offset",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "Seeds where and when drops land, so two cards differ. Default 0.",
+				"default": 0,
+				"live": "config"
+			},
+			{
+				"name": "quiet",
+				"kind": "point",
+				"fields": [
+					{
+						"name": "x",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "radius",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "depth",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "An area kept calm and dim: centre (0–1 from the top left), radius (share of the height), depth (0–1).",
+				"live": "config"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport (position: fixed). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
 	"LightField": {
 		"selector": "[data-effect-light-field]",
 		"props": [
@@ -2873,6 +3262,28 @@
 				"kind": "color",
 				"doc": "The colour under the light, and under the fallback gradient. Default `#08080a`.",
 				"default": "#08080a"
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"LightLeak": {
+		"selector": "[data-effect-light-leak]",
+		"props": [
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport (position: fixed). Default false.",
+				"default": false
+			},
+			{
+				"name": "lazy",
+				"kind": "boolean",
+				"doc": "Run only while near the screen (true, or a CSS length), giving its WebGL context back when away: for a wall of cards. Default false.",
+				"default": false
 			},
 			{
 				"name": "class",
@@ -6194,6 +6605,22 @@
 				"kind": "other",
 				"doc": "The element to render. Default `div`.",
 				"default": "div"
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"VoronoiMesh": {
+		"selector": "[data-effect-voronoi-mesh]",
+		"props": [
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport (position: fixed). Default false.",
+				"default": false
 			},
 			{
 				"name": "class",

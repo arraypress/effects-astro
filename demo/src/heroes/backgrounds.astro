@@ -9,6 +9,12 @@ import LiveGradient from '@arraypress/effects-astro/LiveGradient.astro';
 import InkField from '@arraypress/effects-astro/InkField.astro';
 import AsciiRain from '@arraypress/effects-astro/AsciiRain.astro';
 import AsciiNoise from '@arraypress/effects-astro/AsciiNoise.astro';
+import LightLeak from '@arraypress/effects-astro/LightLeak.astro';
+import DitherField from '@arraypress/effects-astro/DitherField.astro';
+import CascadeGrid from '@arraypress/effects-astro/CascadeGrid.astro';
+import FlowField from '@arraypress/effects-astro/FlowField.astro';
+import VoronoiMesh from '@arraypress/effects-astro/VoronoiMesh.astro';
+import KineticGrid from '@arraypress/effects-astro/KineticGrid.astro';
 import FlutedGlass from '@arraypress/effects-astro/FlutedGlass.astro';
 import DotGrid from '@arraypress/effects-astro/DotGrid.astro';
 import DotSurface from '@arraypress/effects-astro/DotSurface.astro';
@@ -93,6 +99,48 @@ const paleScenes = ['blob', 'ink-water'];
 	<h2 class="headline" style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-weight: 500; letter-spacing: -0.03em">Every letter<br />earns its cell.</h2>
 	<p class="lede">Monospaced families for code, catalogues and quiet interfaces. Licensed per seat, hinted by hand.</p>
 	<div class="actions"><a class="btn" href="#">Try the fonts</a></div>
+</Hero>
+<Hero id="light-leak" name="LightLeak" code={`<LightLeak colors={['#03061a', '#0a1f8f', '#0038ff', '#8fb4ff']} quiet={{ radius: 0.5, depth: 0.8 }} />`} style="--hero-ground: #03061a">
+	<LightLeak slot="effect" colors={['#03061a', '#0a1f8f', '#0038ff', '#8fb4ff']} quiet={{ radius: 0.5, depth: 0.8 }} />
+	<span class="eyebrow">Lumen Hall · a listening room</span>
+	<h2 class="headline">Light, slowly<br /><em>changing.</em></h2>
+	<p class="lede">Long-form ambient sets in a room lit by one drifting colour. Doors at eight; phones in pockets.</p>
+	<div class="actions"><a class="btn" href="#">Book a seat</a></div>
+</Hero>
+<Hero id="dither-field" name="DitherField" code={`<DitherField background="#0b0b0b" colors={['#2d3a08', '#c8ff00']} origin={[0.96, 0.85]} quiet={{ x: 0.3, y: 0.5, radius: 0.6, depth: 1 }} />`} align="left" style="--hero-ground: #0b0b0b">
+	<DitherField slot="effect" background="#0b0b0b" colors={['#2d3a08', '#c8ff00']} origin={[0.96, 0.85]} quiet={{ x: 0.3, y: 0.5, radius: 0.6, depth: 1 }} />
+	<span class="eyebrow">Tidewater · surf forecasts</span>
+	<h2 class="headline">Every wave<br />finds the shore.</h2>
+	<p class="lede">Swell, wind and tide for 3,000 breaks, read hourly from the buoys and sent before the dawn patrol.</p>
+	<div class="actions"><a class="btn" href="#">Check your break</a></div>
+</Hero>
+<Hero id="cascade-grid" name="CascadeGrid" code={`<CascadeGrid cols={64} colors={['#2e2e2e', '#c8ff00']} background="#0b0b0b" quiet={{ x: 0.3, y: 0.5, radius: 0.55, depth: 0.95 }} />`} align="left" style="--hero-ground: #0b0b0b">
+	<CascadeGrid slot="effect" cols={64} colors={['#2e2e2e', '#c8ff00']} background="#0b0b0b" quiet={{ x: 0.3, y: 0.5, radius: 0.55, depth: 0.95 }} />
+	<span class="eyebrow">Bandpass · a mastering studio</span>
+	<h2 class="headline">Every band<br />gets its turn.</h2>
+	<p class="lede">Stem mastering by ear and by meter, for labels, producers and the odd film score. Back within the week.</p>
+	<div class="actions"><a class="btn" href="#">Book a session</a></div>
+</Hero>
+<Hero id="flow-field" name="FlowField" code={`<FlowField density={16} quiet={{ radius: 0.55, depth: 0.9 }} />`} style="--hero-ground: #000">
+	<FlowField slot="effect" density={16} quiet={{ radius: 0.55, depth: 0.9 }} />
+	<span class="eyebrow">Tidewind · weather data</span>
+	<h2 class="headline">See the wind<br /><em>before it arrives.</em></h2>
+	<p class="lede">Live wind and current forecasts for sailors, kiters and drone pilots, down to the street, an hour at a time.</p>
+	<div class="actions"><a class="btn" href="#">Open the map</a></div>
+</Hero>
+<Hero id="voronoi-mesh" name="VoronoiMesh" code={`<VoronoiMesh cells={8} quiet={{ x: 0.3, y: 0.5, radius: 0.7, depth: 0.8 }} />`} align="left" style="--hero-ground: #350f0e">
+	<VoronoiMesh slot="effect" cells={8} quiet={{ x: 0.3, y: 0.5, radius: 0.7, depth: 0.8 }} />
+	<span class="eyebrow">Silt · soil and water survey</span>
+	<h2 class="headline">Every field<br />has its borders.</h2>
+	<p class="lede">Plot-by-plot soil maps for growers and planners, sampled by hand and redrawn every season.</p>
+	<div class="actions"><a class="btn" href="#">Map your land</a></div>
+</Hero>
+<Hero id="kinetic-grid" name="KineticGrid" code={`<KineticGrid colors={['#3197ff', '#ffffff']} drops={6} quiet={{ x: 0.3, y: 0.5, radius: 0.6, depth: 0.85 }} />`} align="left" style="--hero-ground: #0a0a0a">
+	<KineticGrid slot="effect" colors={['#3197ff', '#ffffff']} drops={6} quiet={{ x: 0.3, y: 0.5, radius: 0.6, depth: 0.85 }} />
+	<span class="eyebrow">Meridian · seismic data</span>
+	<h2 class="headline">Every tremor,<br />mapped live.</h2>
+	<p class="lede">Sensor networks for bridges, towers and fault lines. We hear the ground move before anyone feels it.</p>
+	<div class="actions"><a class="btn" href="#">See the network</a></div>
 </Hero>
 <Hero id="fluted-glass" name="FlutedGlass" code="<FlutedGlass />" theme="light" align="bottom">
 	<FlutedGlass slot="effect" />

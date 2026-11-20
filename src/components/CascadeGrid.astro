@@ -1,0 +1,41 @@
+---
+/**
+ * CascadeGrid: a grid of hexagons or dots that behaves like a scrolling
+ * spectrogram, each column showing the same made-up spectrum a little
+ * later than the last, so waves cascade across it and the cells swell
+ * from idle specks to reactive shapes. See src/runtime/cascade-grid.js.
+ *
+ * Fills its nearest positioned ancestor, or the viewport with `fixed`.
+ * Clear between the cells (or `background`), so it lays over any ground.
+ * Without WebGL it shows the grid at rest when it can (a `pitch` and a
+ * `background`), else the `background` colour.
+ *
+ * @example
+ * <section class="hero" style="position: relative; background: #0b0b0b">
+ *   <CascadeGrid colors={['#2a2a2a', '#c8ff00']} background="#0b0b0b" quiet={{ radius: 0.5, depth: 0.95 }} />
+ *   <h1>…</h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import { cascadeStill, type CascadeGridConfig } from '../runtime/cascade-grid.js';
+
+interface Props extends CascadeGridConfig {
+	/** Fill the viewport (position: fixed). Default false. */
+	fixed?: boolean;
+	/** Run only while near the screen, giving its WebGL context back when away: for pages with many effects. Default false. */
+	lazy?: boolean | string;
+	class?: string;
+}
+
+const { fixed = false, lazy = false, class: className, ...config } = Astro.props;
+const still = config.background ? cascadeStill(config) : undefined;
+---
+
+<EffectCanvas name="cascade-grid" config={config} fixed={fixed} lazy={lazy} background={still} class={className} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { cascadeGrid } from '../runtime/cascade-grid.js';
+
+	mount('[data-effect-cascade-grid]', cascadeGrid);
+</script>

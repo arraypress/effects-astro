@@ -1,0 +1,39 @@
+---
+/**
+ * LightLeak: a soft, slow colour field, a lava lamp or a light leak:
+ * drifting fBm blobs under a gentle warp, mixed through four colours
+ * (darkest first) in Oklab, with a breath too slow to see as one. See
+ * src/runtime/light-leak.js.
+ *
+ * Fills its nearest positioned ancestor, or the viewport with `fixed`.
+ * Opaque. Shows a still of its first frame (`lightLeakStill`) before the
+ * shader starts and without WebGL.
+ *
+ * @example
+ * <section class="hero" style="position: relative">
+ *   <LightLeak colors={['#0b0b0b', '#1a2a8c', '#0038ff', '#ff5c64']} quiet={{ radius: 0.5, depth: 0.8 }} />
+ *   <h1>…</h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import { lightLeakStill, type LightLeakConfig } from '../runtime/light-leak.js';
+
+interface Props extends LightLeakConfig {
+	/** Fill the viewport (position: fixed). Default false. */
+	fixed?: boolean;
+	/** Run only while near the screen (true, or a CSS length), giving its WebGL context back when away: for a wall of cards. Default false. */
+	lazy?: boolean | string;
+	class?: string;
+}
+
+const { fixed = false, lazy = false, class: className, ...config } = Astro.props;
+---
+
+<EffectCanvas name="light-leak" config={config} fixed={fixed} lazy={lazy} background={lightLeakStill(config, 16 / 9)} class={className} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { lightLeak } from '../runtime/light-leak.js';
+
+	mount('[data-effect-light-leak]', lightLeak);
+</script>

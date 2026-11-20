@@ -98,6 +98,23 @@ BorderSweep: a light travelling round an element's outline, on hover and focus o
 | `still` | `'ring' \| 'none'` | What reduced motion shows: `ring` a still lit edge where the light would run, `none` nothing. Default `ring`. |
 | `class` | `string` | Classes for the element. |
 
+## `<CascadeGrid>`
+
+CascadeGrid: a grid of hexagons or dots that behaves like a scrolling spectrogram, each column showing the same made-up spectrum a little later than the last, so waves cascade across it and the cells swell from idle specks to reactive shapes. See src/runtime/cascade-grid.js.
+
+```astro
+<section class="hero" style="position: relative; background: #0b0b0b">
+  <CascadeGrid colors={['#2a2a2a', '#c8ff00']} background="#0b0b0b" quiet={{ radius: 0.5, depth: 0.95 }} />
+  <h1>…</h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `fixed` | `boolean` | Fill the viewport (position: fixed). Default false. |
+| `lazy` | `boolean \| string` | Run only while near the screen, giving its WebGL context back when away: for pages with many effects. Default false. |
+| `class` | `string` | Classes for the element. |
+
 ## `<Caustics>`
 
 Caustics: sunlight through rippling water onto a pool floor, a bright, shifting net of light over an aqua ground, with a faint rainbow at the edges of its lines. The pointer stirs the water where it is; faint tiles can lie on the floor. See src/runtime/caustics.js.
@@ -172,6 +189,23 @@ Cursor: a custom cursor for the whole page: a dot at the pointer and a ring that
 | `size` | `number` | The ring's size at rest, px. Default 32. |
 | `blend` | `string` | Blend with the page: `difference` inverts what is under it, readable on any ground. Default `difference`. |
 
+## `<DitherField>`
+
+DitherField: a field of slow noise drawn in square dots, Bayer-dithered at its edges into a solid, colour-banded core, with ripples running out from a corner, bent into shore-wave shapes. See src/runtime/dither-field.js.
+
+```astro
+<section class="hero" style="position: relative; background: #0b0b0b">
+  <DitherField background="#0b0b0b" colors={['#3d4d0a', '#c8ff00']} quiet={{ x: 0.3, y: 0.5, radius: 0.6, depth: 1 }} />
+  <h1>…</h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `fixed` | `boolean` | Fill the viewport (position: fixed). Default false. |
+| `lazy` | `boolean \| string` | Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away: for pages with many effects. Default false. |
+| `class` | `string` | Classes for the element. |
+
 ## `<DotGrid>`
 
 DotGrid: a sea of dots you can drop stones into. A slow current moves through a fixed grid of dots, a swell sits under the pointer, and a click sends a widening ripple across, lifting and pushing the dots. See src/runtime/dot-grid.js.
@@ -232,6 +266,38 @@ FitText: one line of text sized to exactly span its parent's content width, what
 | Prop | Type | |
 |---|---|---|
 | `as` | `HTMLTag` | The element to render. Default `div`. |
+| `class` | `string` | Classes for the element. |
+
+## `<FlowField>`
+
+FlowField: hundreds of short, fine trails riding a slowly evolving noise flow, born, gathering into streams and fading, white on black by default; how many there are, how fast they go and how heavy the lines are drift slowly. See src/runtime/flow-field.js.
+
+```astro
+<section class="hero" style="position: relative">
+  <FlowField colors={['#c8ff00', '#39ff88']} background="#0b0b0b" quiet={{ radius: 0.5, depth: 0.85 }} />
+  <h1>…</h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `colors` | `string[]` | The trails' colours, CSS hex, blended in Oklab along each trail's life (or by its speed). Default white. |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`. |
+| `background` | `string` | The ground, CSS hex: filled every frame, so the canvas is opaque. Default `#000000`. |
+| `colorBy` | `'life' \| 'speed' \| 'random'` | What picks a trail's colour along `colors`: its age, how fast it travels, or one colour each at random. Default `life`. |
+| `density` | `number` | Trails per 100 × 100 CSS px, on average. Default 12. |
+| `length` | `number` | How much of its path a trail shows behind it, seconds. Default 0.5. |
+| `weight` | `number` | Line width, CSS px. Default 0.7. |
+| `opacity` | `number` | A trail head's opacity, 0–1; the tail fades from it. Default 0.75. |
+| `pace` | `number` | How fast trails travel, CSS px a second, on average. Default 110. |
+| `scale` | `number` | How many noise features span the element (across √(width × height)); higher is busier. Default 2. |
+| `evolve` | `number` | How fast the field changes, noise units a second. Default 0.15. |
+| `life` | `number` | A trail's average life, seconds (each lives half to one and a half times it). Default 4. |
+| `vary` | `number` | How far the slow drives swing density, pace, weight and evolution, 0–1; 0 holds them. Default 0.7. |
+| `speed` | `number` | Plays every clock faster or slower; 0 for one still frame. Default 1. |
+| `seed` | `number` | Which field and which trails: the same seed draws the same. Default 1. |
+| `quiet` | `{ x?: number; y?: number; radius?: number; depth?: number } \| null` | An area with fewer, fainter trails: centre (0–1 from the top left), radius (share of the height), depth (0–1). |
+| `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
 | `class` | `string` | Classes for the element. |
 
 ## `<FlutedGlass>`
@@ -560,6 +626,35 @@ IsoCity: a small isometric city in flat-shaded low poly, with cars driving its s
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
 | `class` | `string` | Classes for the element. |
 
+## `<KineticGrid>`
+
+KineticGrid: a fine wireframe grid that ripples where drops land, the rings spreading and settling, brighter where a wire is stretched, with thin bright ring pulses lighting the wire segments they cross. See src/runtime/kinetic-grid.js.
+
+```astro
+<section class="hero" style="position: relative">
+  <KineticGrid colors={['#c8ff00', '#ffffff']} background="#0b0b0b" quiet={{ x: 0.3, y: 0.5, radius: 0.6, depth: 0.85 }} />
+  <h1>…</h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `colors` | `string[]` | Two CSS hex colours: the wires' and the pulses'. Default the sketch's blue and white. |
+| `palette` | `PaletteName \| (string & {})` | A shared palette by name (`PALETTES`, any case), when there are no `colors`: its first colour for the wires, its glint for the pulses. |
+| `background` | `string` | The ground, a CSS hex colour (opaque, so the canvas covers what is under it); `transparent` leaves it clear. Default '#0a0a0a'. |
+| `cols` | `number` | Grid cells across, whatever the width (cells are square). Default 48. |
+| `width` | `number` | A wire's width, CSS px. Default 1. |
+| `rest` | `number` | How bright a wire at rest is, 0–1; stretched wires brighten to full. Default 0.35. |
+| `drops` | `number` | Drops alive at once, 0–6 (each slot lands a new one about every five seconds). Default 4. |
+| `strength` | `number` | How far the ripples push the wires, 0–1.6 (past that they fold). Default 1. |
+| `size` | `number` | The ripples' scale: wavelength, reach and speed together, 0.5–2. Default 1. |
+| `pulses` | `number` | Ring pulses alive at once, 0–4 (each slot about every two and a half seconds). Default 3. |
+| `speed` | `number` | Plays the clock faster or slower; 0 for one still frame. Default 1. |
+| `offset` | `number` | Seeds where and when drops land, so two cards differ. Default 0. |
+| `quiet` | `{ x?: number; y?: number; radius?: number; depth?: number } \| null` | An area kept calm and dim: centre (0–1 from the top left), radius (share of the height), depth (0–1). |
+| `fixed` | `boolean` | Fill the viewport (position: fixed). Default false. |
+| `class` | `string` | Classes for the element. |
+
 ## `<LightField>`
 
 LightField: liquid light in three colours, bending around the pointer, with a real fluid under it that the pointer stirs and a click drops ink into. See src/runtime/light-field.js for how it is drawn.
@@ -583,6 +678,23 @@ LightField: liquid light in three colours, bending around the pointer, with a re
 | `scale` | `number` | Share of the pixel ratio drawn at. Default 0.5. |
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
 | `background` | `string` | The colour under the light, and under the fallback gradient. Default `#08080a`. |
+| `class` | `string` | Classes for the element. |
+
+## `<LightLeak>`
+
+LightLeak: a soft, slow colour field, a lava lamp or a light leak: drifting fBm blobs under a gentle warp, mixed through four colours (darkest first) in Oklab, with a breath too slow to see as one. See src/runtime/light-leak.js.
+
+```astro
+<section class="hero" style="position: relative">
+  <LightLeak colors={['#0b0b0b', '#1a2a8c', '#0038ff', '#ff5c64']} quiet={{ radius: 0.5, depth: 0.8 }} />
+  <h1>…</h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `fixed` | `boolean` | Fill the viewport (position: fixed). Default false. |
+| `lazy` | `boolean \| string` | Run only while near the screen (true, or a CSS length), giving its WebGL context back when away: for a wall of cards. Default false. |
 | `class` | `string` | Classes for the element. |
 
 ## `<LiquidMetal>`
@@ -1342,6 +1454,22 @@ VariableType: a headline in a variable font whose letters swell under the pointe
 | `idle` | `number` | How far the travelling swell rises with nothing over the text: 0 none, 1 to the peak (0–1). Default 0.35. |
 | `fit` | `boolean` | Size the line so that at its widest swell it spans its parent's width. Default false. |
 | `as` | `HTMLTag` | The element to render. Default `div`. |
+| `class` | `string` | Classes for the element. |
+
+## `<VoronoiMesh>`
+
+VoronoiMesh: a Voronoi mesh in thin lines on a ground, in two nested tiers: macro cells whose seeds orbit slowly, and inner cells inside each that pulse outward from its seed. Pale lines on deep maroon by default. See src/runtime/voronoi-mesh.js.
+
+```astro
+<section class="hero" style="position: relative">
+  <VoronoiMesh cells={8} quiet={{ x: 0.3, y: 0.5, radius: 0.7, depth: 0.8 }} />
+  <h1>…</h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `fixed` | `boolean` | Fill the viewport (position: fixed). Default false. |
 | `class` | `string` | Classes for the element. |
 
 ## `<VoxelLogo>`

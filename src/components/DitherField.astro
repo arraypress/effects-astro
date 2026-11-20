@@ -1,0 +1,41 @@
+---
+/**
+ * DitherField: a field of slow noise drawn in square dots, Bayer-dithered
+ * at its edges into a solid, colour-banded core, with ripples running out
+ * from a corner, bent into shore-wave shapes. See
+ * src/runtime/dither-field.js.
+ *
+ * Fills its nearest positioned ancestor, or the viewport with `fixed`.
+ * Clear where there are no dots (or `background`), so it lays over any
+ * ground; with a `background`, the element shows a still of the field
+ * until the shader starts and without WebGL.
+ *
+ * @example
+ * <section class="hero" style="position: relative; background: #0b0b0b">
+ *   <DitherField background="#0b0b0b" colors={['#3d4d0a', '#c8ff00']} quiet={{ x: 0.3, y: 0.5, radius: 0.6, depth: 1 }} />
+ *   <h1>…</h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import { ditherStill, type DitherFieldConfig } from '../runtime/dither-field.js';
+
+interface Props extends DitherFieldConfig {
+	/** Fill the viewport (position: fixed). Default false. */
+	fixed?: boolean;
+	/** Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away: for pages with many effects. Default false. */
+	lazy?: boolean | string;
+	class?: string;
+}
+
+const { fixed = false, lazy = false, class: className, ...config } = Astro.props;
+const still = config.background ? ditherStill(config) : undefined;
+---
+
+<EffectCanvas name="dither-field" config={config} fixed={fixed} lazy={lazy} background={still} pixelated class={className} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { ditherField } from '../runtime/dither-field.js';
+
+	mount('[data-effect-dither-field]', ditherField);
+</script>

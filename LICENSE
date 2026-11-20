@@ -78,8 +78,8 @@ SOFTWARE.
 
 ---
 
-The hashes in src/runtime/shader-backgrounds/grain-gradient.js and
-src/runtime/ascii-noise.js are Dave Hoskins' "Hash without Sine" (https://www.shadertoy.com/view/4djSRW):
+The hashes in src/runtime/shader-backgrounds/grain-gradient.js,
+src/runtime/hash-noise.js and src/runtime/light-leak.js are Dave Hoskins' "Hash without Sine" (https://www.shadertoy.com/view/4djSRW):
 
 Copyright (c) 2014 David Hoskins
 

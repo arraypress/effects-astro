@@ -27,11 +27,15 @@
  */
 
 import { createStage } from './stage.js';
+import { GLSL_GRADIENT_NOISE, GLSL_NOISE_FIELD, noiseField } from './hash-noise.js';
 import { GLSL_OKLAB, parseColor, toOklab } from './color.js';
 import { GLSL_QUIET, quietUniform } from './glsl.js';
 import { GLSL_GLYPHS, GLYPH_SETS, createGlyphs } from './glyphs.js';
 import { watchColors } from './mount.js';
 import { pickColors } from './palettes.js';
+
+/** The warped field (./hash-noise.js), as 0.10.0 exported it from here. */
+export { noiseField };
 
 /**
  * @typedef {object} AsciiNoiseConfig
@@ -106,42 +110,6 @@ export function rampOf(glyphs = NOISE_DEFAULTS.glyphs) {
 	return chars.length > 1 ? chars : [...NOISE_RAMPS.ascii];
 }
 
-/**
- * GLSL (ES 1.00): `float noiseField(vec2 p, float evo, float wt)`, the
- * warped five-octave gradient noise, 0–1. `noiseField` below is the same
- * in JavaScript.
- */
-const GLSL_FIELD = `
-vec2 grad(vec2 p) {
-	vec3 p3 = fract(vec3(p.xyx) * vec3(0.1031, 0.1030, 0.0973));
-	p3 += dot(p3, p3.yzx + 33.33);
-	return -1.0 + 2.0 * fract((p3.xx + p3.yz) * p3.zy);
-}
-float gnoise(vec2 p) {
-	vec2 i = floor(p);
-	vec2 f = p - i;
-	vec2 u = f * f * f * (f * (f * 6.0 - 15.0) + 10.0);
-	float a = dot(grad(i), f);
-	float b = dot(grad(i + vec2(1.0, 0.0)), f - vec2(1.0, 0.0));
-	float c = dot(grad(i + vec2(0.0, 1.0)), f - vec2(0.0, 1.0));
-	float d = dot(grad(i + vec2(1.0, 1.0)), f - vec2(1.0, 1.0));
-	return 0.5 + 0.5 * mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
-}
-float noiseField(vec2 p, float evo, float wt) {
-	float warp = gnoise(p + wt * 0.04);
-	float v = 0.0;
-	float amp = 0.5;
-	float freq = 1.0;
-	for (int i = 0; i < 5; i++) {
-		v += amp * gnoise(p * freq + vec2(warp * 0.3, warp * 0.25) + evo * 0.06);
-		amp *= 0.5;
-		freq *= 2.07;
-		warp = v;
-	}
-	return v;
-}
-`;
-
 const FRAG = `
 precision highp float;
 uniform vec2 uRes;
@@ -159,7 +127,8 @@ uniform vec4 uBg;
 ${GLSL_OKLAB}
 ${GLSL_QUIET}
 ${GLSL_GLYPHS}
-${GLSL_FIELD}
+${GLSL_GRADIENT_NOISE}
+${GLSL_NOISE_FIELD}
 
 void main() {
 	// Cells counted from the top left, as the text still lays them.
@@ -180,76 +149,6 @@ void main() {
 	gl_FragColor = vec4(col * a + uBg.rgb * uBg.a * (1.0 - a), a + uBg.a * (1.0 - a));
 }
 `;
-
-/**
- * One octave's gradient at a lattice point (the shader's `grad`): Dave
- * Hoskins' Hash without Sine, which brings its input under 1 before it
- * multiplies, so the GPU's 32-bit floats and these 64-bit ones agree.
- * (The sketch's own hash multiplied values in the thousands, where the
- * two drift apart and the text still would not be the shader's frame.)
- *
- * @param {number} x The point's x.
- * @param {number} y The point's y.
- * @returns {[number, number]} A gradient, each part −1 to 1.
- */
-function grad(x, y) {
-	const fract = (/** @type {number} */ n) => n - Math.floor(n);
-	let a = fract(x * 0.1031);
-	let b = fract(y * 0.103);
-	let c = fract(x * 0.0973);
-	const d = a * (b + 33.33) + b * (c + 33.33) + c * (a + 33.33);
-	a += d;
-	b += d;
-	c += d;
-	return [-1 + 2 * fract((a + b) * c), -1 + 2 * fract((a + c) * b)];
-}
-
-/**
- * Gradient noise with a quintic fade (the shader's `gnoise`).
- *
- * @param {number} x Where, x.
- * @param {number} y Where, y.
- * @returns {number} 0–1.
- */
-function gnoise(x, y) {
-	const ix = Math.floor(x);
-	const iy = Math.floor(y);
-	const fx = x - ix;
-	const fy = y - iy;
-	const ux = fx * fx * fx * (fx * (fx * 6 - 15) + 10);
-	const uy = fy * fy * fy * (fy * (fy * 6 - 15) + 10);
-	const dot = (/** @type {[number, number]} */ g, /** @type {number} */ dx, /** @type {number} */ dy) => g[0] * dx + g[1] * dy;
-	const a = dot(grad(ix, iy), fx, fy);
-	const b = dot(grad(ix + 1, iy), fx - 1, fy);
-	const c = dot(grad(ix, iy + 1), fx, fy - 1);
-	const d = dot(grad(ix + 1, iy + 1), fx - 1, fy - 1);
-	const ab = a + (b - a) * ux;
-	const cd = c + (d - c) * ux;
-	return 0.5 + 0.5 * (ab + (cd - ab) * uy);
-}
-
-/**
- * The field: five octaves of gradient noise, each warped by the sum so far.
- *
- * @param {number} x Where, x.
- * @param {number} y Where, y.
- * @param {number} evo The morphing clock.
- * @param {number} wt The warp's clock (seconds).
- * @returns {number} 0–1, near 0.5 on average.
- */
-export function noiseField(x, y, evo, wt) {
-	let warp = gnoise(x + wt * 0.04, y + wt * 0.04);
-	let v = 0;
-	let amp = 0.5;
-	let freq = 1;
-	for (let i = 0; i < 5; i++) {
-		v += amp * gnoise(x * freq + warp * 0.3 + evo * 0.06, y * freq + warp * 0.25 + evo * 0.06);
-		amp *= 0.5;
-		freq *= 2.07;
-		warp = v;
-	}
-	return v;
-}
 
 /**
  * One frame as ramp indices: what the shader draws, cell for cell, on a

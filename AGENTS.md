@@ -10,7 +10,7 @@ Pick by what is asked for:
 
 | Asked for | Use |
 |---|---|
-| An animated, colourful background for a page or hero | `<LightField>` (liquid light), `<FlutedGlass>` (light, gallery-white or dark), `<AsciiRain>` (techy, dark), `<AsciiNoise>` (drifting blobs of monospace type; techy, terminal, studio), `<DotGrid>` (quiet, minimal), `<SignalLines>` / `<WaveBars>` (audio) |
+| An animated, colourful background for a page or hero | `<LightField>` (liquid light), `<FlutedGlass>` (light, gallery-white or dark), `<AsciiRain>` (techy, dark), `<AsciiNoise>` (drifting blobs of monospace type; techy, terminal, studio), `<LightLeak>` (a soft drifting colour field), `<DitherField>` (dithered dots, ripples from a corner), `<CascadeGrid>` (a hex or dot spectrogram), `<FlowField>` (fine trails on a flow; Canvas), `<VoronoiMesh>` (thin nested cell lines), `<KineticGrid>` (a wire grid rain ripples), `<DotGrid>` (quiet, minimal), `<SignalLines>` / `<WaveBars>` (audio) |
 | Ink in water, a lit fluid background, or a hero whose colours a palette switcher changes | `<InkField palette="…">` (Lumetri, Forest, Cadmium, Peacock, Vermillion, Barbie, Uranium, Azure, Ruby, Ultramarine, Saffron, Crimson); `setColors(el, INK_PALETTES[name].colors, INK_PALETTES[name].glint)` recolours it live |
 | Something to play with: ink, smoke, liquid, "interactive" | `<Ink>` over a section, or `<LightField>` (it has the fluid under it), or `<DotGrid>` (click ripples) |
 | A soft gradient that drifts (a card, a hero, a section) — "grainy gradient", "mesh", "aurora" | `<LiveGradient colors={[…]}>` (lazy by default; `liveGradient(colors)` for HTML made in a script) |

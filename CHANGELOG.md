@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.0] — 2026-11-20
+
+Six backgrounds after Processing sketches shared with the owner, modernised: on the GPU (FlowField on Canvas 2D), timed in
+seconds, sized by the element so a card and a hero look alike, colours in Oklab, a `quiet` area behind copy, `speed: 0`
+for a still, and each with a pure JS twin for stills and tests. Made for the Logomarks Lookbook's field cards.
+
+### Added
+
+- `<LightLeak>` (`lightLeak`, `lightLeakStill`): a soft, slow lava-lamp or light-leak colour field, four colours darkest first, `quietTone` for the tone the quiet area flattens to, `drift` for how fast it moves (0.3; the sketch's own 0.04 loops in four and a half minutes, made for a long mix behind it, and looked still on a card). After `lavalamp_bg`.
+- `<DitherField>` (`ditherField`, `ditherStill`): a noise field in square dots, Bayer-dithered edges into a banded core, ripples from an `origin`, one canvas pixel per dot. After `ripple_dither_bg`.
+- `<CascadeGrid>` (`cascadeGrid`, `cascadeStill`): hexagons or dots (`cell`) run like a scrolling spectrogram, the level analytic in the shader (no ring buffer). After `hex_spectrogram_bg` and `circle_grid_bg`.
+- `<FlowField>` (`flowField`): fine particle trails riding an evolving noise flow, Canvas 2D (no WebGL context), stepped at a fixed rate. After `perlin_field_bg`.
+- `<VoronoiMesh>` (`voronoiMesh`, `meshStill`): two tiers of thin Voronoi outlines, the inner cells confined to their macro cell and pulsing; exact border distance in the shader. After `voronoi_bg`.
+- `<KineticGrid>` (`kineticGrid`, `gridStill`): a wireframe grid that seeded raindrops ripple, pulses running along the wires, no CPU physics. After `grid_bg`.
+- `runtime/hash-noise`: Hash without Sine (`hash33`), gradient noise (`grad`, `gnoise`) and the warped field (`noiseField`), as GLSL and matching JS, shared by AsciiNoise, DitherField, CascadeGrid, VoronoiMesh and KineticGrid.
+
+### Changed
+
+- `<AsciiNoise>`'s noise now comes from `runtime/hash-noise`; `noiseField` is still exported from `runtime/ascii-noise`. Nothing it draws changes.
+
 ## [0.10.0] — 2026-11-20
 
 ### Added

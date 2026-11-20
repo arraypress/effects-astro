@@ -1,0 +1,39 @@
+---
+/**
+ * VoronoiMesh: a Voronoi mesh in thin lines on a ground, in two nested
+ * tiers: macro cells whose seeds orbit slowly, and inner cells inside each
+ * that pulse outward from its seed. Pale lines on deep maroon by default.
+ * See src/runtime/voronoi-mesh.js.
+ *
+ * Fills its nearest positioned ancestor, or the viewport with `fixed`.
+ * Opaque (its `background`), which the element shows before the shader
+ * starts and without WebGL; `meshStill` in the runtime makes an SVG still
+ * of the same frame for a box of known size (a card).
+ *
+ * @example
+ * <section class="hero" style="position: relative">
+ *   <VoronoiMesh cells={8} quiet={{ x: 0.3, y: 0.5, radius: 0.7, depth: 0.8 }} />
+ *   <h1>…</h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import { MESH_DEFAULTS, type VoronoiMeshConfig } from '../runtime/voronoi-mesh.js';
+
+interface Props extends VoronoiMeshConfig {
+	/** Fill the viewport (position: fixed). Default false. */
+	fixed?: boolean;
+	class?: string;
+}
+
+const { fixed = false, class: className, ...config } = Astro.props;
+const ground = config.background ?? MESH_DEFAULTS.background;
+---
+
+<EffectCanvas name="voronoi-mesh" config={config} fixed={fixed} background={ground} class={className} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { voronoiMesh } from '../runtime/voronoi-mesh.js';
+
+	mount('[data-effect-voronoi-mesh]', voronoiMesh);
+</script>
