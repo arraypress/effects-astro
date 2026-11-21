@@ -1,32 +1,36 @@
 export interface PixelFountainConfig {
-	/** The pixels' colour when they fire; the darker steps they fade through are made from it. Default `#c8ff00`. */
+	/** The pixels' colour when they fire; the darker steps they fade through are made from it. With `source="pointer"`, the one ink every block is drawn in. Default `#c8ff00` (from the pointer, the text's colour, `currentColor`). */
 	color?: string;
-	/** The steps a pixel fades through, first to last (overrides `color`). Default made from `color`. */
+	/** The steps a pixel fades through, first to last (overrides `color`; from the pointer, only the first is used). Default made from `color`. */
 	colors?: string[];
 	/** A shared palette by name, its colours as the steps, when there are no `colors`. Default none. */
 	palette?: string;
 	/** A pixel's size, CSS px (a power-up's biggest blocks are two). Default 8. */
 	cell?: number;
-	/** How far above the edge the pixels can fly, CSS px. Default 240. */
+	/** How far above the edge the pixels can fly, CSS px (from the pointer: how far above the host the canvas reaches). Default 240 (160 from the pointer). */
 	rise?: number;
-	/** Pixels a second trickling up on their own, per 1,000 CSS px of edge; 0 for none. Default 14. */
+	/** Pixels a second trickling up on their own, per 1,000 CSS px of edge; 0 for none (always none from the pointer). Default 14. */
 	rate?: number;
-	/** Pixels a click or tap fires. Default 40. */
+	/** Pixels a click or tap fires. Default 40 (24 from the pointer). */
 	burst?: number;
+	/** From the pointer: blocks fired for every 100 CSS px it moves, at most 12 a move. Default 10. */
+	trail?: number;
+	/** Whether a mouse click fires a burst (a tap always does). Default true (false from the pointer). */
+	press?: boolean;
 	/** How hard they are pulled back, 0–2. Default 1. */
 	gravity?: number;
 	/** How widely they fan out, 0–1. Default 0.5. */
 	spread?: number;
 	/** How much a wind pushes them sideways, 0–1. Default 0.3. */
 	drift?: number;
-	/** The longest a pixel lives, seconds. Default 1.4. */
+	/** The longest a pixel lives, seconds. Default 1.4 (0.9 from the pointer). */
 	life?: number;
-	/** The chance a pixel splits into smaller ones rather than shrinking, 0–1. Default 0.4. */
+	/** The chance a pixel splits into smaller ones rather than shrinking, 0–1. Default 0.4 (0.2 from the pointer). */
 	split?: number;
-	/** The chance a pixel flickers out on and off before it goes, 0–1. Default 0.35. */
+	/** The chance a pixel flickers out on and off before it goes, 0–1. Default 0.35 (0.5 from the pointer). */
 	flicker?: number;
-	/** Fire from the host's top edge, or from the filled pixels of its text. Default `edge`. */
-	source?: 'edge' | 'text';
+	/** Fire from the host's top edge; from the filled pixels of its text; or only from the pointer, where it moves over the host (a block-dust trail in one ink, nothing on its own). Default `edge`. */
+	source?: 'edge' | 'text' | 'pointer';
 	/** A selector for the element the pixels fire from and the pointer is followed over: the nearest ancestor that matches, else the first on the page. Default the element's positioned parent. */
 	host?: string;
 	/** Seeds the randomness. Default 1. */
@@ -61,8 +65,8 @@ export interface Pixel {
 	wobble: number;
 }
 
-/** What fired a pixel: the ambient trickle, the pointer moving, or a press (a power-up). */
-export type EmitKind = 'ambient' | 'move' | 'burst';
+/** What fired a pixel: the ambient trickle, the pointer moving over the edge or letters, or a press (a power-up); from the pointer, its trail and a tap. */
+export type EmitKind = 'ambient' | 'move' | 'burst' | 'trail' | 'tap';
 
 /** A fountain's settings: the canvas's size and the effect's physics. */
 export interface FountainOptions {
@@ -80,6 +84,8 @@ export interface FountainOptions {
 	life?: number;
 	split?: number;
 	flicker?: number;
+	/** Blocks a pointer's move fires for every 100 CSS px it travels. Default 10. */
+	trail?: number;
 	seed?: number;
 }
 
@@ -100,6 +106,10 @@ export interface Fountain {
 	emitEdge(x: number, n: number, kind?: EmitKind): number;
 	/** Fires `n` pixels from where the ambient ones fire. */
 	emitAmbient(n: number, kind?: EmitKind): number;
+	/** The pointer moved to a point: fires `trail` blocks per 100 px travelled (at most `TRAIL_CAP`), spaced along the way it came and ending there; none on the first point after a lift or for no move. Returns how many fired. */
+	moveTo(x: number, y: number): number;
+	/** Forgets where the pointer was (it left, or lifted). */
+	lift(): void;
 	/** One step (default 1/60 s): the trickle, then every pixel ages, breaks down, moves and flickers. */
 	step(dt?: number): void;
 	/** Empties the pool. */
@@ -111,6 +121,12 @@ export const MAX_PIXELS: number;
 
 /** The simulation's fixed step, seconds (1/60). */
 export const STEP: number;
+
+/** The most blocks one pointer move fires (12). */
+export const TRAIL_CAP: number;
+
+/** The settings that change with `source: 'pointer'`. */
+export const POINTER_DEFAULTS: { rate: number; life: number; split: number; flicker: number; rise: number; burst: number; trail: number };
 
 /** The steps a pixel fades through, made from one colour in Oklab: darker and less saturated each step, turning a little towards olive. */
 export function fadeSteps(color: string, count?: number): string[];
@@ -130,5 +146,5 @@ export function inkedCells(rgba: Uint8ClampedArray, width: number, height: numbe
 /** Makes a seeded fountain of pixels. */
 export function createFountain(options: FountainOptions): Fountain;
 
-/** Starts the pixel fountain on an element placed over its host's top edge. Returns a function that stops it. */
+/** Starts the pixel fountain on an element placed over its host's top edge (over the host and above it, from the text or the pointer). Returns a function that stops it. */
 export function pixelFountain(el: HTMLElement, config: PixelFountainConfig): () => void;

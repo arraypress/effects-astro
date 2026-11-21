@@ -3,7 +3,8 @@
  * PixelGlitchText: one line of text that breaks into pixels under the
  * pointer and knits back together behind it. With `stroke`, a hollow
  * outline at rest that the pixels fill in; `tear="row"` tears whole rows,
- * and `ghost` lays a coloured copy behind the blocks. See
+ * and `ghost` lays a coloured copy behind the blocks; `glitch={false}`
+ * keeps only the drawing at rest (a still outlined wordmark). See
  * src/runtime/pixel-glitch.js.
  *
  * With `fit`, the text is sized to span its parent's width (a footer
@@ -27,13 +28,13 @@ interface Props extends PixelGlitchConfig {
 	[attribute: string]: unknown;
 }
 
-const { as: Tag = 'span', fit = false, cell, reach, decay, block, shift, stroke, tear, ghost, class: className, style: given, ...attributes } = Astro.props;
+const { as: Tag = 'span', fit = false, cell, reach, decay, block, shift, stroke, tear, ghost, glitch, class: className, style: given, ...attributes } = Astro.props;
 ---
 
 <Tag
 	class:list={['effect-pixel-glitch', { 'is-outline': (stroke ?? 0) > 0 }, className]}
 	data-effect-pixel-glitch
-	data-effect-config={JSON.stringify({ cell, reach, decay, block, shift, stroke, tear, ghost })}
+	data-effect-config={JSON.stringify({ cell, reach, decay, block, shift, stroke, tear, ghost, glitch })}
 	data-fit-text={fit ? '' : undefined}
 	style={withStyle(stroke ? `--glitch-stroke: ${stroke}px` : undefined, given)}
 	{...attributes}

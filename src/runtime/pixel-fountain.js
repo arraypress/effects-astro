@@ -15,13 +15,23 @@
  * over the host fires a stream from under it, and a click or tap fires a
  * power-up: a bigger burst whose first frames burn white.
  *
+ * With `source: 'pointer'` nothing fires on its own: blocks fire only where
+ * the pointer is, as it moves over the host, a few for every stretch it
+ * travels (none while it rests or once it leaves). They pop out and up with
+ * a little spread and a kick along the pointer's way, arc under gravity and
+ * break down within about a second: a block-dust trail off the cursor, in
+ * one solid ink (the text's colour unless `color` is set), with a few
+ * chunky blocks among the small ones. A tap fires a burst where it lands;
+ * a click does too only with `press`.
+ *
  * The simulation (`createFountain`) is pure and seeded: it runs in fixed
  * 60 Hz steps, so the same seed and the same emits give the same pixels
  * whatever the frame rate. At most MAX_PIXELS live at once, in a pool that
  * allocates nothing while it runs. Canvas 2D in device pixels, every
  * rectangle on whole pixels, so the blocks stay crisp at any pixel ratio.
  * Drawn only while near the screen and while the tab shows (the shared
- * loop); with prefers-reduced-motion, a still scatter of pixels.
+ * loop); with prefers-reduced-motion, a still scatter of pixels (nothing
+ * at all from the pointer).
  */
 
 import { createCanvas2D } from './canvas2d.js';
@@ -34,20 +44,22 @@ import { textNodesWithin, paintGlyphs } from './text.js';
 
 /**
  * @typedef {object} PixelFountainConfig
- * @property {string} [color='#c8ff00'] The pixels' colour when they fire; the darker steps they fade through are made from it.
- * @property {string[]} [colors] The steps a pixel fades through, first to last (overrides `color`).
+ * @property {string} [color='#c8ff00'] The pixels' colour when they fire; the darker steps they fade through are made from it. With `source: 'pointer'`, the one ink every block is drawn in (default the text's colour, `currentColor`).
+ * @property {string[]} [colors] The steps a pixel fades through, first to last (overrides `color`; from the pointer, only the first is used).
  * @property {string} [palette] A shared palette by name, its colours as the steps, when there are no `colors`.
  * @property {number} [cell=8] A pixel's size, CSS px (a power-up's biggest blocks are two).
- * @property {number} [rise=240] How far above the edge the pixels can fly, CSS px.
- * @property {number} [rate=14] Pixels a second trickling up on their own, per 1,000 CSS px of edge; 0 for none.
- * @property {number} [burst=40] Pixels a click or tap fires.
+ * @property {number} [rise=240] How far above the edge the pixels can fly, CSS px (160 from the pointer: how far above the host the canvas reaches, and about how high a tap's burst flies).
+ * @property {number} [rate=14] Pixels a second trickling up on their own, per 1,000 CSS px of edge; 0 for none (always none from the pointer).
+ * @property {number} [burst=40] Pixels a click or tap fires (24 from the pointer).
+ * @property {number} [trail=10] From the pointer: blocks fired for every 100 CSS px it moves (at most 12 a move).
+ * @property {boolean} [press] Whether a mouse click fires a burst: default true, false from the pointer (where a tap still does).
  * @property {number} [gravity=1] How hard they are pulled back, 0–2.
  * @property {number} [spread=0.5] How widely they fan out, 0–1.
  * @property {number} [drift=0.3] How much a wind pushes them sideways, 0–1.
- * @property {number} [life=1.4] The longest a pixel lives, seconds.
- * @property {number} [split=0.4] The chance a pixel splits into smaller ones rather than shrinking, 0–1.
- * @property {number} [flicker=0.35] The chance a pixel flickers out on and off before it goes, 0–1.
- * @property {'edge' | 'text'} [source='edge'] Fire from the host's top edge, or from the filled pixels of its text.
+ * @property {number} [life=1.4] The longest a pixel lives, seconds (0.9 from the pointer).
+ * @property {number} [split=0.4] The chance a pixel splits into smaller ones rather than shrinking, 0–1 (0.2 from the pointer).
+ * @property {number} [flicker=0.35] The chance a pixel flickers out on and off before it goes, 0–1 (0.5 from the pointer).
+ * @property {'edge' | 'text' | 'pointer'} [source='edge'] Fire from the host's top edge, from the filled pixels of its text, or only from the pointer as it moves over the host.
  * @property {string} [host] A selector for the element the pixels fire from and the pointer is followed over: the nearest ancestor that matches, else the first on the page. Default the element's positioned parent.
  * @property {number} [seed=1] Seeds the randomness.
  */
@@ -68,10 +80,28 @@ const LAST_TIER = TIER_CELLS.length - 1;
 const GRAVITY = 1000;
 
 /** How hard each kind of emit throws, a share of the throw that reaches 0.62 of `rise`. */
-const POWER = { ambient: [0.5, 0.35], move: [0.62, 0.3], burst: [0.7, 0.6] };
+const POWER = { ambient: [0.5, 0.35], move: [0.62, 0.3], burst: [0.7, 0.6], trail: [0.15, 0.7], tap: [0.4, 0.55] };
 
 /** How far into its flight a fired pixel may already be, seconds: a burst comes out as a spurt, not one slab. */
-const LEAD = { ambient: 0, move: 0.06, burst: 0.3 };
+const LEAD = { ambient: 0, move: 0.06, burst: 0.3, trail: 0, tap: 0.05 };
+
+/** The size a pixel fires at, by what fired it: a double block below the first share of a roll, a block below the second, else a half. */
+const TIERS = { ambient: [0, 0.7], move: [0.15, 1], burst: [0.4, 1], trail: [0.2, 0.7], tap: [0.35, 0.85] };
+
+/** How far a pointer's block may lean from straight up, radians at `spread` 1 (a tap's twice as far). */
+const FAN = 1.1;
+
+/** The share of the pointer's way (CSS px a move) a trail block is kicked along, as CSS px/s. */
+const KICK = 7;
+
+/** The most kick a trail block takes along the pointer's way, CSS px/s. */
+const MAX_KICK = 260;
+
+/** The most blocks one pointer move fires. */
+export const TRAIL_CAP = 12;
+
+/** The settings that change with `source: 'pointer'`: no trickle, a short life, fewer splits, more flicker, a lower canvas, a smaller tap. */
+export const POINTER_DEFAULTS = { rate: 0, life: 0.9, split: 0.2, flicker: 0.5, rise: 160, burst: 24, trail: 10 };
 
 /** The wind at `drift` 1, CSS px/s² (a slow swing either way). */
 const WIND = 70;
@@ -120,11 +150,14 @@ const HOT_MIX = 0.6;
  * @property {number} [life=1.4] The longest life, seconds.
  * @property {number} [split=0.4] The chance of a split at each break, 0–1.
  * @property {number} [flicker=0.35] The chance of flickering out, 0–1.
+ * @property {number} [trail=10] Blocks a pointer's move fires for every 100 CSS px it travels.
  * @property {number} [seed=1] The seed.
  */
 
 /**
- * @typedef {'ambient' | 'move' | 'burst'} EmitKind
+ * @typedef {'ambient' | 'move' | 'burst' | 'trail' | 'tap'} EmitKind
+ * What fired a pixel: the trickle, the pointer moving over the edge or the
+ * letters, a press (a power-up); or, from the pointer, its trail and a tap.
  */
 
 /**
@@ -263,6 +296,8 @@ export function inkedCells(rgba, width, height, cell, floor = height) {
  *   emitNear: (x: number, y: number, n: number, kind?: EmitKind, radius?: number) => number,
  *   emitEdge: (x: number, n: number, kind?: EmitKind) => number,
  *   emitAmbient: (n: number, kind?: EmitKind) => number,
+ *   moveTo: (x: number, y: number) => number,
+ *   lift: () => void,
  *   step: (dt?: number) => void,
  *   clear: () => void,
  * }} The fountain: `pixels[0…count)` are alive.
@@ -277,6 +312,7 @@ export function createFountain(options) {
 	const LIFE = options.life ?? 1.4;
 	const SPLIT = options.split ?? 0.4;
 	const FLICKER = options.flicker ?? 0.35;
+	const TRAIL = options.trail ?? 10;
 	const random = seededRandom(options.seed ?? 1);
 	// The throw that reaches 0.62 of `rise` at the nominal pull, whatever `gravity` is: gravity changes the arc, not the throw.
 	const THROW = Math.sqrt(2 * GRAVITY * RISE * 0.62);
@@ -291,6 +327,10 @@ export function createFountain(options) {
 	/** @type {Float32Array | null} */
 	let origins = null;
 	let topCount = 0;
+	// The pointer's last place (NaN while it is away), and the share of a block its moves owe.
+	let px = NaN;
+	let py = NaN;
+	let carry = 0;
 
 	/** @type {Pixel[]} */
 	const pixels = Array.from({ length: MAX_PIXELS }, () => ({
@@ -334,24 +374,36 @@ export function createFountain(options) {
 	 * @param {number} x Centre, across, CSS px.
 	 * @param {number} y Centre, down, CSS px.
 	 * @param {EmitKind} kind What fired it.
+	 * @param {number} [kx=0] A kick across, CSS px/s (the pointer's way, for its trail).
+	 * @param {number} [ky=0] A kick down, CSS px/s.
 	 * @returns {boolean} False when the pool is full.
 	 */
-	const spawn = (x, y, kind) => {
+	const spawn = (x, y, kind, kx = 0, ky = 0) => {
 		if (count >= MAX_PIXELS) return false;
 		const p = pixels[count++];
 		const [base, range] = POWER[kind];
 		const speed = THROW * (base + random() * range);
-		const fan = kind === 'burst' ? 2 : 1;
+		const pointer = kind === 'trail' || kind === 'tap';
 		p.x = x;
 		p.y = y;
-		p.vx = (random() * 2 - 1) * SPREAD * fan * speed * 0.5;
-		p.vy = -speed;
+		if (pointer) {
+			// Out and up, leaning either way by `spread`, and carried a little along the pointer's way.
+			const lean = (random() * 2 - 1) * SPREAD * FAN * (kind === 'tap' ? 2 : 1);
+			p.vx = Math.sin(lean) * speed + kx;
+			p.vy = -Math.cos(lean) * speed + ky;
+		} else {
+			const fan = kind === 'burst' ? 2 : 1;
+			p.vx = (random() * 2 - 1) * SPREAD * fan * speed * 0.5;
+			p.vy = -speed;
+		}
 		p.age = 0;
 		// Gone before it lands: a flight's length at most, so each runs through its colours in the air.
-		const flight = G > 0 ? (2 * speed) / G : Infinity;
+		// The pointer's blocks are thrown from mid-air, so they only live their life (and fall past where they started).
+		const flight = G > 0 && !pointer ? (2 * speed) / G : Infinity;
 		p.life = Math.min(LIFE * (0.6 + random() * 0.4), flight * (0.85 + random() * 0.2));
 		const roll = random();
-		p.tier = kind === 'burst' ? (roll < 0.4 ? 0 : 1) : kind === 'move' ? (roll < 0.15 ? 0 : 1) : roll < 0.7 ? 1 : 2;
+		const [big, block] = TIERS[kind];
+		p.tier = roll < big ? 0 : roll < block ? 1 : 2;
 		schedule(p);
 		p.hot = kind === 'burst';
 		p.flicker = random() < FLICKER ? 0.45 + random() * 0.3 : 2;
@@ -453,7 +505,7 @@ export function createFountain(options) {
 			topCount = tops;
 		},
 		emit(x, y, n, kind = 'burst') {
-			const jitter = (kind === 'burst' ? 2.5 : kind === 'move' ? 1 : 0) * CELL;
+			const jitter = (kind === 'burst' ? 2.5 : kind === 'move' || kind === 'tap' ? 1 : 0) * CELL;
 			let made = 0;
 			for (let i = 0; i < n; i++) {
 				if (!spawn(x + (random() * 2 - 1) * jitter, y, kind)) break;
@@ -489,6 +541,40 @@ export function createFountain(options) {
 				made++;
 			}
 			return made;
+		},
+		moveTo(x, y) {
+			const was = [px, py];
+			px = x;
+			py = y;
+			// The first place after a lift only marks where the pointer is.
+			if (!Number.isFinite(was[0])) return 0;
+			const dx = x - was[0];
+			const dy = y - was[1];
+			const d = Math.hypot(dx, dy);
+			if (!d) return 0;
+			carry += (d * TRAIL) / 100;
+			// A hair under a whole block counts: ten moves of a tenth must make one.
+			const owed = Math.floor(carry + 1e-9);
+			const n = Math.min(TRAIL_CAP, owed);
+			// What the cap cut off is dropped, not saved up for later moves.
+			carry = Math.max(0, carry - owed);
+			const kick = Math.min(MAX_KICK, d * KICK) / d;
+			const jitter = CELL;
+			let made = 0;
+			for (let i = 0; i < n; i++) {
+				// Spaced along the stretch just travelled, ending at the pointer, so a quick sweep leaves an even trail.
+				const t = (i + random()) / n;
+				const x0 = was[0] + dx * t + (random() * 2 - 1) * jitter;
+				const y0 = was[1] + dy * t + (random() * 2 - 1) * jitter;
+				if (!spawn(x0, y0, 'trail', dx * kick, dy * kick * 0.5)) break;
+				made++;
+			}
+			return made;
+		},
+		lift() {
+			px = NaN;
+			py = NaN;
+			carry = 0;
 		},
 		step(dt = STEP) {
 			time += dt;
@@ -553,24 +639,38 @@ function findHost(el, selector) {
 }
 
 /**
+ * Whether a colour asks for the text's own (none, or `currentColor`).
+ *
+ * @param {string | undefined} color The colour given.
+ * @returns {boolean} True to read the element's CSS colour.
+ */
+const isCurrent = (color) => !color || color.toLowerCase() === 'currentcolor';
+
+/**
  * Starts the pixel fountain on an element (its first canvas is drawn
  * into). The element should be positioned over its host's top edge (or,
- * with `source: 'text'`, over the host and the space above it), with its
- * bottom on the host's bottom edge: the component does this.
+ * with `source: 'text'` or `'pointer'`, over the host and the space above
+ * it), with its bottom on the host's bottom edge: the component does this.
  *
  * @param {HTMLElement} el The element.
  * @param {PixelFountainConfig} config The settings.
  * @returns {() => void} Stops it.
  */
 export function pixelFountain(el, config) {
-	const CELL = Math.max(2, config.cell ?? 8);
-	const BURST = config.burst ?? 40;
-	const TEXT = config.source === 'text';
-	const host = findHost(el, config.host);
-	const fountain = createFountain({ ...config, cell: CELL, width: 1, height: 1 });
+	const POINTER = config.source === 'pointer';
+	// From the pointer: its own defaults, and never a trickle.
+	const settings = POINTER ? { ...POINTER_DEFAULTS, ...config, rate: 0 } : config;
+	const CELL = Math.max(2, settings.cell ?? 8);
+	const BURST = settings.burst ?? 40;
+	const PRESS = settings.press ?? !POINTER;
+	const TEXT = settings.source === 'text';
+	const host = findHost(el, settings.host);
+	const fountain = createFountain({ ...settings, cell: CELL, width: 1, height: 1 });
 
-	let steps = pickColors(config, fadeSteps(config.color ?? '#c8ff00'));
+	// The ramp's steps; from the pointer, one ink (empty for the text's colour).
+	let steps = POINTER ? pickColors(settings, isCurrent(settings.color) ? [] : [/** @type {string} */ (settings.color)]) : pickColors(settings, fadeSteps(settings.color ?? '#c8ff00'));
 	let hot = '';
+	let ink = '';
 	/**
 	 * Takes a new set of steps, and the hot colour from the first.
 	 *
@@ -578,17 +678,24 @@ export function pixelFountain(el, config) {
 	 */
 	const recolor = (next) => {
 		steps = next;
+		readInk();
 		try {
 			hot = toHex(mixOklab(parseColor(steps[0]), [1, 1, 1], HOT_MIX));
 		} catch {
 			hot = steps[0];
 		}
 	};
+	/** The pointer's one ink: the first step, or the element's CSS colour. */
+	const readInk = () => {
+		if (POINTER) ink = isCurrent(steps[0]) ? getComputedStyle(el).color : steps[0];
+	};
 	recolor(steps);
 	const unwatch = watchColors(el, ({ colors }) => recolor(colors));
 
 	let acc = 0;
 	let stopped = false;
+	/** Whether the last frame drew anything (an empty pool is cleared once, then left). */
+	let drawn = true;
 	/** @type {import('./canvas2d.js').Canvas2D | null} */
 	let canvas2d = null;
 
@@ -614,25 +721,31 @@ export function pixelFountain(el, config) {
 
 	/**
 	 * With reduced motion: a still scatter, the fountain run on its own
-	 * for a moment from its seed and held.
+	 * for a moment from its seed and held (nothing from the pointer).
 	 *
 	 * @param {import('./canvas2d.js').Canvas2D} c The canvas.
 	 */
 	const scatter = (c) => {
 		fountain.clear();
-		for (let i = 0; i < 90; i++) {
-			fountain.step();
-			if (i % 5 === 0) fountain.emitAmbient(1, 'move');
+		if (!POINTER) {
+			for (let i = 0; i < 90; i++) {
+				fountain.step();
+				if (i % 5 === 0) fountain.emitAmbient(1, 'move');
+			}
 		}
+		drawn = true;
 		render(c);
 	};
 
 	/**
-	 * Draws the live pixels, each on its own grid in device pixels.
+	 * Draws the live pixels, each on its own grid in device pixels: through
+	 * the ramp, or from the pointer all in its one ink.
 	 *
 	 * @param {import('./canvas2d.js').Canvas2D} c The canvas.
 	 */
 	const render = (c) => {
+		if (!fountain.count && !drawn) return;
+		drawn = fountain.count > 0;
 		const { ctx, dpr } = c;
 		ctx.setTransform(1, 0, 0, 1, 0, 0);
 		ctx.clearRect(0, 0, c.canvas.width, c.canvas.height);
@@ -640,12 +753,15 @@ export function pixelFountain(el, config) {
 		const floor = c.canvas.height;
 		const n = steps.length;
 		let fill = '';
+		if (POINTER) ctx.fillStyle = fill = ink;
 		for (let i = 0; i < fountain.count; i++) {
 			const p = fountain.pixels[i];
 			if (!p.on) continue;
-			const shade = shadeAt(p.age / p.life, n, p.hot);
-			const color = shade < 0 ? hot : steps[shade];
-			if (color !== fill) ctx.fillStyle = fill = color;
+			if (!POINTER) {
+				const shade = shadeAt(p.age / p.life, n, p.hot);
+				const color = shade < 0 ? hot : steps[shade];
+				if (color !== fill) ctx.fillStyle = fill = color;
+			}
 			const size = sizes[p.tier];
 			const [x, y] = pixelRect(p.x * dpr, p.y * dpr, size, floor);
 			ctx.fillRect(x, y, size, size);
@@ -656,6 +772,8 @@ export function pixelFountain(el, config) {
 		resize(c) {
 			canvas2d = c;
 			fountain.resize(c.width, c.height);
+			readInk();
+			drawn = true;
 			if (TEXT) readText();
 			else if (c.still) scatter(c);
 		},
@@ -680,6 +798,18 @@ export function pixelFountain(el, config) {
 	let travel = 0;
 
 	/**
+	 * A point in the canvas's CSS px.
+	 *
+	 * @param {number} clientX Viewport x.
+	 * @param {number} clientY Viewport y.
+	 * @returns {[number, number]} Across and down the canvas.
+	 */
+	const toCanvas = (clientX, clientY) => {
+		const box = c.canvas.getBoundingClientRect();
+		return [clientX - box.left, clientY - box.top];
+	};
+
+	/**
 	 * Fires pixels from under a point.
 	 *
 	 * @param {number} clientX Viewport x.
@@ -688,14 +818,22 @@ export function pixelFountain(el, config) {
 	 * @param {EmitKind} kind What fired them.
 	 */
 	const fireAt = (clientX, clientY, n, kind) => {
-		const box = c.canvas.getBoundingClientRect();
-		const x = clientX - box.left;
-		if (TEXT) fountain.emitNear(x, clientY - box.top, n, kind, kind === 'burst' ? 110 : 60);
+		const [x, y] = toCanvas(clientX, clientY);
+		if (POINTER) fountain.emit(x, y, n, 'tap');
+		else if (TEXT) fountain.emitNear(x, y, n, kind, kind === 'burst' ? 110 : 60);
 		else fountain.emitEdge(x, n, kind);
 	};
 
 	/** @param {PointerEvent} e The move. */
 	const move = (e) => {
+		if (POINTER) {
+			// Only over the host's own box (a child may overflow it).
+			const box = host.getBoundingClientRect();
+			if (e.clientX < box.left || e.clientX > box.right || e.clientY < box.top || e.clientY > box.bottom) return fountain.lift();
+			const [x, y] = toCanvas(e.clientX, e.clientY);
+			fountain.moveTo(x, y);
+			return;
+		}
 		if (last) travel += Math.hypot(e.clientX - last.x, e.clientY - last.y);
 		last = { x: e.clientX, y: e.clientY };
 		const n = Math.min(8, Math.floor(travel / 10));
@@ -703,13 +841,16 @@ export function pixelFountain(el, config) {
 		travel -= n * 10;
 		fireAt(e.clientX, e.clientY, n, 'move');
 	};
-	/** Forgets the pointer's path when it leaves the host. */
+	/** Forgets the pointer's path when it leaves the host (and picks up the text's colour again as it comes back). */
 	const leave = () => {
 		last = null;
 		travel = 0;
+		fountain.lift();
+		readInk();
 	};
-	/** @param {PointerEvent} e The press. */
+	/** @param {PointerEvent} e The press: a tap always fires, a click only with `press`. */
 	const press = (e) => {
+		if (!PRESS && e.pointerType === 'mouse') return;
 		if (!pressAt(host, e)) return;
 		fireAt(e.clientX, e.clientY, BURST, 'burst');
 	};

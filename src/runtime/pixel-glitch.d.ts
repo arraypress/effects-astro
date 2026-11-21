@@ -15,6 +15,8 @@ export interface PixelGlitchConfig {
 	tear?: 'cell' | 'row';
 	/** A colour for a copy of the blocks, nudged 3px right behind them (an accent under the break). Default none. */
 	ghost?: string;
+	/** Break into pixels under the pointer. False only draws the text at rest (with `stroke`, its merged outline), everywhere, with reduced motion and on touch screens too: the same look, the pointer left to something else. Default true. */
+	glitch?: boolean;
 }
 
 /**
