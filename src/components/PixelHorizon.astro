@@ -1,0 +1,40 @@
+---
+/**
+ * PixelHorizon: a flat colour filling one side and breaking up into square
+ * blocks toward the other, blocks winking on and off along a slowly
+ * swaying frontier. See src/runtime/pixel-horizon.js.
+ *
+ * Fills its nearest positioned ancestor, or the viewport with `fixed`.
+ * Clear where there is nothing drawn, so it lays over any ground; with a
+ * `background`, the element shows a CSS still until the shader starts and
+ * without WebGL.
+ *
+ * @example
+ * <section class="hero" style="position: relative; background: #0b0b0b">
+ *   <PixelHorizon background="#0b0b0b" colors={['#1aff00']} side="bottom" quiet={{ radius: 0.42, depth: 1 }} />
+ *   <h1>…</h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import { horizonStill, type PixelHorizonConfig } from '../runtime/pixel-horizon.js';
+
+interface Props extends PixelHorizonConfig {
+	/** Fill the viewport (position: fixed). Default false. */
+	fixed?: boolean;
+	/** Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away: for pages with many effects. Default false. */
+	lazy?: boolean | string;
+	class?: string;
+}
+
+const { fixed = false, lazy = false, class: className, ...config } = Astro.props;
+const still = config.background ? horizonStill(config) : undefined;
+---
+
+<EffectCanvas name="pixel-horizon" config={config} fixed={fixed} lazy={lazy} background={still} pixelated class={className} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { pixelHorizon } from '../runtime/pixel-horizon.js';
+
+	mount('[data-effect-pixel-horizon]', pixelHorizon);
+</script>

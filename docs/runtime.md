@@ -13,6 +13,7 @@ The package's main entry is the runtime the components are built on, for use wit
 | `createPoints(gl, vertex)`, `projectPoint`, `GLSL_PROJECT` | Particles as soft points, with a 3D projection matched in JavaScript |
 | `drawShape`, `samplePoints`, `gridPoints`, `distanceField`, `blurField`, `fontAt` | Shapes from text or images, and what effects take from them |
 | `hash33`, `grad`, `gnoise`, `noiseField`, `GLSL_HASH33`, `GLSL_GRADIENT_NOISE`, `GLSL_NOISE_FIELD` (`hash-noise`) | Hash without Sine and gradient noise on it, as GLSL and as matching JS, so a shader and its JS twin (a still, a test) agree |
+| `bayer`, `GLSL_BAYER` (`bayer`) | The 8×8 Bayer ordered-dither threshold, as GLSL and as matching JS, shared by DitherField and DitherGradient |
 | `createGlyphs`, `GLYPH_SETS`, `GLSL_GLYPHS` | Text characters as a texture, for ASCII effects |
 | `createTrackers(el, count)` | Machine-vision tracker boxes over an effect |
 | `createFountain(options)`, `fadeSteps`, `shadeAt`, `tierSizes`, `pixelRect`, `inkedCells`, `MAX_PIXELS` | `<PixelFountain>`'s pure, seeded simulation (fixed 60 Hz steps, a pooled 400 pixels), its colour ramp, its grid snapping and the cells a wordmark fills |

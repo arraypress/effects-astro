@@ -10,6 +10,7 @@
 - `<Glass refract>`'s lens (an SDF displacement map with a specular channel, fed to `feDisplacementMap` through `backdrop-filter`, and a three-pass RGB split) is adapted from Sam Asante's [liquid-glass](https://github.com/samasante/liquid-glass) (MIT, © 2026 Sam Asante).
 - `<LightLeak>`, `<DitherField>`, `<CascadeGrid>`, `<FlowField>`, `<VoronoiMesh>` and `<KineticGrid>` are after Processing sketches shared with the owner (2026-11-20): `lavalamp_bg`, `ripple_dither_bg`, `hex_spectrogram_bg` and `circle_grid_bg`, `perlin_field_bg`, `voronoi_bg` and `grid_bg`. Their hashes (`hash-noise`) are Dave Hoskins' Hash without Sine (MIT, © 2014 David Hoskins).
 - `<AsciiNoise>`'s field, warp, tunings and ramps are after `ascii_noise_bg`, a Processing sketch shared with the owner (2026-11-20); its lattice hash is Dave Hoskins' [Hash without Sine](https://www.shadertoy.com/view/4djSRW) (MIT, © 2014 David Hoskins).
+- `<DitherGradient>`, `<TruchetField>`, `<PixelHorizon>` and `<FlutedGlow>` are new constructions after reference images the owner collected (2026-11-26): no code or artwork is taken from them. Truchet's tiles are Sébastien Truchet's (1704), in Cyril Stanley Smith's quarter-arc form.
 - Oklab is Björn Ottosson's.
 
 The full notices are in [LICENSE](../LICENSE).

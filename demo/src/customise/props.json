@@ -998,6 +998,28 @@
 			}
 		]
 	},
+	"DitherGradient": {
+		"selector": "[data-effect-dither-gradient]",
+		"props": [
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport (position: fixed). Default false.",
+				"default": false
+			},
+			{
+				"name": "lazy",
+				"kind": "boolean",
+				"doc": "Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away: for pages with many effects. Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
 	"DotGrid": {
 		"selector": "[data-effect-dot-grid]",
 		"props": [
@@ -1579,6 +1601,28 @@
 				"name": "fixed",
 				"kind": "boolean",
 				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"FlutedGlow": {
+		"selector": "[data-effect-fluted-glow]",
+		"props": [
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport (position: fixed). Default false.",
+				"default": false
+			},
+			{
+				"name": "lazy",
+				"kind": "boolean",
+				"doc": "Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away: for pages with many effects. Default false.",
 				"default": false
 			},
 			{
@@ -4658,14 +4702,14 @@
 			{
 				"name": "color",
 				"kind": "color",
-				"doc": "The pixels' colour when they fire; the darker steps they fade through are made from it. Default `#c8ff00`.",
+				"doc": "The pixels' colour when they fire; the darker steps they fade through are made from it. With `source=\"pointer\"`, the one ink every block is drawn in. Default `#c8ff00` (from the pointer, the text's colour, `currentColor`).",
 				"default": "#c8ff00",
 				"live": "config"
 			},
 			{
 				"name": "colors",
 				"kind": "colors",
-				"doc": "The steps a pixel fades through, first to last (overrides `color`). Default made from `color`.",
+				"doc": "The steps a pixel fades through, first to last (overrides `color`; from the pointer, only the first is used). Default made from `color`.",
 				"live": "config"
 			},
 			{
@@ -4690,7 +4734,7 @@
 				"min": 60,
 				"max": 720,
 				"step": 1,
-				"doc": "How far above the edge the pixels can fly, CSS px. Default 240.",
+				"doc": "How far above the edge the pixels can fly, CSS px (from the pointer: how far above the host the canvas reaches). Default 240 (160 from the pointer).",
 				"default": 240,
 				"live": "config"
 			},
@@ -4700,7 +4744,7 @@
 				"min": 0,
 				"max": 42,
 				"step": 1,
-				"doc": "Pixels a second trickling up on their own, per 1,000 CSS px of edge; 0 for none. Default 14.",
+				"doc": "Pixels a second trickling up on their own, per 1,000 CSS px of edge; 0 for none (always none from the pointer). Default 14.",
 				"default": 14,
 				"live": "config"
 			},
@@ -4710,8 +4754,25 @@
 				"min": 10,
 				"max": 120,
 				"step": 1,
-				"doc": "Pixels a click or tap fires. Default 40.",
+				"doc": "Pixels a click or tap fires. Default 40 (24 from the pointer).",
 				"default": 40,
+				"live": "config"
+			},
+			{
+				"name": "trail",
+				"kind": "number",
+				"min": 2,
+				"max": 30,
+				"step": 1,
+				"doc": "From the pointer: blocks fired for every 100 CSS px it moves, at most 12 a move. Default 10.",
+				"default": 10,
+				"live": "config"
+			},
+			{
+				"name": "press",
+				"kind": "boolean",
+				"doc": "Whether a mouse click fires a burst (a tap always does). Default true (false from the pointer).",
+				"default": true,
 				"live": "config"
 			},
 			{
@@ -4750,7 +4811,7 @@
 				"min": 0.34,
 				"max": 4.2,
 				"step": 0.02,
-				"doc": "The longest a pixel lives, seconds. Default 1.4.",
+				"doc": "The longest a pixel lives, seconds. Default 1.4 (0.9 from the pointer).",
 				"default": 1.4,
 				"live": "config"
 			},
@@ -4760,7 +4821,7 @@
 				"min": 0,
 				"max": 1,
 				"step": 0.005,
-				"doc": "The chance a pixel splits into smaller ones rather than shrinking, 0–1. Default 0.4.",
+				"doc": "The chance a pixel splits into smaller ones rather than shrinking, 0–1. Default 0.4 (0.2 from the pointer).",
 				"default": 0.4,
 				"live": "config"
 			},
@@ -4770,7 +4831,7 @@
 				"min": 0,
 				"max": 1,
 				"step": 0.005,
-				"doc": "The chance a pixel flickers out on and off before it goes, 0–1. Default 0.35.",
+				"doc": "The chance a pixel flickers out on and off before it goes, 0–1. Default 0.35 (0.5 from the pointer).",
 				"default": 0.35,
 				"live": "config"
 			},
@@ -4779,9 +4840,10 @@
 				"kind": "enum",
 				"options": [
 					"edge",
-					"text"
+					"text",
+					"pointer"
 				],
-				"doc": "Fire from the host's top edge, or from the filled pixels of its text. Default `edge`.",
+				"doc": "Fire from the host's top edge; from the filled pixels of its text; or only from the pointer, where it moves over the host (a block-dust trail in one ink, nothing on its own). Default `edge`.",
 				"default": "edge",
 				"live": "config"
 			},
@@ -4900,6 +4962,13 @@
 				"live": "config"
 			},
 			{
+				"name": "glitch",
+				"kind": "boolean",
+				"doc": "Break into pixels under the pointer. False only draws the text at rest (with `stroke`, its merged outline), everywhere, with reduced motion and on touch screens too: the same look, the pointer left to something else. Default true.",
+				"default": true,
+				"live": "config"
+			},
+			{
 				"name": "as",
 				"kind": "other",
 				"doc": "The element to render. Default `span`.",
@@ -4909,6 +4978,28 @@
 				"name": "fit",
 				"kind": "boolean",
 				"doc": "Size the text to span its parent's width. Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"PixelHorizon": {
+		"selector": "[data-effect-pixel-horizon]",
+		"props": [
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport (position: fixed). Default false.",
+				"default": false
+			},
+			{
+				"name": "lazy",
+				"kind": "boolean",
+				"doc": "Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away: for pages with many effects. Default false.",
 				"default": false
 			},
 			{
@@ -6482,6 +6573,28 @@
 				"name": "fixed",
 				"kind": "boolean",
 				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"TruchetField": {
+		"selector": "[data-effect-truchet-field]",
+		"props": [
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport (position: fixed). Default false.",
+				"default": false
+			},
+			{
+				"name": "lazy",
+				"kind": "boolean",
+				"doc": "Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away: for pages with many effects. Default false.",
 				"default": false
 			},
 			{

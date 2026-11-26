@@ -11,6 +11,10 @@ import AsciiRain from '@arraypress/effects-astro/AsciiRain.astro';
 import AsciiNoise from '@arraypress/effects-astro/AsciiNoise.astro';
 import LightLeak from '@arraypress/effects-astro/LightLeak.astro';
 import DitherField from '@arraypress/effects-astro/DitherField.astro';
+import DitherGradient from '@arraypress/effects-astro/DitherGradient.astro';
+import TruchetField from '@arraypress/effects-astro/TruchetField.astro';
+import PixelHorizon from '@arraypress/effects-astro/PixelHorizon.astro';
+import FlutedGlow from '@arraypress/effects-astro/FlutedGlow.astro';
 import CascadeGrid from '@arraypress/effects-astro/CascadeGrid.astro';
 import FlowField from '@arraypress/effects-astro/FlowField.astro';
 import VoronoiMesh from '@arraypress/effects-astro/VoronoiMesh.astro';
@@ -113,6 +117,34 @@ const paleScenes = ['blob', 'ink-water'];
 	<h2 class="headline">Every wave<br />finds the shore.</h2>
 	<p class="lede">Swell, wind and tide for 3,000 breaks, read hourly from the buoys and sent before the dawn patrol.</p>
 	<div class="actions"><a class="btn" href="#">Check your break</a></div>
+</Hero>
+
+<Hero id="dither-gradient" name="DitherGradient" code={`<DitherGradient background="#081226" colors={['#5a0f4a', '#ff1f8f']} shape="wave" quiet={{ x: 0.3, y: 0.45, radius: 0.6, depth: 1 }} />`} align="left" style="--hero-ground: #081226">
+	<DitherGradient slot="effect" background="#081226" colors={['#5a0f4a', '#ff1f8f']} shape="wave" quiet={{ x: 0.3, y: 0.45, radius: 0.6, depth: 1 }} />
+	<span class="eyebrow">Afterglow · night radio</span>
+	<h2 class="headline">Tuned to<br />the late shift.</h2>
+	<p class="lede">Slow sets from midnight to six, mixed live, with the requests read out between the records.</p>
+</Hero>
+
+<Hero id="truchet-field" name="TruchetField" code={`<TruchetField background="#0b0b0b" colors={['#3a3a3a', '#f4f3ef']} quiet={{ x: 0.3, y: 0.5, radius: 0.6, depth: 0.9 }} />`} align="left" style="--hero-ground: #0b0b0b">
+	<TruchetField slot="effect" background="#0b0b0b" colors={['#3a3a3a', '#f4f3ef']} quiet={{ x: 0.3, y: 0.5, radius: 0.6, depth: 0.9 }} />
+	<span class="eyebrow">Loopwork · type foundry</span>
+	<h2 class="headline">Every curve<br />meets another.</h2>
+	<p class="lede">Display faces drawn on a modular grid, each glyph built from the same few arcs.</p>
+</Hero>
+
+<Hero id="pixel-horizon" name="PixelHorizon" code={`<PixelHorizon background="#0b0b0b" colors={['#1aff00']} side="right" level={0.32} quiet={{ x: 0.3, y: 0.5, radius: 0.6, depth: 1 }} />`} align="left" style="--hero-ground: #0b0b0b">
+	<PixelHorizon slot="effect" background="#0b0b0b" colors={['#1aff00']} side="right" level={0.32} quiet={{ x: 0.3, y: 0.5, radius: 0.6, depth: 1 }} />
+	<span class="eyebrow">Fieldnet · rural broadband</span>
+	<h2 class="headline">Signal, all the way<br />to the last farm.</h2>
+	<p class="lede">Fixed wireless for the places the cable never reached, up in a day and billed by the month.</p>
+</Hero>
+
+<Hero id="fluted-glow" name="FlutedGlow" code={`<FlutedGlow colors={['#7a1d00', '#ff7a00', '#ffd27a']} background="#050302" centre={[0.7, 0.5]} />`} align="left" style="--hero-ground: #050302">
+	<FlutedGlow slot="effect" colors={['#7a1d00', '#ff7a00', '#ffd27a']} background="#050302" centre={[0.7, 0.5]} />
+	<span class="eyebrow">Ember · glass studio</span>
+	<h2 class="headline">Light, poured<br />and set.</h2>
+	<p class="lede">Lamps and screens in reeded and cast glass, blown to order in the furnace behind the shop.</p>
 </Hero>
 <Hero id="cascade-grid" name="CascadeGrid" code={`<CascadeGrid cols={64} colors={['#2e2e2e', '#c8ff00']} background="#0b0b0b" quiet={{ x: 0.3, y: 0.5, radius: 0.55, depth: 0.95 }} />`} align="left" style="--hero-ground: #0b0b0b">
 	<CascadeGrid slot="effect" cols={64} colors={['#2e2e2e', '#c8ff00']} background="#0b0b0b" quiet={{ x: 0.3, y: 0.5, radius: 0.55, depth: 0.95 }} />

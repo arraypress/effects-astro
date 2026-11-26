@@ -206,6 +206,23 @@ DitherField: a field of slow noise drawn in square dots, Bayer-dithered at its e
 | `lazy` | `boolean \| string` | Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away: for pages with many effects. Default false. |
 | `class` | `string` | Classes for the element. |
 
+## `<DitherGradient>`
+
+DitherGradient: a soft colour gradient drawn only in dots: a wavy horizon, a glowing band, a swirl, a pinwheel or stepped columns, square dots an ordered dither thins out or round halftone dots that shrink. See src/runtime/dither-gradient.js.
+
+```astro
+<section class="hero" style="position: relative; background: #0b0b0b">
+  <DitherGradient background="#081226" colors={['#5a0f4a', '#ff1f8f']} shape="wave" quiet={{ radius: 0.5, depth: 1 }} />
+  <h1>…</h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `fixed` | `boolean` | Fill the viewport (position: fixed). Default false. |
+| `lazy` | `boolean \| string` | Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away: for pages with many effects. Default false. |
+| `class` | `string` | Classes for the element. |
+
 ## `<DotGrid>`
 
 DotGrid: a sea of dots you can drop stones into. A slow current moves through a fixed grid of dots, a swell sits under the pointer, and a click sends a widening ripple across, lifting and pushing the dots. See src/runtime/dot-grid.js.
@@ -324,6 +341,23 @@ FlutedGlass: a pane of slanted fluted glass over soft blooms of colour, the main
 | `highlight` | `number` | The highlight along each flute; 0 for none. Default 0.35. |
 | `bloom` | `number` | How strong the blooms are. Default 1. |
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
+| `class` | `string` | Classes for the element. |
+
+## `<FlutedGlow>`
+
+FlutedGlow: a soft ring, orb or rising light seen through upright reeded glass, breathing slowly, made to sit behind copy (no pointer). See src/runtime/fluted-glow.js.
+
+```astro
+<section class="hero" style="position: relative; background: #0b0b0b">
+  <FlutedGlow colors={['#7a1d00', '#ff7a00', '#ffd27a']} shape="ring" />
+  <h1>…</h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `fixed` | `boolean` | Fill the viewport (position: fixed). Default false. |
+| `lazy` | `boolean \| string` | Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away: for pages with many effects. Default false. |
 | `class` | `string` | Classes for the element. |
 
 ## `<Galaxy>`
@@ -1009,24 +1043,31 @@ PixelFountain: retro 8-bit sparks. Chunky square pixels fire up out of the host'
   <PixelFountain cell={8} />
   …
 </footer>
+@example
+<div class="wordmark-wrap" style="position: relative; color: #0b0b0b">
+  <PixelFountain source="pointer" cell={10} />
+  <FitText as="div">Arcadia</FitText>
+</div>
 ```
 
 | Prop | Type | |
 |---|---|---|
-| `color` | `string` | The pixels' colour when they fire; the darker steps they fade through are made from it. Default `#c8ff00`. |
-| `colors` | `string[]` | The steps a pixel fades through, first to last (overrides `color`). Default made from `color`. |
+| `color` | `string` | The pixels' colour when they fire; the darker steps they fade through are made from it. With `source="pointer"`, the one ink every block is drawn in. Default `#c8ff00` (from the pointer, the text's colour, `currentColor`). |
+| `colors` | `string[]` | The steps a pixel fades through, first to last (overrides `color`; from the pointer, only the first is used). Default made from `color`. |
 | `palette` | `string` | A shared palette by name, its colours as the steps, when there are no `colors`. Default none. |
 | `cell` | `number` | A pixel's size, CSS px (a power-up's biggest blocks are two). Default 8. |
-| `rise` | `number` | How far above the edge the pixels can fly, CSS px. Default 240. |
-| `rate` | `number` | Pixels a second trickling up on their own, per 1,000 CSS px of edge; 0 for none. Default 14. |
-| `burst` | `number` | Pixels a click or tap fires. Default 40. |
+| `rise` | `number` | How far above the edge the pixels can fly, CSS px (from the pointer: how far above the host the canvas reaches). Default 240 (160 from the pointer). |
+| `rate` | `number` | Pixels a second trickling up on their own, per 1,000 CSS px of edge; 0 for none (always none from the pointer). Default 14. |
+| `burst` | `number` | Pixels a click or tap fires. Default 40 (24 from the pointer). |
+| `trail` | `number` | From the pointer: blocks fired for every 100 CSS px it moves, at most 12 a move. Default 10. |
+| `press` | `boolean` | Whether a mouse click fires a burst (a tap always does). Default true (false from the pointer). |
 | `gravity` | `number` | How hard they are pulled back, 0–2. Default 1. |
 | `spread` | `number` | How widely they fan out, 0–1. Default 0.5. |
 | `drift` | `number` | How much a wind pushes them sideways, 0–1. Default 0.3. |
-| `life` | `number` | The longest a pixel lives, seconds. Default 1.4. |
-| `split` | `number` | The chance a pixel splits into smaller ones rather than shrinking, 0–1. Default 0.4. |
-| `flicker` | `number` | The chance a pixel flickers out on and off before it goes, 0–1. Default 0.35. |
-| `source` | `'edge' \| 'text'` | Fire from the host's top edge, or from the filled pixels of its text. Default `edge`. |
+| `life` | `number` | The longest a pixel lives, seconds. Default 1.4 (0.9 from the pointer). |
+| `split` | `number` | The chance a pixel splits into smaller ones rather than shrinking, 0–1. Default 0.4 (0.2 from the pointer). |
+| `flicker` | `number` | The chance a pixel flickers out on and off before it goes, 0–1. Default 0.35 (0.5 from the pointer). |
+| `source` | `'edge' \| 'text' \| 'pointer'` | Fire from the host's top edge; from the filled pixels of its text; or only from the pointer, where it moves over the host (a block-dust trail in one ink, nothing on its own). Default `edge`. |
 | `host` | `string` | A selector for the element the pixels fire from and the pointer is followed over: the nearest ancestor that matches, else the first on the page. Default the element's positioned parent. |
 | `seed` | `number` | Seeds the randomness. Default 1. |
 | `zIndex` | `number` | The canvas's `z-index`, over what is above the host. Default none (auto). |
@@ -1035,7 +1076,7 @@ PixelFountain: retro 8-bit sparks. Chunky square pixels fire up out of the host'
 
 ## `<PixelGlitchText>`
 
-PixelGlitchText: one line of text that breaks into pixels under the pointer and knits back together behind it. With `stroke`, a hollow outline at rest that the pixels fill in; `tear="row"` tears whole rows, and `ghost` lays a coloured copy behind the blocks. See src/runtime/pixel-glitch.js.
+PixelGlitchText: one line of text that breaks into pixels under the pointer and knits back together behind it. With `stroke`, a hollow outline at rest that the pixels fill in; `tear="row"` tears whole rows, and `ghost` lays a coloured copy behind the blocks; `glitch={false}` keeps only the drawing at rest (a still outlined wordmark). See src/runtime/pixel-glitch.js.
 
 ```astro
 <footer>
@@ -1053,8 +1094,26 @@ PixelGlitchText: one line of text that breaks into pixels under the pointer and 
 | `stroke` | `number` | With a width (CSS px), the text at rest is an outline that the pixels fill: one outline round the word, so overlapping letters merge. Default 0 (solid). |
 | `tear` | `'cell' \| 'row'` | What slips: `cell`, each hot cell on its own; `row`, a whole row at once, now and then, by its hottest cell (up to half of `shift` either way). Default `cell`. |
 | `ghost` | `string` | A colour for a copy of the blocks, nudged 3px right behind them (an accent under the break). Default none. |
+| `glitch` | `boolean` | Break into pixels under the pointer. False only draws the text at rest (with `stroke`, its merged outline), everywhere, with reduced motion and on touch screens too: the same look, the pointer left to something else. Default true. |
 | `as` | `HTMLTag` | The element to render. Default `span`. |
 | `fit` | `boolean` | Size the text to span its parent's width. Default false. |
+| `class` | `string` | Classes for the element. |
+
+## `<PixelHorizon>`
+
+PixelHorizon: a flat colour filling one side and breaking up into square blocks toward the other, blocks winking on and off along a slowly swaying frontier. See src/runtime/pixel-horizon.js.
+
+```astro
+<section class="hero" style="position: relative; background: #0b0b0b">
+  <PixelHorizon background="#0b0b0b" colors={['#1aff00']} side="bottom" quiet={{ radius: 0.42, depth: 1 }} />
+  <h1>…</h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `fixed` | `boolean` | Fill the viewport (position: fixed). Default false. |
+| `lazy` | `boolean \| string` | Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away: for pages with many effects. Default false. |
 | `class` | `string` | Classes for the element. |
 
 ## `<PointCloud>`
@@ -1418,6 +1477,23 @@ Topography: a survey map that never sits still. The contour lines of a slowly dr
 | `labels` | `boolean` | Small elevation numbers on a few index lines. Default false. |
 | `quiet` | `{ x?: number; y?: number; radius?: number; depth?: number } \| null` | An area kept dim behind copy: centre (0–1 from the top left), radius (a share of the height), depth (0–1). Default none; `{}` for the middle. |
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
+| `class` | `string` | Classes for the element. |
+
+## `<TruchetField>`
+
+TruchetField: a field of Truchet tiles, quarter arcs that join into loops and S-bends, a few tiles turning at a time, bright patches drifting through. See src/runtime/truchet-field.js.
+
+```astro
+<section class="hero" style="position: relative; background: #0b0b0b">
+  <TruchetField background="#0b0b0b" colors={['#3a3a3a', '#f4f3ef']} quiet={{ radius: 0.5, depth: 0.9 }} />
+  <h1>…</h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `fixed` | `boolean` | Fill the viewport (position: fixed). Default false. |
+| `lazy` | `boolean \| string` | Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away: for pages with many effects. Default false. |
 | `class` | `string` | Classes for the element. |
 
 ## `<Typewriter>`

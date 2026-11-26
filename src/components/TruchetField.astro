@@ -1,0 +1,40 @@
+---
+/**
+ * TruchetField: a field of Truchet tiles, quarter arcs that join into
+ * loops and S-bends, a few tiles turning at a time, bright patches
+ * drifting through. See src/runtime/truchet-field.js.
+ *
+ * Fills its nearest positioned ancestor, or the viewport with `fixed`.
+ * Clear where there is nothing drawn, so it lays over any ground; with a
+ * `background`, the element shows a CSS still until the shader starts and
+ * without WebGL.
+ *
+ * @example
+ * <section class="hero" style="position: relative; background: #0b0b0b">
+ *   <TruchetField background="#0b0b0b" colors={['#3a3a3a', '#f4f3ef']} quiet={{ radius: 0.5, depth: 0.9 }} />
+ *   <h1>…</h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import { truchetStill, type TruchetFieldConfig } from '../runtime/truchet-field.js';
+
+interface Props extends TruchetFieldConfig {
+	/** Fill the viewport (position: fixed). Default false. */
+	fixed?: boolean;
+	/** Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away: for pages with many effects. Default false. */
+	lazy?: boolean | string;
+	class?: string;
+}
+
+const { fixed = false, lazy = false, class: className, ...config } = Astro.props;
+const still = config.background ? truchetStill(config) : undefined;
+---
+
+<EffectCanvas name="truchet-field" config={config} fixed={fixed} lazy={lazy} background={still} class={className} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { truchetField } from '../runtime/truchet-field.js';
+
+	mount('[data-effect-truchet-field]', truchetField);
+</script>

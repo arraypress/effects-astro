@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.0] — 2026-11-26
+
+Four backgrounds after reference images the owner collected for the Logomarks Lookbook, in the house style of 0.11:
+timed in seconds with nothing kept between frames, sized by the element, colours in Oklab, a `quiet` area behind copy,
+`speed: 0` for a still, a CSS still for before the shader starts, and a pure JS twin for tests.
+
+### Added
+
+- `<DitherGradient>` (`ditherGradient`, `gradientStill`, `gradientDots`, `gradientTone`): a soft colour gradient drawn only in dots, in five shapes (`wave`, `band`, `swirl`, `pinwheel`, `steps`), square dots an 8×8 ordered dither thins out (`mode: 'bayer'`) or round halftone dots that shrink (`mode: 'halftone'`); `angle`, `level`, `soft`, `arms`, `twist`, `block`, `steps`, `rate`. Its quiet area's opening is squared, so a smooth tone clears well inside the radius.
+- `<TruchetField>` (`truchetField`, `truchetStill`, `truchetTile`, `truchetTone`): quarter-arc Truchet tiles joining into loops, a few turning a quarter at a time on their own clocks (`period`, `turn`), a slow noise brightening and thickening the lines (`scale`, `drift`, `thin`), optionally shaded like tubes (`tube`).
+- `<PixelHorizon>` (`pixelHorizon`, `horizonStill`, `horizonBlocks`): a flat colour filling one `side` and breaking up into square blocks, winking on and off along a swaying, wandering frontier (`level`, `spread`, `sway`, `wander`, `rate`); one canvas pixel a block.
+- `<FlutedGlow>` (`flutedGlow`, `glowStill`, `glowAt`, `fluteSample`): a ring, orb or rising light through upright reeded glass, breathing slowly, with seams and grain; opaque, no pointer, made to sit behind copy.
+- `runtime/bayer` (`bayer`, `GLSL_BAYER`): the 8×8 Bayer threshold, as GLSL and JS, now shared by DitherField and DitherGradient.
+- `<PixelFountain source="pointer">` (a block-dust trail where the pointer moves, `trail`, `press`, `TRAIL_CAP`, `POINTER_DEFAULTS`) and `<PixelGlitchText glitch={false}>` (the text at rest only): merged to main on 2026-11-21 from a parked branch; opt-in, and not yet tested end to end in a browser.
+
+### Changed
+
+- `<DitherField>`'s Bayer matrix comes from `runtime/bayer`; `bayer` is still exported from `runtime/dither-field`. Nothing it draws changes.
+
 ## [0.11.0] — 2026-11-20
 
 Six backgrounds after Processing sketches shared with the owner, modernised: on the GPU (FlowField on Canvas 2D), timed in

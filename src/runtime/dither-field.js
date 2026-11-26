@@ -37,6 +37,7 @@ import { GLSL_GRADIENT_NOISE, GLSL_NOISE_FIELD, grad, gnoise, noiseField } from 
 import { GLSL_OKLAB, parseColor, toOklab, mixOklab, toHex } from './color.js';
 import { GLSL_QUIET, quietUniform } from './glsl.js';
 import { watchColors } from './mount.js';
+import { GLSL_BAYER, bayer } from './bayer.js';
 import { pickColors } from './palettes.js';
 
 /**
@@ -92,19 +93,12 @@ const ZONES = { edge: 0.1, core: 0.3, bias: 0.2, inner: 0.8, fuzz: 0.02, gain: 8
 const AMBER = ['#b4b4b4', '#ffbe50'];
 
 /**
- * GLSL (ES 1.00): `float bayer8(vec2 cell)`, the 8×8 Bayer threshold
- * (0–63 over 64) built from the 2×2 one, and `float ripplePulse(float s)`,
- * a smooth 1-D noise, 0–1, that the rings are cut from. `bayer` and
- * `ripplePulse` below are the same in JavaScript.
+ * GLSL (ES 1.00): `float ripplePulse(float s)`, a smooth 1-D noise, 0–1,
+ * that the rings are cut from (`ripplePulse` below is the same in
+ * JavaScript). The Bayer threshold is `./bayer.js`'s.
  */
 const GLSL_DITHER = `
-float bayer2(vec2 a) { return fract(a.x * 0.5 + a.y * a.y * 0.75); }
-float bayer8(vec2 cell) {
-	vec2 a = mod(floor(cell), 8.0);
-	vec2 b = floor(a * 0.5);
-	vec2 c = floor(a * 0.25);
-	return bayer2(a) + bayer2(b) * 0.25 + bayer2(c) * 0.0625;
-}
+${GLSL_BAYER}
 float hash11(float p) {
 	p = fract(p * 0.1031);
 	p *= p + 33.33;
@@ -203,28 +197,8 @@ const smooth = (e0, e1, x) => {
  */
 const quintic = (f) => f * f * f * (f * (f * 6 - 15) + 10);
 
-/**
- * The 8×8 Bayer threshold at a dot (the shader's `bayer8`): the classic
- * ordered-dither matrix, 0/64 to 63/64, built from the 2×2 one at three
- * scales, so neither side needs a texture.
- *
- * @param {number} x The dot's column (any integer; it repeats every 8).
- * @param {number} y The dot's row.
- * @returns {number} The threshold, 0–63/64.
- */
-export function bayer(x, y) {
-	/**
-	 * The 2×2 matrix (0, 2 / 3, 1 over 4) by a cell's parity.
-	 *
-	 * @param {number} a Column.
-	 * @param {number} b Row.
-	 * @returns {number} 0, 0.25, 0.5 or 0.75.
-	 */
-	const two = (a, b) => fract(a * 0.5 + b * b * 0.75);
-	const ax = ((Math.floor(x) % 8) + 8) % 8;
-	const ay = ((Math.floor(y) % 8) + 8) % 8;
-	return two(ax, ay) + two(Math.floor(ax / 2), Math.floor(ay / 2)) * 0.25 + two(Math.floor(ax / 4), Math.floor(ay / 4)) * 0.0625;
-}
+/** The 8×8 Bayer threshold at a dot (`./bayer.js`), exported here as before. */
+export { bayer };
 
 /**
  * A hash of one number (the shader's `hash11`): Dave Hoskins' Hash without
