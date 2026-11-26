@@ -12,6 +12,9 @@ The package's main entry is the runtime the components are built on, for use wit
 | `createFluid(gl, options)`, `stir(fluid, el, options)` | A Stable Fluids solve, and its pointer hookup |
 | `createPoints(gl, vertex)`, `projectPoint`, `GLSL_PROJECT` | Particles as soft points, with a 3D projection matched in JavaScript |
 | `drawShape`, `samplePoints`, `gridPoints`, `distanceField`, `blurField`, `fontAt` | Shapes from text or images, and what effects take from them |
+| `GLSL_STUDIO`, `lightVector` (`glass-optics`) | A small studio for glass to mirror and Schlick's fresnel, shared by GlassDrop and GlassStack |
+| `dropAt`, `dropCycle`, `dropLayout` (`glass-drop-plan`) | GlassDrop's timeline (what the sequence is doing at a moment; `Infinity` the final state) and where the glass and the logo sit, so a page can lay a still exactly under it |
+| `sliceRuns`, `runsTexture`, `slabGrowth` (`slab-runs`); `stackLayout`, `sliceTints` | GlassStack's slicing, its intro, where the stack sits and each slice's tint |
 | `hash33`, `grad`, `gnoise`, `noiseField`, `GLSL_HASH33`, `GLSL_GRADIENT_NOISE`, `GLSL_NOISE_FIELD` (`hash-noise`) | Hash without Sine and gradient noise on it, as GLSL and as matching JS, so a shader and its JS twin (a still, a test) agree |
 | `bayer`, `GLSL_BAYER` (`bayer`) | The 8×8 Bayer ordered-dither threshold, as GLSL and as matching JS, shared by DitherField and DitherGradient |
 | `createGlyphs`, `GLYPH_SETS`, `GLSL_GLYPHS` | Text characters as a texture, for ASCII effects |

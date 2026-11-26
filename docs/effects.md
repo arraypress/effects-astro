@@ -49,6 +49,8 @@ Every prop of every component is in **[COMPONENTS.md](../COMPONENTS.md)**, gener
 
 | Component | | Drawn with |
 |---|---|---|
+| `<GlassDrop>` | A logo arriving as liquid glass: a drop lands with rings running out, spreads into a glass tile over the logo (or into the logo's own shape), bends and splits light at its rim, then melts and leaves the logo flat; once or on a loop | WebGL |
+| `<GlassStack>` | A logo as a stack of tinted glass discs in front of a lit card, seen a little from below, growing from the bottom up, then leaning toward the pointer | WebGL |
 | `<GlassGlyph>` | The logo as a thick bevelled slab of glass, swaying slowly in front of fixed beams of coloured light that bend through its rims | WebGL |
 | `<LiquidMetal>` | The logo as liquid chrome in a slowly turning studio: the pointer dents it and sends ripples across it, a stroke parts it, a click splashes it (a crater, a ring wave, droplets that crawl back), and it pulls itself back into shape; `tint` for gold, rose gold, copper or black chrome | WebGL |
 | `<ParticleLogo>` | The logo in thousands of twinkling particles that scatter round the pointer | WebGL |

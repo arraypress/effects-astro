@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.13.0] — 2026-11-26
+
+Two glass logos for the Logomarks Lookbook, our own constructions after the ideas of reactdrops.dev's Liquid Glass Logo
+and Glass Slab Logo (no code, shaders or assets taken: their licence forbids reuse in a component library; see
+docs/credits.md).
+
+### Added
+
+- `<GlassDrop>` (`glassDrop`): a logo arriving as liquid glass. A drop forms, lands with rings running out, and spreads into a glass tile with the logo rising under it (`form: 'tile'`), or into the logo's own shape in tinted glass (`form: 'mark'`); it holds, then melts away and leaves the logo flat at `restScale`. Plays once, or on a `loop` whose rounds start from the resting logo, so a page can show the resting logo as its still. `depth`, `dispersion`, `bevel`, `highlights`, `caustics`, `bloom`, `ripples`, `tint`, `lightAngle`, `radius`, the colours (`background`, `color`, `plate`, `light`), `size`, `markScale`, `speed`, `delay`, `hold`, `loopDelay`, `rest: 'glass'` to keep the glass.
+- `runtime/glass-drop-plan` (`dropAt`, `dropCycle`, `dropLayout`, `DROP_PHASES`, `DROP_SIZE`): GlassDrop's timeline and layout, pure, so a page can lay a still exactly where the effect leaves the logo.
+- `<GlassStack>` (`glassStack`, `stackLayout`, `sliceTints`): a logo as a stack of tinted glass discs in front of a lit card, seen a little from below: the logo cut into `slabs` slices, every stretch of logo in a slice a disc, tints along `colors` (2–6) from top to bottom; the discs grow from the bottom up (`intro`, `introDuration`), then the stack leans on its own (`sway`) and toward the pointer (`tilt`). `phase`, `band`, `depth`, `thickness`, `ior`, `reflectivity`, `density`, `opacity`, `exposure`, `ambient`, `cardSize`, `lightAngle`, `logoScale`.
+- `runtime/slab-runs` (`sliceRuns`, `runsTexture`, `slabGrowth`): GlassStack's slicing (a slice samples a band, so small parts are kept) and intro, pure.
+- `runtime/glass-optics` (`GLSL_STUDIO`, `lightVector`): a small studio for glass to mirror and Schlick's fresnel, shared by both.
+
 ## [0.12.0] — 2026-11-26
 
 Four backgrounds after reference images the owner collected for the Logomarks Lookbook, in the house style of 0.11:

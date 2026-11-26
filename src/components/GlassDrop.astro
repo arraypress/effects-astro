@@ -1,0 +1,40 @@
+---
+/**
+ * GlassDrop: a logo arriving as liquid glass. A drop forms, lands with
+ * rings running out, and spreads into a glass tile with the logo rising
+ * under it (or into the logo's own shape, `form="mark"`); it holds, then
+ * melts away and leaves the logo flat on the ground. Once, or on a loop.
+ * See src/runtime/glass-drop.js.
+ *
+ * Opaque: it is the whole background of what it fills (its nearest
+ * positioned ancestor, or the viewport with `fixed`). Without WebGL the
+ * `background` colour shows; with reduced motion, the final frame.
+ *
+ * @example
+ * <section class="hero" style="position: relative">
+ *   <GlassDrop src="/logo.svg" loop />
+ *   <h1>…</h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { GlassDropConfig } from '../runtime/glass-drop.js';
+
+interface Props extends GlassDropConfig {
+	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
+	fixed?: boolean;
+	/** Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away: for pages with many effects. Default false. */
+	lazy?: boolean | string;
+	class?: string;
+}
+
+const { fixed = false, lazy = false, class: className, ...config } = Astro.props;
+---
+
+<EffectCanvas name="glass-drop" config={config} fixed={fixed} lazy={lazy} class={className} behind background={config.background ?? '#000000'} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { glassDrop } from '../runtime/glass-drop.js';
+
+	mount('[data-effect-glass-drop]', glassDrop);
+</script>

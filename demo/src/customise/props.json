@@ -1855,6 +1855,305 @@
 			}
 		]
 	},
+	"GlassDrop": {
+		"selector": "[data-effect-glass-drop]",
+		"props": [
+			{
+				"name": "src",
+				"kind": "string",
+				"doc": "An image (an SVG logo) to make the glass of.",
+				"live": "config"
+			},
+			{
+				"name": "text",
+				"kind": "string",
+				"doc": "A character or word instead of an image.",
+				"live": "config"
+			},
+			{
+				"name": "font",
+				"kind": "string",
+				"doc": "Its CSS font, without the size. Default: the page's, bold.",
+				"live": "config"
+			},
+			{
+				"name": "area",
+				"kind": "point",
+				"fields": [
+					{
+						"name": "x",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "width",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "height",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "Where the glass sits, each 0–1 from the top left. Default all of the element.",
+				"live": "config"
+			},
+			{
+				"name": "form",
+				"kind": "enum",
+				"options": [
+					"tile",
+					"mark"
+				],
+				"doc": "What the drop becomes: `tile`, a glass tile with the logo under it, or `mark`, the logo's own shape in glass. Default `tile`.",
+				"default": "tile",
+				"live": "config"
+			},
+			{
+				"name": "size",
+				"kind": "number",
+				"min": 0.2,
+				"max": 1,
+				"step": 0.005,
+				"doc": "The tile's edge, a share of the area's shorter side, 0.2–1. Default 0.7.",
+				"default": 0.7,
+				"live": "config"
+			},
+			{
+				"name": "markScale",
+				"kind": "number",
+				"min": 0.2,
+				"max": 1,
+				"step": 0.005,
+				"doc": "The logo's size under the glass, a share of the tile, 0.2–1. Default 0.62.",
+				"default": 0.62,
+				"live": "config"
+			},
+			{
+				"name": "restScale",
+				"kind": "number",
+				"min": 0.5,
+				"max": 2,
+				"step": 0.01,
+				"doc": "The logo's size once the glass has melted, times its size under the glass, 0.5–2. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "radius",
+				"kind": "number",
+				"min": 0,
+				"max": 0.5,
+				"step": 0.005,
+				"doc": "The tile's corner radius, a share of its edge, 0–0.5. Default 0.24.",
+				"default": 0.24,
+				"live": "config"
+			},
+			{
+				"name": "background",
+				"kind": "color",
+				"doc": "The ground. Default `#000000`.",
+				"default": "#000000",
+				"live": "config"
+			},
+			{
+				"name": "color",
+				"kind": "color",
+				"doc": "The logo's colour. Default `#ffffff`.",
+				"default": "#ffffff",
+				"live": "config"
+			},
+			{
+				"name": "plate",
+				"kind": "color",
+				"doc": "The tile's surface under the logo. Default `#0a1020`.",
+				"default": "#0a1020",
+				"live": "config"
+			},
+			{
+				"name": "light",
+				"kind": "color",
+				"doc": "The studio light the glass mirrors. Default `#ffffff`.",
+				"default": "#ffffff",
+				"live": "config"
+			},
+			{
+				"name": "depth",
+				"kind": "number",
+				"min": 0,
+				"max": 2,
+				"step": 0.01,
+				"doc": "How hard the glass bends what is under it, 0–2. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "dispersion",
+				"kind": "number",
+				"min": 0,
+				"max": 2,
+				"step": 0.01,
+				"doc": "How far the colours part at the rim, 0–2; 0 for none. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "bevel",
+				"kind": "number",
+				"min": 0.02,
+				"max": 0.3,
+				"step": 0.002,
+				"doc": "How wide the rounded rim is, a share of the tile (or the logo), 0.02–0.3. Default 0.1.",
+				"default": 0.1,
+				"live": "config"
+			},
+			{
+				"name": "highlights",
+				"kind": "number",
+				"min": 0,
+				"max": 2,
+				"step": 0.01,
+				"doc": "The lip and the studio's reflections, 0–2. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "caustics",
+				"kind": "number",
+				"min": 0,
+				"max": 2,
+				"step": 0.01,
+				"doc": "Light focused at the glass's edge and onto the ground, 0–2. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "bloom",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "A soft glow round the glass, 0–1. Default 0.5.",
+				"default": 0.5,
+				"live": "config"
+			},
+			{
+				"name": "ripples",
+				"kind": "number",
+				"min": 0,
+				"max": 2,
+				"step": 0.01,
+				"doc": "The rings the drop sends across the ground, 0–2; 0 for none. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "tint",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "With `form: 'mark'`: how strongly the glass takes the logo's colour, 0–1. Default 0.88.",
+				"default": 0.88,
+				"live": "config"
+			},
+			{
+				"name": "lightAngle",
+				"kind": "number",
+				"min": 0,
+				"max": 360,
+				"step": 1,
+				"doc": "Where the light comes from, degrees, 0–360 (0 right, 90 top). Default 125.",
+				"default": 125,
+				"live": "config"
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How fast the sequence plays, 0.25–3. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "delay",
+				"kind": "number",
+				"min": 0,
+				"max": 10,
+				"step": 1,
+				"doc": "Seconds to wait before it starts, 0–10. Default 0.",
+				"default": 0,
+				"live": "config"
+			},
+			{
+				"name": "hold",
+				"kind": "number",
+				"min": 0,
+				"max": 10,
+				"step": 0.05,
+				"doc": "Seconds the glass holds before it melts, 0–10. Default 2.4.",
+				"default": 2.4,
+				"live": "config"
+			},
+			{
+				"name": "loop",
+				"kind": "boolean",
+				"doc": "Play it again after a rest; each round starts from the resting logo, which fades as the new drop forms. Default false.",
+				"default": false,
+				"live": "config"
+			},
+			{
+				"name": "loopDelay",
+				"kind": "number",
+				"min": 0,
+				"max": 10,
+				"step": 0.05,
+				"doc": "With `loop`: seconds the logo rests before the next drop, 0–10. Default 1.6.",
+				"default": 1.6,
+				"live": "config"
+			},
+			{
+				"name": "rest",
+				"kind": "enum",
+				"options": [
+					"flat",
+					"glass"
+				],
+				"doc": "How it ends: `flat`, the glass melted and the logo left on the ground, or `glass`, the glass held. Default `flat`.",
+				"default": "flat",
+				"live": "config"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "lazy",
+				"kind": "boolean",
+				"doc": "Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away: for pages with many effects. Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
 	"GlassGlyph": {
 		"selector": "[data-effect-glass-glyph]",
 		"props": [
@@ -2078,6 +2377,295 @@
 				"name": "fixed",
 				"kind": "boolean",
 				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"GlassStack": {
+		"selector": "[data-effect-glass-stack]",
+		"props": [
+			{
+				"name": "src",
+				"kind": "string",
+				"doc": "An image (an SVG logo) to make the stack of.",
+				"live": "config"
+			},
+			{
+				"name": "text",
+				"kind": "string",
+				"doc": "A character or word instead of an image.",
+				"live": "config"
+			},
+			{
+				"name": "font",
+				"kind": "string",
+				"doc": "Its CSS font, without the size. Default: the page's, bold.",
+				"live": "config"
+			},
+			{
+				"name": "area",
+				"kind": "point",
+				"fields": [
+					{
+						"name": "x",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "y",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "width",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					},
+					{
+						"name": "height",
+						"min": 0,
+						"max": 1,
+						"step": 0.01
+					}
+				],
+				"doc": "Where the stack sits, each 0–1 from the top left. Default all of the element.",
+				"live": "config"
+			},
+			{
+				"name": "logoScale",
+				"kind": "number",
+				"min": 0.2,
+				"max": 1,
+				"step": 0.005,
+				"doc": "The logo's size, a share of the area's shorter side, 0.2–1. Default 0.73.",
+				"default": 0.73,
+				"live": "config"
+			},
+			{
+				"name": "colors",
+				"kind": "colors",
+				"doc": "The glass's tints from the top slice to the bottom, 2–6 colours. Default aqua to deep blue.",
+				"live": "config"
+			},
+			{
+				"name": "background",
+				"kind": "color",
+				"doc": "The ground. Default `#ffffff`.",
+				"default": "#ffffff",
+				"live": "config"
+			},
+			{
+				"name": "light",
+				"kind": "color",
+				"doc": "The lit card behind the stack, and the studio the glass mirrors. Default `#ffffff`.",
+				"default": "#ffffff",
+				"live": "config"
+			},
+			{
+				"name": "slabs",
+				"kind": "number",
+				"min": 4,
+				"max": 64,
+				"step": 1,
+				"doc": "How many slices the logo is cut into, 4–64. Default 22.",
+				"default": 22,
+				"live": "config"
+			},
+			{
+				"name": "phase",
+				"kind": "number",
+				"min": 0.13,
+				"max": 1.5,
+				"step": 0.01,
+				"doc": "Where in its slice each disc samples the logo, 0 the top to 1 the bottom. Default 0.5.",
+				"default": 0.5,
+				"live": "config"
+			},
+			{
+				"name": "band",
+				"kind": "number",
+				"min": 0.085,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How much of its slice each disc samples, 0 a line to 1 all of it; more keeps small parts. Default 0.35.",
+				"default": 0.35,
+				"live": "config"
+			},
+			{
+				"name": "depth",
+				"kind": "number",
+				"min": 0.05,
+				"max": 1.4,
+				"step": 0.01,
+				"doc": "How open each disc is from below (the camera's height), a share of the slice, 0.05–1.4. Default 0.55.",
+				"default": 0.55,
+				"live": "config"
+			},
+			{
+				"name": "thickness",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How much of each disc's front edge shows, a share of the slice, 0–1. Default 0.35.",
+				"default": 0.35,
+				"live": "config"
+			},
+			{
+				"name": "ior",
+				"kind": "number",
+				"min": 1,
+				"max": 2,
+				"step": 0.005,
+				"doc": "The glass's refractive index: how hard its rims bend the card, 1–2. Default 1.45.",
+				"default": 1.45,
+				"live": "config"
+			},
+			{
+				"name": "reflectivity",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How strongly the glass mirrors the studio, 0–1. Default 0.3.",
+				"default": 0.3,
+				"live": "config"
+			},
+			{
+				"name": "density",
+				"kind": "number",
+				"min": 0,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How deeply the glass is tinted, 0–3. Default 0.9.",
+				"default": 0.9,
+				"live": "config"
+			},
+			{
+				"name": "opacity",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How much the discs hide the discs behind them, 0–1. Default 0.92.",
+				"default": 0.92,
+				"live": "config"
+			},
+			{
+				"name": "exposure",
+				"kind": "number",
+				"min": 0,
+				"max": 2,
+				"step": 0.01,
+				"doc": "The card's brightness, 0–2. Default 1.1.",
+				"default": 1.1,
+				"live": "config"
+			},
+			{
+				"name": "ambient",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How far the card's light spills onto the ground, 0–1. Default 0.05.",
+				"default": 0.05,
+				"live": "config"
+			},
+			{
+				"name": "cardSize",
+				"kind": "number",
+				"min": 0,
+				"max": 3.4,
+				"step": 0.02,
+				"doc": "The card's size, times the logo's box, 0 for none to 3. Default 1.15.",
+				"default": 1.15,
+				"live": "config"
+			},
+			{
+				"name": "lightAngle",
+				"kind": "number",
+				"min": 0,
+				"max": 360,
+				"step": 1,
+				"doc": "Where the light comes from, degrees, 0–360 (0 right, 90 top). Default 115.",
+				"default": 115,
+				"live": "config"
+			},
+			{
+				"name": "tilt",
+				"kind": "number",
+				"min": 0,
+				"max": 2,
+				"step": 0.01,
+				"doc": "How far the stack leans toward the pointer, 0–2; 0 for not at all. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "sway",
+				"kind": "number",
+				"min": 0,
+				"max": 2,
+				"step": 0.01,
+				"doc": "How far it leans on its own, slowly, 0–2; 0 holds it still. Default 0.5.",
+				"default": 0.5,
+				"live": "config"
+			},
+			{
+				"name": "intro",
+				"kind": "boolean",
+				"doc": "Grow the discs from the bottom up when it first shows. Default true.",
+				"default": true,
+				"live": "config"
+			},
+			{
+				"name": "introDuration",
+				"kind": "number",
+				"min": 0.2,
+				"max": 6,
+				"step": 0.05,
+				"doc": "Seconds until the top disc has grown, 0.2–6. Default 1.6.",
+				"default": 1.6,
+				"live": "config"
+			},
+			{
+				"name": "delay",
+				"kind": "number",
+				"min": 0,
+				"max": 10,
+				"step": 1,
+				"doc": "Seconds before the intro starts, 0–10. Default 0.",
+				"default": 0,
+				"live": "config"
+			},
+			{
+				"name": "speed",
+				"kind": "number",
+				"min": 0.24,
+				"max": 3,
+				"step": 0.02,
+				"doc": "How fast the intro plays, 0.25–3. Default 1.",
+				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "lazy",
+				"kind": "boolean",
+				"doc": "Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away: for pages with many effects. Default false.",
 				"default": false
 			},
 			{

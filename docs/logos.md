@@ -6,4 +6,6 @@ The logo effects take `text` (any word, character or emoji, in the font you name
 <VoxelLogo src="/logo.svg" cells={36} colors={['#a7f3d0', '#08090a']} />
 <ParticleLogo src="/logo.svg" area={{ x: 0.5, y: 0.1, width: 0.45, height: 0.8 }} />
 <GlassGlyph text="7" font="900 Anton, sans-serif" />
+<GlassDrop src="/logo.svg" form="mark" color="#c8ff00" loop />
+<GlassStack src="/logo.svg" background="#0b0b0b" colors={['#f4ffd0', '#c8ff00', '#0e8c7e']} />
 ```

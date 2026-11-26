@@ -2,6 +2,8 @@
 /** The gallery's logos, a hero each, in the order they are shown. */
 import Hero from '../components/Hero.astro';
 import GlassGlyph from '@arraypress/effects-astro/GlassGlyph.astro';
+import GlassDrop from '@arraypress/effects-astro/GlassDrop.astro';
+import GlassStack from '@arraypress/effects-astro/GlassStack.astro';
 import LiquidMetal from '@arraypress/effects-astro/LiquidMetal.astro';
 import NebulaLogo from '@arraypress/effects-astro/NebulaLogo.astro';
 import NeonSwarm from '@arraypress/effects-astro/NeonSwarm.astro';
@@ -15,6 +17,20 @@ import VoxelLogo from '@arraypress/effects-astro/VoxelLogo.astro';
 	<h2 class="headline" style="font: 900 clamp(64px, 10vw, 150px)/0.9 Impact, 'Arial Narrow', sans-serif; text-transform: uppercase; letter-spacing: 0">Heavy<br />Rotation</h2>
 	<p class="lede">The station that plays whole albums, start to finish. On air every night from ten.</p>
 	<div class="actions"><a class="btn" href="#">Listen live</a><a class="btn btn--ghost" href="#">Tonight's album</a></div>
+</Hero>
+<Hero id="glass-drop" name="GlassDrop" code={`<GlassDrop src="/logo.svg" area={{ x: 0.5, y: 0, width: 0.5, height: 1 }} restScale={1.3} loop />`} align="left" style="--hero-ground: #000000">
+	<GlassDrop slot="effect" src="/logo.svg" area={{ x: 0.5, y: 0, width: 0.5, height: 1 }} restScale={1.3} loop />
+	<span class="eyebrow">Meniscus · app studio</span>
+	<h2 class="headline" style="max-width: 8ch">Apps that <em>settle in.</em></h2>
+	<p class="lede" style="max-width: 24rem">We design and build iOS apps from the first icon to the App Store page. The drop lands, the glass sets, the work stays.</p>
+	<div class="actions"><a class="btn" href="#">Start a project</a></div>
+</Hero>
+<Hero id="glass-stack" name="GlassStack" code={`<GlassStack src="/logo.svg" area={{ x: 0.5, y: 0, width: 0.5, height: 1 }} background="#0b0b0b" colors={['#f4ffd0', '#c8ff00', '#39ff88', '#0e8c7e']} />`} align="left" style="--hero-ground: #0b0b0b">
+	<GlassStack slot="effect" src="/logo.svg" area={{ x: 0.5, y: 0, width: 0.5, height: 1 }} background="#0b0b0b" colors={['#f4ffd0', '#c8ff00', '#39ff88', '#0e8c7e']} />
+	<span class="eyebrow">Stacked · glassworks</span>
+	<h2 class="headline" style="max-width: 9ch">Cut, layered, <em>lit.</em></h2>
+	<p class="lede" style="max-width: 24rem">Coloured glass signs and screens, cut slice by slice and stacked by hand. Move the pointer to walk round one.</p>
+	<div class="actions"><a class="btn" href="#">See the workshop</a></div>
 </Hero>
 <Hero id="liquid-metal" name="LiquidMetal" code={`<LiquidMetal src="/logo.svg" />`} align="left" style="--hero-ground: radial-gradient(90% 70% at 72% 45%, #23262b, #0d0e10 60%, #060607)">
 	<LiquidMetal slot="effect" src="/logo.svg" />

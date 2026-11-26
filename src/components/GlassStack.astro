@@ -1,0 +1,41 @@
+---
+/**
+ * GlassStack: a logo as a stack of tinted glass discs in front of a lit
+ * card, seen a little from below. The logo is cut into slices and every
+ * stretch of it in a slice becomes a disc; the tints run from the top slice
+ * to the bottom. The discs grow from the bottom up when it first shows,
+ * then the stack leans gently on its own and toward the pointer.
+ * See src/runtime/glass-stack.js.
+ *
+ * Opaque: it is the whole background of what it fills (its nearest
+ * positioned ancestor, or the viewport with `fixed`). Without WebGL the
+ * `background` colour shows; with reduced motion, every disc grown.
+ *
+ * @example
+ * <section class="hero" style="position: relative">
+ *   <GlassStack src="/logo.svg" background="#0b0b0b" colors={['#f4ffd0', '#c8ff00', '#0e8c7e']} />
+ *   <h1>…</h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import type { GlassStackConfig } from '../runtime/glass-stack.js';
+
+interface Props extends GlassStackConfig {
+	/** Fill the viewport, behind the page (position: fixed, z-index -1). Default false. */
+	fixed?: boolean;
+	/** Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away: for pages with many effects. Default false. */
+	lazy?: boolean | string;
+	class?: string;
+}
+
+const { fixed = false, lazy = false, class: className, ...config } = Astro.props;
+---
+
+<EffectCanvas name="glass-stack" config={config} fixed={fixed} lazy={lazy} class={className} behind background={config.background ?? '#ffffff'} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { glassStack } from '../runtime/glass-stack.js';
+
+	mount('[data-effect-glass-stack]', glassStack);
+</script>
