@@ -70,3 +70,24 @@ test('the still is CSS only (no url or data:), with the ground last and the quie
 			assert.match(css, /, #0b0b0b$/);
 		}
 });
+
+test('the orb and the pill: brightest near the centre, dark far out', () => {
+	for (const shape of ['orb', 'pill']) {
+		const s = gradientSettings({ shape, size: 0.25, rate: 0 }, 80);
+		const mid = gradientTone(s, 0.5, 0.625, 1.25);
+		const corner = gradientTone(s, 0.02, 0.02, 1.25);
+		assert.ok(mid > corner && corner < 0.1, `${shape}: ${mid} ${corner}`);
+	}
+	const pill = gradientSettings({ shape: 'pill', size: 0.25, rate: 0 }, 80);
+	assert.ok(gradientTone(pill, 0.78, 0.625, 1.25) > gradientTone(pill, 0.5, 0.95, 1.25), 'the pill reaches further along than across');
+});
+
+test('gradientRamp: three colours of their own, or halfway between two', async () => {
+	const { gradientRamp } = await import('../src/runtime/dither-gradient.js');
+	assert.deepEqual(gradientRamp({ colors: ['#111111', '#777777', '#ffffff'] }), ['#111111', '#777777', '#ffffff']);
+	const [lo, mid, hi] = gradientRamp({ colors: ['#000000', '#ffffff'] });
+	assert.equal(lo, '#000000');
+	assert.equal(hi, '#ffffff');
+	assert.notEqual(mid, lo);
+	assert.match(gradientStill({ shape: 'orb', colors: ['#111111', '#777777', '#ffffff'], background: '#000000' }), /#777777/);
+});

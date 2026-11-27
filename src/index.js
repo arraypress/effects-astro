@@ -27,6 +27,8 @@ export { ditherGradient, gradientStill } from './runtime/dither-gradient.js';
 export { truchetField, truchetStill } from './runtime/truchet-field.js';
 export { pixelHorizon, horizonStill } from './runtime/pixel-horizon.js';
 export { flutedGlow, glowStill } from './runtime/fluted-glow.js';
+export { fluidFolds, foldsStill } from './runtime/fluid-folds.js';
+export { flutedBokeh, bokehStill } from './runtime/fluted-bokeh.js';
 export { bayer, GLSL_BAYER } from './runtime/bayer.js';
 export { glassGlyph } from './runtime/glass-glyph.js';
 export { glassDrop } from './runtime/glass-drop.js';

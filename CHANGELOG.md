@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.14.0] — 2026-11-28
+
+Two backgrounds and more for the dithered gradient, after the owner's Fluid, Fluted Glass and Dithered Gradient
+backgrounds for the Logomarks Lookbook, in the house style of 0.11 and 0.12: timed in seconds with nothing kept between
+frames, colours in Oklab, a `quiet` area behind copy, `speed: 0` for a still, a CSS still for before the shader starts,
+and a pure JS twin for tests.
+
+### Added
+
+- `<FluidFolds>` (`fluidFolds`, `foldsStill`, `foldHeight`, `foldHue`, `foldColors`, `FOLD_STYLES`): glossy folds of liquid colour on a dark ground, a height field warped by slow noise and lit from one side, an iridescent rim where a fold turns away and a glassy highlight on each crest, its colour drifting along a ramp of three; `style: 'liquid'` (poured enamel) or `'dunes'` (long silk dunes under a dark sky, `level`); `scale`, `warp`, `gloss`, `light`, `hue`, `rate`, `grain`, `seed`.
+- `<FlutedBokeh>` (`flutedBokeh`, `bokehStill`, `bokehLights`, `bokehAt`, `reedSample`, `bokehColors`, `BOKEH_GLASS`, `MAX_LIGHTS`): coloured lights out of focus behind upright reeded glass, each flute a squeezed slice (`squeeze`) with red and blue parted at its seams (`dispersion`) and the light smeared a little upright (`streak`), or behind a wall of square glass blocks (`mode: 'blocks'`), the lights drifting slowly (`lights`, `size`, `glow`, `drift`, `rate`); `seams`, `grain`, `seed`.
+- `<DitherGradient>`: two shapes, `orb` (a soft glow wandering about its centre) and `pill` (a long glowing capsule), sized by `size`; and three colours (`colors` dim, middle, bright) blend through the middle one (`gradientRamp`). Two colours blend exactly as before.
+
+
 ## [0.13.0] — 2026-11-26
 
 Two glass logos for the Logomarks Lookbook, our own constructions after the ideas of reactdrops.dev's Liquid Glass Logo

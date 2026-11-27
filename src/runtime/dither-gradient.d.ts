@@ -1,10 +1,10 @@
 import type { PaletteName } from './palettes.js';
 
 /** The gradient's shapes. */
-export type GradientShape = 'wave' | 'band' | 'swirl' | 'pinwheel' | 'steps';
+export type GradientShape = 'wave' | 'band' | 'swirl' | 'pinwheel' | 'steps' | 'orb' | 'pill';
 
 export interface DitherGradientConfig {
-	/** Two CSS hex colours: the dim one where the tone is low and the bright one where it is full. Default a plum and a hot pink. */
+	/** Two CSS hex colours, the dim one where the tone is low and the bright one where it is full, or three with a middle colour between them. Default a plum and a hot pink. */
 	colors?: string[];
 	/** A shared palette by name (`PALETTES`, any case), when there are no `colors`: its first and last colours. */
 	palette?: PaletteName | (string & {});
@@ -32,6 +32,8 @@ export interface DitherGradientConfig {
 	rate?: number;
 	/** The steps' block, in dots. Default 6. */
 	block?: number;
+	/** The orb's radius, and the pill's thickness's share, in widths. Default 0.3. */
+	size?: number;
 	/** Colour bands from dim to bright; 0 blends smoothly. Default 0. */
 	steps?: number;
 	/** The swirl's and pinwheel's centre, and the wave's and band's pivot, 0–1 from the top left. Default [0.5, 0.5]. */
@@ -45,7 +47,7 @@ export interface DitherGradientConfig {
 }
 
 /** The shapes, in the order the shader numbers them. */
-export declare const GRADIENT_SHAPES: readonly ['wave', 'band', 'swirl', 'pinwheel', 'steps'];
+export declare const GRADIENT_SHAPES: readonly ['wave', 'band', 'swirl', 'pinwheel', 'steps', 'orb', 'pill'];
 
 /** The settings' defaults, shared by the shader and the JS twin. */
 export declare const GRADIENT_DEFAULTS: {
@@ -60,6 +62,7 @@ export declare const GRADIENT_DEFAULTS: {
 	twist: number;
 	rate: number;
 	block: number;
+	size: number;
 	steps: number;
 	centre: [number, number];
 };
@@ -80,6 +83,9 @@ export declare function gradientTone(s: GradientSettings, x: number, y: number, 
 
 /** One frame dot for dot on a target exactly `cols` by `rows` dots: each dot's tone after the quiet area, and whether a bayer dot is lit. */
 export declare function gradientDots(config: DitherGradientConfig, cols: number, rows: number, time?: number): { tone: number; lit: boolean }[][];
+
+/** The three colours the dots blend through, low to high: a middle one of their own when three or more are given, else halfway in Oklab. */
+export declare function gradientRamp(config: DitherGradientConfig): [string, string, string];
 
 /** The two colours as the shader takes them: the dim one and the bright one. */
 export declare function gradientColors(config: DitherGradientConfig): [string, string];

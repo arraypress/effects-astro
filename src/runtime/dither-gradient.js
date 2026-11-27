@@ -2,11 +2,12 @@
  * @module @arraypress/effects-astro/dither-gradient
  *
  * A soft colour gradient drawn only in dots: the tone of a slow, smooth
- * shape (a wavy horizon, a glowing band, a swirl, a pinwheel, or stepped
- * columns falling) decides at each dot of a fixed grid whether it shows
+ * shape (a wavy horizon, a glowing band, a swirl, a pinwheel, stepped
+ * columns falling, a soft orb or a glowing pill) decides at each dot of a fixed grid whether it shows
  * (`mode: 'bayer'`, an 8×8 ordered dither: square dots that thin out as the
  * tone falls) or how big it is (`mode: 'halftone'`: round dots that shrink),
- * its colour blended from a dim one to a bright one in Oklab. The dots keep
+ * its colour blended from a dim one to a bright one in Oklab (through a
+ * middle colour when three are given). The dots keep
  * their size in CSS px; the shapes are measured in widths, so a 330 px card
  * and a 1280 px hero show the same picture.
  *
@@ -29,10 +30,10 @@ import { watchColors } from './mount.js';
 import { pickColors } from './palettes.js';
 
 /**
- * @typedef {'wave' | 'band' | 'swirl' | 'pinwheel' | 'steps'} GradientShape
+ * @typedef {'wave' | 'band' | 'swirl' | 'pinwheel' | 'steps' | 'orb' | 'pill'} GradientShape
  *
  * @typedef {object} DitherGradientConfig
- * @property {string[]} [colors] Two CSS hex colours: the dim one where the tone is low and the bright one where it is full. Default a plum and a hot pink.
+ * @property {string[]} [colors] Two CSS hex colours, the dim one where the tone is low and the bright one where it is full, or three with a middle colour between them. Default a plum and a hot pink.
  * @property {string} [palette] A shared palette by name (PALETTES; any case), when there are no `colors`: its first and last colours.
  * @property {string} [background] A CSS hex colour to fill behind the dots; none leaves the canvas clear there.
  * @property {GradientShape} [shape='wave'] The gradient's shape.
@@ -46,6 +47,7 @@ import { pickColors } from './palettes.js';
  * @property {number} [twist=2] How tightly the swirl winds (per e-fold of radius) and the pinwheel bends (turns per width).
  * @property {number} [rate=0.03] How fast it moves, cycles a second.
  * @property {number} [block=6] The steps' block, in dots.
+ * @property {number} [size=0.3] The orb's radius, and the pill's thickness's share, in widths.
  * @property {number} [steps=0] Colour bands from dim to bright; 0 blends smoothly.
  * @property {[number, number]} [centre=[0.5, 0.5]] The swirl's and pinwheel's centre, and the wave's and band's pivot, 0–1 from the top left.
  * @property {[number, number]} [offset=[0, 0]] Where the shapes' noise starts, so two cards differ.
@@ -55,7 +57,7 @@ import { pickColors } from './palettes.js';
  */
 
 /** The shapes, in the order the shader numbers them. */
-export const GRADIENT_SHAPES = /** @type {const} */ (['wave', 'band', 'swirl', 'pinwheel', 'steps']);
+export const GRADIENT_SHAPES = /** @type {const} */ (['wave', 'band', 'swirl', 'pinwheel', 'steps', 'orb', 'pill']);
 
 /** The settings' defaults, shared by the shader and the JS twin. */
 export const GRADIENT_DEFAULTS = {
@@ -70,6 +72,7 @@ export const GRADIENT_DEFAULTS = {
 	twist: 2,
 	rate: 0.03,
 	block: 6,
+	size: 0.3,
 	steps: 0,
 	centre: /** @type {[number, number]} */ ([0.5, 0.5]),
 };
@@ -91,6 +94,7 @@ uniform float uArms;
 uniform float uTwist;
 uniform float uRate;
 uniform float uBlock;
+uniform float uSizeW;
 uniform vec2 uCentre;
 uniform vec2 uOffset;
 float gradientTone(vec2 c, float H, float t) {
@@ -99,6 +103,15 @@ float gradientTone(vec2 c, float H, float t) {
 	float u = p.x * k + p.y * s;
 	float v = p.y * k - p.x * s;
 	float ph = t * uRate;
+	if (uShape > 4.5) {
+		// the orb and the pill: a soft glow wandering slowly about the centre
+		vec2 w = vec2(gnoise(vec2(ph * 0.9 + uOffset.x, uOffset.y)), gnoise(vec2(uOffset.x, ph * 0.9 + uOffset.y))) - 0.5;
+		vec2 d = vec2(u, v) - w * 0.24;
+		if (uShape > 5.5) d.x = max(abs(d.x) - uSizeW * 1.1, 0.0);
+		float r0 = max(uShape > 5.5 ? uSizeW * 0.55 : uSizeW, 0.02) * (1.0 + 0.08 * sin(6.2831853 * ph));
+		float e = clamp(uSoft, 0.05, 1.0);
+		return exp(-pow(length(d) / r0, 2.0) * (1.2 / e));
+	}
 	if (uShape < 0.5) {
 		float h = uLevel + 0.07 * sin(6.2831853 * (u * 1.1 + ph)) + 0.22 * (gnoise(vec2(u * 2.2 + uOffset.x, ph * 0.8 + uOffset.y)) - 0.5);
 		return smoothstep(-uSoft * 0.5, uSoft * 0.5, v - h);
@@ -135,6 +148,7 @@ uniform float uMode;
 uniform float uFill;
 uniform float uSteps;
 uniform vec3 uLow;
+uniform vec3 uMid;
 uniform vec3 uHigh;
 uniform vec4 uBg;
 ${GLSL_OKLAB}
@@ -169,7 +183,7 @@ void main() {
 	}
 
 	float tq = uSteps > 0.5 ? floor(tone * uSteps + 0.5) / uSteps : tone;
-	vec3 col = fromOklab(mix(uLow, uHigh, tq));
+	vec3 col = fromOklab(tq < 0.5 ? mix(uLow, uMid, tq * 2.0) : mix(uMid, uHigh, tq * 2.0 - 1.0));
 	gl_FragColor = vec4(col * lit + uBg.rgb * uBg.a * (1.0 - lit), lit + uBg.a * (1.0 - lit));
 }
 `;
@@ -229,6 +243,16 @@ export function gradientTone(s, x, y, H, time = 0) {
 	const v = py * k - px * sn;
 	const ph = time * s.rate;
 	const [ox, oy] = s.offset;
+	if (s.shapeIndex >= 5) {
+		const wx = gnoise(ph * 0.9 + ox, oy) - 0.5;
+		const wy = gnoise(ox, ph * 0.9 + oy) - 0.5;
+		let dx = u - wx * 0.24;
+		const dy = v - wy * 0.24;
+		if (s.shapeIndex === 6) dx = Math.max(Math.abs(dx) - s.size * 1.1, 0);
+		const r0 = Math.max(s.shapeIndex === 6 ? s.size * 0.55 : s.size, 0.02) * (1 + 0.08 * Math.sin(2 * Math.PI * ph));
+		const e = Math.min(1, Math.max(0.05, s.soft));
+		return Math.exp(-((Math.hypot(dx, dy) / r0) ** 2) * (1.2 / e));
+	}
 	if (s.shapeIndex === 0) {
 		const h = s.level + 0.07 * Math.sin(2 * Math.PI * (u * 1.1 + ph)) + 0.22 * (gnoise(u * 2.2 + ox, ph * 0.8 + oy) - 0.5);
 		return smooth(-s.soft * 0.5, s.soft * 0.5, v - h);
@@ -282,6 +306,22 @@ export function gradientDots(config, cols, rows, time = 0) {
 }
 
 /**
+ * The three colours the dots are blended through, low to high: a middle
+ * colour of their own when three or more are given, else halfway in Oklab
+ * (so two colours blend exactly as before).
+ *
+ * @param {DitherGradientConfig} config The settings.
+ * @returns {[string, string, string]} The dim colour, the middle and the bright one.
+ */
+export function gradientRamp(config) {
+	const colors = pickColors(config, PINK);
+	const low = colors[0];
+	const high = colors[colors.length - 1];
+	const mid = colors.length >= 3 ? colors[Math.floor(colors.length / 2)] : toHex(mixOklab(parseColor(low), parseColor(high), 0.5));
+	return [low, mid, high];
+}
+
+/**
  * The two colours as the shader takes them.
  *
  * @param {DitherGradientConfig} config The settings.
@@ -307,6 +347,8 @@ function shapeLayer(config, low, mid, high) {
 	const at = `${Math.round(cx * 100)}% ${Math.round(cy * 100)}%`;
 	// CSS angles point where a gradient runs to: 0deg starts at the bottom, as `angle` 0 rises from it
 	const to = Math.round(o.angle);
+	if (o.shape === 'orb') return `radial-gradient(circle at ${at}, ${high} 0%, ${mid} ${Math.round(o.size * 55)}%, ${low} ${Math.round(o.size * 95)}%, transparent ${Math.round(o.size * 150)}%)`;
+	if (o.shape === 'pill') return `radial-gradient(ellipse ${Math.round(o.size * 160)}% ${Math.round(o.size * 60)}% at ${at}, ${high} 0%, ${mid} 40%, ${low} 70%, transparent 100%)`;
 	if (o.shape === 'band') return `linear-gradient(${to}deg, transparent 22%, ${low} 36%, ${high} 50%, ${low} 64%, transparent 78%)`;
 	if (o.shape === 'swirl' || o.shape === 'pinwheel') {
 		const arm = 360 / Math.max(1, Math.round(o.arms));
@@ -325,10 +367,9 @@ function shapeLayer(config, low, mid, high) {
  * @returns {string} The CSS background.
  */
 export function gradientStill(config) {
-	const [low, high] = gradientColors(config).map(parseColor);
+	const [low, mid, high] = gradientRamp(config);
 	const ground = config.background ?? '#000000';
 	const dot = Math.max(1, config.dot ?? GRADIENT_DEFAULTS.dot);
-	const mid = toHex(mixOklab(low, high, 0.5));
 	const pc = (/** @type {number} */ n) => `${Math.round(n * 100)}%`;
 	const quiet = config.quiet;
 	const r = pc((quiet?.radius ?? 0.8) * 0.55);
@@ -339,7 +380,7 @@ export function gradientStill(config) {
 	return [
 		quiet ? `radial-gradient(${r} ${r} at ${pc(quiet.x ?? 0.5)} ${pc(quiet.y ?? 0.5)}, ${ground} 55%, transparent 100%)` : '',
 		screen,
-		shapeLayer(config, toHex(low), mid, toHex(high)),
+		shapeLayer(config, toHex(parseColor(low)), toHex(parseColor(mid)), toHex(parseColor(high))),
 		ground,
 	]
 		.filter(Boolean)
@@ -357,7 +398,7 @@ export function gradientStill(config) {
 export function ditherGradient(el, config) {
 	const speed = config.speed ?? 1;
 	const lab = (/** @type {string} */ c) => toOklab(parseColor(c));
-	let [low, high] = gradientColors(config).map(lab);
+	let [low, mid, high] = gradientRamp(config).map(lab);
 	const bg = config.background ? [...parseColor(config.background), 1] : [0, 0, 0, 0];
 	const dot = Math.max(1, config.dot ?? GRADIENT_DEFAULTS.dot);
 	const start = performance.now();
@@ -387,6 +428,7 @@ export function ditherGradient(el, config) {
 			gl.uniform1f(uniform('uTwist'), s.twist);
 			gl.uniform1f(uniform('uRate'), s.rate);
 			gl.uniform1f(uniform('uBlock'), s.blockW);
+			gl.uniform1f(uniform('uSizeW'), s.size);
 			gl.uniform2f(uniform('uCentre'), s.centre[0], s.centre[1]);
 			gl.uniform2f(uniform('uOffset'), s.offset[0], s.offset[1]);
 			gl.uniform4f(uniform('uQuiet'), ...quietUniform(config.quiet, cols / rows));
@@ -394,13 +436,14 @@ export function ditherGradient(el, config) {
 		uniforms({ gl, uniform }, now) {
 			gl.uniform1f(uniform('uTime'), ((now - start) / 1000) * Math.max(0, speed));
 			gl.uniform3f(uniform('uLow'), low[0], low[1], low[2]);
+			gl.uniform3f(uniform('uMid'), mid[0], mid[1], mid[2]);
 			gl.uniform3f(uniform('uHigh'), high[0], high[1], high[2]);
 		},
 	});
 	if (!stage) return stop;
 
 	const unwatch = watchColors(el, (next) => {
-		[low, high] = gradientColors({ colors: next.colors }).map(lab);
+		[low, mid, high] = gradientRamp({ colors: next.colors }).map(lab);
 		if (stage.still) stage.redraw();
 	});
 	return () => {
