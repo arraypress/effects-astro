@@ -3,10 +3,10 @@
  *
  * A photo seen through a lens racking its focus: the plane of focus sweeps
  * slowly from near to far and back, so one part of the picture sharpens while
- * the rest melts into soft blur, and out-of-focus lights (round or six-bladed
- * discs with a brighter rim, tinted from the photo's own highlights) drift
- * slowly upward through it. Made for flowers and close portraits behind a
- * mark: no pointer, the copy sharp in front.
+ * the rest melts into soft blur, and out-of-focus lights (soft filled glows,
+ * round or six-bladed, tinted from the photo's highlights and brighter where
+ * they cross them) drift slowly upward through it. Made for flowers and close
+ * portraits behind a mark: no pointer, the copy sharp in front.
  *
  * There is no depth map, so the depth is a guess from the picture itself:
  * its blurred brightness and colour (the bright, saturated subject nearer)
@@ -33,11 +33,11 @@ import { loadImage, imageTexture, coverScale, GLSL_COVER } from './image.js';
  * @property {number} [blur=0.03] The widest blur, a share of the height.
  * @property {number} [rate=0.06] How fast the focus racks, cycles a second.
  * @property {number} [near=0.55] How much the depth guess leans on the picture (its brightness and colour) against its height in the frame, 0–1.
- * @property {number} [discs=9] Out-of-focus lights drifting through it, up to 12; 0 for none.
- * @property {number} [size=0.07] Their radius, a share of the height.
+ * @property {number} [discs=6] Out-of-focus lights drifting through it, up to 12; 0 for none.
+ * @property {number} [size=0.11] Their radius, a share of the height.
  * @property {number} [glow=0.35] How bright they are.
  * @property {BokehShape} [shape='round'] Round lights, or six-bladed ones.
- * @property {number} [drift=0.025] How fast they rise, heights a second.
+ * @property {number} [drift=0.02] How fast they rise, heights a second.
  * @property {number} [vignette=0.35] Darkening toward the edges; 0 for none.
  * @property {number} [grain=0.04] Fine grain over all of it; 0 for none.
  * @property {number} [seed=0] Where the focus and the lights start, so two cards differ.
@@ -51,11 +51,11 @@ export const BOKEH_DEFAULTS = {
 	blur: 0.03,
 	rate: 0.06,
 	near: 0.55,
-	discs: 9,
-	size: 0.07,
+	discs: 6,
+	size: 0.11,
 	glow: 0.35,
 	shape: /** @type {BokehShape} */ ('round'),
-	drift: 0.025,
+	drift: 0.02,
 	vignette: 0.35,
 	grain: 0.04,
 	seed: 0,
@@ -160,7 +160,7 @@ float depthAt(vec2 uv) {
 
 float hash1(float n) { return fract(sin(n * 12.9898 + uSeed * 3.1) * 43758.5453); }
 
-// one out-of-focus light: soft edged, a brighter rim, round or six-bladed
+// one out-of-focus light: a soft, filled glow (brightest in its middle, no ring at its edge), round or six-bladed
 float disc(vec2 p, vec2 c, float r) {
 	vec2 d = p - c;
 	float dist = length(d);
@@ -169,9 +169,8 @@ float disc(vec2 p, vec2 c, float r) {
 		float k = 3.14159265 / 6.0;
 		dist *= cos(k) / cos(mod(a, 2.0 * k) - k);
 	}
-	float body = 1.0 - smoothstep(r * 0.86, r, dist);
-	float rim = smoothstep(r * 0.62, r * 0.93, dist) * body;
-	return body * 0.78 + rim * 0.3;
+	float x = dist / r;
+	return exp(-x * x * 1.6) * (1.0 - smoothstep(0.9, 1.3, x));
 }
 
 void main() {
@@ -213,7 +212,9 @@ void main() {
 		if (mod(float(i), 4.0) > 2.5) tint = uTint[3];
 		lights += tint * disc(p, vec2(x * aspect, y), r) * (0.5 + 0.5 * hash1(fi * 7.0 + 5.0));
 	}
-	col = 1.0 - (1.0 - col) * (1.0 - clamp(lights * uGlow, 0.0, 1.0));
+	// brighter where they pass over the photo's own highlights, as light out of focus would be
+	float lum = dot(col, vec3(0.299, 0.587, 0.114));
+	col = 1.0 - (1.0 - col) * (1.0 - clamp(lights * uGlow * (0.75 + lum * 1.6), 0.0, 1.0));
 
 	// a little quieter where the copy sits, darker toward the edges, and grain
 	vec2 q = vec2((uv.x - 0.5) * aspect, 0.5 - uv.y);

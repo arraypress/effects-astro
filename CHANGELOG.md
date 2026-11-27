@@ -15,19 +15,23 @@ nothing off screen.
 
 ### Added
 
-- `<PaintDrip>` (`paintDrip`, `dripStill`, `dripRun`, `dripAt`, `dripAnchors`, `dripPlan`, `dripClock`, `DRIP_DEFAULTS`,
-  `DEPTH_STEP`): a mark (`src`, any image; its alpha) sprayed in paint on a lit, grained ground, the paint running. Drips
-  hang from the mark's lower edges (read off its coverage: gentle, low edges and the low points of a run likelier), pool
+- `<PaintDrip>` (`paintDrip`, `dripStill`, `dripRun`, `dripAt`, `dripAnchors`, `dripPlan`, `dripClock`, `dripPath`,
+  `dripsAtRest`, `DRIP_DEFAULTS`, `DEPTH_STEP`): a mark (`src`, any image; its alpha) sprayed in paint on a lit, grained
+  ground, the paint running. Drips hang only from the mark's outer lower silhouette (read off its coverage: never a
+  counter or a stripe end inside it; gentle, low edges and the low points of a run likelier), pool
   until the paint passes what surface tension holds, then fall under gravity against viscosity, laying paint behind so
   the head's bead shrinks and slows and the body thins, and stop when spent or when they meet something; a wet sheen
   fades as they dry. Staggered, seeded volumes and starts; they hold (`hold`), fade and run again. `color`,
   `background`, `box`, `drips`, `volume`, `floor`, `glow`, `spray` (a speckled spray edge), `grain`, `seed`. Canvas 2D;
-  redrawn only while something moves.
+  redrawn only while something moves. A drip's outline is pure SVG path data (`dripPath`; `dripsAtRest` for all at full
+  length), which the canvas fills, so a still can show the resting frame; pass `anchors` (from `dripAnchors`) and the
+  canvas runs the same drips the still shows.
 - `<PhotoBokeh>` (`photoBokeh`, `photoBokehStill`, `focusAt`, `blurAt`, `discAt`, `highlightTints`, `BOKEH_DEFAULTS`,
   `MAX_DISCS`): a photo (`src`) through a lens racking its focus near to far and back (`rate`), the depth guessed from
   the picture's blurred brightness and colour and its height (`near`), the blur a golden-angle disc of taps read from
-  the mipmaps (`blur`); out-of-focus lights (`discs`, `size`, `glow`, round or six-bladed `shape`) tinted from the
-  photo's highlights drift up through it (`drift`); `vignette`, `grain`, `quiet`. Transparent until the photo loads.
+  the mipmaps (`blur`); a few large out-of-focus lights (`discs`, `size`, `glow`, round or six-bladed `shape`), soft
+  filled glows with no ring at the edge, tinted from the photo's highlights and brighter where they cross them, drift
+  slowly up through it (`drift`); `vignette`, `grain`, `quiet`. Transparent until the photo loads.
 
 ## [0.14.0] — 2026-11-28
 

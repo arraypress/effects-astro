@@ -39,6 +39,8 @@ import { seededRandom as mulberry32 } from './random.js';
  * @property {number} [grain=0.12] Grain over the ground and the paint; 0 for none.
  * @property {number} [hold=2.6] Seconds the finished drips hold before they fade and run again.
  * @property {number} [seed=0] Which drips (where, how big, when), so two cards differ.
+ * @property {DripAnchor[]} [anchors] Where the drips hang (from `dripAnchors` on the mark's coverage), when a still was
+ *   made from them: the canvas then runs the same drips. Read off the image when not given.
  * @property {number} [speed=1] Plays the clock faster or slower; 0 for one still frame.
  */
 
@@ -190,9 +192,9 @@ export function dripAt(run, t) {
  */
 
 /**
- * The places paint drips from: points on the mark's lower edges (ink above, clear below), the gentler the slope and
- * the lower on the mark the likelier, the lowest points of a run likelier still (paint gathers where an edge turns
- * up again), picked apart from each other.
+ * The places paint drips from: points on the mark's outer lower silhouette (ink above, nothing of the mark anywhere
+ * below, so never inside a counter or off a stripe end within it), the gentler the slope and the lower on the mark the
+ * likelier, the lowest points of a run likelier still (paint gathers where an edge turns up again), picked apart.
  *
  * @param {ArrayLike<number>} alpha The mark's coverage, 0–1, row by row.
  * @param {number} w Its width, cells.
@@ -225,7 +227,9 @@ export function dripAnchors(alpha, w, h, count, seed) {
 			if (slope > 1.3) continue; // too steep to hold paint: it runs down the edge instead
 			const lowest = a.y <= e.y && b.y <= e.y;
 			const room = e.room / h;
-			const weight = (0.08 + (e.y / h) ** 2) * (lowest ? 3 : 1) * Math.min(1, room / 0.08 + (e.open ? 1 : 0)) * (1 - slope * 0.5);
+			// only the outer lower silhouette: nothing of the mark below (never a counter, never a stripe end inside it)
+			if (!e.open) continue;
+			const weight = (0.08 + (e.y / h) ** 2) * (lowest ? 3 : 1) * (1 - slope * 0.5);
 			if (weight > 0) candidates.push({ x: e.x / w, y: (e.y + 1) / h, room, open: e.open, weight });
 		}
 	const rand = mulberry32(Math.floor(seed * 1000) + 17);
@@ -293,6 +297,56 @@ export function dripClock(plan, time) {
 	const fade = t < fadeAt ? 1 : t < fadeAt + FADE ? 1 - (t - fadeAt) / FADE : 0;
 	return { t, fade };
 }
+
+/**
+ * A drip's outline at a time, as SVG path data in heights (x from the left, y from the top): a fillet where it leaves
+ * the edge, its body down to the head, the bead (a little teardrop while it moves). The canvas fills it (`Path2D`), and
+ * a still draws it, so both show the same drip.
+ *
+ * @param {DripPlan['drips'][number]} d The drip.
+ * @param {number} t Seconds into the loop.
+ * @returns {string} The path data, or '' before it starts.
+ */
+export function dripPath(d, t) {
+	const head = dripAt(d.run, t);
+	if (!head.started) return '';
+	const f = (n) => (Math.round(n * 1e4) / 1e4).toString();
+	const { x: x0, y: y0 } = d;
+	const depth = head.y;
+	const rb = Math.max(head.r, 0.002);
+	const sway = (s) => Math.sin(s * 23 + d.x * 40) * Math.min(0.0036, s * 0.02);
+	const widthAt = (s) => d.run.w[Math.min(d.run.w.length - 1, Math.max(0, Math.floor(s / DEPTH_STEP)))] ?? rb;
+	const w0 = widthAt(0);
+	const fillet = Math.max(w0 * 0.9, rb * 0.8);
+	const neck = Math.max(0, depth - rb * 0.6);
+	const steps = Math.max(2, Math.ceil(neck / 0.01));
+	const stretch = 1 + Math.min(0.45, head.v * 6);
+	const bx = x0 + sway(depth),
+		by = y0 + depth;
+	const left = [],
+		right = [];
+	for (let i = 1; i <= steps; i++) {
+		const sd = (neck * i) / steps;
+		if (sd <= fillet) continue; // the fillet covers the top of the body
+		left.push(`L${f(x0 + sway(sd) - widthAt(sd) / 2)} ${f(y0 + sd)}`);
+		right.unshift(`L${f(x0 + sway(sd) + widthAt(sd) / 2)} ${f(y0 + sd)}`);
+	}
+	return (
+		`M${f(x0 - w0 / 2 - fillet)} ${f(y0 - 0.001)}Q${f(x0 - w0 / 2)} ${f(y0)} ${f(x0 - w0 / 2)} ${f(y0 + fillet)}` +
+		left.join('') +
+		`L${f(bx - rb)} ${f(by)}A${f(rb)} ${f(rb * stretch)} 0 0 0 ${f(bx + rb)} ${f(by)}` +
+		right.join('') +
+		`L${f(x0 + w0 / 2)} ${f(y0 + fillet)}Q${f(x0 + w0 / 2)} ${f(y0)} ${f(x0 + w0 / 2 + fillet)} ${f(y0 - 0.001)}Z`
+	);
+}
+
+/**
+ * Every drip at its full length (the loop's resting frame), as one SVG path in heights: what a still shows.
+ *
+ * @param {DripPlan} plan The plan.
+ * @returns {string} The path data.
+ */
+export const dripsAtRest = (plan) => plan.drips.map((d) => dripPath(d, plan.settled + 0.01)).join('');
 
 /**
  * A CSS `background` that stands in for the ground before the canvas draws: its colour with the soft light in its
@@ -417,7 +471,12 @@ export function paintDrip(el, config) {
 			data.data[i * 4 + 3] = kept * 255;
 		}
 		k.putImageData(data, 0, 0);
-		// where the paint drips from, read off the mark at a coarser size
+		// where the paint drips from: given (so a still made from the same plan matches), or read off the mark
+		if (o.anchors) {
+			plan = dripPlan(o.anchors, { left: box.left / H, top: box.top / H, size: box.size / H }, o);
+			lastKey = '';
+			return;
+		}
 		const n = 160;
 		const probe = document.createElement('canvas');
 		probe.width = n;
@@ -445,41 +504,22 @@ export function paintDrip(el, config) {
 	const drawDrip = (p, d, t, H) => {
 		const head = dripAt(d.run, t);
 		if (!head.started) return;
+		p.save();
+		p.scale(H, H);
+		p.fill(new Path2D(dripPath(d, t)));
+		p.restore();
 		const x0 = d.x * H,
 			y0 = d.y * H;
 		const depth = head.y * H;
 		const rb = Math.max(head.r * H, 0.6);
-		// a gentle sway as it runs, the same each loop
-		const sway = (s) => Math.sin(s * 0.07 + d.x * 40) * Math.min(1.2, s * 0.02);
-		const widthAt = (s) => {
-			const k = Math.min(d.run.w.length - 1, Math.max(0, Math.floor(s / H / DEPTH_STEP)));
-			return (d.run.w[k] ?? rb) * H;
-		};
-		p.beginPath();
-		// the fillet off the edge, then down the left of the body
+		const sway = (sp) => Math.sin((sp / H) * 23 + d.x * 40) * Math.min(0.0036, (sp / H) * 0.02) * H;
+		const widthAt = (sp) => (d.run.w[Math.min(d.run.w.length - 1, Math.max(0, Math.floor(sp / H / DEPTH_STEP)))] ?? head.r) * H;
 		const w0 = widthAt(0);
 		const fillet = Math.max(w0 * 0.9, rb * 0.8);
-		p.moveTo(x0 - w0 / 2 - fillet, y0 - 0.5);
-		p.quadraticCurveTo(x0 - w0 / 2, y0, x0 - w0 / 2, y0 + fillet);
 		const neck = Math.max(0, depth - rb * 0.6);
-		const steps = Math.max(2, Math.ceil(neck / 2));
-		for (let i = 1; i <= steps; i++) {
-			const s = (neck * i) / steps;
-			p.lineTo(x0 + sway(s) - widthAt(s) / 2, y0 + s);
-		}
-		// round the bead: a little teardrop while it moves, round once it rests
 		const stretch = 1 + Math.min(0.45, head.v * 6);
 		const bx = x0 + sway(depth),
 			by = y0 + depth;
-		p.ellipse(bx, by, rb, rb * stretch, 0, Math.PI, 0, true);
-		for (let i = steps; i >= 1; i--) {
-			const s = (neck * i) / steps;
-			p.lineTo(x0 + sway(s) + widthAt(s) / 2, y0 + s);
-		}
-		p.lineTo(x0 + w0 / 2, y0 + fillet);
-		p.quadraticCurveTo(x0 + w0 / 2, y0, x0 + w0 / 2 + fillet, y0 - 0.5);
-		p.closePath();
-		p.fill();
 		// wet: a sheen down the body and a glint on the bead, fading as the paint dries
 		const since = head.done ? t - (d.run.t0 + d.run.duration) : 0;
 		const wet = head.done ? Math.max(0, 1 - since / 1.8) : 1;

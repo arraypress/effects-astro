@@ -23,6 +23,8 @@ export interface PaintDripConfig {
 	hold?: number;
 	/** Which drips (where, how big, when), so two cards differ. Default 0. */
 	seed?: number;
+	/** Where the drips hang (from `dripAnchors` on the mark's coverage), when a still was made from them: the canvas then runs the same drips. Read off the image when not given. */
+	anchors?: DripAnchor[];
 	/** Plays the clock faster or slower; 0 for one still frame (every drip at full length). Default 1. */
 	speed?: number;
 }
@@ -73,6 +75,12 @@ export declare function dripPlan(anchors: DripAnchor[], at: { left: number; top:
 
 /** Seconds into the loop, and the drips' opacity (they fade at its end). */
 export declare function dripClock(plan: DripPlan, time: number): { t: number; fade: number };
+
+/** A drip's outline at a time, SVG path data in heights ('' before it starts): what the canvas fills and a still draws. */
+export declare function dripPath(d: DripPlan['drips'][number], t: number): string;
+
+/** Every drip at its full length (the loop's resting frame), one SVG path in heights. */
+export declare function dripsAtRest(plan: DripPlan): string;
 
 /** A CSS `background` that stands in for the ground before the canvas draws. */
 export declare function dripStill(config: PaintDripConfig): string;

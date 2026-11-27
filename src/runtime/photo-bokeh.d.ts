@@ -10,15 +10,15 @@ export interface PhotoBokehConfig {
 	rate?: number;
 	/** How much the depth guess leans on the picture (its brightness and colour) against its height in the frame, 0–1. Default 0.55. */
 	near?: number;
-	/** Out-of-focus lights drifting through it, up to 12; 0 for none. Default 9. */
+	/** Out-of-focus lights drifting through it (soft filled glows), up to 12; 0 for none. Default 6. */
 	discs?: number;
-	/** Their radius, a share of the height. Default 0.07. */
+	/** Their radius, a share of the height. Default 0.11. */
 	size?: number;
 	/** How bright they are. Default 0.35. */
 	glow?: number;
 	/** Round lights, or six-bladed ones. Default 'round'. */
 	shape?: BokehShape;
-	/** How fast they rise, heights a second. Default 0.025. */
+	/** How fast they rise, heights a second. Default 0.02. */
 	drift?: number;
 	/** Darkening toward the edges; 0 for none. Default 0.35. */
 	vignette?: number;

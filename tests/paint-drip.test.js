@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { DRIP_DEFAULTS, DEPTH_STEP, dripRun, dripAt, dripAnchors, dripPlan, dripClock, dripStill } from '../src/runtime/paint-drip.js';
+import { DRIP_DEFAULTS, DEPTH_STEP, dripRun, dripAt, dripAnchors, dripPlan, dripClock, dripStill, dripPath, dripsAtRest } from '../src/runtime/paint-drip.js';
 
 /** A hexagon on its point, as the mark's coverage. */
 function hexagon(n = 160) {
@@ -92,4 +92,38 @@ test('a CSS still of the ground', () => {
 	assert.match(css, /^radial-gradient\(/);
 	assert.match(css, /#808080 70%\)$/);
 	assert.doesNotMatch(css, /url\(/);
+});
+
+test('never from a counter or a stripe end inside the mark: only the outer lower silhouette', () => {
+	// an E: a top bar, a stem, a middle bar with ink below it, a bottom bar
+	const n = 96,
+		a = new Float32Array(n * n);
+	const fill = (x0, y0, x1, y1) => {
+		for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) a[y * n + x] = 1;
+	};
+	fill(10, 10, 86, 24);
+	fill(10, 24, 24, 86);
+	fill(10, 45, 70, 58);
+	fill(10, 72, 86, 86);
+	for (let seed = 1; seed < 12; seed++)
+		for (const p of dripAnchors(a, n, n, 4, seed)) {
+			assert.ok(p.open, 'clear all the way below');
+			assert.ok(p.y > 0.85, `from the bottom bar, not the middle one (${p.y})`);
+		}
+});
+
+test('the still and the canvas draw the same outline: every drip at full length, as SVG path data', () => {
+	const n = 160;
+	const plan = dripPlan(dripAnchors(hexagon(n), n, n, 3, 2), { left: 0.15, top: 0.17, size: 0.5 }, { seed: 2 });
+	const rest = dripsAtRest(plan);
+	assert.equal(rest.match(/M/g).length, 3, 'one shape a drip');
+	assert.match(rest, /^M[\d.]+ [\d.]+Q/);
+	assert.doesNotMatch(rest, /NaN|Infinity/);
+	for (const d of plan.drips) {
+		const path = dripPath(d, plan.settled + 0.01);
+		// the bead reaches the drip's full length
+		const ys = [...path.matchAll(/[\d.]+ ([\d.]+)/g)].map((m) => Number(m[1]));
+		assert.ok(Math.abs(Math.max(...ys) - (d.y + d.run.length)) < 0.01);
+		assert.equal(dripPath(d, d.run.t0 - 0.1), '', 'nothing before it starts');
+	}
 });
