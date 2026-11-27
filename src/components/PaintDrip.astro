@@ -1,0 +1,40 @@
+---
+/**
+ * PaintDrip: a mark sprayed in paint, the paint running. Wet paint pools
+ * along the mark's lower edges, drips break away where a pool grows past what
+ * surface tension holds, run down under gravity against the paint's viscosity
+ * (a bead at the head, the body thinning as paint is laid behind), slow, stop
+ * and dry; they hold, fade, and run again. See src/runtime/paint-drip.js.
+ *
+ * Fills its nearest positioned ancestor, or the viewport with `fixed`.
+ * Opaque: it paints its `background` everywhere; the element shows a CSS still
+ * of the ground until the canvas draws.
+ *
+ * @example
+ * <section class="hero" style="position: relative">
+ *   <PaintDrip src="/logo-white.svg" color="#C8FF00" />
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import { dripStill, type PaintDripConfig } from '../runtime/paint-drip.js';
+
+interface Props extends PaintDripConfig {
+	/** Fill the viewport (position: fixed). Default false. */
+	fixed?: boolean;
+	/** Run only while near the screen (true, or how near as a CSS length). Default false. */
+	lazy?: boolean | string;
+	class?: string;
+}
+
+const { fixed = false, lazy = false, class: className, ...config } = Astro.props;
+const still = dripStill(config);
+---
+
+<EffectCanvas name="paint-drip" config={config} fixed={fixed} lazy={lazy} background={still} class={className} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { paintDrip } from '../runtime/paint-drip.js';
+
+	mount('[data-effect-paint-drip]', paintDrip);
+</script>

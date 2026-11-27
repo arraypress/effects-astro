@@ -1,0 +1,40 @@
+---
+/**
+ * PhotoBokeh: a photo seen through a lens racking its focus, the plane of
+ * focus sweeping slowly near to far and back (a depth guessed from the
+ * picture itself), soft out-of-focus lights tinted from its highlights
+ * drifting up through it. No pointer, made to sit behind copy. See
+ * src/runtime/photo-bokeh.js.
+ *
+ * Fills its nearest positioned ancestor, or the viewport with `fixed`. The
+ * element shows the photo until the shader starts and without WebGL.
+ *
+ * @example
+ * <section class="hero" style="position: relative">
+ *   <PhotoBokeh src="/img/dahlias.webp" shape="blades" />
+ *   <h1>…</h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import { photoBokehStill, type PhotoBokehConfig } from '../runtime/photo-bokeh.js';
+
+interface Props extends PhotoBokehConfig {
+	/** Fill the viewport (position: fixed). Default false. */
+	fixed?: boolean;
+	/** Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away. Default false. */
+	lazy?: boolean | string;
+	class?: string;
+}
+
+const { fixed = false, lazy = false, class: className, ...config } = Astro.props;
+const still = photoBokehStill(config);
+---
+
+<EffectCanvas name="photo-bokeh" config={config} fixed={fixed} lazy={lazy} background={still} class={className} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { photoBokeh } from '../runtime/photo-bokeh.js';
+
+	mount('[data-effect-photo-bokeh]', photoBokeh);
+</script>

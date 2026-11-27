@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.0] — 2026-11-28
+
+Two live effects after the owner's references for the Logomarks Lookbook: a spray-stencil badge with paint running off
+it, and a flower photo in shallow focus. In the house style: timed in seconds, a pure JS twin for tests, a still, and
+nothing off screen.
+
+### Added
+
+- `<PaintDrip>` (`paintDrip`, `dripStill`, `dripRun`, `dripAt`, `dripAnchors`, `dripPlan`, `dripClock`, `DRIP_DEFAULTS`,
+  `DEPTH_STEP`): a mark (`src`, any image; its alpha) sprayed in paint on a lit, grained ground, the paint running. Drips
+  hang from the mark's lower edges (read off its coverage: gentle, low edges and the low points of a run likelier), pool
+  until the paint passes what surface tension holds, then fall under gravity against viscosity, laying paint behind so
+  the head's bead shrinks and slows and the body thins, and stop when spent or when they meet something; a wet sheen
+  fades as they dry. Staggered, seeded volumes and starts; they hold (`hold`), fade and run again. `color`,
+  `background`, `box`, `drips`, `volume`, `floor`, `glow`, `spray` (a speckled spray edge), `grain`, `seed`. Canvas 2D;
+  redrawn only while something moves.
+- `<PhotoBokeh>` (`photoBokeh`, `photoBokehStill`, `focusAt`, `blurAt`, `discAt`, `highlightTints`, `BOKEH_DEFAULTS`,
+  `MAX_DISCS`): a photo (`src`) through a lens racking its focus near to far and back (`rate`), the depth guessed from
+  the picture's blurred brightness and colour and its height (`near`), the blur a golden-angle disc of taps read from
+  the mipmaps (`blur`); out-of-focus lights (`discs`, `size`, `glow`, round or six-bladed `shape`) tinted from the
+  photo's highlights drift up through it (`drift`); `vignette`, `grain`, `quiet`. Transparent until the photo loads.
+
 ## [0.14.0] — 2026-11-28
 
 Two backgrounds and more for the dithered gradient, after the owner's Fluid, Fluted Glass and Dithered Gradient
