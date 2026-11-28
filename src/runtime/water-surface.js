@@ -359,16 +359,15 @@ export function sunDirection(o) {
 
 /**
  * A CSS `background` that stands for the water before the shader starts and without WebGL: the sky's light lying on
- * the far water, the deep colour nearer, soft bands of light across where the waves' backs catch it.
+ * the far water, the deep colour nearer (`waterStillSvg` lays the ripples over it).
  *
  * @param {WaterSurfaceConfig} config The settings.
  * @returns {string} The CSS background.
  */
 export function waterStill(config = {}) {
 	const l = waterSettings(config).lookColors;
-	const bands = `repeating-linear-gradient(178deg, transparent 0 18px, ${l.horizon}22 22px, transparent 30px)`;
-	const glow = `radial-gradient(ellipse 70% 40% at ${Math.round(50 + (waterSettings(config).sun / 60) * 40)}% 18%, ${l.sun}55, transparent 70%)`;
-	return [glow, bands, `linear-gradient(180deg, ${l.horizon} 0%, ${l.scatter} 38%, ${l.deep} 100%)`].join(', ');
+	const mix = (/** @type {string} */ a, /** @type {string} */ b, /** @type {number} */ t) => toHex(mixOklab(parseColor(a), parseColor(b), t));
+	return `linear-gradient(180deg, ${mix(l.horizon, l.scatter, 0.6)}, ${mix(l.scatter, l.deep, 0.35)} 42%, ${l.deep})`;
 }
 
 /**
@@ -391,24 +390,22 @@ export function waterStillSvg(config = {}, id = 'water') {
 	const az = 270 + o.sun;
 	const sharpTop = Math.round(Math.max(10, (o.focus - 0.22) * 100)),
 		sharpBot = Math.round(Math.min(90, (o.focus + 0.22) * 100));
-	const water = (filter) =>
-		`<g filter="url(#${filter})"><rect width="400" height="500" fill="${mid}" /></g>`;
+	// (the element's background is the CSS still, `waterStill`: the water's gradient; this lays the ripples over it, once
+	// blurred and screened everywhere, once sharp in the band the lens is focused on)
 	return (
 		`<svg class="wc-noise wc-water" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>` +
-		`<linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${far}" /><stop offset=".42" stop-color="${mid}" /><stop offset="1" stop-color="${l.deep}" /></linearGradient>` +
-		`<filter id="${id}s" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">` +
-		`<feTurbulence type="fractalNoise" baseFrequency="0.006 0.034" numOctaves="3" seed="${seed}" result="n" />` +
-		`<feSpecularLighting in="n" surfaceScale="5" specularConstant="1.1" specularExponent="22" lighting-color="${l.sun}" result="s"><feDistantLight azimuth="${az}" elevation="${l.height + 8}" /></feSpecularLighting>` +
-		`<feComposite in="s" in2="SourceGraphic" operator="arithmetic" k1="0" k2="0.42" k3="0.12" k4="0" /></filter>` +
-		`<filter id="${id}b"><feGaussianBlur stdDeviation="5" /></filter>` +
-		`<linearGradient id="${id}m" x1="0" y1="0" x2="0" y2="1"><stop offset="${sharpTop - 12}%" stop-color="#000" /><stop offset="${sharpTop}%" stop-color="#fff" /><stop offset="${sharpBot}%" stop-color="#fff" /><stop offset="${sharpBot + 12}%" stop-color="#000" /></linearGradient>` +
-		`<mask id="${id}k"><rect width="400" height="500" fill="url(#${id}m)" /></mask></defs>` +
-		`<rect width="400" height="500" fill="url(#${id}g)" />` +
-		`<g filter="url(#${id}b)" opacity=".6" style="mix-blend-mode:screen">${water(`${id}s`)}</g>` +
-		`<g mask="url(#${id}k)" style="mix-blend-mode:screen">${water(`${id}s`)}</g>` +
-		`</svg>`
+		`<filter id="${id}s" x="0" y="0" width="1" height="1"><feTurbulence type="fractalNoise" baseFrequency=".006 .034" numOctaves="3" seed="${seed}"/>` +
+		`<feSpecularLighting surfaceScale="5" specularConstant="1.1" specularExponent="22" lighting-color="${l.sun}"><feDistantLight azimuth="${az}" elevation="${l.height + 8}"/></feSpecularLighting>` +
+		`<feComposite in2="SourceGraphic" operator="arithmetic" k2=".42" k3=".12"/></filter>` +
+		`<filter id="${id}b"><feGaussianBlur stdDeviation="5"/></filter>` +
+		`<linearGradient id="${id}m" x2="0" y2="1"><stop offset="${sharpTop - 12}%"/><stop offset="${sharpTop}%" stop-color="#fff"/><stop offset="${sharpBot}%" stop-color="#fff"/><stop offset="${sharpBot + 12}%"/></linearGradient>` +
+		`<mask id="${id}k"><rect width="400" height="500" fill="url(#${id}m)"/></mask>` +
+		`<rect id="${id}w" width="400" height="500" fill="${mid}" filter="url(#${id}s)"/></defs>` +
+		`<g filter="url(#${id}b)" opacity=".6" style="mix-blend-mode:screen"><use href="#${id}w"/></g>` +
+		`<g mask="url(#${id}k)" style="mix-blend-mode:screen"><use href="#${id}w"/></g></svg>`
 	);
 }
+
 
 /**
  * Starts the water on an element (its first canvas is drawn into).
