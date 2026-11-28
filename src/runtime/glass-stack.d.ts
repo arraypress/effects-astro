@@ -55,6 +55,8 @@ export interface GlassStackConfig {
 	speed?: number;
 	/** A photo behind the stack (same origin), covering the element; each disc then refracts it as a thick lens. */
 	backdrop?: string;
+	/** How soft the backdrop is round the glass (a mip bias, 0–5); through the glass it stays sharp, as a lens brings it into focus. Default 0. */
+	soften?: number;
 	/** How bright the backdrop shows, 0–1. Default 0.78. */
 	dim?: number;
 	/** With a backdrop: how far the colours part where the discs bend it, 0–1. Default 0.35. */

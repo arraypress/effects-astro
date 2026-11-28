@@ -73,6 +73,9 @@ uniform float uHasPhoto;
 uniform float uAspect;
 uniform vec2 uCover;
 uniform float uDim;
+uniform float uSoft;
+// the mip bias the backdrop is read at: soft round the glass, sharp through it (a lens brings what is behind into focus)
+float gBias = 0.0;
 uniform float uFlow;
 uniform float uMagnify;
 uniform float uShadow;
@@ -134,7 +137,7 @@ vec3 ground(vec2 p) {
 		// a photo behind the glass, covering the element as CSS 'cover' does, dimmed so the glass reads over it
 		vec2 sp = p + uCentre;
 		vec2 uv = (vec2(sp.x / uAspect, 1.0 - sp.y) - 0.5) * uCover + 0.5;
-		col = texture2D(uPhoto, clamp(uv, 0.001, 0.999)).rgb * uDim;
+		col = texture2D(uPhoto, clamp(uv, 0.001, 0.999), gBias).rgb * uDim;
 	}
 	if (uRipple > 0.0) {
 		float r = length(p);
@@ -182,6 +185,7 @@ void main() {
 	vec2 rim = n.xy * uDepth * mix(0.06, 0.11, uHasPhoto);
 	vec2 lens = p * (1.0 - h * uMagnify * uGlass);
 	float split = uDispersion * mix(0.3, 0.45, uHasPhoto);
+	gBias = 0.0;
 	vec3 through = vec3(
 		scene(lens - rim * (1.0 + split), plate).r,
 		scene(lens - rim, plate).g,
@@ -216,6 +220,7 @@ void main() {
 	col += mix(uLight, uInk, 0.5) * inner * max(-facing, 0.0) * 0.32 * uCaustics * uGlass;
 
 	// Outside: the ground, the light the glass focuses onto it on the side away from the light, and a soft bloom.
+	gBias = uSoft * uHasPhoto;
 	vec3 outside = scene(p, 0.0);
 	// (the logo's own field stops a little way out, so its glow stays closer)
 	float reach = uForm < 0.5 ? uEdge : uMarkBox * 0.4;
@@ -257,6 +262,7 @@ const DEFAULTS = Object.freeze({
 	magnify: 0.05,
 	shadow: 0,
 	lightDrift: 0,
+	soften: 0,
 });
 
 /** The finest the logo's mask and field are drawn, in pixels across. */
@@ -347,6 +353,7 @@ export function glassDrop(el, config) {
 			gl.uniform1i(uniform('uPhoto'), 2);
 			gl.uniform1f(uniform('uHasPhoto'), 0);
 			gl.uniform1f(uniform('uDim'), c.dim);
+			gl.uniform1f(uniform('uSoft'), Math.max(0, Math.min(5, c.soften)));
 			gl.uniform1f(uniform('uFlow'), Math.max(0, Math.min(2, c.flow)));
 			gl.uniform1f(uniform('uMagnify'), c.magnify);
 			gl.uniform1f(uniform('uShadow'), Math.max(0, Math.min(2, c.shadow)));
@@ -409,7 +416,7 @@ export function glassDrop(el, config) {
 				if (!alive) return;
 				const { gl, uniform, program } = stage;
 				gl.activeTexture(gl.TEXTURE2);
-				photo = imageTexture(gl, image);
+				photo = imageTexture(gl, image, { mipmap: true });
 				photoAspect = image.naturalWidth / image.naturalHeight;
 				gl.useProgram(program);
 				gl.uniform1f(uniform('uHasPhoto'), 1);

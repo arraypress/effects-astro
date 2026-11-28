@@ -64,6 +64,9 @@ uniform float uHasPhoto;
 uniform float uAspect;
 uniform vec2 uCover;
 uniform float uDim;
+uniform float uSoft;
+// the mip bias the backdrop is read at: soft round the glass, sharp through it (a lens brings what is behind into focus)
+float gBias = 0.0;
 uniform float uDisperse;
 ${GLSL_STUDIO}
 
@@ -72,7 +75,7 @@ vec3 backdrop(vec2 p) {
 	if (uHasPhoto > 0.5) {
 		// a photo behind the stack, covering the element, dimmed so the glass reads over it
 		vec2 uv = (vec2(p.x / uAspect, 1.0 - p.y) - 0.5) * uCover + 0.5;
-		return texture2D(uPhoto, clamp(uv, 0.001, 0.999)).rgb * uDim;
+		return texture2D(uPhoto, clamp(uv, 0.001, 0.999), gBias).rgb * uDim;
 	}
 	vec2 hs = vec2(uEdge * 0.5 * uCardSize);
 	vec2 q = abs(p - uCentre) - hs + uEdge * 0.06;
@@ -97,7 +100,9 @@ vec2 runAt(float x, float slice) {
 void main() {
 	vec2 p = gl_FragCoord.xy / uRes.y;
 	float px = 1.0 / uRes.y;
+	gBias = uSoft * uHasPhoto;
 	vec3 col = backdrop(p);
+	gBias = 0.0;
 	float pitch = uEdge / uSlices;
 	float top = uCentre.y + uEdge * 0.5;
 	float here = floor((top - p.y) / pitch);
@@ -188,6 +193,7 @@ const DEFAULTS = Object.freeze({
 	speed: 1,
 	dim: 0.78,
 	dispersion: 0.35,
+	soften: 0,
 });
 
 /** The finest the logo is sliced, in columns. */
@@ -299,6 +305,7 @@ export function glassStack(el, config) {
 			gl.uniform1i(uniform('uPhoto'), 2);
 			gl.uniform1f(uniform('uHasPhoto'), 0);
 			gl.uniform1f(uniform('uDim'), c.dim);
+			gl.uniform1f(uniform('uSoft'), Math.max(0, Math.min(5, c.soften)));
 			gl.uniform1f(uniform('uDisperse'), Math.max(0, Math.min(1, c.dispersion)) * 0.25);
 			return () => gl.deleteTexture(photo);
 		},
@@ -357,7 +364,7 @@ export function glassStack(el, config) {
 				if (!alive) return;
 				const { gl, uniform, program } = stage;
 				gl.activeTexture(gl.TEXTURE2);
-				photo = imageTexture(gl, image);
+				photo = imageTexture(gl, image, { mipmap: true });
 				photoAspect = image.naturalWidth / image.naturalHeight;
 				gl.useProgram(program);
 				gl.uniform1f(uniform('uHasPhoto'), 1);

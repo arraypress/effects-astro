@@ -55,6 +55,8 @@ export interface GlassDropConfig {
 	loopDelay?: number;
 	/** A photo behind the glass (same origin), covering the element; the glass is then clear and bends it. */
 	backdrop?: string;
+	/** How soft the backdrop is round the glass (a mip bias, 0–5); through the glass it stays sharp, as a lens brings it into focus. Default 0. */
+	soften?: number;
 	/** How bright the backdrop shows round the glass, 0–1. Default 0.82. */
 	dim?: number;
 	/** A slow swell over the glass's top, like liquid settling, 0–2; 0 for none. Default 0. */
