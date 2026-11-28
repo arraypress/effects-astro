@@ -16,6 +16,10 @@
  * runs read from a small texture (./slab-runs.js), nearer discs drawn over
  * farther ones.
  *
+ * Over a `backdrop` photo each disc is a thick lens: the photo shows
+ * through it magnified toward its middle and bent hard at its rim, the
+ * colours parting there, tinted by the glass, deeper where it is thicker.
+ *
  * Opaque: it paints its `background` everywhere. Without WebGL the canvas
  * goes and the element's background shows. With reduced motion it is one
  * still frame, every disc grown.
@@ -28,6 +32,7 @@ import { canHover } from './device.js';
 import { pointerIn } from './pointer.js';
 import { GLSL_STUDIO, lightVector } from './glass-optics.js';
 import { sliceRuns, runsTexture, slabGrowth } from './slab-runs.js';
+import { loadImage, imageTexture, coverScale } from './image.js';
 
 /**
  * @typedef {import('./glass-stack.js').GlassStackConfig} GlassStackConfig
@@ -54,10 +59,21 @@ uniform float uDensity;
 uniform float uReflect;
 uniform float uOpacity;
 uniform vec2 uLightDir;
+uniform sampler2D uPhoto;
+uniform float uHasPhoto;
+uniform float uAspect;
+uniform vec2 uCover;
+uniform float uDim;
+uniform float uDisperse;
 ${GLSL_STUDIO}
 
 // The lit card behind the stack, and the ground round it.
 vec3 backdrop(vec2 p) {
+	if (uHasPhoto > 0.5) {
+		// a photo behind the stack, covering the element, dimmed so the glass reads over it
+		vec2 uv = (vec2(p.x / uAspect, 1.0 - p.y) - 0.5) * uCover + 0.5;
+		return texture2D(uPhoto, clamp(uv, 0.001, 0.999)).rgb * uDim;
+	}
 	vec2 hs = vec2(uEdge * 0.5 * uCardSize);
 	vec2 q = abs(p - uCentre) - hs + uEdge * 0.06;
 	float d = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - uEdge * 0.06;
@@ -112,9 +128,14 @@ void main() {
 			float r = sqrt(q * q + (dy * dy) / (vr * vr));
 			float roll = pow(clamp(r, 0.0, 1.0), 4.0);
 			vec3 n = normalize(vec3(vec2(q, dy / vr) * roll * 1.6, 1.0));
-			vec2 bend = n.xy * (uIor - 1.0) * pitch * 1.4;
+			// over a photo the disc is a thick lens: it magnifies what is behind toward its middle and bends it hard at
+			// the rim, the colours parting as far as it bends
+			vec2 bend = n.xy * (uIor - 1.0) * pitch * mix(1.4, 3.2, uHasPhoto);
+			vec2 lensed = p + (vec2(q * pitch * 2.2, dy) * -0.18) * uHasPhoto;
 			float path = 1.0 + 1.1 * roll;
-			vec3 through = backdrop(p - bend) * pow(c, vec3(uDensity * path));
+			vec3 split = vec3(1.0 + uDisperse, 1.0, 1.0 - uDisperse);
+			vec3 behind = vec3(backdrop(lensed - bend * split.x).r, backdrop(lensed - bend).g, backdrop(lensed - bend * split.z).b);
+			vec3 through = behind * pow(c, vec3(uDensity * path)) * (1.0 + 0.25 * uHasPhoto);
 			float fres = schlick(n.z, 0.04);
 			vec3 mirrored = studio(reflect(view, n), uLightDir, uLight);
 			vec3 face = through * (1.0 - fres * 0.5) + mirrored * (fres * 1.4 + 0.05) * (0.4 + uReflect);
@@ -165,6 +186,8 @@ const DEFAULTS = Object.freeze({
 	introDuration: 1.6,
 	delay: 0,
 	speed: 1,
+	dim: 0.78,
+	dispersion: 0.35,
 });
 
 /** The finest the logo is sliced, in columns. */
@@ -225,6 +248,11 @@ export function glassStack(el, config) {
 	let tintTex = /** @type {WebGLTexture | null} */ (null);
 	/** The last growth written, so the tints are uploaded only while the discs grow. */
 	let grown = -1;
+	/** The backdrop photo's texture, its aspect, and the element's, once known. */
+	let photo = /** @type {WebGLTexture | null} */ (null);
+	let photoAspect = 1;
+	let boxAspect = 1;
+	let alive = true;
 
 	/**
 	 * A nearest-filtered, edge-clamped texture on a unit.
@@ -268,9 +296,17 @@ export function glassStack(el, config) {
 			gl.uniform1f(uniform('uReflect'), c.reflectivity);
 			gl.uniform1f(uniform('uOpacity'), Math.max(0, Math.min(1, c.opacity)));
 			gl.uniform2fv(uniform('uLightDir'), lightVector(c.lightAngle));
+			gl.uniform1i(uniform('uPhoto'), 2);
+			gl.uniform1f(uniform('uHasPhoto'), 0);
+			gl.uniform1f(uniform('uDim'), c.dim);
+			gl.uniform1f(uniform('uDisperse'), Math.max(0, Math.min(1, c.dispersion)) * 0.25);
+			return () => gl.deleteTexture(photo);
 		},
 		resize({ gl, uniform, canvas }) {
 			const aspect = canvas.width / canvas.height;
+			boxAspect = aspect;
+			gl.uniform1f(uniform('uAspect'), aspect);
+			gl.uniform2fv(uniform('uCover'), coverScale(photoAspect, aspect));
 			const layout = stackLayout(c, aspect);
 			gl.uniform2f(uniform('uCentre'), layout.centre.x * aspect, 1 - layout.centre.y);
 			gl.uniform1f(uniform('uEdge'), layout.edge);
@@ -309,7 +345,29 @@ export function glassStack(el, config) {
 			tilt.x += (goal.x - tilt.x) * ease;
 			tilt.y += (goal.y - tilt.y) * ease;
 			gl.uniform2f(uniform('uTilt'), tilt.x, tilt.y);
+			if (photo) {
+				gl.activeTexture(gl.TEXTURE2);
+				gl.bindTexture(gl.TEXTURE_2D, photo);
+			}
 		},
 	});
-	return stop;
+	if (stage && c.backdrop) {
+		loadImage(c.backdrop)
+			.then((image) => {
+				if (!alive) return;
+				const { gl, uniform, program } = stage;
+				gl.activeTexture(gl.TEXTURE2);
+				photo = imageTexture(gl, image);
+				photoAspect = image.naturalWidth / image.naturalHeight;
+				gl.useProgram(program);
+				gl.uniform1f(uniform('uHasPhoto'), 1);
+				gl.uniform2fv(uniform('uCover'), coverScale(photoAspect, boxAspect));
+				stage.redraw();
+			})
+			.catch((error) => console.warn('[effects-astro]', error));
+	}
+	return () => {
+		alive = false;
+		stop();
+	};
 }

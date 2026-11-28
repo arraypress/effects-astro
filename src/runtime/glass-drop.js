@@ -14,6 +14,12 @@
  * a circle, a rounded square or the logo's own field, mixed as the drop
  * spreads — lit by the shared studio (./glass-optics.js).
  *
+ * Over a `backdrop` photo it is clear glass: the photo shows through it,
+ * magnified in its flat middle and bent hard at its bevel, the colours
+ * parting there, darker in a band inside the rim, tinted the logo's colour
+ * as light through tinted glass is, casting a shadow with a caustic in it.
+ * `flow` swells its top slowly, like liquid, and `lightDrift` moves the light.
+ *
  * Opaque: it paints its `background` everywhere. Without WebGL the canvas
  * goes and the element's background shows. With reduced motion it is one
  * still frame: the final state (the logo at rest, or the glass held).
@@ -24,6 +30,7 @@ import { drawShape, distanceField, blurField } from './shape.js';
 import { parseColor } from './color.js';
 import { GLSL_STUDIO, lightVector } from './glass-optics.js';
 import { DROP_SIZE, dropAt, dropLayout } from './glass-drop-plan.js';
+import { loadImage, imageTexture, coverScale } from './image.js';
 
 /**
  * @typedef {import('./glass-drop.js').GlassDropConfig} GlassDropConfig
@@ -61,6 +68,14 @@ uniform float uBloom;
 uniform float uRipples;
 uniform float uTint;
 uniform vec2 uLightDir;
+uniform sampler2D uPhoto;
+uniform float uHasPhoto;
+uniform float uAspect;
+uniform vec2 uCover;
+uniform float uDim;
+uniform float uFlow;
+uniform float uMagnify;
+uniform float uShadow;
 ${GLSL_STUDIO}
 
 // The logo's coverage at p (heights from the glass's middle), its box 'box' high.
@@ -105,9 +120,22 @@ float heightAt(float g, float b) {
 	return sqrt(s * (2.0 - s));
 }
 
+// A slow swell over the glass's top, like liquid still settling: a height to add inside the bevel.
+float flowAt(vec2 p) {
+	if (uFlow <= 0.0) return 0.0;
+	float t = uTime;
+	return uFlow * 0.05 * (sin(p.x * 17.0 + t * 0.9) * cos(p.y * 13.0 - t * 0.7) + 0.6 * sin((p.x + p.y) * 23.0 - t * 1.3));
+}
+
 // The ground: its colour, a faint pool of light about the middle, and the rings the drop sent out.
 vec3 ground(vec2 p) {
 	vec3 col = uGround + (uLight - uGround) * 0.03 * uGlass * exp(-dot(p, p) * 5.0);
+	if (uHasPhoto > 0.5) {
+		// a photo behind the glass, covering the element as CSS 'cover' does, dimmed so the glass reads over it
+		vec2 sp = p + uCentre;
+		vec2 uv = (vec2(sp.x / uAspect, 1.0 - sp.y) - 0.5) * uCover + 0.5;
+		col = texture2D(uPhoto, clamp(uv, 0.001, 0.999)).rgb * uDim;
+	}
 	if (uRipple > 0.0) {
 		float r = length(p);
 		for (int k = 0; k < 3; k++) {
@@ -140,6 +168,8 @@ void main() {
 	float hx = heightAt(glassField(p + e.xy), b) - heightAt(glassField(p - e.xy), b);
 	float hy = heightAt(glassField(p + e.yx), b) - heightAt(glassField(p - e.yx), b);
 	vec2 slope = vec2(hx, hy) / (2.0 * e.x) * b;
+	float inGlass = smoothstep(0.0, b, g);
+	slope += vec2(flowAt(p + e.xy) - flowAt(p - e.xy), flowAt(p + e.yx) - flowAt(p - e.yx)) / (2.0 * e.x) * b * inGlass;
 	float h = heightAt(g, b);
 	vec3 n = normalize(vec3(-slope * uDepth * 0.55 * uGlass, 1.0));
 	vec2 outward = length(slope) > 1e-5 ? -normalize(slope) : vec2(0.0);
@@ -148,9 +178,10 @@ void main() {
 	float plate = uForm < 0.5 ? cover : 0.0;
 
 	// Through the glass: magnified a little, bent at the rim, the colours parting there.
-	vec2 rim = n.xy * uDepth * 0.06;
-	vec2 lens = p * (1.0 - h * uDepth * 0.05 * uGlass);
-	float split = uDispersion * 0.3;
+	// (over a photo the bend is stronger, so it visibly bends and magnifies what is behind; the colours part as far as it bends)
+	vec2 rim = n.xy * uDepth * mix(0.06, 0.11, uHasPhoto);
+	vec2 lens = p * (1.0 - h * uMagnify * uGlass);
+	float split = uDispersion * mix(0.3, 0.45, uHasPhoto);
 	vec3 through = vec3(
 		scene(lens - rim * (1.0 + split), plate).r,
 		scene(lens - rim, plate).g,
@@ -158,8 +189,15 @@ void main() {
 	);
 	if (uForm > 0.5) {
 		// The logo made of glass: the ground through it, tinted the logo's colour, deepest where it is thickest.
-		float tint = mix(1.0, uTint * (0.75 + 0.25 * h), uGlass);
-		through = mix(through, uInk * (0.82 + 0.18 * h + 0.12 * (1.0 - uGlass)), tint);
+		if (uHasPhoto > 0.5) {
+			// clear glass over a photo: the photo through it, taking the logo's colour as light does through tinted glass
+			// (deeper where it is thicker), and a touch lighter than the dimmed ground, as glass gathers light
+			vec3 absorb = pow(max(uInk, vec3(0.02)), vec3((0.35 + 0.9 * h) * uTint));
+			through = through * mix(vec3(1.0), absorb, uGlass) * (1.0 + 0.18 * uGlass);
+		} else {
+			float tint = mix(1.0, uTint * (0.75 + 0.25 * h), uGlass);
+			through = mix(through, uInk * (0.82 + 0.18 * h + 0.12 * (1.0 - uGlass)), tint);
+		}
 	}
 
 	// What the glass mirrors: the studio, along the bevels as they turn toward it.
@@ -168,6 +206,8 @@ void main() {
 	float fres = schlick(n.z, 0.04);
 	vec3 col = through * (1.0 - fres * 0.6) + mirrored * (0.25 + fres * 1.6) * uHighlights * uGlass;
 
+	// Thick glass goes dark in a band just inside its rim, where the view inside reflects back off the far wall.
+	col *= 1.0 - 0.26 * uHasPhoto * uGlass * smoothstep(b * 0.85, b * 0.2, g) * smoothstep(0.0, px * 2.5, g);
 	// The lip: a hairline brightest facing the light; light gathered just inside the rim on the far side.
 	float facing = dot(outward, uLightDir);
 	float lip = exp(-pow(g / (px * 1.3), 2.0));
@@ -182,6 +222,15 @@ void main() {
 	float near = exp(min(g, 0.0) / (reach * 0.05 + 1e-4));
 	outside += mix(uLight, uInk, 0.6) * near * max(-facing, 0.0) * 0.14 * uCaustics * uGlass;
 	outside += mix(uLight, uInk, 0.5) * exp(min(g, 0.0) / (reach * 0.09 + 1e-4)) * 0.12 * uBloom * uGlass;
+	if (uShadow > 0.0) {
+		// its shadow on what is behind, cast away from the light, and the light the glass focuses into it
+		float gs = glassField(p + uLightDir * reach * 0.07);
+		float shade = smoothstep(-reach * 0.05, reach * 0.03, gs);
+		outside *= 1.0 - 0.5 * uShadow * shade * uGlass;
+		float gc = glassField(p + uLightDir * reach * 0.035);
+		float focus = exp(-pow(gc / (reach * 0.012 + 1e-4), 2.0)) * step(g, 0.0);
+		outside += mix(uLight, uInk, 0.45) * focus * 0.35 * uShadow * uCaustics * uGlass;
+	}
 
 	gl_FragColor = vec4(mix(outside, col, cover), 1.0);
 }
@@ -203,6 +252,11 @@ const DEFAULTS = Object.freeze({
 	ripples: 1,
 	tint: 0.88,
 	lightAngle: 125,
+	dim: 0.82,
+	flow: 0,
+	magnify: 0.05,
+	shadow: 0,
+	lightDrift: 0,
 });
 
 /** The finest the logo's mask and field are drawn, in pixels across. */
@@ -261,6 +315,11 @@ export function glassDrop(el, config) {
 	/** The shape's textures, made in setup. */
 	let mask = /** @type {WebGLTexture | null} */ (null);
 	let sdf = /** @type {WebGLTexture | null} */ (null);
+	/** The backdrop photo's texture, its aspect, and the element's, once known. */
+	let photo = /** @type {WebGLTexture | null} */ (null);
+	let photoAspect = 1;
+	let boxAspect = 1;
+	let alive = true;
 
 	const { stage, stop } = createStage(el, {
 		fragment: FRAG,
@@ -285,9 +344,19 @@ export function glassDrop(el, config) {
 			gl.uniform3fv(uniform('uInk'), parseColor(c.color));
 			gl.uniform3fv(uniform('uPlate'), parseColor(c.plate));
 			gl.uniform3fv(uniform('uLight'), parseColor(c.light));
+			gl.uniform1i(uniform('uPhoto'), 2);
+			gl.uniform1f(uniform('uHasPhoto'), 0);
+			gl.uniform1f(uniform('uDim'), c.dim);
+			gl.uniform1f(uniform('uFlow'), Math.max(0, Math.min(2, c.flow)));
+			gl.uniform1f(uniform('uMagnify'), c.magnify);
+			gl.uniform1f(uniform('uShadow'), Math.max(0, Math.min(2, c.shadow)));
+			return () => gl.deleteTexture(photo);
 		},
 		resize({ gl, uniform, canvas }) {
 			const aspect = canvas.width / canvas.height;
+			boxAspect = aspect;
+			gl.uniform1f(uniform('uAspect'), aspect);
+			gl.uniform2fv(uniform('uCover'), coverScale(photoAspect, aspect));
 			const layout = dropLayout(c, aspect);
 			gl.uniform2f(uniform('uCentre'), layout.centre.x * aspect, 1 - layout.centre.y);
 			tile = layout.tile;
@@ -325,7 +394,32 @@ export function glassDrop(el, config) {
 			gl.uniform1f(uniform('uMarkIn'), s.markIn);
 			gl.uniform1f(uniform('uGlass'), s.glass);
 			gl.uniform1f(uniform('uScale'), s.scale);
+			// the light drifts slowly about its angle, so the glass's rims and reflections move
+			const drift = still || !c.lightDrift ? 0 : Math.sin(seconds * 0.23) * c.lightDrift * 0.7 + Math.sin(seconds * 0.11 + 1.3) * c.lightDrift * 0.3;
+			gl.uniform2fv(uniform('uLightDir'), lightVector(c.lightAngle + drift));
+			if (photo) {
+				gl.activeTexture(gl.TEXTURE2);
+				gl.bindTexture(gl.TEXTURE_2D, photo);
+			}
 		},
 	});
-	return stop;
+	if (stage && c.backdrop) {
+		loadImage(c.backdrop)
+			.then((image) => {
+				if (!alive) return;
+				const { gl, uniform, program } = stage;
+				gl.activeTexture(gl.TEXTURE2);
+				photo = imageTexture(gl, image);
+				photoAspect = image.naturalWidth / image.naturalHeight;
+				gl.useProgram(program);
+				gl.uniform1f(uniform('uHasPhoto'), 1);
+				gl.uniform2fv(uniform('uCover'), coverScale(photoAspect, boxAspect));
+				stage.redraw();
+			})
+			.catch((error) => console.warn('[effects-astro]', error));
+	}
+	return () => {
+		alive = false;
+		stop();
+	};
 }

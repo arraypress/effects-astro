@@ -53,6 +53,12 @@ export interface GlassStackConfig {
 	delay?: number;
 	/** How fast the intro plays, 0.25–3. Default 1. */
 	speed?: number;
+	/** A photo behind the stack (same origin), covering the element; each disc then refracts it as a thick lens. */
+	backdrop?: string;
+	/** How bright the backdrop shows, 0–1. Default 0.78. */
+	dim?: number;
+	/** With a backdrop: how far the colours part where the discs bend it, 0–1. Default 0.35. */
+	dispersion?: number;
 }
 
 /** The tint of each slice: the colours as a gradient from the top slice to the bottom one, blended in Oklab (RGB 0–1). */

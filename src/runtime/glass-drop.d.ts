@@ -53,6 +53,18 @@ export interface GlassDropConfig {
 	loop?: boolean;
 	/** With `loop`: seconds the logo rests before the next drop, 0–10. Default 1.6. */
 	loopDelay?: number;
+	/** A photo behind the glass (same origin), covering the element; the glass is then clear and bends it. */
+	backdrop?: string;
+	/** How bright the backdrop shows round the glass, 0–1. Default 0.82. */
+	dim?: number;
+	/** A slow swell over the glass's top, like liquid settling, 0–2; 0 for none. Default 0. */
+	flow?: number;
+	/** How much the glass's flat middle magnifies what is behind, 0–0.3. Default 0.05. */
+	magnify?: number;
+	/** The glass's shadow on what is behind, with light focused into it, 0–2; 0 for none. Default 0. */
+	shadow?: number;
+	/** How far the light swings about `lightAngle` over time, degrees; 0 holds it. Default 0. */
+	lightDrift?: number;
 	/** How it ends: `flat`, the glass melted and the logo left on the ground, or `glass`, the glass held. Default `flat`. */
 	rest?: 'flat' | 'glass';
 }
