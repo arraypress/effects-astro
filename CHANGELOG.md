@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.15.0] — 2026-11-28
 
+### Changed
+
+- **GlassDrop and GlassStack refract a photo** (`backdrop`, same origin, covering the element). Over it the glass is clear:
+  the photo is magnified in the flat middle (`magnify`) and bent hard at the bevel, the colours parting as far as it bends;
+  the backdrop is soft round the glass and sharp through it (`soften`, a mip bias), as a lens brings what is behind into
+  focus. GlassDrop's glass takes the logo's colour as light through tinted glass does (deeper where it is thicker), goes
+  dark in a band inside its rim, casts a shadow with a caustic in it (`shadow`), swells slowly like liquid (`flow`) and
+  its light drifts (`lightDrift`); GlassStack's discs are thick lenses with dispersion (`dispersion`). Without a backdrop
+  both draw as before. `dim` sets how bright the photo shows.
+
 Two live effects after the owner's references for the Logomarks Lookbook: a spray-stencil badge with paint running off
 it, and a flower photo in shallow focus. In the house style: timed in seconds, a pure JS twin for tests, a still, and
 nothing off screen.
