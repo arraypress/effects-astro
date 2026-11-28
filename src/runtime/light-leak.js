@@ -37,6 +37,7 @@ import { GLSL_OKLAB, parseColor, toOklab, fromOklab, toHex } from './color.js';
 import { GLSL_QUIET, quietUniform } from './glsl.js';
 import { watchColors } from './mount.js';
 import { pickColors } from './palettes.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {object} LightLeakConfig
@@ -371,7 +372,7 @@ export function lightLeak(el, config) {
 	const speed = Math.max(0, config.speed ?? 1);
 	const labs = (/** @type {string[]} */ colors) => colors.map((c) => toOklab(parseColor(c)));
 	let ramp = labs(leakColors(config));
-	const start = performance.now();
+	const start = frameNow();
 
 	const { stage, stop } = createStage(el, {
 		fragment: FRAG,

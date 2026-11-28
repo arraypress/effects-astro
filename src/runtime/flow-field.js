@@ -44,6 +44,7 @@ import { quietUniform } from './glsl.js';
 import { watchColors } from './mount.js';
 import { pickColors } from './palettes.js';
 import { seededRandom } from './random.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {object} FlowFieldConfig
@@ -507,7 +508,7 @@ export function flowField(el, config) {
 		ramp = flowRamp(next.colors);
 		buckets = Array.from({ length: ramp.length * ALPHA_LEVELS }, () => []);
 		fresh = true;
-		draw(c, performance.now(), 0);
+		draw(c, frameNow(), 0);
 	});
 	return () => {
 		stop();

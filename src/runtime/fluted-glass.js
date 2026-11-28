@@ -25,6 +25,7 @@ import { pointerIn } from './pointer.js';
 import { watchColors } from './mount.js';
 import { GLSL_NOISE } from './glsl.js';
 import { pickColors } from './palettes.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {object} FlutedGlassConfig
@@ -111,7 +112,7 @@ const COLORS = ['#2563eb', '#06b6d4', '#f59e0b'];
  */
 export function flutedGlass(el, config) {
 	let colors = pickColors(config, COLORS);
-	const start = performance.now();
+	const start = frameNow();
 	const ptr = { x: 0.62, y: 0.55 };
 
 	const { stage, stop } = createStage(el, {

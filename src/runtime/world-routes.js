@@ -24,6 +24,7 @@ import { CLICK_IGNORE, pointerIn } from './pointer.js';
 import { fitView, greatCircle, paintLand, project, regionBounds } from './world-map.js';
 import { placeLabels } from './world-labels.js';
 import { CITIES, RAMP, planRoutes } from './world-plan.js';
+import { frameNow } from './loop.js';
 
 export { CITIES };
 
@@ -132,7 +133,7 @@ export function worldRoutes(el, config) {
 		wrap: DRIFT !== 0,
 	};
 	const interactive = config.interactive !== false && canHover();
-	const start = performance.now();
+	const start = frameNow();
 	let plan = planRoutes(config);
 
 	/** The view the map is drawn in, set on resize. */
@@ -644,7 +645,7 @@ export function worldRoutes(el, config) {
 	const unwatch = watchColors(el, (next) => {
 		plan = planRoutes({ ...config, colors: next.colors });
 		layArcs(c.ctx);
-		if (c.still) draw(c, performance.now(), 0);
+		if (c.still) draw(c, frameNow(), 0);
 	});
 	return () => {
 		stop();

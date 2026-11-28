@@ -25,6 +25,7 @@ import { canHover } from './device.js';
 import { pointerIn } from './pointer.js';
 import { watchColors } from './mount.js';
 import { pickColors } from './palettes.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {object} VoxelLogoConfig
@@ -147,7 +148,7 @@ const COLORS = ['#a7f3d0', '#08090a'];
 export function voxelLogo(el, config) {
 	let colors = pickColors(config, COLORS, (p) => [p.colors[0], COLORS[1]]);
 	const area = config.area ?? { x: 0.42, y: 0.04, width: 0.56, height: 0.92 };
-	const start = performance.now();
+	const start = frameNow();
 	const turn = { x: 0, y: 0 };
 	const markers = (config.markers ?? 0) > 0 ? createTrackers(el, config.markers ?? 0, { kind: 'marker' }) : null;
 	/** The grid's size in cells, once the shape is drawn. */

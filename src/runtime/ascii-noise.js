@@ -33,6 +33,7 @@ import { GLSL_QUIET, quietUniform } from './glsl.js';
 import { GLSL_GLYPHS, GLYPH_SETS, createGlyphs } from './glyphs.js';
 import { watchColors } from './mount.js';
 import { pickColors } from './palettes.js';
+import { frameNow } from './loop.js';
 
 /** The warped field (./hash-noise.js), as 0.10.0 exported it from here. */
 export { noiseField };
@@ -235,7 +236,7 @@ function run(el, config, ramp) {
 	const lab = (/** @type {string} */ c) => toOklab(parseColor(c));
 	let [lo, hi] = noiseColors(config).map(lab);
 	const bg = config.background ? [...parseColor(config.background), 1] : [0, 0, 0, 0];
-	const start = performance.now();
+	const start = frameNow();
 
 	const { stage, stop } = createStage(el, {
 		fragment: FRAG,

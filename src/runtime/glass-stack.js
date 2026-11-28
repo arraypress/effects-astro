@@ -34,6 +34,7 @@ import { GLSL_STUDIO, lightVector } from './glass-optics.js';
 import { sliceRuns, runsTexture, slabGrowth } from './slab-runs.js';
 import { loadImage, imageTexture, coverScale } from './image.js';
 import { glassPlates } from './glass-plates.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {import('./glass-stack.js').GlassStackConfig} GlassStackConfig
@@ -250,7 +251,7 @@ export function glassStack(el, config) {
 	const tints = sliceTints(colors, slices);
 	const tintBytes = new Uint8Array(slices * 4);
 	tints.forEach((t, i) => tintBytes.set([t[0] * 255, t[1] * 255, t[2] * 255, 0], i * 4));
-	const start = performance.now();
+	const start = frameNow();
 	const tilt = { x: 0, y: 0 };
 	let generation = 0;
 	let runsTex = /** @type {WebGLTexture | null} */ (null);

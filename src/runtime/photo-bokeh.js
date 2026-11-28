@@ -24,6 +24,7 @@ import { createStage } from './stage.js';
 import { GLSL_HASH33 } from './hash-noise.js';
 import { GLSL_QUIET, quietUniform } from './glsl.js';
 import { loadImage, imageTexture, coverScale, GLSL_COVER } from './image.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {'round' | 'blades'} BokehShape
@@ -271,7 +272,7 @@ export function highlightTints(rgba) {
  */
 export function photoBokeh(el, config) {
 	const o = settings(config);
-	const start = performance.now();
+	const start = frameNow();
 	let ready = false;
 	let imageAspect = 1;
 	let aspect = 0.8;

@@ -29,6 +29,7 @@ import { vertexShaderSource } from '../vendor/paper/vertex-shader.js';
 import { getShaderColorFromString } from '../vendor/paper/get-shader-color-from-string.js';
 import { getShaderNoiseTexture } from '../vendor/paper/get-shader-noise-texture.js';
 import { PRESETS, ENUMS, RENAMES, FITS } from '../vendor/paper/presets.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {object} PaperConfig
@@ -282,7 +283,7 @@ async function start(el, config) {
 		if (noise) pictures.u_noiseTexture = await noise.decode().then(() => noise);
 	}
 
-	const startTime = performance.now();
+	const startTime = frameNow();
 	/** @type {Map<string, { type: number, size: number, location: WebGLUniformLocation }>} */
 	const active = new Map();
 

@@ -5,6 +5,8 @@
  * fitting it to a canvas the way CSS `object-fit: cover` does.
  */
 
+import { track } from './loop.js';
+
 /**
  * Loads and decodes an image, asking for CORS so a WebGL texture may read
  * it (same origin, or served with Access-Control-Allow-Origin).
@@ -17,11 +19,13 @@ export function loadImage(src) {
 	const img = new Image();
 	img.crossOrigin = 'anonymous';
 	img.src = src;
-	return img.decode().then(
-		() => img,
-		() => {
-			throw new Error(`Could not load ${src}`);
-		},
+	return track(
+		img.decode().then(
+			() => img,
+			() => {
+				throw new Error(`Could not load ${src}`);
+			},
+		),
 	);
 }
 

@@ -25,6 +25,7 @@ import { GLSL_OKLAB, parseColor, toOklab, toHex } from './color.js';
 import { GLSL_QUIET, quietUniform } from './glsl.js';
 import { watchColors } from './mount.js';
 import { pickColors } from './palettes.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {'bottom' | 'left' | 'top' | 'right'} HorizonSide
@@ -221,7 +222,7 @@ export function pixelHorizon(el, config) {
 	const native = typeof window === 'undefined' ? 1 : window.devicePixelRatio || 1;
 	// Whole screen pixels a block, so the scaled-up pixels are all the same size.
 	const blockCss = Math.max(1, Math.round(Math.max(1, o.block) * native)) / native;
-	const start = performance.now();
+	const start = frameNow();
 	const canvas = el.querySelector('canvas');
 
 	const { stage, stop } = createStage(el, {

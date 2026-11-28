@@ -49,6 +49,7 @@ import { GLSL_QUIET, quietUniform } from './glsl.js';
 import { pickColors } from './palettes.js';
 import { audioSignal } from './audio.js';
 import { sampleAt, smoothInto } from './audio-meter.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {object} SignalLinesConfig
@@ -529,7 +530,7 @@ export function signalLines(el, config) {
 	const pulseData = new Float32Array(PULSES * 4);
 	const pointer = follower(el, (config.bend ?? 1) > 0);
 	// Started a little way in, so the still frame and the first are a good moment.
-	const start = performance.now() - 7_300 / Math.max(speed, 0.01);
+	const start = frameNow() - 7_300 / Math.max(speed, 0.01);
 	/** @type {import('./audio.js').AudioSignal | null} */
 	let sound = null;
 	/** The sound's waveform: its texture, the smoothed trace and the bytes it is filled from; and the kicks already answered with a pulse. */
@@ -629,7 +630,7 @@ export function waveBars(el, config) {
 	let bars = { cur: new Float32Array(0), tgt: new Float32Array(0), peak: new Float32Array(0), hold: new Float32Array(0), fall: new Float32Array(0) };
 	let data = new Uint8Array(0);
 	let lastTune = 0;
-	let start = performance.now();
+	let start = frameNow();
 	/** @type {WebGLTexture | null} */
 	let heights = null;
 	/** @type {import('./audio.js').AudioSignal | null} */

@@ -26,6 +26,7 @@ import { GLSL_OKLAB, parseColor, toOklab, toHex, mixOklab } from './color.js';
 import { GLSL_QUIET, quietUniform } from './glsl.js';
 import { watchColors } from './mount.js';
 import { pickColors } from './palettes.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {'ring' | 'orb' | 'rise'} GlowShape
@@ -267,7 +268,7 @@ export function flutedGlow(el, config) {
 	const lab = (/** @type {string} */ c) => toOklab(parseColor(c));
 	let ramp = glowColors(config).map(lab);
 	const ground = lab(o.background);
-	const start = performance.now();
+	const start = frameNow();
 
 	const { stage, stop } = createStage(el, {
 		fragment: FRAG,

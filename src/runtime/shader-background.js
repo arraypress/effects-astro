@@ -42,6 +42,7 @@ import { GRAIN_GRADIENT } from './shader-backgrounds/grain-gradient.js';
 import { BAND_LENS } from './shader-backgrounds/band-lens.js';
 import { SILK } from './shader-backgrounds/silk.js';
 import { pickColors } from './palettes.js';
+import { frameNow } from './loop.js';
 
 /** @typedef {import('./color.js').Rgb} Rgb */
 
@@ -214,7 +215,7 @@ export function shaderBackground(el, config) {
 	const { speed, intensity, frame } = shaderBackgroundSettings(config);
 	const reduced = prefersReducedMotion();
 	let palette = livePalette(el, pickColors(config, [], (p) => [...p.colors, p.glint]));
-	const start = performance.now();
+	const start = frameNow();
 	const mouse = { x: 0.5, y: 0.5, on: 0 };
 
 	/**

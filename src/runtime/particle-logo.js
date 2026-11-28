@@ -23,6 +23,7 @@ import { canHover, isMobileGpu } from './device.js';
 import { pointerIn } from './pointer.js';
 import { watchColors } from './mount.js';
 import { pickColors } from './palettes.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {object} ParticleLogoConfig
@@ -115,7 +116,7 @@ const COLORS = ['#ffffff', '#a5c8ff', '#0f4c5c', '#0b1f3a'];
  */
 export function particleLogo(el, config) {
 	let colors = pickColors(config, COLORS, (p) => ['#ffffff', ...p.colors]);
-	const start = performance.now();
+	const start = frameNow();
 	const ptr = { x: 0.5, y: 0.5 };
 	const tilt = { x: 0, y: 0 };
 	let active = 0;

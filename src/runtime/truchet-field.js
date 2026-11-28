@@ -26,6 +26,7 @@ import { GLSL_OKLAB, parseColor, toOklab, toHex, mixOklab } from './color.js';
 import { GLSL_QUIET, quietUniform } from './glsl.js';
 import { watchColors } from './mount.js';
 import { pickColors } from './palettes.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {object} TruchetFieldConfig
@@ -230,7 +231,7 @@ export function truchetField(el, config) {
 	const lab = (/** @type {string} */ c) => toOklab(parseColor(c));
 	let [dim, bright] = truchetColors(config).map(lab);
 	const bg = config.background ? [...parseColor(config.background), 1] : [0, 0, 0, 0];
-	const start = performance.now();
+	const start = frameNow();
 
 	const { stage, stop } = createStage(el, {
 		fragment: FRAG,

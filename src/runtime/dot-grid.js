@@ -22,6 +22,7 @@
 import { parseColor, toHex } from './color.js';
 import { createCanvas2D } from './canvas2d.js';
 import { pressAt } from './pointer.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {object} DotGridConfig
@@ -101,7 +102,7 @@ export function dotGrid(el, config) {
 	let greeted = config.greet === false;
 	/** When the first frame was drawn, seconds: the greeting waits for the grid to be seen, not merely set up. */
 	let shown = -1;
-	const start = performance.now();
+	const start = frameNow();
 	/** The pointer, where it is (t) and eased towards it (m), in CSS px over the element. */
 	const ptr = { tx: -9999, ty: -9999, mx: -9999, my: -9999 };
 
@@ -224,7 +225,7 @@ export function dotGrid(el, config) {
 		const at = pressAt(el, e);
 		if (!at) return;
 		move(e);
-		drop(at.x * el.clientWidth, (1 - at.y) * el.clientHeight, 1, (performance.now() - start) / 1000);
+		drop(at.x * el.clientWidth, (1 - at.y) * el.clientHeight, 1, (frameNow() - start) / 1000);
 	};
 
 	const { c, stop } = createCanvas2D(el, {

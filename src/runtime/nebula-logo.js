@@ -27,6 +27,7 @@ import { canHover } from './device.js';
 import { pointerIn, trail } from './pointer.js';
 import { watchColors } from './mount.js';
 import { pickColors } from './palettes.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {object} NebulaLogoConfig
@@ -177,7 +178,7 @@ const WAKE_SCALE = 0.25;
  */
 export function nebulaLogo(el, config) {
 	let palette = paletteUniform(pickColors(config, COLORS));
-	const start = performance.now();
+	const start = frameNow();
 	const stir = config.stir ?? 1;
 	const ptr = { x: 0.5, y: 0.5 };
 	let active = 0;

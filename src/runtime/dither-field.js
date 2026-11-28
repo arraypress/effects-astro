@@ -39,6 +39,7 @@ import { GLSL_QUIET, quietUniform } from './glsl.js';
 import { watchColors } from './mount.js';
 import { GLSL_BAYER, bayer } from './bayer.js';
 import { pickColors } from './palettes.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {object} DitherFieldConfig
@@ -360,7 +361,7 @@ export function ditherField(el, config) {
 	const native = typeof window === 'undefined' ? 1 : window.devicePixelRatio || 1;
 	// Whole screen pixels a dot, so the scaled-up pixels are all the same size.
 	const dotCss = Math.max(1, Math.round(Math.max(0.5, o.dot) * native)) / native;
-	const start = performance.now();
+	const start = frameNow();
 	const canvas = el.querySelector('canvas');
 
 	const { stage, stop } = createStage(el, {

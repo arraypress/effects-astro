@@ -32,6 +32,7 @@ import { canHover } from './device.js';
 import { pointerIn } from './pointer.js';
 import { watchColors } from './mount.js';
 import { pickColors } from './palettes.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {object} GlassGlyphConfig
@@ -258,7 +259,7 @@ function lightColors(color) {
 export function glassGlyph(el, config) {
 	let colors = pickColors(config, COLORS, (p) => [p.colors[0], p.glint]);
 	let lit = lightColors(colors[0]);
-	const start = performance.now();
+	const start = frameNow();
 	const area = config.area ?? AREA;
 	// The light's crossing, 0–1 with y up as the shader has it.
 	const cross = { x: config.light?.x ?? area.x + area.width * 0.42, y: 1 - (config.light?.y ?? area.y + area.height * 0.6) };

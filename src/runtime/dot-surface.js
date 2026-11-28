@@ -28,6 +28,7 @@ import { canHover, isMobileGpu } from './device.js';
 import { pointerIn, pressAt } from './pointer.js';
 import { watchColors } from './mount.js';
 import { pickColors } from './palettes.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {object} DotSurfaceConfig
@@ -349,7 +350,7 @@ export function dotSurface(el, config) {
 	 * @returns {Float32Array} Four floats a ring, zeros for none.
 	 */
 	const ringUniform = () => {
-		const now = performance.now() / 1000;
+		const now = frameNow() / 1000;
 		while (rings.length && now - rings[0].t0 > RING_LIFE) rings.shift();
 		ringData.fill(0);
 		rings.forEach((r, i) => {
@@ -411,7 +412,7 @@ export function dotSurface(el, config) {
 		const at = pressAt(el, e);
 		const spot = at && sheetAt(at.x, at.y, tilt, el.clientWidth / (el.clientHeight || 1));
 		if (!spot) return;
-		rings.push({ ...spot, t0: performance.now() / 1000 });
+		rings.push({ ...spot, t0: frameNow() / 1000 });
 		while (rings.length > MAX_RINGS) rings.shift();
 	};
 	if (interactive && !stage.still) document.addEventListener('pointerdown', press, { passive: true });

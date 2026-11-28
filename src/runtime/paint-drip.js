@@ -24,6 +24,7 @@ import { createCanvas2D, grainPattern, grainOnto } from './canvas2d.js';
 import { loadImage } from './image.js';
 import { parseColor, mixOklab, toHex } from './color.js';
 import { seededRandom as mulberry32 } from './random.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {object} PaintDripConfig
@@ -391,7 +392,7 @@ export function paintDrip(el, config) {
 	const pctx = paint.getContext('2d');
 	let pattern = /** @type {CanvasPattern | null} */ (null);
 	let lastKey = '';
-	const start = performance.now();
+	const start = frameNow();
 	const still = o.speed <= 0;
 
 	/**
@@ -474,6 +475,8 @@ export function paintDrip(el, config) {
 		// where the paint drips from: given (so a still made from the same plan matches), or read off the mark
 		if (o.anchors) {
 			plan = dripPlan(o.anchors, { left: box.left / H, top: box.top / H, size: box.size / H }, o);
+			// its exact loop, in the page's seconds, for a recording that closes without a crossfade (export/field-video.js)
+			if (o.speed > 0) el.dataset.effectCycle = String(plan.cycle / o.speed);
 			lastKey = '';
 			return;
 		}
@@ -489,6 +492,8 @@ export function paintDrip(el, config) {
 		for (let i = 0; i < n * n; i++) cover[i] = pd[i * 4 + 3] / 255;
 		const anchors = dripAnchors(cover, n, n, o.drips, o.seed);
 		plan = dripPlan(anchors, { left: box.left / H, top: box.top / H, size: box.size / H }, o);
+		// its exact loop, in the page's seconds, for a recording that closes without a crossfade (export/field-video.js)
+		if (o.speed > 0) el.dataset.effectCycle = String(plan.cycle / o.speed);
 		lastKey = '';
 	};
 
@@ -590,7 +595,7 @@ export function paintDrip(el, config) {
 		draw: (cv, now) => draw(cv, now),
 		resize: (cv) => {
 			prepare(cv);
-			draw(cv, performance.now());
+			draw(cv, frameNow());
 		},
 	});
 	if (!c) return stop;
@@ -601,7 +606,7 @@ export function paintDrip(el, config) {
 				if (!alive) return;
 				image = img;
 				prepare(c);
-				draw(c, performance.now());
+				draw(c, frameNow());
 			})
 			.catch((error) => console.warn('[effects-astro]', error));
 	return () => {

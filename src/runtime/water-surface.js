@@ -28,6 +28,7 @@
  */
 
 import { createStage } from './stage.js';
+import { frameNow } from './loop.js';
 import { parseColor, mixOklab, toHex } from './color.js';
 import { isMobileGpu, pixelRatio } from './device.js';
 import { GLSL_HASH33 } from './hash-noise.js';
@@ -419,7 +420,7 @@ export function waterSurface(el, config = {}) {
 	const mobile = isMobileGpu();
 	const count = mobile ? 16 : MAX_WAVES;
 	const waves = waterWaves(config, MAX_WAVES);
-	const start = performance.now();
+	const start = frameNow();
 	// where the clock starts in the loop, so two cards on the same settings differ
 	const offset = (o.seed * 7.31) % o.loop;
 	const rgb = (/** @type {string} */ c) => parseColor(c);

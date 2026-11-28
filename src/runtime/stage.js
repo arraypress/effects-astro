@@ -16,7 +16,7 @@
 import { getContext, createProgram, bindTriangle } from './gl.js';
 import { sharingContexts, sharedPlace } from './shared-gl.js';
 import { pixelRatio, prefersReducedMotion } from './device.js';
-import { animate } from './loop.js';
+import { animate, frameNow } from './loop.js';
 
 /** Frames between looks at the frame rate, the smoothed frame time counted slow (about 45 fps), each step down, and the lowest share of the pixel ratio a step may reach. */
 const ADAPT_WINDOW = 60;
@@ -92,6 +92,8 @@ export function createStage(el, options) {
 	 * it has stopped adjusting.
 	 */
 	const quality = { share: 1, ema: 0, frames: 0, before: 0, settled: false };
+	/** An export's hold (loop.js `holdFrames`): the pixel ratio it draws at while held (0: not held). */
+	let exportRatio = 0;
 
 	/**
 	 * Lowers the resolution while frames run slow, a step at a time. A step
@@ -143,7 +145,7 @@ export function createStage(el, options) {
 		gl.drawArrays(gl.TRIANGLES, 0, 3);
 		options.after?.(stage, now, dt);
 		place?.end(canvas.width, canvas.height);
-		if (adaptive && dt > 0) adapt(dt);
+		if (adaptive && dt > 0 && !exportRatio) adapt(dt);
 	};
 
 	/** @type {Stage} */
@@ -154,7 +156,7 @@ export function createStage(el, options) {
 		uniform: compiled.uniform,
 		still: options.still === true || prefersReducedMotion(),
 		ratio: pixelRatio(scale),
-		redraw: () => render(performance.now(), 0),
+		redraw: () => render(frameNow(), 0),
 	};
 
 	place?.begin(1, 1);
@@ -170,7 +172,8 @@ export function createStage(el, options) {
 
 	/** Sizes the canvas to the element, at the capped pixel ratio (lowered while frames run slow). */
 	const size = () => {
-		stage.ratio = pixelRatio(scale) * quality.share;
+		// held for an export, it draws at the export's resolution (its share of it, for an effect drawn at a lower one)
+		stage.ratio = exportRatio ? exportRatio * scale : pixelRatio(scale) * quality.share;
 		canvas.width = Math.max(1, Math.round(el.clientWidth * stage.ratio));
 		canvas.height = Math.max(1, Math.round(el.clientHeight * stage.ratio));
 		place?.begin(canvas.width, canvas.height);
@@ -182,7 +185,14 @@ export function createStage(el, options) {
 	resizer.observe(el);
 	size();
 
-	const stopLoop = stage.still ? () => {} : animate(el, render);
+	const stopLoop = stage.still
+		? () => {}
+		: animate(el, render, {
+				hold(on, ratio) {
+					exportRatio = on ? ratio : 0;
+					size();
+				},
+			});
 	return {
 		stage,
 		stop: () => {

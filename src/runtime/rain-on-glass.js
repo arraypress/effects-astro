@@ -22,6 +22,7 @@ import { loadImage, imageTexture, coverScale } from './image.js';
 import { backdrop } from './rain-on-glass/backdrop.js';
 import { createWipe } from './rain-on-glass/wipe.js';
 import { FRAG } from './rain-on-glass/shader.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {object} RainOnGlassConfig
@@ -64,7 +65,7 @@ export function rainOnGlass(el, config) {
 	const interactive = config.interactive ?? true;
 	let colors = pickColors(config, []);
 	const strokes = trail(el, { step: 0.01, max: 24 });
-	const start = performance.now();
+	const start = frameNow();
 	/** @type {HTMLImageElement | null} */
 	let photo = null;
 	/** @type {WebGLTexture | null} */

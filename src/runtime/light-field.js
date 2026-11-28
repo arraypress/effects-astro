@@ -31,6 +31,7 @@ import { watchColors } from './mount.js';
 import { PALETTES, findPalette, pickColors } from './palettes.js';
 import { pointerIn } from './pointer.js';
 import { createFluid, stir } from './fluid.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {object} LightFieldConfig
@@ -179,7 +180,7 @@ export function lightField(el, config) {
 	let press = 0;
 	let pressTarget = 0;
 	let active = 0;
-	const start = performance.now() - 40_000;
+	const start = frameNow() - 40_000;
 	/** @type {import('./fluid.js').Fluid | null} */
 	let fluid = null;
 	/** @type {ReturnType<typeof stir> | null} */

@@ -43,6 +43,7 @@ import { GLSL_OKLAB, mixOklab, parseColor, toHex, toOklab } from './color.js';
 import { GLSL_QUIET, quietUniform } from './glsl.js';
 import { watchColors } from './mount.js';
 import { pickColors } from './palettes.js';
+import { frameNow } from './loop.js';
 
 /** Hash without Sine (./hash-noise.js), the seeds' hash. */
 export { hash33 };
@@ -566,7 +567,7 @@ export function voronoiMesh(el, config) {
 	let [macro, inner] = meshColors(config).map(lab);
 	const opaque = Boolean(o.background) && o.background !== 'transparent';
 	const bg = opaque ? [...lab(o.background), 1] : [0, 0, 0, 0];
-	const start = performance.now();
+	const start = frameNow();
 	let ratio = 1;
 
 	const { stage, stop } = createStage(el, {

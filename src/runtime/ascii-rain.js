@@ -33,6 +33,7 @@ import { canHover } from './device.js';
 import { pointerIn, pressAt } from './pointer.js';
 import { watchColors } from './mount.js';
 import { pickColors } from './palettes.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {object} AsciiRainConfig
@@ -274,7 +275,7 @@ export function asciiRain(el, config) {
 	// Shapes sit in square cells; type in the usual tall ones.
 	const aspect = config.aspect ?? (glyphs === 'data' ? 1 : 0.6);
 	let palette = paletteUniform(pickColors(config, COOL));
-	const start = performance.now();
+	const start = frameNow();
 	const ptr = { x: 0, y: 0 };
 	let active = 0;
 	/** The last click: where (canvas px, y up) and when (shader seconds); long ago at first. */
@@ -316,7 +317,7 @@ export function asciiRain(el, config) {
 			 */
 			const drop = (e) => {
 				const at = pressAt(el, e);
-				if (at && stage) Object.assign(click, { x: at.x * stage.canvas.width, y: at.y * stage.canvas.height, t: clock(performance.now()) });
+				if (at && stage) Object.assign(click, { x: at.x * stage.canvas.width, y: at.y * stage.canvas.height, t: clock(frameNow()) });
 			};
 			document.addEventListener('pointerdown', drop);
 			return () => document.removeEventListener('pointerdown', drop);

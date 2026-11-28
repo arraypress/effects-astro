@@ -31,6 +31,7 @@ import { parseColor } from './color.js';
 import { GLSL_STUDIO, lightVector } from './glass-optics.js';
 import { DROP_SIZE, dropAt, dropLayout } from './glass-drop-plan.js';
 import { loadImage, imageTexture, coverScale } from './image.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {import('./glass-drop.js').GlassDropConfig} GlassDropConfig
@@ -323,7 +324,7 @@ function texture(gl, unit) {
 export function glassDrop(el, config) {
 	const c = { ...DEFAULTS, ...config };
 	const form = c.form === 'mark' ? 1 : 0;
-	const start = performance.now();
+	const start = frameNow();
 	let generation = 0;
 	/** The tile's edge in heights, from the last resize. */
 	let tile = 0;

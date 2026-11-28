@@ -34,6 +34,7 @@ const XHTML = 'http://www.w3.org/1999/xhtml';
  * @property {number} height The element's height, CSS px.
  * @property {(scale?: number) => string} svg The SVG document, `scale` times the element's size (every vector and word sharp).
  * @property {(moved: Moved[]) => Promise<void>} update Reads the moved properties again from the page into the copy.
+ * @property {(type?: string) => number} canvases Reads every kept canvas again into the copy, now (a `live` snapshot).
  */
 
 /**
@@ -49,6 +50,8 @@ const XHTML = 'http://www.w3.org/1999/xhtml';
  * @property {Map<Element, number>} ids Each element with a pseudo-element that shows, and its number.
  * @property {Map<string, string>} pseudoRules Each pseudo-element (`${n}::before`) and its declarations.
  * @property {Promise<unknown>[]} pending Pictures and URLs being inlined.
+ * @property {boolean} live Whether every canvas is kept, blank ones too (`snapshot`'s `live`).
+ * @property {[HTMLCanvasElement, Element][]} canvases Each canvas kept and the picture standing for it in the copy.
  */
 
 /**
@@ -171,15 +174,16 @@ function inlineMedia(copy, o, shots) {
 		if (src) copy.pending.push(toDataUrl(src).then((d) => c.setAttribute('src', d), () => c.removeAttribute('src')));
 	} else if (o instanceof HTMLCanvasElement) {
 		const shot = shots.get(o);
-		if (!shot) {
+		if (!shot && !copy.live) {
 			c.remove();
 			return;
 		}
 		const img = document.createElementNS(XHTML, 'img');
 		img.setAttribute('style', c.getAttribute('style') ?? '');
-		img.setAttribute('src', shot);
+		if (shot) img.setAttribute('src', shot);
 		c.replaceWith(img);
 		copy.pairs.set(o, img);
+		copy.canvases.push([o, img]);
 	} else if (o instanceof SVGImageElement) {
 		const href = o.href.baseVal;
 		if (href && !href.startsWith('data:')) copy.pending.push(toDataUrl(href).then((d) => c.setAttribute('href', d)));
@@ -213,10 +217,10 @@ function rewrite(copy, m) {
  * Snapshots an element.
  *
  * @param {HTMLElement} el The element (shown, laid out).
- * @param {{ square?: boolean, skip?: (el: Element) => boolean }} [options] `square` corners whatever its border-radius (an export of a card, not of its frame; default true), and elements to `skip`.
+ * @param {{ square?: boolean, skip?: (el: Element) => boolean, live?: boolean }} [options] `square` corners whatever its border-radius (an export of a card, not of its frame; default true), elements to `skip`, and `live`: keep every canvas, blank ones too, for `canvases()` to read again each frame (a recording of live effects, export/field-video.js).
  * @returns {Promise<Snapshot>} The snapshot.
  */
-export async function snapshot(el, { square = true, skip } = {}) {
+export async function snapshot(el, { square = true, skip, live = false } = {}) {
 	const root = /** @type {HTMLElement} */ (el.cloneNode(true));
 	const all = [el, ...el.querySelectorAll('*')];
 	const copies = [root, ...root.querySelectorAll('*')];
@@ -231,6 +235,8 @@ export async function snapshot(el, { square = true, skip } = {}) {
 		ids: new Map(),
 		pseudoRules: new Map(),
 		pending: [],
+		live,
+		canvases: [],
 	};
 	const shots = await canvasShots([...el.querySelectorAll('canvas')]);
 	for (const o of all) {
@@ -271,6 +277,22 @@ export async function snapshot(el, { square = true, skip } = {}) {
 		async update(moved) {
 			for (const m of moved) rewrite(copy, m);
 			await Promise.all(copy.pending.splice(0));
+		},
+		/**
+		 * Reads every canvas again into the copy, now: call it in the same task as the drawing (a WebGL canvas that
+		 * isn't kept reads blank later). For a `live` snapshot of effects stepped by hand (loop.js `holdFrames`).
+		 *
+		 * @param {string} [type] The pictures' format; PNG keeps a canvas's transparency. Default PNG.
+		 * @returns {number} How many it read.
+		 */
+		canvases(type = 'image/png') {
+			let n = 0;
+			for (const [cv, img] of copy.canvases) {
+				if (!cv.width || !cv.height) continue;
+				img.setAttribute('src', cv.toDataURL(type));
+				n++;
+			}
+			return n;
 		},
 	};
 }

@@ -25,6 +25,7 @@ import { drawShape, distanceField, blurField } from './shape.js';
 import { parseColor, mixOklab } from './color.js';
 import { GLSL_STUDIO, lightVector } from './glass-optics.js';
 import { loadImage, imageTexture, coverScale } from './image.js';
+import { frameNow } from './loop.js';
 
 /** The most plates. */
 const MAX_PLATES = 4;
@@ -216,7 +217,7 @@ export function glassPlates(el, config) {
 	const tints = plateTints(c.colors, plates);
 	const tintArray = new Float32Array(MAX_PLATES * 3);
 	tints.forEach((t, i) => tintArray.set(t, i * 3));
-	const start = performance.now();
+	const start = frameNow();
 	let generation = 0;
 	let box = 0.5;
 	let sdf = /** @type {WebGLTexture | null} */ (null);

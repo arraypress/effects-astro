@@ -26,6 +26,7 @@ import { GLSL_OKLAB, parseColor, toOklab, toHex, mixOklab } from './color.js';
 import { GLSL_QUIET, quietUniform } from './glsl.js';
 import { watchColors } from './mount.js';
 import { pickColors } from './palettes.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {'liquid' | 'dunes'} FoldStyle
@@ -275,7 +276,7 @@ export function fluidFolds(el, config) {
 	let ramp = foldColors(config).map(lab);
 	const ground = lab(o.background);
 	const a = (o.light * Math.PI) / 180;
-	const start = performance.now();
+	const start = frameNow();
 
 	const { stage, stop } = createStage(el, {
 		fragment: FRAG,

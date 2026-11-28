@@ -21,7 +21,7 @@
  */
 
 import { createStage } from './stage.js';
-import { animate } from './loop.js';
+import { animate, frameNow } from './loop.js';
 import { isMobileGpu, prefersReducedMotion } from './device.js';
 import { pointerIn, trail, pressAt } from './pointer.js';
 import { loadImage, imageTexture, coverScale, GLSL_COVER } from './image.js';
@@ -261,7 +261,7 @@ export function imageRipple(el, config) {
 
 	/** Joins the page's loop, if the water was asleep. */
 	const wake = () => {
-		lastStir = performance.now();
+		lastStir = frameNow();
 		if (stopLoop || !ready) return;
 		backlog = 0;
 		path.reset();

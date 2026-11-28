@@ -18,7 +18,7 @@
  */
 
 import { createStage } from './stage.js';
-import { animate } from './loop.js';
+import { animate, frameNow } from './loop.js';
 import { parseColor, toOklab, GLSL_OKLAB } from './color.js';
 import { prefersReducedMotion } from './device.js';
 import { watchColors } from './mount.js';
@@ -365,7 +365,7 @@ export function mosaicReveal(el, config) {
 			gl.bindTexture(gl.TEXTURE_2D, to.texture);
 			gl.uniform2fv(uniform('uFromScale'), coverScale(from.aspect, box));
 			gl.uniform2fv(uniform('uToScale'), coverScale(to.aspect, box));
-			gl.uniform1f(uniform('uProgress'), run ? Math.min(1, (performance.now() - run.start) / duration) : 0);
+			gl.uniform1f(uniform('uProgress'), run ? Math.min(1, (frameNow() - run.start) / duration) : 0);
 			gl.uniform1f(uniform('uDir'), run?.dir ?? 1);
 			gl.uniform1f(uniform('uSeed'), run?.seed ?? 0);
 			gl.uniform2fv(uniform('uGrid'), tileGrid(config.tiles ?? 9, box));
@@ -440,7 +440,7 @@ export function mosaicReveal(el, config) {
 		}
 		picture(to + dir);
 		await new Promise((done) => {
-			state.run = { from: a, to: b, dir, start: performance.now(), seed: Math.random() * 100, done: () => done(undefined) };
+			state.run = { from: a, to: b, dir, start: frameNow(), seed: Math.random() * 100, done: () => done(undefined) };
 		});
 		state.current = to;
 		shown = b;
@@ -452,7 +452,7 @@ export function mosaicReveal(el, config) {
 		const run = state.run;
 		if (!run || !stage) return;
 		stage.redraw();
-		if (performance.now() - run.start < duration) return;
+		if (frameNow() - run.start < duration) return;
 		state.run = null;
 		run.done();
 	};

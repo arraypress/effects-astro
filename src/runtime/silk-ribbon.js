@@ -23,6 +23,7 @@ import { pointerIn } from './pointer.js';
 import { watchColors } from './mount.js';
 import { GLSL_NOISE, paletteUniform } from './glsl.js';
 import { pickColors } from './palettes.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {object} SilkRibbonConfig
@@ -163,7 +164,7 @@ const byLightness = (colors) =>
  */
 export function silkRibbon(el, config) {
 	let pal = paletteUniform(byLightness(pickColors(config, COLORS)));
-	const start = performance.now();
+	const start = frameNow();
 	const speed = config.speed ?? 1;
 	const side = SIDES[config.side ?? 'right'] ?? 1;
 	const lean = { x: 0, at: 0 };

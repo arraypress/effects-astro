@@ -25,7 +25,9 @@ The package's main entry is the runtime the components are built on, for use wit
 | `isLand(lat, lon)`, `LAND`, `CITIES` | Where the land is (Natural Earth, 1.5°), and cities by name |
 | `inView(el, show)` | A callback as an element scrolls into view |
 | `scrollReveal(config)`, `REVEAL_CLASSES` | Class-based scroll reveal for a whole page |
-| `animate(el, frame)` | A frame callback on the page's one loop, while `el` is near the screen |
+| `animate(el, frame, hooks?)` | A frame callback on the page's one loop, while `el` is near the screen (`hooks.hold`: told when an export holds it, with the pixel ratio to draw at) |
+| `holdFrames(root, { ratio })` | Holds the effects under `root` for an export: the loop leaves them, `seek(ms)` draws them by hand at exact times from 0 (stepped 1/60 s), `ready()`, `release()` |
+| `frameNow()` | The time effects draw at: `performance.now()`, or the held time while an export holds effects |
 | `budget(cap)` | A cap on how many effects run at once: the rest wait their turn and start as one stops (with `whenNear`, a wall of cards keeps under the browser's WebGL contexts) |
 | `pointerIn`, `trail`, `pressAt`, `CLICK_IGNORE` | The pointer over an element, its strokes, and presses |
 | `pixelRatio`, `isMobileGpu`, `prefersReducedMotion`, `canHover` | The device checks every effect makes |
@@ -37,12 +39,13 @@ Pictures, plain SVG and video of an element on the page, made in the browser. Th
 
 | Module | Exports | |
 |---|---|---|
-| `export/snapshot` | `snapshot(el, { square, skip })` | An element as a self-contained SVG (`<foreignObject>`, every computed style inline, pictures, canvases and fonts inlined): `svg(scale)` draws it pixel for pixel; `update(moved)` rewrites what a stepped `clock` moved |
+| `export/snapshot` | `snapshot(el, { square, skip, live })` | An element as a self-contained SVG (`<foreignObject>`, every computed style inline, pictures, canvases and fonts inlined): `svg(scale)` draws it pixel for pixel; `update(moved)` rewrites what a stepped `clock` moved |
 | `export/clean-svg` | `cleanSvg(el, long)`, `cleanIssues(el)` | An element rebuilt as plain SVG (rects, pictures, inline SVG, `<text>`) that a design tool can edit; `cleanIssues` lists what stops it (a filter, a gradient, a shadow…), and `cleanSvg` refuses then |
 | `export/clock` | `clock(root)` | The CSS animations under an element, paused and stepped by hand (`seek(ms)`, `moved()`, `release()`) for an exact recording |
 | `export/raster` | `drawSvg(svg, width, height, canvas?, settle?)`, `rasterize(svg, { width, height }, type?, quality?)`, `imageOf(canvas, type?, quality?)`, `pngOf`, `svgDataUrl`, `decodeImage` | SVG to a canvas, and a canvas or an SVG to a PNG (or a JPEG at a quality) |
 | `export/video` | `record({ width, height, fps, duration, draw, progress, signal })`, `canRecord()` | Frames drawn by you to MP4 (H.264), or WebM where the browser cannot encode it; WebCodecs |
 | `export/save` | `save(data, filename)`, `fileSlug(text)` | A file handed to the browser to save, and a name for it from any text |
+| `export/field-video` | `recordField(el, { cycle, speed, fade, width, fps, restart, progress, signal })`, `fieldFrames(el, { width, fps, speed, restart })`, `loopPlan(total, fade)` | A live effect (a WebGL or Canvas 2D field) and what sits on it as a seamless looping video: the effect held (`holdFrames`), started again from time 0 and stepped frame by frame at the video's resolution, each frame read into a `live` snapshot; the loop closed by a crossfade, or recorded whole when the effect declares an exact loop (`data-effect-cycle`, as the paint drip does) |
 | `export/fonts`, `export/fetch`, `export/styles` | `fontFaceCss(el)`, `toDataUrl(url)`, `inlineCssUrls(css)`, `declarations(el)`, `releaseDefaults()` | The pieces under them: the `@font-face` rules an element's text uses, files as `data:` URLs, computed style as the few declarations that matter |
 
 ```js

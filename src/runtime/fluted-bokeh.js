@@ -31,6 +31,7 @@ import { parseColor, toHex, mixOklab } from './color.js';
 import { GLSL_QUIET, quietUniform } from './glsl.js';
 import { watchColors } from './mount.js';
 import { pickColors } from './palettes.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {'reeds' | 'blocks'} BokehGlass
@@ -305,7 +306,7 @@ export function flutedBokeh(el, config) {
 	const rgb = (/** @type {string[]} */ cs) => lights.map((l) => parseColor(cs[l.color % cs.length]));
 	let colours = rgb(bokehColors(config));
 	const ground = parseColor(o.background);
-	const start = performance.now();
+	const start = frameNow();
 	const pack = new Float32Array(MAX_LIGHTS * 4);
 	lights.forEach((l, i) => pack.set([l.x, l.y, l.r, l.phase], i * 4));
 

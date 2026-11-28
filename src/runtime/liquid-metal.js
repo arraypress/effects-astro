@@ -40,6 +40,7 @@ import { createWave } from './liquid-metal/wave.js';
 import { createField } from './liquid-metal/field.js';
 import { fieldSampler, splash, stepBeads, packBeads } from './liquid-metal/beads.js';
 import { metalColor, studioTints } from './liquid-metal/look.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {object} LiquidMetalConfig
@@ -136,7 +137,7 @@ export function liquidMetal(el, config) {
 		keep: 1 - 0.01 * viscosity,
 		viscosity: Math.min(0.2, 0.05 * viscosity),
 	};
-	const start = performance.now();
+	const start = frameNow();
 	/** @type {import('./liquid-metal/wave.js').Wave | null} */
 	let wave = null;
 	/** @type {import('./liquid-metal/field.js').Field | null} */

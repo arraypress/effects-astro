@@ -23,6 +23,7 @@ import { canHover, isMobileGpu } from './device.js';
 import { pointerIn } from './pointer.js';
 import { watchColors } from './mount.js';
 import { pickColors } from './palettes.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {object} PointCloudConfig
@@ -141,7 +142,7 @@ function sheetData(sheets, columns, rows) {
  */
 export function pointCloud(el, config) {
 	let colors = pickColors(config, COLORS, (p) => ['#ffffff', p.colors[0], p.colors[1]]);
-	const start = performance.now();
+	const start = frameNow();
 	const turn = { y: 0, x: 0 };
 	/** @type {import('./points.js').Points | null} */
 	let points = null;

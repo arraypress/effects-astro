@@ -33,6 +33,7 @@ import { mixOklab, parseColor, toHex } from './color.js';
 import { watchColors } from './mount.js';
 import { pickColors } from './palettes.js';
 import { randomFrom } from './random.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {object} GalaxyConfig
@@ -306,7 +307,7 @@ export function galaxy(el, config) {
 	let stars = [];
 	// Park–Miller's scatter is one stream that runs on across resizes; mulberry32's starts afresh each time.
 	const running = RNG === 'park-miller' ? randomFrom(RNG, STAR_SEED) : null;
-	const start = performance.now();
+	const start = frameNow();
 
 	/**
 	 * Scatters the glitter and stars over the new size, in device px.
@@ -400,7 +401,7 @@ export function galaxy(el, config) {
 	const unwatch = watchColors(el, (next) => {
 		colors = next.colors;
 		paint();
-		if (c.still) draw(c, performance.now());
+		if (c.still) draw(c, frameNow());
 	});
 	return () => {
 		stop();

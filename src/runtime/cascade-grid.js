@@ -38,6 +38,7 @@ import { GLSL_OKLAB, mixOklab, parseColor, toHex, toOklab } from './color.js';
 import { GLSL_QUIET, quietUniform } from './glsl.js';
 import { watchColors } from './mount.js';
 import { pickColors } from './palettes.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {object} CascadeGridConfig
@@ -380,7 +381,7 @@ export function cascadeGrid(el, config) {
 	const lab = (/** @type {string} */ c) => toOklab(parseColor(c));
 	let [lo, hi] = cascadeColors(config).map(lab);
 	const bg = config.background ? [...parseColor(config.background), 1] : [0, 0, 0, 0];
-	const start = performance.now();
+	const start = frameNow();
 
 	const { stage, stop } = createStage(el, {
 		fragment: FRAG,

@@ -25,6 +25,7 @@ import { createStage } from './stage.js';
 import { GLSL_HASH33 } from './hash-noise.js';
 import { parseColor, toHex, mixOklab } from './color.js';
 import { GLSL_QUIET, quietUniform } from './glsl.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {object} LensFlareConfig
@@ -245,7 +246,7 @@ export function flareStill(config) {
 export function lensFlare(el, config) {
 	const o = settings(config);
 	const rgb = (/** @type {string} */ c) => parseColor(c);
-	const start = performance.now();
+	const start = frameNow();
 	const ghostTints = [rgb(o.ghost), rgb(o.streak), [0.35, 0.95, 0.6]];
 	const ghosts = new Float32Array(GHOSTS.flat());
 

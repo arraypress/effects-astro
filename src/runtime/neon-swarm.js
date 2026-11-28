@@ -28,6 +28,7 @@ import { canHover, isMobileGpu } from './device.js';
 import { pointerIn } from './pointer.js';
 import { watchColors } from './mount.js';
 import { pickColors } from './palettes.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {object} NeonSwarmConfig
@@ -143,7 +144,7 @@ const EDGE = 0.3;
 export function neonSwarm(el, config) {
 	let palette = paletteUniform(pickColors(config, COLORS));
 	const area = config.area ?? AREA;
-	const start = performance.now();
+	const start = frameNow();
 	const count = Math.round((config.count ?? 6000) * (isMobileGpu() ? 0.5 : 1));
 	const swarm = createSwarm(count);
 	const data = new Float32Array(count * STAMPS * 4);

@@ -17,6 +17,11 @@ export interface Snapshot {
 	svg(scale?: number): string;
 	/** Reads the moved properties again from the page into the copy. */
 	update(moved: Moved[]): Promise<void>;
+	/**
+	 * Reads every kept canvas again into the copy, now (call it in the task that drew them); a `live` snapshot of
+	 * effects stepped by hand. Returns how many it read.
+	 */
+	canvases(type?: string): number;
 }
 
 export interface SnapshotOptions {
@@ -24,6 +29,8 @@ export interface SnapshotOptions {
 	square?: boolean;
 	/** Elements to leave out. */
 	skip?: (el: Element) => boolean;
+	/** Keep every canvas, blank ones too, for `canvases()` to read again each frame. Default false. */
+	live?: boolean;
 }
 
 /** The inline style that sets a snapshot's root in place, at its size, untransformed and with no shadow (`square` corners too). */

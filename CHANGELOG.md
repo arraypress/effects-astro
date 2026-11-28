@@ -21,6 +21,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (`day`) and Black Marble city lights with a water mask (`aux`), both public domain, which the page serves; `mars`,
   `moon` (airless: a hard limb) and `giant` are drawn from noise. A pure function of the time; the sun's place on the frame
   is found once a frame (`sunPlace`), not per pixel. Still: `planetStill` (CSS).
+- **Video of live effects** (`./runtime/export/field-video`: `recordField`, `fieldFrames`, `loopPlan`; the owner: "ability
+  to export videos is important"). A WebGL or Canvas 2D effect and what sits on it (the lockup, the words) as a seamless
+  looping MP4 (or WebM): the effect is held, started again so it runs from time 0, and stepped by hand frame by frame
+  at the video's resolution, each frame read into a `live` snapshot of its element and drawn. The same settings make the
+  same frames every time. Few effects repeat exactly, so the loop is closed by a crossfade (the recording runs 0.6 s past
+  its end and the tail fades into the head the video starts after); an effect that does repeat declares its period on
+  its element (`data-effect-cycle`, as the paint drip now does) and is recorded whole, with no crossfade.
+- **`holdFrames(root, { ratio })`** (loop.js): the page's loop leaves the effects under an element alone and `seek(ms)`
+  draws them at exact times from 0, a simulation stepped 1/60 s at a time as it would run live; effects started under
+  the hold are held from their first frame, and `Math.random` is a seeded one while a hold is on (an effect's grain and
+  scatter come out the same); its `ready()` waits for the pictures the effects are still loading (`track(promise)`,
+  which `loadImage` now calls), so a run never starts on the frames before a photo arrives. `frameNow()`: what effects now read the time with instead of
+  `performance.now()` (every effect switched), the held time while a hold is on. `animate(el, frame, hooks)` takes a
+  `hold` hook: `createStage` and `createCanvas2D` draw at the export's resolution while held, and stop adapting theirs.
+- `snapshot(el, { live: true })` keeps every canvas, blank ones too, and its new `canvases()` reads them again into the
+  copy (in the task that drew them).
 - **WaterSurface** (`waterSurface`, `./runtime/water-surface`): moving water seen close and low through a long lens, after a
   photo the owner sent ("ultra realistic water as a background"). Waves summed from a spectrum (long swells to wind
   ripples, the deep-water dispersion relation, peaked crests), a camera a little above the water pitched down into it,

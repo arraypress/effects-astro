@@ -29,6 +29,7 @@ import { createStage } from './stage.js';
 import { GLSL_HASH33, GLSL_GRADIENT_NOISE } from './hash-noise.js';
 import { parseColor, toHex, mixOklab } from './color.js';
 import { GLSL_QUIET, quietUniform } from './glsl.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {'blinds' | 'prism'} SunWallMode
@@ -272,7 +273,7 @@ export function sunWallStill(config) {
  */
 export function sunWall(el, config) {
 	const o = settings(config);
-	const start = performance.now();
+	const start = frameNow();
 	const { stop } = createStage(el, {
 		fragment: FRAG,
 		alpha: false,

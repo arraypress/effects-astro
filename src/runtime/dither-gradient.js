@@ -28,6 +28,7 @@ import { GLSL_OKLAB, parseColor, toOklab, mixOklab, toHex } from './color.js';
 import { GLSL_QUIET, quietUniform } from './glsl.js';
 import { watchColors } from './mount.js';
 import { pickColors } from './palettes.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {'wave' | 'band' | 'swirl' | 'pinwheel' | 'steps' | 'orb' | 'pill'} GradientShape
@@ -401,7 +402,7 @@ export function ditherGradient(el, config) {
 	let [low, mid, high] = gradientRamp(config).map(lab);
 	const bg = config.background ? [...parseColor(config.background), 1] : [0, 0, 0, 0];
 	const dot = Math.max(1, config.dot ?? GRADIENT_DEFAULTS.dot);
-	const start = performance.now();
+	const start = frameNow();
 
 	const { stage, stop } = createStage(el, {
 		fragment: FRAG,

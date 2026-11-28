@@ -17,6 +17,7 @@
 
 import { prefersReducedMotion } from './device.js';
 import { inView } from './in-view.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {object} ScrambleConfig
@@ -63,7 +64,7 @@ export function scramble(el, config) {
 	/** Runs the scramble once. */
 	const play = () => {
 		cancelAnimationFrame(raf);
-		const start = performance.now();
+		const start = frameNow();
 		/**
 		 * One frame: each character still scrambling gets a random glyph.
 		 *

@@ -28,6 +28,7 @@ import { pointerIn } from './pointer.js';
 import { watchColors } from './mount.js';
 import { pickColors } from './palettes.js';
 import { GLSL_NOISE } from './glsl.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {object} RadiantGlassConfig
@@ -209,7 +210,7 @@ const SHAPES = {
  */
 export function radiantGlass(el, config) {
 	const colors = pickColors(config, COLORS, (p) => [...p.colors, p.glint]);
-	const start = performance.now();
+	const start = frameNow();
 	const speed = config.speed ?? 1;
 	const ptr = { x: 0, y: 0 };
 	const tiles = LAYOUTS[config.layout ?? 'cross'] ?? LAYOUTS.cross;

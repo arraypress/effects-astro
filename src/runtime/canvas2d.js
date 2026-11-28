@@ -15,7 +15,8 @@
  */
 
 import { prefersReducedMotion } from './device.js';
-import { animate } from './loop.js';
+import { animate, frameNow } from './loop.js';
+import { seededRandom } from './random.js';
 
 /**
  * @typedef {object} Canvas2D
@@ -70,21 +71,31 @@ export function createCanvas2D(el, options) {
 	/** @type {Canvas2D} */
 	const c = { ctx, canvas, width: 0, height: 0, dpr: 1, still: prefersReducedMotion() };
 
+	/** An export's pixel ratio while it holds the effect (0: not held). */
+	let exportRatio = 0;
 	/** Sizes the canvas to the element. */
 	const size = () => {
-		c.dpr = Math.min(window.devicePixelRatio || 1, 2);
+		c.dpr = exportRatio || Math.min(window.devicePixelRatio || 1, 2);
 		c.width = Math.max(1, el.clientWidth);
 		c.height = Math.max(1, el.clientHeight);
 		canvas.width = Math.floor(c.width * c.dpr);
 		canvas.height = Math.floor(c.height * c.dpr);
 		ctx.setTransform(c.dpr, 0, 0, c.dpr, 0, 0);
 		options.resize?.(c);
-		if (c.still) options.draw(c, performance.now(), 0);
+		if (c.still) options.draw(c, frameNow(), 0);
 	};
 	const resizer = new ResizeObserver(size);
 	resizer.observe(el);
 	size();
-	const stopLoop = c.still ? () => {} : animate(el, (now, dt) => options.draw(c, now, dt));
+	const stopLoop = c.still
+		? () => {}
+		: animate(el, (now, dt) => options.draw(c, now, dt), {
+				// held for an export (loop.js holdFrames): drawn at the export's resolution
+				hold(on, ratio) {
+					exportRatio = on ? ratio : 0;
+					size();
+				},
+			});
 	return {
 		c,
 		stop: () => {
@@ -96,7 +107,8 @@ export function createCanvas2D(el, options) {
 }
 
 /**
- * A repeating tile of grey noise, for laying grain over what has been drawn.
+ * A repeating tile of grey noise, for laying grain over what has been drawn: the same tile every time (seeded), so a
+ * recording of an effect is the same frame for frame.
  *
  * @param {CanvasRenderingContext2D} ctx The context the pattern is for.
  * @returns {CanvasPattern | null} The pattern.
@@ -109,8 +121,9 @@ export function grainPattern(ctx) {
 	const t = tile.getContext('2d');
 	if (!t) return null;
 	const img = t.createImageData(size, size);
+	const rand = seededRandom(0x6a1);
 	for (let i = 0; i < img.data.length; i += 4) {
-		const v = (Math.random() * 255) | 0;
+		const v = (rand() * 255) | 0;
 		img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
 		img.data[i + 3] = 255;
 	}
@@ -134,7 +147,12 @@ export function grainOnto(c, pattern, amount, shimmer = false) {
 	ctx.globalCompositeOperation = 'source-atop';
 	ctx.globalAlpha = amount;
 	ctx.fillStyle = pattern;
-	if (shimmer) ctx.translate(Math.random() * 128, Math.random() * 128);
+	if (shimmer) {
+		// a new place each frame, from the frame's time (a recording draws the same)
+		const k = frameNow() * 0.001;
+		const frac = (/** @type {number} */ x) => x - Math.floor(x);
+		ctx.translate(frac(Math.sin(k * 127.1) * 43758.5453) * 128, frac(Math.sin(k * 311.7) * 43758.5453) * 128);
+	}
 	ctx.fillRect(-128, -128, c.width + 128, c.height + 128);
 	ctx.restore();
 }

@@ -40,6 +40,7 @@ import { cityLook } from './iso-city/look.js';
 import { carMesh, cityMesh, personMesh, pinMesh, ribbonMesh } from './iso-city/scene.js';
 import { bakeShadows, shadowShift } from './iso-city/shadows.js';
 import { BACKGROUND, FRAGMENT, VERTEX } from './iso-city/shaders.js';
+import { frameNow } from './loop.js';
 
 /**
  * @typedef {object} IsoCityConfig
@@ -91,7 +92,7 @@ export function isoCity(el, config) {
 	/** @type {ReturnType<typeof isoCamera> | null} */
 	let camera = null;
 	const lean = { x: 0, y: 0 };
-	const start = performance.now();
+	const start = frameNow();
 	/** @type {Map<number, { buffer: WebGLBuffer, count: number }>} */
 	const ribbons = new Map();
 	/** @type {(() => void) | null} */

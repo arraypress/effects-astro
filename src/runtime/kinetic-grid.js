@@ -38,6 +38,7 @@ import { GLSL_OKLAB, parseColor, toOklab, mixOklab, toHex } from './color.js';
 import { GLSL_QUIET, quietUniform } from './glsl.js';
 import { watchColors } from './mount.js';
 import { pickColors } from './palettes.js';
+import { frameNow } from './loop.js';
 
 /** Hash without Sine (./hash-noise.js), the drops' and pulses' hash. */
 export { hash33 };
@@ -415,7 +416,7 @@ export function kineticGrid(el, config) {
 	const bg = opaque ? [...lab(o.background), 1] : [0, 0, 0, 0];
 	const drops = new Float32Array(MAX_DROPS * 4);
 	const pulses = new Float32Array(MAX_PULSES * 4);
-	const start = performance.now();
+	const start = frameNow();
 	let aspect = 1;
 
 	const { stage, stop } = createStage(el, {
