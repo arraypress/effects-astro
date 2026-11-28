@@ -25,7 +25,7 @@
  * prefers-reduced-motion it is one still frame.
  */
 
-import { createStage } from './stage.js';
+import { createStage, SLOW_FPS } from './stage.js';
 import { GLSL_HASH33, GLSL_GRADIENT_NOISE } from './hash-noise.js';
 import { parseColor, toHex, mixOklab } from './color.js';
 import { GLSL_QUIET, quietUniform } from './glsl.js';
@@ -278,6 +278,7 @@ export function sunWall(el, config) {
 		fragment: FRAG,
 		alpha: false,
 		still: o.speed <= 0,
+		fps: SLOW_FPS, // slow motion: every other frame of a 60 Hz screen is as smooth to the eye
 		setup({ gl, uniform }) {
 			gl.uniform1f(uniform('uMode'), o.modeIndex);
 			gl.uniform3fv(uniform('uWall'), parseColor(o.wall));

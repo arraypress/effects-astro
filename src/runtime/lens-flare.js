@@ -21,7 +21,7 @@
  * still frame.
  */
 
-import { createStage } from './stage.js';
+import { createStage, SLOW_FPS } from './stage.js';
 import { GLSL_HASH33 } from './hash-noise.js';
 import { parseColor, toHex, mixOklab } from './color.js';
 import { GLSL_QUIET, quietUniform } from './glsl.js';
@@ -254,6 +254,7 @@ export function lensFlare(el, config) {
 		fragment: FRAG,
 		alpha: false,
 		still: o.speed <= 0,
+		fps: SLOW_FPS, // slow motion: every other frame of a 60 Hz screen is as smooth to the eye
 		setup({ gl, uniform }) {
 			gl.uniform3fv(uniform('uBg'), rgb(o.background));
 			gl.uniform3fv(uniform('uStreakC'), rgb(o.streak));

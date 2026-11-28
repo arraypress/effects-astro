@@ -20,7 +20,7 @@
  * one still frame. Without WebGL nothing is drawn.
  */
 
-import { createStage } from './stage.js';
+import { createStage, SLOW_FPS } from './stage.js';
 import { GLSL_HASH33 } from './hash-noise.js';
 import { GLSL_QUIET, quietUniform } from './glsl.js';
 import { loadImage, imageTexture, coverScale, GLSL_COVER } from './image.js';
@@ -285,6 +285,7 @@ export function photoBokeh(el, config) {
 		fragment: FRAG,
 		alpha: true,
 		still: o.speed <= 0,
+		fps: SLOW_FPS, // slow motion: every other frame of a 60 Hz screen is as smooth to the eye
 		setup({ gl, uniform }) {
 			gl.uniform1i(uniform('uPhoto'), 0);
 			gl.uniform1f(uniform('uBlur'), o.blur);

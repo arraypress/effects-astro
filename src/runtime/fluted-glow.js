@@ -20,7 +20,7 @@
  * still frame.
  */
 
-import { createStage } from './stage.js';
+import { createStage, SLOW_FPS } from './stage.js';
 import { GLSL_HASH33 } from './hash-noise.js';
 import { GLSL_OKLAB, parseColor, toOklab, toHex, mixOklab } from './color.js';
 import { GLSL_QUIET, quietUniform } from './glsl.js';
@@ -274,6 +274,7 @@ export function flutedGlow(el, config) {
 		fragment: FRAG,
 		alpha: false,
 		still: o.speed <= 0,
+		fps: SLOW_FPS, // slow motion: every other frame of a 60 Hz screen is as smooth to the eye
 		setup({ gl, uniform }) {
 			gl.uniform1f(uniform('uFlutes'), Math.max(1, o.flutes));
 			gl.uniform1f(uniform('uSqueeze'), o.squeeze);

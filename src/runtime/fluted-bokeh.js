@@ -25,7 +25,7 @@
  * still frame.
  */
 
-import { createStage } from './stage.js';
+import { createStage, SLOW_FPS } from './stage.js';
 import { GLSL_HASH33, hash33 } from './hash-noise.js';
 import { parseColor, toHex, mixOklab } from './color.js';
 import { GLSL_QUIET, quietUniform } from './glsl.js';
@@ -120,24 +120,36 @@ export function bokehLights(config) {
  * `bokehAt` below.
  */
 const GLSL_LIGHTS = `
-uniform vec4 uLights[${MAX_LIGHTS}];
+uniform vec4 uLightAt[${MAX_LIGHTS}];
 uniform vec3 uLightCol[${MAX_LIGHTS}];
 uniform float uCount;
-uniform float uSize;
 uniform float uGlow;
-uniform float uDrift;
-uniform float uRate;
 uniform float uAspect;
+// uLightAt is each light this frame: its centre (worked out once a frame, not at every pixel) and 1.4 over its radius
+// squared
 vec3 bokehAt(vec2 s, float t) {
 	vec3 c = vec3(0.0);
 	for (int i = 0; i < ${MAX_LIGHTS}; i++) {
 		if (float(i) >= uCount) break;
-		vec4 l = uLights[i];
-		float ph = 6.2831853 * t * uRate + l.w;
-		vec2 at = l.xy + uDrift * vec2(sin(ph * 0.9) / uAspect, cos(ph * 0.71));
-		vec2 d = vec2((s.x - at.x) * uAspect, s.y - at.y);
-		float r = uSize * l.z;
-		c += uLightCol[i] * exp(-dot(d, d) / (r * r) * 1.4);
+		vec4 l = uLightAt[i];
+		vec2 d = vec2((s.x - l.x) * uAspect, s.y - l.y);
+		c += uLightCol[i] * exp(-dot(d, d) * l.z);
+	}
+	return c * uGlow;
+}
+// The same through upright reeds: red, green and blue seen at three places across (sx), each smeared upright over three
+// taps (weights a half and two quarters). A light's glow is a product of one falloff across and one down, so six
+// falloffs a light stand for the nine the taps would take.
+vec3 reedsAt(vec3 sx, float y, float streak) {
+	vec3 c = vec3(0.0);
+	for (int i = 0; i < ${MAX_LIGHTS}; i++) {
+		if (float(i) >= uCount) break;
+		vec4 l = uLightAt[i];
+		vec3 dx = (sx - l.x) * uAspect;
+		vec3 dy = vec3(y, y + streak, y - streak) - l.y;
+		vec3 across = exp(-dx * dx * l.z);
+		vec3 down = exp(-dy * dy * l.z);
+		c += uLightCol[i] * across * dot(down, vec3(0.5, 0.25, 0.25));
 	}
 	return c * uGlow;
 }
@@ -183,7 +195,7 @@ void main() {
 		float sr = cx.y + cx.x * hw * uSqueeze * (1.0 + uDisp);
 		float sg = cx.y + cx.x * hw * uSqueeze;
 		float sb = cx.y + cx.x * hw * uSqueeze * (1.0 - uDisp);
-		col = vec3(seen(vec2(sr, s.y), uTime).r, seen(vec2(sg, s.y), uTime).g, seen(vec2(sb, s.y), uTime).b);
+		col = reedsAt(vec3(sr, sg, sb), s.y, uStreak);
 		seam = 1.0 - uSeams * 0.35 * (1.0 - cos(cx.x * 1.5707963));
 		seam += uSeams * 0.3 * smoothstep(-0.86, -1.0, cx.x);
 		seam -= uSeams * 0.35 * smoothstep(0.86, 1.0, cx.x);
@@ -307,13 +319,15 @@ export function flutedBokeh(el, config) {
 	let colours = rgb(bokehColors(config));
 	const ground = parseColor(o.background);
 	const start = frameNow();
-	const pack = new Float32Array(MAX_LIGHTS * 4);
-	lights.forEach((l, i) => pack.set([l.x, l.y, l.r, l.phase], i * 4));
+	const at = new Float32Array(MAX_LIGHTS * 4);
+	const flat = new Float32Array(MAX_LIGHTS * 3);
+	let aspect = 0.8;
 
 	const { stage, stop } = createStage(el, {
 		fragment: FRAG,
 		alpha: false,
 		still: o.speed <= 0,
+		fps: SLOW_FPS, // slow motion: every other frame of a 60 Hz screen is as smooth to the eye
 		setup({ gl, uniform }) {
 			gl.uniform1f(uniform('uMode'), o.modeIndex);
 			gl.uniform1f(uniform('uFlutes'), Math.max(1, o.flutes));
@@ -323,22 +337,28 @@ export function flutedBokeh(el, config) {
 			gl.uniform1f(uniform('uSeams'), o.seams);
 			gl.uniform1f(uniform('uGrain'), o.grain);
 			gl.uniform1f(uniform('uCount'), lights.length);
-			gl.uniform1f(uniform('uSize'), o.size);
 			gl.uniform1f(uniform('uGlow'), o.glow);
-			gl.uniform1f(uniform('uDrift'), o.drift);
-			gl.uniform1f(uniform('uRate'), o.rate);
 			gl.uniform3f(uniform('uBg'), ground[0], ground[1], ground[2]);
-			gl.uniform4fv(uniform('uLights[0]'), pack);
 		},
 		resize({ gl, uniform }) {
 			const w = Math.max(1, el.clientWidth);
 			const h = Math.max(1, el.clientHeight);
-			gl.uniform1f(uniform('uAspect'), w / h);
+			aspect = w / h;
+			gl.uniform1f(uniform('uAspect'), aspect);
 			gl.uniform4f(uniform('uQuiet'), ...quietUniform(config.quiet, w / h));
 		},
 		uniforms({ gl, uniform }, now) {
-			gl.uniform1f(uniform('uTime'), ((now - start) / 1000) * Math.max(0, o.speed));
-			const flat = new Float32Array(MAX_LIGHTS * 3);
+			const t = ((now - start) / 1000) * Math.max(0, o.speed);
+			gl.uniform1f(uniform('uTime'), t);
+			// where each light is this frame (it wanders on a slow loop), and how fast its glow falls off
+			lights.forEach((l, i) => {
+				const ph = 2 * Math.PI * t * o.rate + l.phase;
+				const r = o.size * l.r;
+				at[i * 4] = l.x + (o.drift * Math.sin(ph * 0.9)) / aspect;
+				at[i * 4 + 1] = l.y + o.drift * Math.cos(ph * 0.71);
+				at[i * 4 + 2] = 1.4 / (r * r);
+			});
+			gl.uniform4fv(uniform('uLightAt[0]'), at);
 			colours.forEach((c, i) => flat.set(c, i * 3));
 			gl.uniform3fv(uniform('uLightCol[0]'), flat);
 		},

@@ -32,7 +32,7 @@
  * the JavaScript in step.
  */
 
-import { createStage } from './stage.js';
+import { createStage, SLOW_FPS } from './stage.js';
 import { GLSL_OKLAB, parseColor, toOklab, fromOklab, toHex } from './color.js';
 import { GLSL_QUIET, quietUniform } from './glsl.js';
 import { watchColors } from './mount.js';
@@ -379,6 +379,7 @@ export function lightLeak(el, config) {
 		alpha: false,
 		scale: RESOLUTION,
 		still: speed <= 0,
+		fps: SLOW_FPS, // slow motion: every other frame of a 60 Hz screen is as smooth to the eye
 		setup({ gl, uniform }) {
 			gl.uniform1f(uniform('uScale'), o.scale);
 			gl.uniform1f(uniform('uWarp'), Math.max(0, o.warp));

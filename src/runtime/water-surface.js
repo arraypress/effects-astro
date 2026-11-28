@@ -29,7 +29,7 @@
  * prefers-reduced-motion it is one frame.
  */
 
-import { createStage } from './stage.js';
+import { createStage, SLOW_FPS } from './stage.js';
 import { frameNow } from './loop.js';
 import { parseColor, mixOklab, toHex } from './color.js';
 import { isMobileGpu, pixelRatio } from './device.js';
@@ -190,7 +190,7 @@ uniform vec2 uRes;
 uniform float uTime;
 uniform float uLoop;
 uniform vec4 uWave[${MAX_WAVES}];   // dir.xy, k, amp
-uniform vec3 uWaveT[${MAX_WAVES}];  // omega, phase, peaked
+uniform vec2 uWaveT[${MAX_WAVES}];  // phase this frame (worked out once a frame), peaked
 uniform float uCount;
 uniform float uPitch;
 uniform float uTanH;
@@ -213,18 +213,24 @@ ${GLSL_HASH33}
 
 // one wave's height and slope at a point on the water: a smooth sine (a rounded swell) blended into a peaked crest over
 // a broad trough (a ripple) by wt.z; both have the same mean
-vec3 wave(vec4 w, vec3 wt, vec2 xz, float t) {
-	float ph = w.z * dot(w.xy, xz) - wt.x * t + wt.y;
+vec3 wave(vec4 w, vec2 wt, vec2 xz) {
+	float ph = w.z * dot(w.xy, xz) + wt.x;
 	float sn = sin(ph), cs = cos(ph);
 	float e = exp(sn - 1.0);
-	float prof = mix(0.4658 + 0.43 * sn, e, wt.z);
-	float dprof = mix(0.43 * cs, e * cs, wt.z);
+	float prof = mix(0.4658 + 0.43 * sn, e, wt.y);
+	float dprof = mix(0.43 * cs, e * cs, wt.y);
 	return vec3(w.w * (prof - 0.4658), w.w * w.z * dprof * w.xy);
 }
 
-float liftAt(vec2 xz, float t) {
+// the same wave's height alone (the lift needs no slope)
+float waveHeight(vec4 w, vec2 wt, vec2 xz) {
+	float sn = sin(w.z * dot(w.xy, xz) + wt.x);
+	return w.w * (mix(0.4658 + 0.43 * sn, exp(sn - 1.0), wt.y) - 0.4658);
+}
+
+float liftAt(vec2 xz) {
 	float h = 0.0;
-	for (int i = 0; i < ${GEOMETRY_WAVES}; i++) h += wave(uWave[i], uWaveT[i], xz, t).x;
+	for (int i = 0; i < ${GEOMETRY_WAVES}; i++) h += waveHeight(uWave[i], uWaveT[i], xz);
 	return h;
 }
 
@@ -243,7 +249,7 @@ void main() {
 	float d = uEye / down;
 	vec2 xz = dir.xz * d;
 	for (int j = 0; j < 3; j++) {
-		float h = liftAt(xz, t);
+		float h = liftAt(xz);
 		d = (uEye - h) / down;
 		xz = dir.xz * d;
 	}
@@ -265,10 +271,17 @@ void main() {
 		vec4 w = uWave[i];
 		float ri = r * mix(1.0, stretch, abs(dot(w.xy, along)));
 		float kr = w.z * ri;
-		float f = exp(-0.5 * kr * kr);
-		vec3 hs = wave(w, uWaveT[i], xz, t);
 		// fine ripples gather on the swell's forward faces and thin on its backs, so they read as riding it
 		float ride = i < ${GEOMETRY_WAVES} ? 1.0 : clamp(0.85 + 5.0 * dot(swellSlope, wind), 0.4, 1.7);
+		// a wave far finer than the footprint is filtered right out (under a twenty-thousandth of it left): all of its
+		// slope goes into the roughness, and its shape is not worked out (most ripples, out of focus and far off)
+		if (kr > 4.5) {
+			float gone = w.w * w.z * ride;
+			lost += 0.5 * gone * gone;
+			continue;
+		}
+		float f = exp(-0.5 * kr * kr);
+		vec3 hs = wave(w, uWaveT[i], xz);
 		if (i < ${GEOMETRY_WAVES}) swellSlope += hs.yz * f;
 		slope += hs.yz * f * ride;
 		crest += hs.x * f * ride;
@@ -449,6 +462,7 @@ export function waterSurface(el, config = {}) {
 	const mobile = isMobileGpu();
 	const count = mobile ? 16 : MAX_WAVES;
 	const waves = waterWaves(config, MAX_WAVES);
+	const phases = new Float32Array(MAX_WAVES * 2);
 	const start = frameNow();
 	// where the clock starts in the loop, so two cards on the same settings differ
 	const offset = (o.seed * 7.31) % o.loop;
@@ -459,15 +473,14 @@ export function waterSurface(el, config = {}) {
 		alpha: false,
 		scale: Math.min(1, (mobile ? 1 : 1.5) / pixelRatio()),
 		still: o.speed <= 0,
+		fps: SLOW_FPS, // slow motion: every other frame of a 60 Hz screen is as smooth to the eye
 		setup({ gl, uniform: u }) {
 			const a = new Float32Array(MAX_WAVES * 4);
-			const b = new Float32Array(MAX_WAVES * 3);
 			waves.forEach((w, i) => {
 				a.set([w.dir[0], w.dir[1], w.k, w.amp], i * 4);
-				b.set([w.omega, w.phase, w.peaked], i * 3);
+				phases[i * 2 + 1] = w.peaked;
 			});
 			gl.uniform4fv(u('uWave[0]'), a);
-			gl.uniform3fv(u('uWaveT[0]'), b);
 			gl.uniform1f(u('uCount'), count);
 			gl.uniform1f(u('uLoop'), o.loop);
 			gl.uniform1f(u('uPitch'), (o.pitch * Math.PI) / 180);
@@ -495,11 +508,32 @@ export function waterSurface(el, config = {}) {
 			gl.uniform4f(u('uQuiet'), ...quietUniform(config.quiet, w / h));
 		},
 		uniforms({ gl, uniform: u }, now) {
-			gl.uniform1f(u('uTime'), waterTime(o, now - start) + offset);
+			const time = waterTime(o, now - start) + offset;
+			gl.uniform1f(u('uTime'), time);
+			// each wave's phase at this moment in the loop, wrapped to a turn (kept exact here, not at every pixel)
+			wavePhases(waves, time, o.loop, phases);
+			gl.uniform2fv(u('uWaveT[0]'), phases);
 		},
 	});
 	if (!stage) return stop;
 	return stop;
+}
+
+/**
+ * Each wave's phase at a moment in the loop, wrapped to a turn: worked out once a frame (in double precision) and
+ * handed to the shader, which then adds only where the pixel is. Written into every other slot of `out` (the slots
+ * between hold how peaked each wave is).
+ *
+ * @param {{ omega: number, phase: number }[]} waves The waves.
+ * @param {number} time Seconds on the water's clock.
+ * @param {number} loop The loop, seconds.
+ * @param {Float32Array} [out] Filled and returned.
+ * @returns {Float32Array} The phases, at 0, 2, 4…
+ */
+export function wavePhases(waves, time, loop, out = new Float32Array(waves.length * 2)) {
+	const t = ((time % loop) + loop) % loop;
+	for (let i = 0; i < waves.length; i++) out[i * 2] = (waves[i].phase - waves[i].omega * t) % (2 * Math.PI);
+	return out;
 }
 
 /**

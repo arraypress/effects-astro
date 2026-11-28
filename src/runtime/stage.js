@@ -23,6 +23,12 @@ const ADAPT_WINDOW = 60;
 const ADAPT_SLOW = 1 / 45;
 const ADAPT_STEP = 0.8;
 const ADAPT_FLOOR = 0.5;
+/** The frame rate a slow effect asks for (drifting light, slow water): half a 60 Hz screen's work, nothing to see for it. */
+export const SLOW_FPS = 30;
+/** A capped stage draws a frame that comes this share of a frame early (screens tick a little unevenly). */
+const SLACK = 0.25;
+/** How many capped stages have started: every other one starts half a gap ahead, so they take turns. */
+let gates = 0;
 
 /** The vertex shader for a full-screen pass that works in `gl_FragCoord`. */
 const CLIP = `
@@ -47,6 +53,9 @@ void main() { gl_Position = vec4(p, 0.0, 1.0); }
  * @property {string} [vertex] A vertex shader of its own (its position attribute at location 0); the default passes the triangle through.
  * @property {boolean} [alpha=true] A transparent canvas (premultiplied), or an opaque one.
  * @property {number} [scale=1] Share of the pixel ratio to draw at.
+ * @property {number} [fps=0] Draw at most this many frames a second (0: every frame the page gives). A slow effect (a
+ *   drifting light, a breathing field) asks for 30 and costs half as much on a 60 Hz screen, with nothing to see for it;
+ *   held for a recording, every asked frame is drawn.
  * @property {boolean} [adaptive=true] Lower the resolution while frames run slow (a weak GPU), down to half; a step that does not help is taken back and adjusting stops.
  * @property {boolean} [webgl1=true] Accept WebGL 1 where there is no WebGL 2.
  * @property {boolean} [antialias=false] Smooth the edges of geometry drawn into it (multisampling): for effects that draw meshes.
@@ -62,6 +71,29 @@ void main() { gl_Position = vec4(p, 0.0, 1.0); }
  */
 
 /**
+ * A frame-rate cap: tell it each frame's time and it says whether to draw, and how much time that drawn frame covers
+ * (the passed-over frames' time with its own, so nothing is lost and the effect moves at its own speed). A frame that
+ * comes up to a quarter of a frame early still draws (screens tick a little unevenly), so 30 on a 60 Hz screen is every
+ * other frame, never every third; a screen slower than the cap draws every frame.
+ *
+ * @param {number} fps The most frames a second.
+ * @param {number} [lead=0] Seconds it starts ahead by: half a gap for every other capped effect on a page, so they take
+ *   turns on a 60 Hz screen (half draw on each frame) and the work is spread evenly.
+ * @returns {(dt: number) => number} Given the seconds since the last frame: the seconds to draw, or 0 to pass it over.
+ */
+export function frameGate(fps, lead = 0) {
+	const gap = 1 / fps;
+	let owed = lead;
+	return (dt) => {
+		owed += dt;
+		if (owed < gap - SLACK * Math.min(dt, gap)) return 0;
+		const whole = owed;
+		owed = 0;
+		return whole;
+	};
+}
+
+/**
  * Starts a full-canvas effect on an element (its first canvas is drawn into).
  *
  * @param {HTMLElement} el The element.
@@ -71,6 +103,8 @@ void main() { gl_Position = vec4(p, 0.0, 1.0); }
  */
 export function createStage(el, options) {
 	const { fragment, alpha = true, scale = 1, webgl1 = true, adaptive = true, antialias = false } = options;
+	/** Passes frames over when capped (`fps`); null draws every frame. */
+	const gate = options.fps && options.fps > 0 ? frameGate(options.fps, (gates++ % 2) * (0.5 / options.fps)) : null;
 	const canvas = el.querySelector('canvas');
 	// with shareContexts() on (./shared-gl.js), the effect draws in the one shared context and copies each frame into
 	// its own canvas; a multisampled effect keeps a context of its own (the shared one isn't)
@@ -130,6 +164,25 @@ export function createStage(el, options) {
 	 * @param {number} dt Seconds since the last frame.
 	 */
 	const render = (now, dt) => {
+		// capped (`fps`): a frame that comes too soon after the last drawn one is passed over, its time kept for the next;
+		// a still redraw (dt 0) and a recording's held frames always draw
+		if (gate && dt > 0 && !exportRatio) {
+			const whole = gate(dt);
+			if (whole > 0) draw(now, whole, dt);
+			return;
+		}
+		draw(now, dt, dt);
+	};
+
+	/**
+	 * Draws the frame: `dt` is the time the effect has to cover, `tick` the page's own frame time (what the resolution
+	 * adapts to: a capped effect's longer steps are not slow frames).
+	 *
+	 * @param {number} now The time, ms.
+	 * @param {number} dt Seconds since the last drawn frame.
+	 * @param {number} tick Seconds since the page's last frame.
+	 */
+	const draw = (now, dt, tick) => {
 		place?.begin(canvas.width, canvas.height);
 		options.update?.(stage, now, dt);
 		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -145,7 +198,7 @@ export function createStage(el, options) {
 		gl.drawArrays(gl.TRIANGLES, 0, 3);
 		options.after?.(stage, now, dt);
 		place?.end(canvas.width, canvas.height);
-		if (adaptive && dt > 0 && !exportRatio) adapt(dt);
+		if (adaptive && tick > 0 && !exportRatio) adapt(tick);
 	};
 
 	/** @type {Stage} */
@@ -156,7 +209,7 @@ export function createStage(el, options) {
 		uniform: compiled.uniform,
 		still: options.still === true || prefersReducedMotion(),
 		ratio: pixelRatio(scale),
-		redraw: () => render(frameNow(), 0),
+		redraw: () => draw(frameNow(), 0, 0),
 	};
 
 	place?.begin(1, 1);

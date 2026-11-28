@@ -25,6 +25,8 @@ export interface StageOptions {
 	scale?: number;
 	/** Lower the resolution while frames run slow (a weak GPU), down to half; a step that does not help is taken back and adjusting stops. Default true. */
 	adaptive?: boolean;
+	/** Draw at most this many frames a second (0: every frame). A slow effect asks for 30; a recording's held frames always draw. Default 0. */
+	fps?: number;
 	/** Accept WebGL 1 without WebGL 2. Default true. */
 	webgl1?: boolean;
 	/** Smooth the edges of geometry drawn into it (multisampling): for effects that draw meshes. Default false. */
@@ -45,3 +47,9 @@ export interface StageOptions {
 
 /** Starts a full-canvas effect in `el`'s canvas. `stage` is null without WebGL (the canvas is removed). */
 export function createStage(el: HTMLElement, options: StageOptions): { stage: Stage | null; stop(): void };
+
+/** The frame rate a slow effect asks for (30): half a 60 Hz screen's work, nothing to see for it. */
+export declare const SLOW_FPS: number;
+
+/** A frame-rate cap: given the seconds since the last frame, the seconds to draw (the passed-over frames' with its own) or 0 to pass it over. */
+export declare function frameGate(fps: number, lead?: number): (dt: number) => number;

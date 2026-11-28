@@ -31,7 +31,7 @@
  * the limb).
  */
 
-import { createStage } from './stage.js';
+import { createStage, SLOW_FPS } from './stage.js';
 import { GLSL_HASH33, GLSL_GRADIENT_NOISE } from './hash-noise.js';
 import { parseColor } from './color.js';
 import { GLSL_QUIET, quietUniform } from './glsl.js';
@@ -483,6 +483,7 @@ export function planet(el, config) {
 		fragment: FRAG,
 		alpha: false,
 		still: o.speed <= 0,
+		fps: SLOW_FPS, // slow motion: every other frame of a 60 Hz screen is as smooth to the eye
 		setup({ gl, uniform }) {
 			gl.uniform1i(uniform('uDay'), 0);
 			gl.uniform1i(uniform('uAux'), 1);

@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.16.2] — 2026-11-28
+
+### Changed
+
+Cheaper to run, with nothing to see for it (frames at fixed times compared before and after on a real GPU: identical,
+or within 1–3 levels of 255 where the arithmetic was reordered).
+
+- **Slow effects draw 30 frames a second**: WaterSurface, Planet, LensFlare, FluidFolds, FlutedBokeh, FlutedGlow,
+  PhotoBokeh, LightLeak and SunWall ask the stage for `fps: SLOW_FPS`, half the GPU work on a 60 Hz screen (a quarter at
+  120 Hz). Every other capped effect starts half a gap ahead, so on a page of them half draw on each frame. A recording's
+  held frames (`holdFrames`) and a still's redraw always draw, so videos and stills are as they were.
+- **FlutedBokeh**: each light's place is worked out once a frame, not at every pixel, and the reeds' nine reads of the
+  lights (three colours, three smear taps) are six falloffs a light (a glow is a falloff across times one down). About
+  four times cheaper in software rendering. No array is made each frame.
+- **WaterSurface**: each wave's phase is worked out once a frame in double precision (`wavePhases`), the surface lift
+  reads heights only, and a wave filtered right out by the footprint skips its shape.
+
+### Added
+
+- `createStage`'s `fps` option, `frameGate(fps, lead)` and `SLOW_FPS` (`runtime/stage`); `wavePhases`
+  (`runtime/water-surface`).
+
 ## [0.16.1] — 2026-11-28
 
 ### Changed

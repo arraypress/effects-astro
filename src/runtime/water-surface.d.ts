@@ -71,3 +71,6 @@ export declare function waterStill(config?: WaterSurfaceConfig): string;
 export declare function waterStillSvg(config?: WaterSurfaceConfig, id?: string): string;
 export declare function waterTime(config: WaterSurfaceConfig, elapsedMs: number): number;
 export declare function waterSurface(el: HTMLElement, config?: WaterSurfaceConfig): () => void;
+
+/** Each wave's phase at a moment in the loop, wrapped to a turn, written into every other slot of `out`: worked out once a frame for the shader. */
+export declare function wavePhases(waves: { omega: number; phase: number }[], time: number, loop: number, out?: Float32Array): Float32Array;

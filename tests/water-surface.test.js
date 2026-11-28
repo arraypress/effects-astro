@@ -7,6 +7,7 @@ import {
 	waterStill,
 	waterStillSvg,
 	waterTime,
+	wavePhases,
 	focusDistance,
 	sunDirection,
 	ringOf,
@@ -86,4 +87,23 @@ test('the water is rounded mounds from crossing swells, with peaked ripples ridi
 	// and come from more than one heading, so they cross into mounds rather than rows
 	const headings = ws.slice(0, 6).map((w) => Math.atan2(w.dir[1], w.dir[0]));
 	assert.ok(Math.max(...headings) - Math.min(...headings) > 1);
+});
+
+test('each wave\'s phase is worked out once a frame: the wave\'s own, wrapped to a turn, the same a loop later', () => {
+	const c = { seed: 3, loop: 30 };
+	const waves = waterWaves(c);
+	const a = wavePhases(waves, 4.1, 30);
+	const b = wavePhases(waves, 34.1, 30);
+	assert.equal(a.length, waves.length * 2);
+	waves.forEach((w, i) => {
+		assert.ok(Math.abs(a[i * 2]) <= 2 * Math.PI, 'within a turn, so single precision keeps it exact enough');
+		// the same angle as the wave's own phase less its travel
+		const want = w.phase - w.omega * 4.1;
+		assert.ok(Math.abs(Math.sin(a[i * 2]) - Math.sin(want)) < 1e-5 && Math.abs(Math.cos(a[i * 2]) - Math.cos(want)) < 1e-5);
+		assert.equal(a[i * 2], b[i * 2], 'one loop later, the same phase');
+		assert.equal(a[i * 2 + 1], 0, 'the slots between are left alone');
+	});
+	// filled in place, with no new array each frame
+	const out = new Float32Array(MAX_WAVES * 2);
+	assert.equal(wavePhases(waves, 1, 30, out), out);
 });
