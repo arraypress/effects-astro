@@ -1505,6 +1505,50 @@
 			}
 		]
 	},
+	"FluidFolds": {
+		"selector": "[data-effect-fluid-folds]",
+		"props": [
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport (position: fixed). Default false.",
+				"default": false
+			},
+			{
+				"name": "lazy",
+				"kind": "boolean",
+				"doc": "Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away: for pages with many effects. Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"FlutedBokeh": {
+		"selector": "[data-effect-fluted-bokeh]",
+		"props": [
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport (position: fixed). Default false.",
+				"default": false
+			},
+			{
+				"name": "lazy",
+				"kind": "boolean",
+				"doc": "Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away: for pages with many effects. Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
 	"FlutedGlass": {
 		"selector": "[data-effect-fluted-glass]",
 		"props": [
@@ -3766,6 +3810,28 @@
 			}
 		]
 	},
+	"LensFlare": {
+		"selector": "[data-effect-lens-flare]",
+		"props": [
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport (position: fixed). Default false.",
+				"default": false
+			},
+			{
+				"name": "lazy",
+				"kind": "boolean",
+				"doc": "Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away. Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
 	"LightField": {
 		"selector": "[data-effect-light-field]",
 		"props": [
@@ -4985,6 +5051,28 @@
 			}
 		]
 	},
+	"PaintDrip": {
+		"selector": "[data-effect-paint-drip]",
+		"props": [
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport (position: fixed). Default false.",
+				"default": false
+			},
+			{
+				"name": "lazy",
+				"kind": "boolean",
+				"doc": "Run only while near the screen (true, or how near as a CSS length). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
 	"PaperShader": {
 		"selector": "[data-effect-paper]",
 		"props": [
@@ -5275,6 +5363,28 @@
 				"name": "fixed",
 				"kind": "boolean",
 				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"PhotoBokeh": {
+		"selector": "[data-effect-photo-bokeh]",
+		"props": [
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport (position: fixed). Default false.",
+				"default": false
+			},
+			{
+				"name": "lazy",
+				"kind": "boolean",
+				"doc": "Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away. Default false.",
 				"default": false
 			},
 			{
@@ -6953,6 +7063,28 @@
 				"name": "fit",
 				"kind": "boolean",
 				"doc": "Size the text to span its parent's width. Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"SunWall": {
+		"selector": "[data-effect-sun-wall]",
+		"props": [
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport (position: fixed). Default false.",
+				"default": false
+			},
+			{
+				"name": "lazy",
+				"kind": "boolean",
+				"doc": "Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away. Default false.",
 				"default": false
 			},
 			{

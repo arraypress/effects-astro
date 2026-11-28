@@ -1,0 +1,38 @@
+---
+/**
+ * LensFlare: an anamorphic lens flare, built as the lens makes one: a hot source, its long thin horizontal streak, a
+ * veil of scattered light, and soft ghosts on the line through the frame's centre, drifting slowly. See
+ * src/runtime/lens-flare.js.
+ *
+ * Fills its nearest positioned ancestor, or the viewport with `fixed`. Opaque: it paints its `background` everywhere;
+ * the element shows a CSS still of it until the shader starts and without WebGL.
+ *
+ * @example
+ * <section class="hero" style="position: relative; background: #030406">
+ *   <LensFlare source={[0.22, 0.3]} streak="#4f8dff" />
+ *   <h1>…</h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import { flareStill, type LensFlareConfig } from '../runtime/lens-flare.js';
+
+interface Props extends LensFlareConfig {
+	/** Fill the viewport (position: fixed). Default false. */
+	fixed?: boolean;
+	/** Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away. Default false. */
+	lazy?: boolean | string;
+	class?: string;
+}
+
+const { fixed = false, lazy = false, class: className, ...config } = Astro.props;
+const still = flareStill(config);
+---
+
+<EffectCanvas name="lens-flare" config={config} fixed={fixed} lazy={lazy} background={still} class={className} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { lensFlare } from '../runtime/lens-flare.js';
+
+	mount('[data-effect-lens-flare]', lensFlare);
+</script>

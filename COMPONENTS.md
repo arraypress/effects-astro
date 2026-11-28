@@ -317,6 +317,40 @@ FlowField: hundreds of short, fine trails riding a slowly evolving noise flow, b
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
 | `class` | `string` | Classes for the element. |
 
+## `<FluidFolds>`
+
+FluidFolds: glossy folds of liquid colour on a dark ground, warped by slow noise and lit from one side, the colour drifting along a ramp of three; poured enamel (`style="liquid"`) or long silk dunes (`style="dunes"`). No pointer, made to sit behind copy. See src/runtime/fluid-folds.js.
+
+```astro
+<section class="hero" style="position: relative; background: #050409">
+  <FluidFolds colors={['#1638ff', '#7b2cff', '#ff4a3d']} style="liquid" />
+  <h1>…</h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `fixed` | `boolean` | Fill the viewport (position: fixed). Default false. |
+| `lazy` | `boolean \| string` | Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away: for pages with many effects. Default false. |
+| `class` | `string` | Classes for the element. |
+
+## `<FlutedBokeh>`
+
+FlutedBokeh: coloured lights out of focus behind reeded glass (upright flutes with a thin rainbow at each seam) or a wall of glass blocks, the lights drifting slowly. No pointer, made to sit behind copy. See src/runtime/fluted-bokeh.js.
+
+```astro
+<section class="hero" style="position: relative; background: #050608">
+  <FlutedBokeh colors={['#ff4a2a', '#ffb347', '#4fc3ff']} mode="reeds" />
+  <h1>…</h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `fixed` | `boolean` | Fill the viewport (position: fixed). Default false. |
+| `lazy` | `boolean \| string` | Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away: for pages with many effects. Default false. |
+| `class` | `string` | Classes for the element. |
+
 ## `<FlutedGlass>`
 
 FlutedGlass: a pane of slanted fluted glass over soft blooms of colour, the main one following the pointer. Each rib bends what is behind it and fringes it with a thin rainbow. See src/runtime/fluted-glass.js.
@@ -778,6 +812,23 @@ KineticGrid: a fine wireframe grid that ripples where drops land, the rings spre
 | `fixed` | `boolean` | Fill the viewport (position: fixed). Default false. |
 | `class` | `string` | Classes for the element. |
 
+## `<LensFlare>`
+
+LensFlare: an anamorphic lens flare, built as the lens makes one: a hot source, its long thin horizontal streak, a veil of scattered light, and soft ghosts on the line through the frame's centre, drifting slowly. See src/runtime/lens-flare.js.
+
+```astro
+<section class="hero" style="position: relative; background: #030406">
+  <LensFlare source={[0.22, 0.3]} streak="#4f8dff" />
+  <h1>…</h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `fixed` | `boolean` | Fill the viewport (position: fixed). Default false. |
+| `lazy` | `boolean \| string` | Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away. Default false. |
+| `class` | `string` | Classes for the element. |
+
 ## `<LightField>`
 
 LightField: liquid light in three colours, bending around the pointer, with a real fluid under it that the pointer stirs and a click drops ink into. See src/runtime/light-field.js for how it is drawn.
@@ -1050,6 +1101,22 @@ OutlineWordmark: a name at enormous scale, drawn as one outline, cropped so it s
 | `weight` | `number \| string` | CSS font-weight. Default 700. |
 | `class` | `string` | Classes for the element. |
 
+## `<PaintDrip>`
+
+PaintDrip: a mark sprayed in paint, the paint running. Wet paint pools along the mark's lower edges, drips break away where a pool grows past what surface tension holds, run down under gravity against the paint's viscosity (a bead at the head, the body thinning as paint is laid behind), slow, stop and dry; they hold, fade, and run again. See src/runtime/paint-drip.js.
+
+```astro
+<section class="hero" style="position: relative">
+  <PaintDrip src="/logo-white.svg" color="#C8FF00" />
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `fixed` | `boolean` | Fill the viewport (position: fixed). Default false. |
+| `lazy` | `boolean \| string` | Run only while near the screen (true, or how near as a CSS length). Default false. |
+| `class` | `string` | Classes for the element. |
+
 ## `<PaperShader>`
 
 PaperShader: any of the thirty Paper Shaders (mesh and grain gradients, god rays, liquid metal, water, warp, dithering, halftones, metaballs, voronoi, smoke rings and more), with Paper's own presets, and no React. See src/runtime/paper.js; the shaders are vendored from Paper (Apache-2.0).
@@ -1121,6 +1188,23 @@ ParticleLogo: a logo or a word in thousands of twinkling particles that scatter 
 | `tilt` | `number` | How far the mark tilts towards the pointer. Default 1. |
 | `aberration` | `number` | How far red and blue part, CSS px; 0 for none. Default 1.5. |
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
+| `class` | `string` | Classes for the element. |
+
+## `<PhotoBokeh>`
+
+PhotoBokeh: a photo seen through a lens racking its focus, the plane of focus sweeping slowly near to far and back (a depth guessed from the picture itself), soft out-of-focus lights tinted from its highlights drifting up through it. No pointer, made to sit behind copy. See src/runtime/photo-bokeh.js.
+
+```astro
+<section class="hero" style="position: relative">
+  <PhotoBokeh src="/img/dahlias.webp" shape="blades" />
+  <h1>…</h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `fixed` | `boolean` | Fill the viewport (position: fixed). Default false. |
+| `lazy` | `boolean \| string` | Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away. Default false. |
 | `class` | `string` | Classes for the element. |
 
 ## `<PixelFountain>`
@@ -1520,6 +1604,23 @@ SpotlightText: one line of text as a faint outline that a light under the pointe
 | `stroke` | `string` | The outline's width. Default `1.5px`. |
 | `fill` | `'dodge' \| 'solid'` | How the lit letters fill. Default `dodge`. |
 | `fit` | `boolean` | Size the text to span its parent's width. Default false. |
+| `class` | `string` | Classes for the element. |
+
+## `<SunWall>`
+
+SunWall: low sunlight on a plaster wall, through venetian blinds (hard bars whose penumbra grows with the throw) or with a prism's spectrum beside a patch of sun, creeping slowly. See src/runtime/sun-wall.js.
+
+```astro
+<section class="hero" style="position: relative">
+  <SunWall mode="blinds" wall="#d8c3a5" />
+  <h1>…</h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `fixed` | `boolean` | Fill the viewport (position: fixed). Default false. |
+| `lazy` | `boolean \| string` | Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away. Default false. |
 | `class` | `string` | Classes for the element. |
 
 ## `<Tilt>`

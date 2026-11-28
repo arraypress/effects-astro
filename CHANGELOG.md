@@ -15,6 +15,19 @@ nothing off screen.
 
 ### Added
 
+- **LensFlare** (`lensFlare`, `flareStill`, `flareSource`, `flareGhosts`, `streakAt`; `<LensFlare>`): an anamorphic lens
+  flare built the way the lens makes one: a small hot source and its glow, the long thin horizontal streak a
+  cylindrical element smears it into (the coating's colour, white at its core, falling off along its length) with a
+  fainter parallel second streak, a veil of scattered light, and soft ghosts on the line from the source through the
+  frame's centre (squeezed upright as anamorphic ghosts are, brighter at the rim, a hair of colour at their edge). The
+  source drifts slowly and the ghosts travel the other way through the centre, as real ones do; a faint flicker and
+  grain; a filmic shoulder so the hot parts burn rather than clip. Opaque, a quiet area, a CSS still.
+- **SunWall** (`sunWall`, `sunWallStill`, `blindsAt`, `spectrumRgb`; `<SunWall>`): low sunlight on a plaster wall, either
+  through venetian blinds (a skewed patch of hard bars whose penumbra grows with the throw, breathing as the slats
+  tilt, creeping as the sun moves) or as a prism throws it (a patch of sun and beside it in the shade a short, bowed,
+  saturated spectrum, red to violet, its colours blurred into each other). The light is multiplied into the paint, not
+  laid over it; plaster grain and fall-off; a quiet area dims the light behind copy.
+
 - `<PaintDrip>` (`paintDrip`, `dripStill`, `dripRun`, `dripAt`, `dripAnchors`, `dripPlan`, `dripClock`, `dripPath`,
   `dripsAtRest`, `DRIP_DEFAULTS`, `DEPTH_STEP`): a mark (`src`, any image; its alpha) sprayed in paint on a lit, grained
   ground, the paint running. Drips hang only from the mark's outer lower silhouette (read off its coverage: never a
