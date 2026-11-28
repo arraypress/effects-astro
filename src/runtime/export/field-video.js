@@ -26,6 +26,9 @@ import { record } from './video.js';
  * @property {number} [fps=30] Frames a second.
  * @property {() => unknown} [restart] Starts the element's effect again (a fresh run, under the hold, from time 0);
  *   without it the effect is held as it is (the recording then depends on where it was).
+ * @property {(t: number, canvas: HTMLCanvasElement) => void | Promise<void>} [over] Draws on each finished frame, at
+ *   `t` seconds of video (from 0): something that keeps its own time over the effect, as an animated logo does. It is
+ *   drawn after the crossfade, so only the effect is faded into its start; what `over` draws must loop by itself.
  * @property {(done: number) => void} [progress] Called with the share done, 0–1.
  * @property {AbortSignal} [signal] Stops it.
  */
@@ -158,6 +161,7 @@ export async function recordField(el, o) {
 					ctx.drawImage(head[over.frame], 0, 0, canvas.width, canvas.height);
 					ctx.restore();
 				}
+				if (o.over) await o.over(t, canvas);
 			},
 		});
 		for (const b of head) b.close();

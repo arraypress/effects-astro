@@ -12,6 +12,11 @@ export interface FieldVideoOptions {
 	fps?: number;
 	/** Starts the element's effect again, so the recording runs from a fresh start at time 0. */
 	restart?: () => unknown;
+	/**
+	 * Draws on each finished frame, at `t` seconds of video: something that keeps its own time over the effect (an
+	 * animated logo). Drawn after the crossfade, so only the effect fades into its start; it must loop by itself.
+	 */
+	over?: (t: number, canvas: HTMLCanvasElement) => void | Promise<void>;
 	/** Called with the share done, 0–1. */
 	progress?: (done: number) => void;
 	/** Stops it. */
