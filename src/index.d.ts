@@ -154,6 +154,7 @@ export type { SceneConfig, SceneName } from './runtime/scene.js';
 export { PAPER_LOOKS } from './runtime/paper-looks.js';
 export type { PaperLook, PaperLookName } from './runtime/paper-looks.js';
 export { createStage } from './runtime/stage.js';
+export { shareContexts, sharingContexts } from './runtime/shared-gl.js';
 export type { Stage, StageOptions } from './runtime/stage.js';
 export { createMesh, STRIDE } from './runtime/mesh.js';
 export type { Mesh } from './runtime/mesh.js';

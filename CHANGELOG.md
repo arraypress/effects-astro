@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.15.0] — 2026-11-28
 
+### Added
+
+- **One WebGL context for many effects** (`shareContexts()`, `./runtime/shared-gl`). A browser keeps about sixteen WebGL
+  contexts and drops the oldest, so a wall of thirty live cards could only run half of them (the owner: "about 50% on
+  that page are not moving"). With sharing on, every stage draws in one hidden context and copies its frame into its own
+  canvas (a Canvas 2D one, `drawImage`), so any number run; only what is on screen draws. Each stage gets a tracked view of
+  the context (`trackGL`) that remembers the state it set (capabilities, blending, pixel storage, each unit's texture)
+  and the resources it made: before it draws the context is put back to its defaults and its state laid on again, and
+  when it stops its resources are deleted. An opaque stage keeps its alpha at 1. Off by default (an effect on its own
+  page keeps a context of its own); a multisampled stage (`antialias`) always does.
+
 ### Changed
 
 - **GlassDrop and GlassStack refract a photo** (`backdrop`, same origin, covering the element). Over it the glass is clear:

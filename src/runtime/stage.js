@@ -14,6 +14,7 @@
  */
 
 import { getContext, createProgram, bindTriangle } from './gl.js';
+import { sharingContexts, sharedPlace } from './shared-gl.js';
 import { pixelRatio, prefersReducedMotion } from './device.js';
 import { animate } from './loop.js';
 
@@ -71,11 +72,16 @@ void main() { gl_Position = vec4(p, 0.0, 1.0); }
 export function createStage(el, options) {
 	const { fragment, alpha = true, scale = 1, webgl1 = true, adaptive = true, antialias = false } = options;
 	const canvas = el.querySelector('canvas');
-	const gl = canvas && getContext(canvas, { alpha, premultipliedAlpha: true, antialias }, webgl1);
+	// with shareContexts() on (./shared-gl.js), the effect draws in the one shared context and copies each frame into
+	// its own canvas; a multisampled effect keeps a context of its own (the shared one isn't)
+	const place = canvas && sharingContexts() && !antialias ? sharedPlace(canvas) : null;
+	const gl = place ? place.gl : canvas && getContext(canvas, { alpha, premultipliedAlpha: true, antialias }, webgl1);
 	const compiled = gl && createProgram(gl, options.vertex ?? CLIP, fragment);
+	/** Gives the context back: a context of its own is lost; a shared place deletes what it made. */
+	const giveBack = () => (place ? place.dispose() : gl?.getExtension('WEBGL_lose_context')?.loseContext());
 	if (!canvas || !gl || !compiled) {
 		canvas?.remove();
-		gl?.getExtension('WEBGL_lose_context')?.loseContext();
+		giveBack();
 		return { stage: null, stop: () => {} };
 	}
 	const triangle = bindTriangle(gl);
@@ -122,6 +128,7 @@ export function createStage(el, options) {
 	 * @param {number} dt Seconds since the last frame.
 	 */
 	const render = (now, dt) => {
+		place?.begin(canvas.width, canvas.height);
 		options.update?.(stage, now, dt);
 		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 		gl.viewport(0, 0, canvas.width, canvas.height);
@@ -132,9 +139,10 @@ export function createStage(el, options) {
 		if (alpha) {
 			gl.clearColor(0, 0, 0, 0);
 			gl.clear(gl.COLOR_BUFFER_BIT);
-		}
+		} else place?.opaque();
 		gl.drawArrays(gl.TRIANGLES, 0, 3);
 		options.after?.(stage, now, dt);
+		place?.end(canvas.width, canvas.height);
 		if (adaptive && dt > 0) adapt(dt);
 	};
 
@@ -149,12 +157,13 @@ export function createStage(el, options) {
 		redraw: () => render(performance.now(), 0),
 	};
 
+	place?.begin(1, 1);
 	gl.useProgram(compiled.program);
 	const cleanup = options.setup?.(stage);
 	if (cleanup === false) {
 		// It cannot run here: the canvas goes, and its GPU context with it.
 		canvas.remove();
-		gl.getExtension('WEBGL_lose_context')?.loseContext();
+		giveBack();
 		return { stage: null, stop: () => {} };
 	}
 	gl.useProgram(compiled.program);
@@ -164,6 +173,7 @@ export function createStage(el, options) {
 		stage.ratio = pixelRatio(scale) * quality.share;
 		canvas.width = Math.max(1, Math.round(el.clientWidth * stage.ratio));
 		canvas.height = Math.max(1, Math.round(el.clientHeight * stage.ratio));
+		place?.begin(canvas.width, canvas.height);
 		gl.useProgram(compiled.program);
 		options.resize?.(stage);
 		if (stage.still) stage.redraw();
@@ -180,8 +190,10 @@ export function createStage(el, options) {
 			resizer.disconnect();
 			cleanup?.();
 			// Gone from the page: give the GPU context back now rather than
-			// whenever it is collected, as a browser keeps only so many.
-			if (!el.isConnected) gl.getExtension('WEBGL_lose_context')?.loseContext();
+			// whenever it is collected, as a browser keeps only so many. A
+			// shared place always gives back what it made (the context stays).
+			if (place) place.dispose();
+			else if (!el.isConnected) gl.getExtension('WEBGL_lose_context')?.loseContext();
 		},
 	};
 }

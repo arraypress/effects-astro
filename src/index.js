@@ -98,6 +98,7 @@ export { paperLook, paperLookSettings } from './runtime/paper-look.js';
 export { scene, sceneSettings } from './runtime/scene.js';
 export { PAPER_LOOKS } from './runtime/paper-looks.js';
 export { createStage } from './runtime/stage.js';
+export { shareContexts, sharingContexts } from './runtime/shared-gl.js';
 export { createMesh, STRIDE } from './runtime/mesh.js';
 export { isoCamera, ISO_PITCH } from './runtime/iso-camera.js';
 export { instancing } from './runtime/instancing.js';
