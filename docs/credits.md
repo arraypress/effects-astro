@@ -18,3 +18,4 @@
 - Oklab is Björn Ottosson's.
 
 The full notices are in [LICENSE](../LICENSE).
+- `<Planet>`'s Earth is textured from NASA Visible Earth imagery, public domain: the Blue Marble (day) and the Black Marble city lights (2012/2016), with a water mask, resampled to 2048 × 1024 and 4096 × 2048 (taken from the copies in [three-globe](https://github.com/vasturiano/three-globe)'s examples). Its air follows the usual reading of Rayleigh and Mie scattering (a blue band along the limb, a forward lobe round the sun, Henyey–Greenstein); its flare is the lens-flare's.

@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Planet** (`planet`, `./runtime/planet`, `<Planet>`; the owner: "maybe one with a 3d globe or planet behind it,
+  spinning with the lens flares"): a planet seen from low orbit at sunrise. The camera hangs a little above a sphere so
+  its night side is a vast dark curve across the lower frame; the sun crests the limb, climbs a little and sets back over
+  a slow cycle (`period`, `rises`, `rise`, `phase`), an anamorphic flare (the lens-flare's streak, veil and ghosts) along
+  the horizon as strong as the sun is showing; the thin air along the limb is lit warm beside the sun and Rayleigh blue
+  above it, a Mie lobe round the sun, dark on the night side; city lights on the land and a faint moonlit surface, the
+  sun's glint on the sea at the limb; the planet turns slowly (`spin`). The Earth is textured from NASA's Blue Marble
+  (`day`) and Black Marble city lights with a water mask (`aux`), both public domain, which the page serves; `mars`,
+  `moon` (airless: a hard limb) and `giant` are drawn from noise. A pure function of the time; the sun's place on the frame
+  is found once a frame (`sunPlace`), not per pixel. Still: `planetStill` (CSS).
 - **WaterSurface** (`waterSurface`, `./runtime/water-surface`): moving water seen close and low through a long lens, after a
   photo the owner sent ("ultra realistic water as a background"). Waves summed from a spectrum (long swells to wind
   ripples, the deep-water dispersion relation, peaked crests), a camera a little above the water pitched down into it,

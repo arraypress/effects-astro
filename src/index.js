@@ -32,6 +32,7 @@ export { flutedBokeh, bokehStill } from './runtime/fluted-bokeh.js';
 export { paintDrip, dripStill } from './runtime/paint-drip.js';
 export { photoBokeh, photoBokehStill } from './runtime/photo-bokeh.js';
 export { lensFlare, flareStill } from './runtime/lens-flare.js';
+export { planet, planetStill, planetPeriod } from './runtime/planet.js';
 export { sunWall, sunWallStill } from './runtime/sun-wall.js';
 export { waterSurface, waterStill, waterStillSvg, waterTime, WATER_LOOKS } from './runtime/water-surface.js';
 export { bayer, GLSL_BAYER } from './runtime/bayer.js';

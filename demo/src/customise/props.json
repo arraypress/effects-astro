@@ -2169,6 +2169,72 @@
 				"live": "config"
 			},
 			{
+				"name": "backdrop",
+				"kind": "string",
+				"doc": "A photo behind the glass (same origin), covering the element; the glass is then clear and bends it.",
+				"live": "config"
+			},
+			{
+				"name": "soften",
+				"kind": "number",
+				"min": 0,
+				"max": 5,
+				"step": 0.05,
+				"doc": "How soft the backdrop is round the glass (a mip bias, 0–5); through the glass it stays sharp, as a lens brings it into focus. Default 0.",
+				"default": 0,
+				"live": "config"
+			},
+			{
+				"name": "dim",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How bright the backdrop shows round the glass, 0–1. Default 0.82.",
+				"default": 0.82,
+				"live": "config"
+			},
+			{
+				"name": "flow",
+				"kind": "number",
+				"min": 0,
+				"max": 2,
+				"step": 0.01,
+				"doc": "A slow swell over the glass's top, like liquid settling, 0–2; 0 for none. Default 0.",
+				"default": 0,
+				"live": "config"
+			},
+			{
+				"name": "magnify",
+				"kind": "number",
+				"min": 0,
+				"max": 0.3,
+				"step": 0.002,
+				"doc": "How much the glass's flat middle magnifies what is behind, 0–0.3. Default 0.05.",
+				"default": 0.05,
+				"live": "config"
+			},
+			{
+				"name": "shadow",
+				"kind": "number",
+				"min": 0,
+				"max": 2,
+				"step": 0.01,
+				"doc": "The glass's shadow on what is behind, with light focused into it, 0–2; 0 for none. Default 0.",
+				"default": 0,
+				"live": "config"
+			},
+			{
+				"name": "lightDrift",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How far the light swings about `lightAngle` over time, degrees; 0 holds it. Default 0.",
+				"default": 0,
+				"live": "config"
+			},
+			{
 				"name": "rest",
 				"kind": "enum",
 				"options": [
@@ -2698,6 +2764,52 @@
 				"step": 0.02,
 				"doc": "How fast the intro plays, 0.25–3. Default 1.",
 				"default": 1,
+				"live": "config"
+			},
+			{
+				"name": "form",
+				"kind": "enum",
+				"options": [
+					"discs",
+					"plates"
+				],
+				"doc": "`plates`: the logo cut from sheets of thick glass laid one over another (see glass-plates); the other settings are then GlassPlatesConfig's. Default the disc stack.",
+				"live": "config"
+			},
+			{
+				"name": "backdrop",
+				"kind": "string",
+				"doc": "A photo behind the stack (same origin), covering the element; each disc then refracts it as a thick lens.",
+				"live": "config"
+			},
+			{
+				"name": "soften",
+				"kind": "number",
+				"min": 0,
+				"max": 5,
+				"step": 0.05,
+				"doc": "How soft the backdrop is round the glass (a mip bias, 0–5); through the glass it stays sharp, as a lens brings it into focus. Default 0.",
+				"default": 0,
+				"live": "config"
+			},
+			{
+				"name": "dim",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "How bright the backdrop shows, 0–1. Default 0.78.",
+				"default": 0.78,
+				"live": "config"
+			},
+			{
+				"name": "dispersion",
+				"kind": "number",
+				"min": 0,
+				"max": 1,
+				"step": 0.005,
+				"doc": "With a backdrop: how far the colours part where the discs bend it, 0–1. Default 0.35.",
+				"default": 0.35,
 				"live": "config"
 			},
 			{
@@ -5707,6 +5819,28 @@
 			}
 		]
 	},
+	"Planet": {
+		"selector": "[data-effect-planet]",
+		"props": [
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport (position: fixed). Default false.",
+				"default": false
+			},
+			{
+				"name": "lazy",
+				"kind": "boolean",
+				"doc": "Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away. Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
 	"PointCloud": {
 		"selector": "[data-effect-point-cloud]",
 		"props": [
@@ -7591,6 +7725,28 @@
 				"name": "fixed",
 				"kind": "boolean",
 				"doc": "Fill the viewport, behind the page (position: fixed, z-index -1). Default false.",
+				"default": false
+			},
+			{
+				"name": "class",
+				"kind": "string",
+				"doc": "Classes for the element."
+			}
+		]
+	},
+	"WaterSurface": {
+		"selector": "[data-effect-water-surface]",
+		"props": [
+			{
+				"name": "fixed",
+				"kind": "boolean",
+				"doc": "Fill the viewport (position: fixed). Default false.",
+				"default": false
+			},
+			{
+				"name": "lazy",
+				"kind": "boolean",
+				"doc": "Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away. Default false.",
 				"default": false
 			},
 			{

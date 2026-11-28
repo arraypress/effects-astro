@@ -483,6 +483,13 @@ GlassDrop: a logo arriving as liquid glass. A drop forms, lands with rings runni
 | `hold` | `number` | Seconds the glass holds before it melts, 0–10. Default 2.4. |
 | `loop` | `boolean` | Play it again after a rest; each round starts from the resting logo, which fades as the new drop forms. Default false. |
 | `loopDelay` | `number` | With `loop`: seconds the logo rests before the next drop, 0–10. Default 1.6. |
+| `backdrop` | `string` | A photo behind the glass (same origin), covering the element; the glass is then clear and bends it. |
+| `soften` | `number` | How soft the backdrop is round the glass (a mip bias, 0–5); through the glass it stays sharp, as a lens brings it into focus. Default 0. |
+| `dim` | `number` | How bright the backdrop shows round the glass, 0–1. Default 0.82. |
+| `flow` | `number` | A slow swell over the glass's top, like liquid settling, 0–2; 0 for none. Default 0. |
+| `magnify` | `number` | How much the glass's flat middle magnifies what is behind, 0–0.3. Default 0.05. |
+| `shadow` | `number` | The glass's shadow on what is behind, with light focused into it, 0–2; 0 for none. Default 0. |
+| `lightDrift` | `number` | How far the light swings about `lightAngle` over time, degrees; 0 holds it. Default 0. |
 | `rest` | `'flat' \| 'glass'` | How it ends: `flat`, the glass melted and the logo left on the ground, or `glass`, the glass held. Default `flat`. |
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
 | `lazy` | `boolean \| string` | Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away: for pages with many effects. Default false. |
@@ -565,6 +572,11 @@ GlassStack: a logo as a stack of tinted glass discs in front of a lit card, seen
 | `introDuration` | `number` | Seconds until the top disc has grown, 0.2–6. Default 1.6. |
 | `delay` | `number` | Seconds before the intro starts, 0–10. Default 0. |
 | `speed` | `number` | How fast the intro plays, 0.25–3. Default 1. |
+| `form` | `'discs' \| 'plates'` | `plates`: the logo cut from sheets of thick glass laid one over another (see glass-plates); the other settings are then GlassPlatesConfig's. Default the disc stack. |
+| `backdrop` | `string` | A photo behind the stack (same origin), covering the element; each disc then refracts it as a thick lens. |
+| `soften` | `number` | How soft the backdrop is round the glass (a mip bias, 0–5); through the glass it stays sharp, as a lens brings it into focus. Default 0. |
+| `dim` | `number` | How bright the backdrop shows, 0–1. Default 0.78. |
+| `dispersion` | `number` | With a backdrop: how far the colours part where the discs bend it, 0–1. Default 0.35. |
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
 | `lazy` | `boolean \| string` | Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away: for pages with many effects. Default false. |
 | `class` | `string` | Classes for the element. |
@@ -1289,6 +1301,23 @@ PixelHorizon: a flat colour filling one side and breaking up into square blocks 
 | `lazy` | `boolean \| string` | Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away: for pages with many effects. Default false. |
 | `class` | `string` | Classes for the element. |
 
+## `<Planet>`
+
+Planet: a planet seen from low orbit at sunrise: the vast dark curve of its night side across the lower frame (city lights on the Earth), the thin lit air along its limb, the sun cresting the limb and setting back over a slow cycle with an anamorphic flare along the horizon, the planet turning slowly. The Earth needs its two maps (`day`, `aux`; NASA Blue Marble and Black Marble, public domain); `mars`, `moon` and `giant` are drawn from noise. See src/runtime/planet.js.
+
+```astro
+<section class="hero" style="position: relative; background: #000">
+  <Planet day="/img/earth-day.webp" aux="/img/earth-aux.webp" sunX={0.62} />
+  <h1>…</h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `fixed` | `boolean` | Fill the viewport (position: fixed). Default false. |
+| `lazy` | `boolean \| string` | Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away. Default false. |
+| `class` | `string` | Classes for the element. |
+
 ## `<PointCloud>`
 
 PointCloud: a word drawn as a matrix of bright dots among rippling sheets of point cloud, the scene tilting towards the pointer. With `trackers`, boxes lock onto the word like a detector's debug view. See src/runtime/point-cloud.js.
@@ -1764,6 +1793,23 @@ VoxelLogo: a logo or character built of cubes, rocking slowly in perspective and
 | `markers` | `number` | Tracking markers ringing the solid (try 6); 0 for none. Default 0. |
 | `rock` | `number` | How far it rocks and turns towards the pointer. Default 1. |
 | `fixed` | `boolean` | Fill the viewport, behind the page (position: fixed, z-index -1). Default false. |
+| `class` | `string` | Classes for the element. |
+
+## `<WaterSurface>`
+
+WaterSurface: moving water seen close and low, as a long lens films it: ripples and small waves running across the frame in perspective, the sky lying on their backs, the deep colour in the troughs, the sun breaking into glints and a fine sparkle, and a shallow depth of field (sharp across the middle, soft in front and behind). Five looks: dusk blue-grey, deep teal, night under the moon, golden hour, black ink. It repeats exactly every `loop` seconds. See src/runtime/water-surface.js.
+
+```astro
+<section class="hero" style="position: relative">
+  <WaterSurface look="dusk" />
+  <h1>Keystone</h1>
+</section>
+```
+
+| Prop | Type | |
+|---|---|---|
+| `fixed` | `boolean` | Fill the viewport (position: fixed). Default false. |
+| `lazy` | `boolean \| string` | Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away. Default false. |
 | `class` | `string` | Classes for the element. |
 
 ## `<WaveBars>`
