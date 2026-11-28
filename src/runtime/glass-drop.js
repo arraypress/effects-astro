@@ -195,9 +195,10 @@ void main() {
 		// The logo made of glass: the ground through it, tinted the logo's colour, deepest where it is thickest.
 		if (uHasPhoto > 0.5) {
 			// clear glass over a photo: the photo through it, taking the logo's colour as light does through tinted glass
-			// (deeper where it is thicker), and a touch lighter than the dimmed ground, as glass gathers light
+			// (deeper where it is thicker), lifted, as glass gathers light from the room round it: over a dark part of the
+			// photo it still glows a little, never a black hole
 			vec3 absorb = pow(max(uInk, vec3(0.02)), vec3((0.35 + 0.9 * h) * uTint));
-			through = through * mix(vec3(1.0), absorb, uGlass) * (1.0 + 0.18 * uGlass);
+			through = through * mix(vec3(1.0), absorb, uGlass) * (1.0 + 0.3 * uGlass) + mix(uLight, uInk, 0.35) * 0.07 * uGlass;
 		} else {
 			float tint = mix(1.0, uTint * (0.75 + 0.25 * h), uGlass);
 			through = mix(through, uInk * (0.82 + 0.18 * h + 0.12 * (1.0 - uGlass)), tint);
@@ -209,6 +210,14 @@ void main() {
 	vec3 mirrored = studio(reflect(view, n), uLightDir, uLight);
 	float fres = schlick(n.z, 0.04);
 	vec3 col = through * (1.0 - fres * 0.6) + mirrored * (0.25 + fres * 1.6) * uHighlights * uGlass;
+	if (uHasPhoto > 0.5) {
+		// the room the glass mirrors on its face too: a soft window of light swept across it from the light's side, and a
+		// faint lit inner edge all round, so the glass reads even over the darkest part of the photo
+		float across = dot(p, uLightDir) / max(uMarkBox, 1e-4);
+		float window = smoothstep(-0.1, 0.45, across) * (1.0 - smoothstep(0.45, 0.75, across));
+		col += uLight * window * (0.07 + 0.18 * h) * uHighlights * uGlass;
+		col += mix(uLight, uInk, 0.4) * 0.16 * uGlass * smoothstep(b * 0.7, b * 0.05, g) * smoothstep(0.0, px * 2.0, g);
+	}
 
 	// Thick glass goes dark in a band just inside its rim, where the view inside reflects back off the far wall.
 	col *= 1.0 - 0.26 * uHasPhoto * uGlass * smoothstep(b * 0.85, b * 0.2, g) * smoothstep(0.0, px * 2.5, g);

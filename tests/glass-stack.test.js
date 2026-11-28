@@ -68,3 +68,15 @@ test('the stack sits in a square box centred in its area', () => {
 	assert.deepEqual(l.centre, { x: 0.5, y: 0.25 });
 	assert.ok(Math.abs(l.edge - 0.4) < 1e-9);
 });
+
+import { plateTints, plateOffset } from '../src/runtime/glass-plates.js';
+
+test('glass plates: tints back to front, plates stepped down and across about the middle', () => {
+	const t = plateTints(['#ffffff', '#000000'], 3);
+	assert.equal(t.length, 3);
+	assert.ok(t[0][0] > t[1][0] && t[1][0] > t[2][0], 'the back plate takes the first colour');
+	const a = plateOffset(0, 3, 0.07);
+	const b = plateOffset(2, 3, 0.07);
+	assert.deepEqual(plateOffset(1, 3, 0.07), { x: 0, y: 0 });
+	assert.ok(a.x < 0 && a.y < 0 && b.x > 0 && b.y > 0, 'each plate down and across from the one behind');
+});

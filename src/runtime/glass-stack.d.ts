@@ -53,6 +53,8 @@ export interface GlassStackConfig {
 	delay?: number;
 	/** How fast the intro plays, 0.25–3. Default 1. */
 	speed?: number;
+	/** `plates`: the logo cut from sheets of thick glass laid one over another (see glass-plates); the other settings are then GlassPlatesConfig's. Default the disc stack. */
+	form?: 'discs' | 'plates';
 	/** A photo behind the stack (same origin), covering the element; each disc then refracts it as a thick lens. */
 	backdrop?: string;
 	/** How soft the backdrop is round the glass (a mip bias, 0–5); through the glass it stays sharp, as a lens brings it into focus. Default 0. */

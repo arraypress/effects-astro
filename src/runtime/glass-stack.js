@@ -33,6 +33,7 @@ import { pointerIn } from './pointer.js';
 import { GLSL_STUDIO, lightVector } from './glass-optics.js';
 import { sliceRuns, runsTexture, slabGrowth } from './slab-runs.js';
 import { loadImage, imageTexture, coverScale } from './image.js';
+import { glassPlates } from './glass-plates.js';
 
 /**
  * @typedef {import('./glass-stack.js').GlassStackConfig} GlassStackConfig
@@ -241,6 +242,8 @@ export function stackLayout(config, aspect) {
  * @returns {() => void} Stops it.
  */
 export function glassStack(el, config) {
+	// `form: 'plates'`: the logo cut from sheets of thick glass laid one over another (./glass-plates.js)
+	if (config.form === 'plates') return glassPlates(el, config);
 	const c = { ...DEFAULTS, ...config };
 	const slices = Math.max(4, Math.min(64, Math.round(c.slabs)));
 	const colors = c.colors?.length >= 2 ? c.colors : c.colors?.length === 1 ? [c.colors[0], c.colors[0]] : DEFAULTS.colors;
