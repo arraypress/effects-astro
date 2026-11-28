@@ -9,7 +9,8 @@
  * How it is made (the techniques, not any one shader; see docs/credits.md):
  * - **Waves**: a sum of directional waves drawn from a spectrum (long, low ones to short ripples, spread about the
  *   wind), each with the deep-water dispersion relation ω = √(gk), so the long ones travel faster as real waves do
- *   (Tessendorf; Finch, GPU Gems ch. 1). Each wave's profile is `exp(sin φ − 1)`: peaked crests and broad troughs.
+ *   (Tessendorf; Finch, GPU Gems ch. 1). Most of the height is in a few long, gentle swells about a metre long with a
+ *   narrow spread and smooth sine crests; the short ripples are peaked (`exp(sin φ − 1)`) and ride the swell's faces.
  *   The frequencies are rounded to whole turns of `loop` seconds, so the water repeats exactly.
  * - **View**: a ray per pixel from a camera a little above the water, pitched down past the horizon, meeting the
  *   surface; the longest waves lift it there (a few relaxation steps), so crests stand up against what is behind.
@@ -69,11 +70,11 @@ import { seededRandom } from './random.js';
 
 /** The looks. */
 export const WATER_LOOKS = {
-	dusk: { deep: '#04182a', scatter: '#195f84', horizon: '#aebfcb', zenith: '#335e7e', sun: '#ffe2bd', power: 4, height: 10, exposure: 1.6 },
+	dusk: { deep: '#05192b', scatter: '#1d6a90', horizon: '#c3d2dc', zenith: '#4d7896', sun: '#ffe2bd', power: 4, height: 10, exposure: 1.6 },
 	teal: { deep: '#03211f', scatter: '#0f6d64', horizon: '#8cc3bb', zenith: '#1b4a4c', sun: '#fff4dc', power: 3.6, height: 20, exposure: 1.3 },
-	night: { deep: '#02050a', scatter: '#0c1d33', horizon: '#26354e', zenith: '#070c17', sun: '#d6e2ff', power: 2.6, height: 16, exposure: 1.45 },
+	night: { deep: '#050c16', scatter: '#173250', horizon: '#3d5274', zenith: '#0e1828', sun: '#dfe8ff', power: 3, height: 16, exposure: 1.7 },
 	golden: { deep: '#16120c', scatter: '#5b3f1b', horizon: '#e2a564', zenith: '#40364a', sun: '#ffcf8a', power: 4.2, height: 11, exposure: 1.25 },
-	ink: { deep: '#030303', scatter: '#1a1a1a', horizon: '#5c5c5c', zenith: '#121212', sun: '#ffffff', power: 3.4, height: 15, exposure: 1.3 },
+	ink: { deep: '#080808', scatter: '#2a2a2a', horizon: '#808080', zenith: '#1e1e1e', sun: '#ffffff', power: 3.6, height: 15, exposure: 1.5 },
 };
 
 /** The settings' defaults. */
@@ -81,7 +82,7 @@ export const WATER_DEFAULTS = {
 	look: 'dusk',
 	waves: 1.15,
 	wind: 180,
-	pitch: 20,
+	pitch: 13,
 	sun: -20,
 	focus: 0.5,
 	aperture: 1,
@@ -97,7 +98,7 @@ export const MAX_WAVES = 24;
 export const GEOMETRY_WAVES = 6;
 /** The camera: height above the water (metres) and the vertical field of view (degrees). */
 const EYE = 0.62;
-const FOV = 22;
+const FOV = 13; // a long lens: the whole frame looks along the water at a low angle, the swells stacked in rows
 /** Gravity, for the dispersion relation. */
 const G = 9.81;
 
@@ -125,30 +126,43 @@ export function waterWaves(config = {}, count = MAX_WAVES) {
 	const o = waterSettings(config);
 	const rnd = seededRandom(Math.round(o.seed * 1000) + 17);
 	const n = Math.max(1, Math.min(MAX_WAVES, count));
-	const longest = 0.9,
-		shortest = 0.03;
+	const longest = 1.25,
+		shortest = 0.024;
 	const out = [];
 	for (let i = 0; i < n; i++) {
 		const f = n === 1 ? 0 : i / (n - 1);
 		// wavelengths spaced evenly in log between the longest and the shortest, a little jittered
-		const lambda = longest * Math.pow(shortest / longest, f) * (0.88 + rnd() * 0.24);
+		const lambda = longest * Math.pow(shortest / longest, f) * (0.9 + rnd() * 0.2);
 		const k = (2 * Math.PI) / lambda;
-		// long waves run close to the wind; short ripples spread wider
-		const spread = (0.55 + 0.75 * f) * (rnd() * 2 - 1);
+		// a swell is a long, smooth, rounded form running close to one heading, so its few long waves keep a narrow spread
+		// (their crests curve as they cross rather than chop); the fine ripples ride it, running with it, a little wider
+		const spread = (f < 0.3 ? 0.22 : 0.28 + 0.32 * f) * (rnd() * 2 - 1);
 		const a = ((o.wind + 90) * Math.PI) / 180 + spread;
 		const dir = /** @type {[number, number]} */ ([Math.cos(a), Math.sin(a)]);
-		// steepness (a·k) a little under a tenth each: a lively surface that never folds
-		// the spectrum peaks at waves about a third of a metre long (the swells that shape the frame), smaller either side
-		// and again at wind ripples a few centimetres long, riding the swells
-		const peak = Math.exp(-Math.pow(Math.log(lambda / 0.42), 2) / 0.7);
-		const ripple = Math.exp(-Math.pow(Math.log(lambda / 0.055), 2) / 0.45);
-		const steep = o.waves * (0.035 + 0.15 * peak + 0.06 * ripple) * (0.75 + rnd() * 0.5);
+		// the spectrum: most of the height in swells about a metre long (big and gentle: low steepness, so they read as
+		// rounded backs, not chop), little between, and wind ripples a few centimetres long riding them
+		const swell = Math.exp(-Math.pow(Math.log(lambda / 0.6), 2) / 0.6);
+		const mid = Math.exp(-Math.pow(Math.log(lambda / 0.16), 2) / 0.5);
+		const ripple = Math.exp(-Math.pow(Math.log(lambda / 0.05), 2) / 0.4);
+		const steep = o.waves * (0.02 + 0.19 * swell + 0.06 * mid + 0.12 * ripple) * (0.8 + rnd() * 0.4);
 		const amp = steep / k;
+		// the crest's shape: 0 a smooth sine (a rounded swell), 1 a peaked crest over a broad trough (a ripple)
+		const peaked = Math.min(1, 0.15 + 1.1 * f);
 		const turns = Math.max(1, Math.round((Math.sqrt(G * k) * o.loop) / (2 * Math.PI)));
-		out.push({ dir, k, amp, omega: (2 * Math.PI * turns) / o.loop, phase: rnd() * 2 * Math.PI });
+		out.push({ dir, k, amp, peaked, omega: (2 * Math.PI * turns) / o.loop, phase: rnd() * 2 * Math.PI });
 	}
 	return out;
 }
+
+/**
+ * A wave's profile at a phase: a smooth sine (`peaked` 0, a rounded swell) blended into a peaked crest over a broad
+ * trough (`peaked` 1, `exp(sin φ − 1)`), both with the same mean, so changing the blend never lifts the water.
+ *
+ * @param {number} ph The phase.
+ * @param {number} peaked 0–1.
+ * @returns {number} The profile, about 0.13–1.
+ */
+const profile = (ph, peaked) => 0.4658 + 0.43 * Math.sin(ph) + peaked * (Math.exp(Math.sin(ph) - 1) - 0.4658 - 0.43 * Math.sin(ph));
 
 /**
  * The surface's height at a point and a time (metres): the shader's wave sum, unfiltered.
@@ -163,7 +177,7 @@ export function waterHeight(config, x, z, t) {
 	let h = 0;
 	for (const w of waterWaves(config)) {
 		const ph = w.k * (w.dir[0] * x + w.dir[1] * z) - w.omega * t + w.phase;
-		h += w.amp * (Math.exp(Math.sin(ph) - 1) - 0.4658);
+		h += w.amp * (profile(ph, w.peaked) - 0.4658);
 	}
 	return h;
 }
@@ -174,7 +188,7 @@ uniform vec2 uRes;
 uniform float uTime;
 uniform float uLoop;
 uniform vec4 uWave[${MAX_WAVES}];   // dir.xy, k, amp
-uniform vec2 uWaveT[${MAX_WAVES}];  // omega, phase
+uniform vec3 uWaveT[${MAX_WAVES}];  // omega, phase, peaked
 uniform float uCount;
 uniform float uPitch;
 uniform float uTanH;
@@ -195,13 +209,15 @@ uniform vec4 uRing;
 ${GLSL_QUIET}
 ${GLSL_HASH33}
 
-// one wave's height and slope at a point on the water: a peaked crest, a broad trough
-vec3 wave(vec4 w, vec2 wt, vec2 xz, float t) {
+// one wave's height and slope at a point on the water: a smooth sine (a rounded swell) blended into a peaked crest over
+// a broad trough (a ripple) by wt.z; both have the same mean
+vec3 wave(vec4 w, vec3 wt, vec2 xz, float t) {
 	float ph = w.z * dot(w.xy, xz) - wt.x * t + wt.y;
-	float e = exp(sin(ph) - 1.0);
-	float h = w.w * (e - 0.4658);
-	float s = w.w * w.z * e * cos(ph);
-	return vec3(h, s * w.xy);
+	float sn = sin(ph), cs = cos(ph);
+	float e = exp(sn - 1.0);
+	float prof = mix(0.4658 + 0.43 * sn, e, wt.z);
+	float dprof = mix(0.43 * cs, e * cs, wt.z);
+	return vec3(w.w * (prof - 0.4658), w.w * w.z * dprof * w.xy);
 }
 
 float liftAt(vec2 xz, float t) {
@@ -240,6 +256,8 @@ void main() {
 	vec2 slope = vec2(0.0);
 	float lost = 0.0;                                 // slope variance the filter took out: goes into roughness
 	float crest = 0.0;
+	vec2 swellSlope = vec2(0.0);                      // the long waves' slope: the ripples ride it
+	vec2 wind = uWave[0].xy;
 	for (int i = 0; i < ${n}; i++) {
 		if (float(i) >= uCount) break;
 		vec4 w = uWave[i];
@@ -247,9 +265,12 @@ void main() {
 		float kr = w.z * ri;
 		float f = exp(-0.5 * kr * kr);
 		vec3 hs = wave(w, uWaveT[i], xz, t);
-		slope += hs.yz * f;
-		crest += hs.x * f;
-		float ak = w.w * w.z;
+		// fine ripples gather on the swell's forward faces and thin on its backs, so they read as riding it
+		float ride = i < ${GEOMETRY_WAVES} ? 1.0 : clamp(0.85 + 5.0 * dot(swellSlope, wind), 0.4, 1.7);
+		if (i < ${GEOMETRY_WAVES}) swellSlope += hs.yz * f;
+		slope += hs.yz * f * ride;
+		crest += hs.x * f * ride;
+		float ak = w.w * w.z * ride;
 		lost += 0.5 * ak * ak * (1.0 - f * f);
 	}
 	// a slow ring of ripples spreading from a point out on the water, as a drop or a fish leaves (curved crests among
@@ -270,7 +291,9 @@ void main() {
 	// the sky reflected: the bright horizon low down, the darker zenith above, the sun's glow
 	vec3 rf = reflect(dir, n);
 	float up = clamp(rf.y, 0.0, 1.0);
-	vec3 sky = mix(uHorizonC, uZenithC, pow(up, 0.6));
+	// a steep sky gradient near the horizon: at the long lens's low angle the slopes mirror bands of it, so each ripple
+	// shows as light against dark
+	vec3 sky = mix(uHorizonC, uZenithC, pow(up, 0.32));
 	float sunAlign = max(dot(rf, uSunDir), 0.0);
 	sky += uSunC * (pow(sunAlign, 18.0) * 0.35 + pow(sunAlign, 4.0) * 0.12);
 	sky = mix(uHorizonC * 0.5, sky, smoothstep(-0.12, 0.03, rf.y)); // a ray turned back into the water by a steep face
@@ -297,12 +320,13 @@ void main() {
 	// the sparkle: tiny facets flashing, only where the water is in focus (a blur turns them into the sheen above)
 	vec2 cell = floor(xz * 70.0);
 	vec3 hz = hash33(vec3(cell, floor(t * 7.0)));
-	vec3 nm = normalize(n + vec3(hz.x - 0.5, 0.0, hz.y - 0.5) * 0.22);
+	vec3 nm = normalize(n + vec3(hz.x - 0.5, 0.0, hz.y - 0.5) * 0.3);
 	vec2 inCell = fract(xz * 70.0) - (0.2 + 0.6 * hash33(vec3(cell, 3.7)).xy);
 	float dot0 = exp(-dot(inCell, inCell) * 90.0);   // a point of light, not the whole facet
-	float flash = pow(max(dot(nm, hv), 0.0), 900.0) * step(0.4, hz.z) * dot0;
+	float flash = pow(max(dot(nm, hv), 0.0), 650.0) * step(0.28, hz.z) * dot0;
 	float sharp = exp(-pow(r * 150.0, 2.0));
-	col += uSunC * flash * sharp * uSparkle * uPower * 0.9;
+	float facing = 0.6 + 0.8 * clamp(crest * 20.0 + 0.5, 0.0, 1.0);   // crests catch it more than troughs
+	col += uSunC * flash * sharp * facing * uSparkle * uPower * 1.4;
 
 	// a little haze with distance, a soft vignette
 	col = mix(col, mix(uHorizonC, uZenithC, 0.5) * 0.9, 1.0 - exp(-d * 0.012));
@@ -432,13 +456,13 @@ export function waterSurface(el, config = {}) {
 		still: o.speed <= 0,
 		setup({ gl, uniform: u }) {
 			const a = new Float32Array(MAX_WAVES * 4);
-			const b = new Float32Array(MAX_WAVES * 2);
+			const b = new Float32Array(MAX_WAVES * 3);
 			waves.forEach((w, i) => {
 				a.set([w.dir[0], w.dir[1], w.k, w.amp], i * 4);
-				b.set([w.omega, w.phase], i * 2);
+				b.set([w.omega, w.phase, w.peaked], i * 3);
 			});
 			gl.uniform4fv(u('uWave[0]'), a);
-			gl.uniform2fv(u('uWaveT[0]'), b);
+			gl.uniform3fv(u('uWaveT[0]'), b);
 			gl.uniform1f(u('uCount'), count);
 			gl.uniform1f(u('uLoop'), o.loop);
 			gl.uniform1f(u('uPitch'), (o.pitch * Math.PI) / 180);

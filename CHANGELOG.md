@@ -5,6 +5,21 @@ All notable changes to `@arraypress/effects-astro` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [0.16.1] — 2026-11-28
+
+### Changed
+
+- **WaterSurface**: long, smooth swells. Most of the height is now in a few swells about 0.6 m long with a narrow spread
+  and smooth sine crests (each wave carries a `peaked` 0–1 blend between a sine and the old peaked profile); the short
+  ripples stay peaked, run with the swell and gather on its forward faces, so they read as riding it. A long lens (13°)
+  at a low angle (pitch 13) stacks the swells in rows as the reference photo does, the sky's gradient near the horizon is
+  steeper so every ripple shows light against dark, and the sparkle is brighter and scattered more on the crests. The
+  night and ink looks are lifted; dusk's sky is lighter. Still an exact 30 s loop, still a pure function of time.
+- **Planet**: the flare's ghosts no longer drift over the lockup. They line up through an optical centre high to one
+  side (`ghostCentre`, away from the sun), climbing past the lockup to the space above it, and any in the lockup's band
+  fade out. The streak along the horizon is unchanged.
+
 ## [Unreleased]
 
 ## [0.16.0] — 2026-11-28

@@ -97,13 +97,18 @@ export const PLANET_DEFAULTS = {
 /** The kinds, in the shader's numbering. */
 const KINDS = { earth: 0, mars: 1, moon: 2, giant: 3 };
 
-/** The flare's ghosts: where each lies on the line from the sun through the frame's centre (0 the sun, 1 the centre), its radius (heights), how bright, which tint. */
+/**
+ * The flare's ghosts: where each lies on the line from the sun through the lens's optical centre (0 the sun, 1 that
+ * centre), its radius (heights), how bright, which tint. A card is narrow and a long name spans it, so there is no room
+ * beside the lockup: the optical centre (`uGhostC`) sits high to one side, the ghosts climbing from the sun past the
+ * lockup to the space above it (one small ghost stays by the horizon), and any in the lockup's band fade out there.
+ */
 const GHOSTS = [
-	[1.35, 0.04, 0.03, 0],
-	[1.75, 0.07, 0.025, 1],
-	[0.55, 0.016, 0.12, 2],
-	[2.15, 0.1, 0.012, 0],
-	[1.12, 0.009, 0.2, 1],
+	[0.82, 0.04, 0.03, 0],
+	[0.95, 0.07, 0.025, 1],
+	[0.12, 0.016, 0.12, 2],
+	[1.08, 0.1, 0.012, 0],
+	[0.7, 0.009, 0.2, 1],
 ];
 
 const FRAG = `
@@ -137,6 +142,7 @@ uniform float uAirK;
 uniform vec2 uSunQ;
 uniform float uLift;
 uniform vec4 uGhost[5];
+uniform vec2 uGhostC;                 // the optical centre the ghosts line up through (heights from the middle, y down)
 ${GLSL_QUIET}
 ${GLSL_HASH33}
 ${GLSL_GRADIENT_NOISE}
@@ -311,13 +317,15 @@ void main() {
 		col += vec3(1.0) * exp(-abs(d.y) / w) * fall * fall * 0.8 * pw;
 		// the veil round the sun: tight; a lens in space scatters little
 		col += uStreakC * (exp(-dot(d, d) * 260.0) * 0.4 + exp(-length(d) * 18.0) * 0.05) * pw;
-		vec2 axis = -s2;
+		vec2 axis = uGhostC - s2;
+		// ghosts never sit on the name: faded across the lockup's band (the full width, since a long name spans the card)
+		float clear = uQuiet.z > 0.0 ? smoothstep(0.19, 0.27, abs(q.y - uQuiet.y)) : 1.0;
 		for (int i = 0; i < 5; i++) {
 			vec4 gh = uGhost[i];
 			vec2 gc = s2 + axis * gh.x;
 			float rr = length((p2 - gc) / vec2(0.78, 1.0)) / gh.y;
 			vec3 tint = gh.w < 0.5 ? uTint[0] : (gh.w < 1.5 ? uTint[1] : uTint[2]);
-			col += tint * (smoothstep(1.0, 0.82, rr) * 0.45 + smoothstep(0.7, 0.97, rr) * smoothstep(1.06, 0.97, rr) * 0.4) * gh.z * pw;
+			col += tint * (smoothstep(1.0, 0.82, rr) * 0.45 + smoothstep(0.7, 0.97, rr) * smoothstep(1.06, 0.97, rr) * 0.4) * gh.z * pw * clear;
 		}
 	}
 
@@ -328,6 +336,21 @@ void main() {
 	gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
 }
 `;
+
+/**
+ * The point the flare's ghosts line up through (heights from the middle, y down, as the shader's flare works): high in
+ * the frame, to the side away from the sun (the seed picks the side when the sun is central), so the ghosts climb past
+ * the lockup into the space above it.
+ *
+ * @param {{ seed: number }} o The settings.
+ * @param {number} aspect Width over height.
+ * @param {{ x: number, y: number }} sun Where the sun is (heights from the middle, y up).
+ * @returns {[number, number]} The point.
+ */
+export function ghostCentre(o, aspect, sun) {
+	const side = Math.abs(sun.x) > 0.04 * aspect ? -Math.sign(sun.x) : Math.floor(o.seed * 10) % 2 ? 1 : -1;
+	return [side * 0.28 * aspect, -0.42];
+}
 
 /**
  * The settings, filled with the defaults.
@@ -502,6 +525,7 @@ export function planet(el, config) {
 			gl.uniform1f(uniform('uTime'), time);
 			const sun = sunPlace(o, aspect, time);
 			gl.uniform2f(uniform('uSunQ'), sun.x, sun.y);
+			gl.uniform2f(uniform('uGhostC'), ...ghostCentre(o, aspect, sun));
 			gl.uniform1f(uniform('uLift'), sun.lift);
 			gl.uniform1f(uniform('uReady'), ready ? 1 : 0);
 			if (day) {

@@ -58,5 +58,7 @@ export declare const PLANET_DEFAULTS: Required<Omit<PlanetConfig, 'day' | 'aux' 
 export declare function planetPeriod(config: PlanetConfig): number;
 export declare function sunLift(config: PlanetConfig, time?: number): number;
 export declare function sunPlace(config: PlanetConfig, aspect: number, time?: number): { x: number; y: number; lift: number };
+/** The point the flare's ghosts line up through (heights from the middle, y down): beside the lockup, not through it. */
+export declare function ghostCentre(config: { seed: number }, aspect: number, sun: { x: number; y: number }): [number, number];
 export declare function planetStill(config: PlanetConfig): string;
 export declare function planet(el: HTMLElement, config: PlanetConfig): () => void;

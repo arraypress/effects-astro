@@ -38,3 +38,16 @@ test('the still is space, the planet, its limb and the sun with its streak, in t
 	// the moon has no air: no blue limb
 	assert.ok(!planetStill({ kind: 'moon', air: '#4f93ff' }).includes('#4f93ff'));
 });
+
+test('the flare ghosts climb past the lockup to the space above it, to the side away from the sun', async () => {
+	const { ghostCentre } = await import('../src/runtime/planet.js');
+	const aspect = 0.8;
+	// a sun to the right puts the ghosts' line to the left, and the other way round
+	assert.ok(ghostCentre({ seed: 1 }, aspect, { x: 0.2, y: -0.25 })[0] < 0);
+	assert.ok(ghostCentre({ seed: 1 }, aspect, { x: -0.2, y: -0.25 })[0] > 0);
+	// a central sun still sends them to one side, picked by the seed, never straight up the middle
+	for (const seed of [0, 0.1, 0.25, 0.37]) assert.ok(Math.abs(ghostCentre({ seed }, aspect, { x: 0, y: -0.25 })[0]) > 0.2 * aspect);
+	// high in the frame (y down: smaller is higher), above where a lockup sits
+	const [, y] = ghostCentre({ seed: 0 }, aspect, { x: 0, y: -0.25 });
+	assert.ok(y < -0.3);
+});
