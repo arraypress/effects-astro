@@ -1,0 +1,40 @@
+---
+/**
+ * WaterSurface: moving water seen close and low, as a long lens films it: ripples and small waves running across the
+ * frame in perspective, the sky lying on their backs, the deep colour in the troughs, the sun breaking into glints and a
+ * fine sparkle, and a shallow depth of field (sharp across the middle, soft in front and behind). Five looks: dusk
+ * blue-grey, deep teal, night under the moon, golden hour, black ink. It repeats exactly every `loop` seconds. See
+ * src/runtime/water-surface.js.
+ *
+ * Fills its nearest positioned ancestor, or the viewport with `fixed`. Opaque: it paints everywhere; the element shows a
+ * CSS still of it until the shader starts and without WebGL.
+ *
+ * @example
+ * <section class="hero" style="position: relative">
+ *   <WaterSurface look="dusk" />
+ *   <h1>Keystone</h1>
+ * </section>
+ */
+import EffectCanvas from './EffectCanvas.astro';
+import { waterStill, type WaterSurfaceConfig } from '../runtime/water-surface.js';
+
+interface Props extends WaterSurfaceConfig {
+	/** Fill the viewport (position: fixed). Default false. */
+	fixed?: boolean;
+	/** Run only while near the screen (true, or how near as a CSS length), giving its WebGL context back when away. Default false. */
+	lazy?: boolean | string;
+	class?: string;
+}
+
+const { fixed = false, lazy = false, class: className, ...config } = Astro.props;
+const still = waterStill(config);
+---
+
+<EffectCanvas name="water-surface" config={config} fixed={fixed} lazy={lazy} background={still} class={className} />
+
+<script>
+	import { mount } from '../runtime/mount.js';
+	import { waterSurface } from '../runtime/water-surface.js';
+
+	mount('[data-effect-water-surface]', waterSurface);
+</script>

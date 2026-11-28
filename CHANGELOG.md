@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.16.0] — 2026-11-28
+
+### Added
+
+- **WaterSurface** (`waterSurface`, `./runtime/water-surface`): moving water seen close and low through a long lens, after a
+  photo the owner sent ("ultra realistic water as a background"). Waves summed from a spectrum (long swells to wind
+  ripples, the deep-water dispersion relation, peaked crests), a camera a little above the water pitched down into it,
+  each wave filtered by the pixel's footprint and the lens's circle of confusion with the slope it loses carried into the
+  glint's roughness (so the water out of focus turns soft, as a real lens's does), Schlick's Fresnel between the
+  reflected sky and the water's own colour (lit through thin crests), a Beckmann sun glint, a sparkle of tiny facets where
+  the water is in focus, a ring of ripples spreading from a point. Five looks (`dusk`, `teal`, `night`, `golden`, `ink`).
+  A pure function of the time: every wave makes whole turns of `loop` seconds (default 30), so it repeats exactly and a
+  recording can ask for any frame (`waterTime`). Stills: `waterStill` (CSS) and `waterStillSvg` (noise lit as
+  ripples, sharp across the middle and soft above and below).
+
 ## [0.15.0] — 2026-11-28
 
 ### Added
