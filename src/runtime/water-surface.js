@@ -9,8 +9,9 @@
  * How it is made (the techniques, not any one shader; see docs/credits.md):
  * - **Waves**: a sum of directional waves drawn from a spectrum (long, low ones to short ripples, spread about the
  *   wind), each with the deep-water dispersion relation ω = √(gk), so the long ones travel faster as real waves do
- *   (Tessendorf; Finch, GPU Gems ch. 1). Most of the height is in a few long, gentle swells about a metre long with a
- *   narrow spread and smooth sine crests; the short ripples are peaked (`exp(sin φ − 1)`) and ride the swell's faces.
+ *   (Tessendorf; Finch, GPU Gems ch. 1). Most of the height is in waves about half a metre long from two or three
+ *   headings crossing, with smooth crests, so they make rounded mounds; the short ripples are peaked (`exp(sin φ − 1)`)
+ *   and ride the mounds' faces.
  *   The frequencies are rounded to whole turns of `loop` seconds, so the water repeats exactly.
  * - **View**: a ray per pixel from a camera a little above the water, pitched down past the horizon, meeting the
  *   surface; the longest waves lift it there (a few relaxation steps), so crests stand up against what is behind.
@@ -70,7 +71,7 @@ import { seededRandom } from './random.js';
 
 /** The looks. */
 export const WATER_LOOKS = {
-	dusk: { deep: '#05192b', scatter: '#1d6a90', horizon: '#c3d2dc', zenith: '#4d7896', sun: '#ffe2bd', power: 4, height: 10, exposure: 1.6 },
+	dusk: { deep: '#052433', scatter: '#358aa9', horizon: '#c9d7e0', zenith: '#7d9eb4', sun: '#ffc88a', power: 4.6, height: 9, exposure: 1.55 },
 	teal: { deep: '#03211f', scatter: '#0f6d64', horizon: '#8cc3bb', zenith: '#1b4a4c', sun: '#fff4dc', power: 3.6, height: 20, exposure: 1.3 },
 	night: { deep: '#050c16', scatter: '#173250', horizon: '#3d5274', zenith: '#0e1828', sun: '#dfe8ff', power: 3, height: 16, exposure: 1.7 },
 	golden: { deep: '#16120c', scatter: '#5b3f1b', horizon: '#e2a564', zenith: '#40364a', sun: '#ffcf8a', power: 4.2, height: 11, exposure: 1.25 },
@@ -82,7 +83,7 @@ export const WATER_DEFAULTS = {
 	look: 'dusk',
 	waves: 1.15,
 	wind: 180,
-	pitch: 13,
+	pitch: 21,
 	sun: -20,
 	focus: 0.5,
 	aperture: 1,
@@ -98,7 +99,7 @@ export const MAX_WAVES = 24;
 export const GEOMETRY_WAVES = 6;
 /** The camera: height above the water (metres) and the vertical field of view (degrees). */
 const EYE = 0.62;
-const FOV = 13; // a long lens: the whole frame looks along the water at a low angle, the swells stacked in rows
+const FOV = 26; // a moderate lens on a patch of water, the horizon just out of frame
 /** Gravity, for the dispersion relation. */
 const G = 9.81;
 
@@ -126,28 +127,29 @@ export function waterWaves(config = {}, count = MAX_WAVES) {
 	const o = waterSettings(config);
 	const rnd = seededRandom(Math.round(o.seed * 1000) + 17);
 	const n = Math.max(1, Math.min(MAX_WAVES, count));
-	const longest = 1.25,
+	const longest = 1.1,
 		shortest = 0.024;
+	// the long waves come from two or three headings crossing (the wind's and one either side), so their crests interfere
+	// into rounded mounds and troughs, curved both ways, not rows
+	const heads = [0, 0.95, -0.95];
 	const out = [];
 	for (let i = 0; i < n; i++) {
 		const f = n === 1 ? 0 : i / (n - 1);
 		// wavelengths spaced evenly in log between the longest and the shortest, a little jittered
 		const lambda = longest * Math.pow(shortest / longest, f) * (0.9 + rnd() * 0.2);
 		const k = (2 * Math.PI) / lambda;
-		// a swell is a long, smooth, rounded form running close to one heading, so its few long waves keep a narrow spread
-		// (their crests curve as they cross rather than chop); the fine ripples ride it, running with it, a little wider
-		const spread = (f < 0.3 ? 0.22 : 0.28 + 0.32 * f) * (rnd() * 2 - 1);
+		const spread = f < 0.4 ? heads[i % 3] + (rnd() * 2 - 1) * 0.3 : (rnd() * 2 - 1) * (0.5 + 0.6 * f);
 		const a = ((o.wind + 90) * Math.PI) / 180 + spread;
 		const dir = /** @type {[number, number]} */ ([Math.cos(a), Math.sin(a)]);
-		// the spectrum: most of the height in swells about a metre long (big and gentle: low steepness, so they read as
-		// rounded backs, not chop), little between, and wind ripples a few centimetres long riding them
-		const swell = Math.exp(-Math.pow(Math.log(lambda / 0.6), 2) / 0.6);
-		const mid = Math.exp(-Math.pow(Math.log(lambda / 0.16), 2) / 0.5);
-		const ripple = Math.exp(-Math.pow(Math.log(lambda / 0.05), 2) / 0.4);
-		const steep = o.waves * (0.02 + 0.19 * swell + 0.06 * mid + 0.12 * ripple) * (0.8 + rnd() * 0.4);
+		// the spectrum: most of the height in waves about half a metre long (the mounds that shape the frame), a little in
+		// between, and wind ripples a few centimetres long riding them
+		const swell = Math.exp(-Math.pow(Math.log(lambda / 0.5), 2) / 0.55);
+		const mid = Math.exp(-Math.pow(Math.log(lambda / 0.14), 2) / 0.35);
+		const ripple = Math.exp(-Math.pow(Math.log(lambda / 0.05), 2) / 0.45);
+		const steep = o.waves * (0.03 + 0.26 * swell + 0.09 * mid + 0.16 * ripple) * (0.8 + rnd() * 0.4);
 		const amp = steep / k;
-		// the crest's shape: 0 a smooth sine (a rounded swell), 1 a peaked crest over a broad trough (a ripple)
-		const peaked = Math.min(1, 0.15 + 1.1 * f);
+		// the crest's shape: 0 a smooth sine (a rounded mound), 1 a peaked crest over a broad trough (a ripple)
+		const peaked = Math.min(1, 0.25 + 1.0 * f);
 		const turns = Math.max(1, Math.round((Math.sqrt(G * k) * o.loop) / (2 * Math.PI)));
 		out.push({ dir, k, amp, peaked, omega: (2 * Math.PI * turns) / o.loop, phase: rnd() * 2 * Math.PI });
 	}
@@ -291,9 +293,10 @@ void main() {
 	// the sky reflected: the bright horizon low down, the darker zenith above, the sun's glow
 	vec3 rf = reflect(dir, n);
 	float up = clamp(rf.y, 0.0, 1.0);
-	// a steep sky gradient near the horizon: at the long lens's low angle the slopes mirror bands of it, so each ripple
-	// shows as light against dark
-	vec3 sky = mix(uHorizonC, uZenithC, pow(up, 0.32));
+	// the sky the slopes mirror: the bright horizon low down and an overcast-bright dome above (so the backs of the mounds,
+	// facing up, still catch light and the near water never goes black)
+	vec3 sky = mix(uHorizonC, uZenithC, pow(up, 0.6));
+	sky += uHorizonC * 0.28 * smoothstep(0.15, 0.9, up);
 	float sunAlign = max(dot(rf, uSunDir), 0.0);
 	sky += uSunC * (pow(sunAlign, 18.0) * 0.35 + pow(sunAlign, 4.0) * 0.12);
 	sky = mix(uHorizonC * 0.5, sky, smoothstep(-0.12, 0.03, rf.y)); // a ray turned back into the water by a steep face
@@ -315,18 +318,20 @@ void main() {
 	float D = exp(-tan2 / m2) / (3.14159 * m2 * c2 * c2);
 	float nl = max(dot(n, uSunDir), 0.0);
 	vec3 spec = uSunC * uPower * fres * D * nl / (4.0 * nv);
-	col += min(spec * 0.09, vec3(1.1));
+	// glints never flare behind the words: the quiet area behind the lockup takes most of their light
+	float hush = mix(0.25, 1.0, quietOpen(vec2(p.x, p.y)));
+	col += min(spec * 0.13, uSunC * 1.4) * hush;   // warm, sharp glints on the crests facing the low sun (kept warm, never clipped white)
 
 	// the sparkle: tiny facets flashing, only where the water is in focus (a blur turns them into the sheen above)
-	vec2 cell = floor(xz * 70.0);
+	vec2 cell = floor(xz * 55.0);
 	vec3 hz = hash33(vec3(cell, floor(t * 7.0)));
 	vec3 nm = normalize(n + vec3(hz.x - 0.5, 0.0, hz.y - 0.5) * 0.3);
-	vec2 inCell = fract(xz * 70.0) - (0.2 + 0.6 * hash33(vec3(cell, 3.7)).xy);
+	vec2 inCell = fract(xz * 55.0) - (0.2 + 0.6 * hash33(vec3(cell, 3.7)).xy);
 	float dot0 = exp(-dot(inCell, inCell) * 90.0);   // a point of light, not the whole facet
-	float flash = pow(max(dot(nm, hv), 0.0), 650.0) * step(0.28, hz.z) * dot0;
-	float sharp = exp(-pow(r * 150.0, 2.0));
+	float flash = pow(max(dot(nm, hv), 0.0), 420.0) * step(0.22, hz.z) * dot0;
+	float sharp = exp(-pow(r * 110.0, 2.0));
 	float facing = 0.6 + 0.8 * clamp(crest * 20.0 + 0.5, 0.0, 1.0);   // crests catch it more than troughs
-	col += uSunC * flash * sharp * facing * uSparkle * uPower * 1.4;
+	col += uSunC * flash * sharp * facing * uSparkle * uPower * 2.0 * hush;
 
 	// a little haze with distance, a soft vignette
 	col = mix(col, mix(uHorizonC, uZenithC, 0.5) * 0.9, 1.0 - exp(-d * 0.012));

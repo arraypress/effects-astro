@@ -10,12 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **WaterSurface**: long, smooth swells. Most of the height is now in a few swells about 0.6 m long with a narrow spread
-  and smooth sine crests (each wave carries a `peaked` 0–1 blend between a sine and the old peaked profile); the short
-  ripples stay peaked, run with the swell and gather on its forward faces, so they read as riding it. A long lens (13°)
-  at a low angle (pitch 13) stacks the swells in rows as the reference photo does, the sky's gradient near the horizon is
-  steeper so every ripple shows light against dark, and the sparkle is brighter and scattered more on the crests. The
-  night and ink looks are lifted; dusk's sky is lighter. Still an exact 30 s loop, still a pure function of time.
+- **WaterSurface**: rounded swells, the reference photo's look. Most of the height is now in waves about half a metre
+  long from three headings crossing (the wind's and one either side), with smooth crests (each wave carries a `peaked`
+  0–1 blend between a sine and the old peaked profile), so they interfere into soft mounds and troughs curved both ways,
+  not rows; mid waves and peaked wind ripples ride them, gathering on their forward faces. A moderate lens (26°) at about
+  21° down on a patch of water (the horizon just out of frame); an overcast-bright sky term lights the mounds' backs so
+  the near water never goes black; warm, sharp glints on the crests facing the low sun (kept warm, never clipped white)
+  and a brighter, more scattered sparkle, both hushed inside the quiet area so they never flare behind the words. Dusk
+  is a cool blue-teal with darker troughs; night and ink are lifted. Still an exact 30 s loop and a pure function of time.
 - **Planet**: the flare's ghosts no longer drift over the lockup. They line up through an optical centre high to one
   side (`ghostCentre`, away from the sun), climbing past the lockup to the space above it, and any in the lockup's band
   fade out. The streak along the horizon is unchanged.

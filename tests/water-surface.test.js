@@ -73,17 +73,17 @@ test('a still that looks like water: a CSS one and an SVG one, both in the look\
 	}
 });
 
-test('the water is a few long smooth swells with peaked ripples riding them', async () => {
+test('the water is rounded mounds from crossing swells, with peaked ripples riding them', async () => {
 	const { waterWaves } = await import('../src/runtime/water-surface.js');
 	const ws = waterWaves({ seed: 3 });
 	const longest = ws[0], shortest = ws.at(-1);
-	assert.ok((2 * Math.PI) / longest.k > 1, 'the longest swell is over a metre');
-	assert.ok(longest.peaked < 0.3, 'the swells are rounded, not peaked');
+	assert.ok((2 * Math.PI) / longest.k > 0.9, 'the longest swell is about a metre');
+	assert.ok(longest.peaked < 0.35, 'the swells are rounded, not peaked');
 	assert.ok(shortest.peaked > 0.9, 'the ripples are peaked');
 	// the swells carry the height: the six longest outweigh all the rest
 	const swell = ws.slice(0, 6).reduce((t, w) => t + w.amp, 0), rest = ws.slice(6).reduce((t, w) => t + w.amp, 0);
 	assert.ok(swell > rest);
-	// and run close to one heading
-	const heading = Math.atan2(longest.dir[1], longest.dir[0]);
-	for (const w of ws.slice(0, 6)) assert.ok(Math.abs(Math.atan2(w.dir[1], w.dir[0]) - heading) < 0.5);
+	// and come from more than one heading, so they cross into mounds rather than rows
+	const headings = ws.slice(0, 6).map((w) => Math.atan2(w.dir[1], w.dir[0]));
+	assert.ok(Math.max(...headings) - Math.min(...headings) > 1);
 });
